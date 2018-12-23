@@ -4,6 +4,7 @@ from fbsrankings.domain.team import TeamRepository
 from fbsrankings.domain.affiliation import AffiliationRepository, Subdivision
 from fbsrankings.domain.game import GameRepository
 
+
 class Application (object):
     def __init__(self, repository):
         if not isinstance(repository, SeasonRepository):
@@ -127,7 +128,7 @@ class Application (object):
                     season_section = SeasonSection.POSTSEASON
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
-                self._repository.AddGame(season, week, game_date, home_team, away_team, season_section)
+                self._repository.AddGame(season, week, game_date, season_section, home_team, away_team, home_team_score, away_team_score)
         
     def CalculateRankings(self, year):
         pass
