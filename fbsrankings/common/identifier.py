@@ -12,7 +12,7 @@ class Identifier (object):
         return False
         
     def __ne__(self, other):
-        return not __eq__(self, other)
+        return not self.__eq__(self, other)
         
     def __str__(self):
         return str(self.value)
