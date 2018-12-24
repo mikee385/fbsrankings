@@ -73,7 +73,7 @@ class SportsReference (object):
                 
                 if (first_team_name.startswith('(')):
                     start = first_team_name.find(')')
-                    first_team_name = first_team_name[start+2:]
+                    first_team_name = first_team_name[start + 2:]
                 
                 if first_score_string == '':
                     first_score = None
@@ -82,7 +82,7 @@ class SportsReference (object):
                     
                 if (second_team_name.startswith('(')):
                     start = second_team_name.find(')')
-                    second_team_name = second_team_name[start+2:]
+                    second_team_name = second_team_name[start + 2:]
                     
                 if second_score_string == '':
                     second_score = None
