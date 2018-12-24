@@ -1,7 +1,9 @@
 import csv
 import os
+
 from fbsrankings.infrastructure.local.repository import Repository
 from fbsrankings.application import Application
+
 
 repository = Repository()
 application = Application(repository)

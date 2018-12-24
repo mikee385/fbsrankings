@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from fbsrankings.domain.season import SeasonRepository, SeasonSection
 from fbsrankings.domain.team import TeamRepository
 from fbsrankings.domain.affiliation import AffiliationRepository, Subdivision

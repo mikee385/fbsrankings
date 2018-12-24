@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from fbsrankings.domain.affiliation import Affiliation, AffiliationID, AffiliationRepository as BaseRepository
 from fbsrankings.domain.season import Season, SeasonID
 from fbsrankings.domain.team import Team, TeamID

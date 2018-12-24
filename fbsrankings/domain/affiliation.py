@@ -1,4 +1,5 @@
 from enum import Enum
+
 from fbsrankings.common.identifier import Identifier
 from fbsrankings.domain.season import Season, SeasonID
 from fbsrankings.domain.team import Team, TeamID

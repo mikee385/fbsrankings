@@ -1,4 +1,5 @@
 from datetime import date
+
 from fbsrankings.common.identifier import Identifier
 from fbsrankings.domain.season import Season, SeasonID, SeasonSection
 from fbsrankings.domain.team import Team, TeamID

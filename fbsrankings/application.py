@@ -1,4 +1,5 @@
 import csv
+
 from fbsrankings.domain.affiliation import Subdivision
 from fbsrankings.infrastructure.sportsreference import SportsReference
 

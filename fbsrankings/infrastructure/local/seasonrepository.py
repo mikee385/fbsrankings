@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from fbsrankings.domain.season import Season, SeasonID, SeasonRepository as BaseRepository
 
 
