@@ -15,14 +15,14 @@ class Team (object):
 
 
 class TeamRepository (object):
-    def AddTeam(self, name, *args, **kwargs):
+    def add_team(self, name, *args, **kwargs):
         pass
 
-    def FindTeam(self, ID):
+    def find_team(self, ID):
         pass
         
-    def FindTeamByName(self, name):
+    def find_team_by_name(self, name):
         pass
     
-    def AllTeams(self):
+    def all_teams(self):
         pass

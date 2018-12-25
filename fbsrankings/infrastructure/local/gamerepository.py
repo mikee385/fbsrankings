@@ -9,7 +9,7 @@ class GameRepository(BaseRepository):
         self._game_id_dict = {}
         self._game_season_dict = {}
     
-    def AddGame(self, *args, **kwargs):
+    def add_game(self, *args, **kwargs):
         ID = GameID(uuid4())
         value = Game(ID, *args, **kwargs)
         
@@ -23,12 +23,12 @@ class GameRepository(BaseRepository):
         
         return value
 
-    def FindGame(self, ID):
+    def find_game(self, ID):
         if not isinstance(ID, GameID):
             raise TypeError('ID must be of type GameID')
         return self._game_id_dict.get(ID)
         
-    def FindGamesBySeason(self, season):
+    def find_games_by_season(self, season):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
@@ -41,5 +41,5 @@ class GameRepository(BaseRepository):
             return None
         return list(season_dict.values())
         
-    def AllGames(self):
+    def all_games(self):
         return self._game_id_dict.values()

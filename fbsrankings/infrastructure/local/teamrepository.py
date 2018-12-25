@@ -8,7 +8,7 @@ class TeamRepository(BaseRepository):
         self._team_id_dict = {}
         self._team_name_dict = {}
     
-    def AddTeam(self, name, *args, **kwargs):
+    def add_team(self, name, *args, **kwargs):
         if name in self._team_name_dict:
             raise ValueError('Team already exists for name ' + str(name))
             
@@ -20,13 +20,13 @@ class TeamRepository(BaseRepository):
         
         return value
 
-    def FindTeam(self, ID):
+    def find_team(self, ID):
         if not isinstance(ID, TeamID):
             raise TypeError('ID must be of type TeamID')
         return self._team_id_dict.get(ID)
         
-    def FindTeamByName(self, name):
+    def find_team_by_name(self, name):
         return self._team_name_dict.get(name)
         
-    def AllTeams(self):
+    def all_teams(self):
         return self._team_name_dict.values()

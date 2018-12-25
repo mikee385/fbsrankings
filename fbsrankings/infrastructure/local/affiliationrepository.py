@@ -10,7 +10,7 @@ class AffiliationRepository (BaseRepository):
         self._affiliation_id_dict = {}
         self._affiliation_season_dict = {}
     
-    def AddAffiliation(self, season, team, *args, **kwargs):
+    def add_affiliation(self, season, team, *args, **kwargs):
         ID = AffiliationID(uuid4())
         value = Affiliation(ID, season, team, *args, **kwargs)
         
@@ -24,12 +24,12 @@ class AffiliationRepository (BaseRepository):
         
         return value
 
-    def FindAffiliation(self, ID):
+    def find_affiliation(self, ID):
         if not isinstance(ID, AffiliationID):
             raise TypeError('ID must be of type AffiliationID')
         return self._affiliation_id_dict.get(ID)
         
-    def FindAffiliationBySeasonTeam(self, season, team):
+    def find_affiliation_by_season_team(self, season, team):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
@@ -49,7 +49,7 @@ class AffiliationRepository (BaseRepository):
             return None
         return season_dict.get(team_ID)
         
-    def FindAffiliationsBySeason(self, season):
+    def find_affiliations_by_season(self, season):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):

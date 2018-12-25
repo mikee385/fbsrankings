@@ -8,7 +8,7 @@ class SeasonRepository(BaseRepository):
         self._season_id_dict = {}
         self._season_year_dict = {}
     
-    def AddSeason(self, year, *args, **kwargs):
+    def add_season(self, year, *args, **kwargs):
         if year in self._season_year_dict:
             raise ValueError('Season already exists for year ' + str(year))
             
@@ -20,13 +20,13 @@ class SeasonRepository(BaseRepository):
         
         return value
 
-    def FindSeason(self, ID):
+    def find_season(self, ID):
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
         return self._season_id_dict.get(ID)
         
-    def FindSeasonByYear(self, year):
+    def find_season_by_year(self, year):
         return self._season_year_dict.get(year)
         
-    def AllSeasons(self):
+    def all_seasons(self):
         return self._season_year_dict.values()

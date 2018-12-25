@@ -80,12 +80,12 @@ class Game (object):
 
 
 class GameRepository (object):
-    def AddGame(self, *args, **kwargs):
+    def add_game(self, *args, **kwargs):
         pass
 
-    def FindGame(self, ID):
+    def find_game(self, ID):
         pass
         
-    def AllGames(self):
+    def all_games(self):
         pass
         

@@ -21,8 +21,8 @@ with open(index_csv_filename, 'r') as index_file:
         postseason_start_week = int(row[1])
         team_csv_filename = os.path.join(data_directory, row[2])
         game_csv_filename = os.path.join(data_directory, row[3])
-        application.ImportSportsReferenceSeason(year, postseason_start_week, team_csv_filename, game_csv_filename)
+        application.import_sports_reference_season(year, postseason_start_week, team_csv_filename, game_csv_filename)
             
-        application.CalculateRankings(year)
+        application.calculate_rankings(year)
     
-    application.Display()
+    application.display()

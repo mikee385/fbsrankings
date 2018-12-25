@@ -40,15 +40,15 @@ class Affiliation (object):
 
 
 class AffiliationRepository (object):
-    def AddAffiliation(self, season, team, *args, **kwargs):
+    def add_affiliation(self, season, team, *args, **kwargs):
         pass
 
-    def FindAffiliation(self, ID):
+    def find_affiliation(self, ID):
         pass
         
-    def FindAffiliationBySeasonTeam(self, season, team):
+    def find_affiliation_by_season_team(self, season, team):
         pass
         
-    def FindAffiliationsBySeason(self, season):
+    def find_affiliations_by_season(self, season):
         pass
     

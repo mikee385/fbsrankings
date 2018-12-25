@@ -22,15 +22,15 @@ class Season (object):
 
 
 class SeasonRepository (object):
-    def AddSeason(self, year, *args, **kwargs):
+    def add_season(self, year, *args, **kwargs):
         pass
 
-    def FindSeason(self, ID):
+    def find_season(self, ID):
         pass
         
-    def FindSeasonByYear(self, year):
+    def find_season_by_year(self, year):
         pass
         
-    def AllSeasons(self):
+    def all_seasons(self):
         pass
         
