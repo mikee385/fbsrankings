@@ -8,14 +8,56 @@ class Identifier (object):
                 return self.value == other.value
             if isinstance(self.value, type(other.value)):
                 return other.value == self.value
-            return False
-        return False
+            return NotImplemented
+        return NotImplemented
         
     def __ne__(self, other):
-        return not self.__eq__(self, other)
+        if isinstance(other, type(self)) or isinstance(self, type(other)):
+            if isinstance(other.value, type(self.value)):
+                return self.value != other.value
+            if isinstance(self.value, type(other.value)):
+                return other.value != self.value
+            return NotImplemented
+        return NotImplemented
+    
+    def __lt__(self, other):
+        if isinstance(other, type(self)) or isinstance(self, type(other)):
+            if isinstance(other.value, type(self.value)):
+                return self.value < other.value
+            if isinstance(self.value, type(other.value)):
+                return other.value > self.value
+            return NotImplemented
+        return NotImplemented
         
-    def __str__(self):
-        return str(self.value)
+    def __le__(self, other):
+        if isinstance(other, type(self)) or isinstance(self, type(other)):
+            if isinstance(other.value, type(self.value)):
+                return self.value <= other.value
+            if isinstance(self.value, type(other.value)):
+                return other.value >= self.value
+            return NotImplemented
+        return NotImplemented
+        
+    def __gt__(self, other):
+        if isinstance(other, type(self)) or isinstance(self, type(other)):
+            if isinstance(other.value, type(self.value)):
+                return self.value > other.value
+            if isinstance(self.value, type(other.value)):
+                return other.value < self.value
+            return NotImplemented
+        return NotImplemented
+        
+    def __ge__(self, other):
+        if isinstance(other, type(self)) or isinstance(self, type(other)):
+            if isinstance(other.value, type(self.value)):
+                return self.value >= other.value
+            if isinstance(self.value, type(other.value)):
+                return other.value <= self.value
+            return NotImplemented
+        return NotImplemented
         
     def __hash__(self):
         return hash(self.value)
+
+    def __str__(self):
+        return str(self.value)
