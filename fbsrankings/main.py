@@ -1,11 +1,13 @@
 import csv
 import os
 
+from fbsrankings.common.event import EventBus
 from fbsrankings.infrastructure.local.repository import Repository
 from fbsrankings.application import Application
 
 
-repository = Repository()
+event_bus = EventBus()
+repository = Repository(event_bus)
 application = Application(repository)
 
 data_directory = 'fbsrankings/data'

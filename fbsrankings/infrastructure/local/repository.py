@@ -5,8 +5,8 @@ from fbsrankings.infrastructure.local.gamerepository import GameRepository
 
 
 class Repository(SeasonRepository, TeamRepository, GameRepository, AffiliationRepository):
-    def __init__(self):
+    def __init__(self, event_bus):
         SeasonRepository.__init__(self)
         TeamRepository.__init__(self)
         AffiliationRepository.__init__(self)
-        GameRepository.__init__(self)
+        GameRepository.__init__(self, event_bus)
