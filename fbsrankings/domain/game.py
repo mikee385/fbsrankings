@@ -121,13 +121,13 @@ class Game (object):
 
 class GameRepository (object):
     def add_game(self, *args, **kwargs):
-        pass
+        raise NotImplementedError
 
     def find_game(self, ID):
-        pass
+        raise NotImplementedError
         
     def all_games(self):
-        pass
+        raise NotImplementedError
 
 
 class GameScheduledEvent (Event):

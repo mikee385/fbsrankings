@@ -16,13 +16,13 @@ class Team (object):
 
 class TeamRepository (object):
     def add_team(self, name, *args, **kwargs):
-        pass
+        raise NotImplementedError
 
     def find_team(self, ID):
-        pass
+        raise NotImplementedError
         
     def find_team_by_name(self, name):
-        pass
+        raise NotImplementedError
     
     def all_teams(self):
-        pass
+        raise NotImplementedError

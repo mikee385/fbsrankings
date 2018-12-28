@@ -41,14 +41,14 @@ class Affiliation (object):
 
 class AffiliationRepository (object):
     def add_affiliation(self, season, team, *args, **kwargs):
-        pass
+        raise NotImplementedError
 
     def find_affiliation(self, ID):
-        pass
+        raise NotImplementedError
         
     def find_affiliation_by_season_team(self, season, team):
-        pass
+        raise NotImplementedError
         
     def find_affiliations_by_season(self, season):
-        pass
+        raise NotImplementedError
     

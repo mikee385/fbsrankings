@@ -23,14 +23,14 @@ class Season (object):
 
 class SeasonRepository (object):
     def add_season(self, year, *args, **kwargs):
-        pass
+        raise NotImplementedError
 
     def find_season(self, ID):
-        pass
+        raise NotImplementedError
         
     def find_season_by_year(self, year):
-        pass
+        raise NotImplementedError
         
     def all_seasons(self):
-        pass
+        raise NotImplementedError
         
