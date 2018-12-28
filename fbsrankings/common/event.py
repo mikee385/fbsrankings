@@ -15,7 +15,7 @@ class EventBus (object):
         
         handlers = self._handlers.get(event_type)
         if handlers is None:
-            self._handers[event_type] = []
+            self._handlers[event_type] = []
         
     def register_handler(self, event_type, handler):
         if not issubclass(event_type, Event):
