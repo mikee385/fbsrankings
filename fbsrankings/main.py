@@ -3,7 +3,7 @@ import os
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain.factory import Factory
-from fbsrankings.infrastructure.local.repository import Repository
+from fbsrankings.infrastructure.local import Repository
 from fbsrankings.application import Application
 
 
