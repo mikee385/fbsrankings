@@ -1,7 +1,9 @@
 import csv
 
 from fbsrankings.domain.affiliation import Subdivision
+from fbsrankings.domain.game import GameStatus
 from fbsrankings.domain.importservice import ImportService
+from fbsrankings.domain.cancelservice import CancelService
 from fbsrankings.infrastructure.sportsreference import SportsReference
 
 
@@ -21,6 +23,9 @@ class Application (object):
         with open(game_csv_filename, 'r') as game_file:
             game_reader = csv.reader(game_file)
             self._sports_reference.import_games_from_csv(year, postseason_start_week, game_reader)
+            
+        cancel_service = CancelService(self._repository)
+        cancel_service.cancel_past_games(year)
 
     def calculate_rankings(self, year):
         pass
@@ -39,3 +44,25 @@ class Application (object):
     
             games = self._repository.find_games_by_season(season)
             print('Total Games: ' + str(len(games)))
+        
+        print()
+        for game in self._repository.all_games():
+            if game.status == GameStatus.CANCELED:
+                print('Canceled Game:')
+                self._print_game_summary(game)
+            elif game.status != GameStatus.COMPLETED:
+                print('Unknown Status')
+                self._print_game_summary(game)
+        
+    def _print_game_summary(self, game):
+        season = self._repository.find_season(game.season_ID)
+        home_team = self._repository.find_team(game.home_team_ID)
+        away_team = self._repository.find_team(game.away_team_ID)
+        print('Year ' + str(season.year) + ', Week ' + str(game.week))
+        print(game.date)
+        print(home_team.name + ' vs. ' + away_team.name)
+        if game.home_team_score is not None and game.away_team_score is not None:
+            print(str(game.status) + ', ' + str(game.home_team_score) + ' to ' + str(game.away_team_score))
+        else:
+            print(game.status)
+        print()

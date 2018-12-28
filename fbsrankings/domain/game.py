@@ -1,10 +1,17 @@
 from uuid import uuid4
+from enum import Enum
 from datetime import date
 
 from fbsrankings.common.identifier import Identifier
 from fbsrankings.common.event import Event, EventBus
 from fbsrankings.domain.season import Season, SeasonID, SeasonSection
 from fbsrankings.domain.team import Team, TeamID
+
+
+class GameStatus(Enum):
+    SCHEDULED = 0
+    COMPLETED = 1
+    CANCELED = 2
 
 
 class GameID (Identifier):
@@ -40,6 +47,8 @@ class Game (object):
             raise TypeError('season_section must be of type SeasonSection')
         self.season_section = season_section
         
+        self.status = GameStatus.SCHEDULED
+        
         if isinstance(home_team, Team):
             self.home_team_ID = home_team.ID
         elif isinstance(home_team, TeamID):
@@ -57,6 +66,8 @@ class Game (object):
         if home_team_score is not None and away_team_score is not None:
             self._set_score(home_team_score, away_team_score)
         else:
+            self.home_team_score = None
+            self.away_team_score = None
             self.winning_team_ID = None
             self.winning_team_score = None
             self.losing_team_ID = None
@@ -77,6 +88,7 @@ class Game (object):
         self._event_bus.raise_event(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
         
     def cancel(self):
+        self.status = GameStatus.CANCELED
         self._event_bus.raise_event(GameCanceledEvent(self.ID))
         
     def complete(self, home_team_score, away_team_score):
@@ -96,6 +108,8 @@ class Game (object):
         if not isinstance(away_team_score, int):
             raise TypeError('away_team_score must be of type int')
         self.away_team_score = away_team_score
+        
+        self.status = GameStatus.COMPLETED
             
         if home_team_score > away_team_score:
             self.winning_team_ID = self.home_team_ID
