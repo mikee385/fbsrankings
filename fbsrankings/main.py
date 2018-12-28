@@ -2,7 +2,7 @@ import csv
 import os
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain.factory import Factory
+from fbsrankings.domain import Factory
 from fbsrankings.infrastructure.local import Repository
 from fbsrankings.application import Application
 

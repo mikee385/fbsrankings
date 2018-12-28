@@ -1,7 +1,4 @@
-from fbsrankings.domain.season import SeasonFactory
-from fbsrankings.domain.team import TeamFactory
-from fbsrankings.domain.affiliation import AffiliationFactory
-from fbsrankings.domain.game import GameFactory
+from fbsrankings.domain import SeasonFactory, TeamFactory, AffiliationFactory, GameFactory
 
 
 class Factory (SeasonFactory, TeamFactory, AffiliationFactory, GameFactory):

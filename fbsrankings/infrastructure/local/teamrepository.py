@@ -1,4 +1,4 @@
-from fbsrankings.domain.team import TeamID, TeamRepository as BaseRepository
+from fbsrankings.domain import TeamID, TeamRepository as BaseRepository
 
 
 class TeamRepository(BaseRepository):

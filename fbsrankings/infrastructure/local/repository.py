@@ -1,7 +1,4 @@
-from fbsrankings.infrastructure.local.seasonrepository import SeasonRepository
-from fbsrankings.infrastructure.local.teamrepository import TeamRepository
-from fbsrankings.infrastructure.local.affiliationrepository import AffiliationRepository
-from fbsrankings.infrastructure.local.gamerepository import GameRepository
+from fbsrankings.infrastructure.local import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
 
 
 class Repository(SeasonRepository, TeamRepository, GameRepository, AffiliationRepository):

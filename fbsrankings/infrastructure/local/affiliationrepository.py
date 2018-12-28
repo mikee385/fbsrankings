@@ -1,6 +1,4 @@
-from fbsrankings.domain.affiliation import AffiliationID, AffiliationRepository as BaseRepository
-from fbsrankings.domain.season import Season, SeasonID
-from fbsrankings.domain.team import Team, TeamID
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, AffiliationID, AffiliationRepository as BaseRepository
 
 
 class AffiliationRepository (BaseRepository):

@@ -1,9 +1,6 @@
 import csv
 
-from fbsrankings.domain.affiliation import Subdivision
-from fbsrankings.domain.game import GameStatus
-from fbsrankings.domain.importservice import ImportService
-from fbsrankings.domain.cancelservice import CancelService
+from fbsrankings.domain import Subdivision,  GameStatus, ImportService, CancelService
 from fbsrankings.infrastructure import SportsReference
 
 

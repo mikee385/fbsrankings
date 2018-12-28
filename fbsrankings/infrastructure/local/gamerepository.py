@@ -1,5 +1,4 @@
-from fbsrankings.domain.game import GameID, GameRepository as BaseRepository
-from fbsrankings.domain.season import Season, SeasonID
+from fbsrankings.domain import Season, SeasonID, GameID, GameRepository as BaseRepository
 
 
 class GameRepository(BaseRepository):

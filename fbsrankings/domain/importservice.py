@@ -1,7 +1,4 @@
-from fbsrankings.domain.season import SeasonFactory, SeasonRepository
-from fbsrankings.domain.team import TeamFactory, TeamRepository
-from fbsrankings.domain.affiliation import AffiliationFactory, AffiliationRepository
-from fbsrankings.domain.game import GameFactory, GameRepository
+from fbsrankings.domain import SeasonFactory, SeasonRepository, TeamFactory, TeamRepository, AffiliationFactory, AffiliationRepository, GameFactory, GameRepository
 
 
 class ImportService (object):

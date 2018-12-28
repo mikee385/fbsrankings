@@ -1,5 +1,4 @@
-from fbsrankings.domain.season import Season, SeasonID, SeasonRepository
-from fbsrankings.domain.game import GameStatus, GameRepository
+from fbsrankings.domain import Season, SeasonID, SeasonRepository, GameRepository, GameStatus
 
 
 class CancelService (object):

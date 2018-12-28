@@ -2,8 +2,7 @@ from uuid import uuid4
 from enum import Enum
 
 from fbsrankings.common import Identifier, Event, EventBus
-from fbsrankings.domain.season import Season, SeasonID
-from fbsrankings.domain.team import Team, TeamID
+from fbsrankings.domain import Season, SeasonID, Team, TeamID
 
 
 class Subdivision(Enum):
