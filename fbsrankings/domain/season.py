@@ -1,6 +1,8 @@
+from uuid import uuid4
 from enum import Enum
 
 from fbsrankings.common.identifier import Identifier
+from fbsrankings.common.event import Event, EventBus
 
 
 class SeasonSection(Enum):
@@ -14,15 +16,35 @@ class SeasonID (Identifier):
 
 
 class Season (object):
-    def __init__(self, ID, year):
+    def __init__(self, event_bus, ID, year):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
         self.ID = ID
         self.year = year
 
 
+class SeasonFactory (object):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+        self._event_bus.register_type(SeasonRegisteredEvent)
+        
+    def new_season(self, *args, **kwargs):
+        ID = SeasonID(uuid4())
+        season = Season(self._event_bus, ID, *args, **kwargs)
+        season._event_bus.raise_event(SeasonRegisteredEvent(ID, *args, **kwargs))
+        
+        return season
+
+
 class SeasonRepository (object):
-    def add_season(self, year, *args, **kwargs):
+    def add_season(self, season):
         raise NotImplementedError
 
     def find_season(self, ID):
@@ -34,3 +56,8 @@ class SeasonRepository (object):
     def all_seasons(self):
         raise NotImplementedError
         
+
+class SeasonRegisteredEvent (Event):
+    def __init__(self, ID, year):
+        self.ID = ID
+        self.year = year

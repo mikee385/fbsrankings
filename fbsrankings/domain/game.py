@@ -1,3 +1,4 @@
+from uuid import uuid4
 from datetime import date
 
 from fbsrankings.common.identifier import Identifier
@@ -60,12 +61,6 @@ class Game (object):
             self.winning_team_score = None
             self.losing_team_ID = None
             self.losing_team_score = None
-            
-    def schedule(*args, **kwargs):
-        game = Game(*args, **kwargs)
-        game._event_bus.raise_event(GameScheduledEvent(*args, **kwargs))
-        
-        return game
         
     def reschedule(self, week, date_):
         old_week = self.week
@@ -117,10 +112,29 @@ class Game (object):
             self.winning_team_score = None
             self.losing_team_ID = None
             self.losing_team_score = None
+            
+
+class GameFactory (object):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+        self._event_bus.register_type(GameScheduledEvent)
+        self._event_bus.register_type(GameRescheduledEvent)
+        self._event_bus.register_type(GameCanceledEvent)
+        self._event_bus.register_type(GameCompletedEvent)
+        
+    def new_game(self, *args, **kwargs):
+        ID = GameID(uuid4())
+        game = Game(self._event_bus, ID, *args, **kwargs)
+        game._event_bus.raise_event(GameScheduledEvent(ID, *args, **kwargs))
+        
+        return game
 
 
 class GameRepository (object):
-    def add_game(self, *args, **kwargs):
+    def add_game(self, game):
         raise NotImplementedError
 
     def find_game(self, ID):

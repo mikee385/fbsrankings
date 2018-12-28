@@ -2,13 +2,15 @@ import csv
 import os
 
 from fbsrankings.common.event import EventBus
+from fbsrankings.domain.factory import Factory
 from fbsrankings.infrastructure.local.repository import Repository
 from fbsrankings.application import Application
 
 
 event_bus = EventBus()
-repository = Repository(event_bus)
-application = Application(repository)
+factory = Factory(event_bus)
+repository = Repository()
+application = Application(factory, repository)
 
 data_directory = 'fbsrankings/data'
 index_csv_filename = os.path.join(data_directory, 'index.csv')

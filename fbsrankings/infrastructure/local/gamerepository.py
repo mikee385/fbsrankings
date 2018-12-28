@@ -1,32 +1,20 @@
-from uuid import uuid4
-
-from fbsrankings.common.event import EventBus
-from fbsrankings.domain.game import Game, GameID, GameRepository as BaseRepository
+from fbsrankings.domain.game import GameID, GameRepository as BaseRepository
 from fbsrankings.domain.season import Season, SeasonID
 
 
 class GameRepository(BaseRepository):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
-        
+    def __init__(self):
         self._game_id_dict = {}
         self._game_season_dict = {}
     
-    def add_game(self, *args, **kwargs):
-        ID = GameID(uuid4())
-        value = Game(self._event_bus, ID, *args, **kwargs)
+    def add_game(self, game):
+        self._game_id_dict[game.ID] = game
         
-        self._game_id_dict[ID] = value
-        
-        season_dict = self._game_season_dict.get(value.season_ID)
+        season_dict = self._game_season_dict.get(game.season_ID)
         if season_dict is None:
             season_dict = {}
-            self._game_season_dict[value.season_ID] = season_dict
-        season_dict[value.ID] = value
-        
-        return value
+            self._game_season_dict[game.season_ID] = season_dict
+        season_dict[game.ID] = game
 
     def find_game(self, ID):
         if not isinstance(ID, GameID):

@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from fbsrankings.domain.season import Season, SeasonID, SeasonRepository as BaseRepository
 
 
@@ -8,17 +6,15 @@ class SeasonRepository(BaseRepository):
         self._season_id_dict = {}
         self._season_year_dict = {}
     
-    def add_season(self, year, *args, **kwargs):
-        if year in self._season_year_dict:
-            raise ValueError('Season already exists for year ' + str(year))
-            
-        ID = SeasonID(uuid4())
-        value = Season(ID, year, *args, **kwargs)
+    def add_season(self, season):
+        if not isinstance(season, Season):
+            raise TypeError('season must be of type Season')
         
-        self._season_id_dict[ID] = value
-        self._season_year_dict[year] = value
-        
-        return value
+        if season.year in self._season_year_dict:
+            raise ValueError('Season already exists for year ' + str(season.year))
+
+        self._season_id_dict[season.ID] = season
+        self._season_year_dict[season.year] = season
 
     def find_season(self, ID):
         if not isinstance(ID, SeasonID):

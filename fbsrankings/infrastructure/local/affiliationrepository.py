@@ -1,6 +1,4 @@
-from uuid import uuid4
-
-from fbsrankings.domain.affiliation import Affiliation, AffiliationID, AffiliationRepository as BaseRepository
+from fbsrankings.domain.affiliation import AffiliationID, AffiliationRepository as BaseRepository
 from fbsrankings.domain.season import Season, SeasonID
 from fbsrankings.domain.team import Team, TeamID
 
@@ -10,19 +8,14 @@ class AffiliationRepository (BaseRepository):
         self._affiliation_id_dict = {}
         self._affiliation_season_dict = {}
     
-    def add_affiliation(self, season, team, *args, **kwargs):
-        ID = AffiliationID(uuid4())
-        value = Affiliation(ID, season, team, *args, **kwargs)
+    def add_affiliation(self, affiliation):
+        self._affiliation_id_dict[affiliation.ID] = affiliation
         
-        self._affiliation_id_dict[ID] = value
-        
-        season_dict = self._affiliation_season_dict.get(value.season_ID)
+        season_dict = self._affiliation_season_dict.get(affiliation.season_ID)
         if season_dict is None:
             season_dict = {}
-            self._affiliation_season_dict[value.season_ID] = season_dict
-        season_dict[value.team_ID] = value
-        
-        return value
+            self._affiliation_season_dict[affiliation.season_ID] = season_dict
+        season_dict[affiliation.team_ID] = affiliation
 
     def find_affiliation(self, ID):
         if not isinstance(ID, AffiliationID):

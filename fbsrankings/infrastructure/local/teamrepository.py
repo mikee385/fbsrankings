@@ -1,6 +1,4 @@
-from uuid import uuid4
-
-from fbsrankings.domain.team import Team, TeamID, TeamRepository as BaseRepository
+from fbsrankings.domain.team import TeamID, TeamRepository as BaseRepository
 
 
 class TeamRepository(BaseRepository):
@@ -8,17 +6,12 @@ class TeamRepository(BaseRepository):
         self._team_id_dict = {}
         self._team_name_dict = {}
     
-    def add_team(self, name, *args, **kwargs):
-        if name in self._team_name_dict:
-            raise ValueError('Team already exists for name ' + str(name))
+    def add_team(self, team):
+        if team.name in self._team_name_dict:
+            raise ValueError('Team already exists for name ' + str(team.name))
             
-        ID = TeamID(uuid4())
-        value = Team(ID, name, *args, **kwargs)
-        
-        self._team_id_dict[ID] = value
-        self._team_name_dict[name] = value
-        
-        return value
+        self._team_id_dict[team.ID] = team
+        self._team_name_dict[team.name] = team
 
     def find_team(self, ID):
         if not isinstance(ID, TeamID):

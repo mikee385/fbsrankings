@@ -1,25 +1,18 @@
 from datetime import datetime
 
-from fbsrankings.domain.season import SeasonRepository, SeasonSection
-from fbsrankings.domain.team import TeamRepository
-from fbsrankings.domain.affiliation import AffiliationRepository, Subdivision
-from fbsrankings.domain.game import GameRepository
+from fbsrankings.domain.season import SeasonSection
+from fbsrankings.domain.affiliation import Subdivision
+from fbsrankings.domain.importservice import ImportService
 
 
 class SportsReference (object):
-    def __init__(self, repository):
-        if not isinstance(repository, SeasonRepository):
-            raise TypeError('repository must be of type SeasonRepository')
-        if not isinstance(repository, TeamRepository):
-            raise TypeError('repository must be of type TeamRepository')
-        if not isinstance(repository, AffiliationRepository):
-            raise TypeError('repository must be of type AffiliationRepository')
-        if not isinstance(repository, GameRepository):
-            raise TypeError('repository must be of type GameRepository')
-        self._repository = repository
+    def __init__(self, import_service):
+        if not isinstance(import_service, ImportService):
+            raise TypeError('import_service must be of type ImportService')
+        self._import_service = import_service
         
     def import_teams_from_csv(self, year, csv_reader):
-        season = self._import_season(year)
+        season = self._import_service.import_season(year)
         
         iterrows = iter(csv_reader)
         row = next(iterrows)
@@ -32,10 +25,11 @@ class SportsReference (object):
         for row in iterrows:
             if row[rank_index].isdigit():
                 name = row[name_index]
-                self._import_team(season, name, Subdivision.FBS)
+                team = self._import_service.import_team(name)
+                self._import_service.import_affiliation(season, team, Subdivision.FBS)
                 
     def import_games_from_csv(self, year, postseason_start_week, csv_reader):
-        season = self._repository.find_season_by_year(year)
+        season = self._import_service._repository.find_season_by_year(year)
         if season is None:
             raise ValueError('Teams for season ' + year + 'must be imported before games can be imported')
             
@@ -104,35 +98,18 @@ class SportsReference (object):
                     raise ValueError(
                         'Unable to convert symbol "' + home_away_symbol + '" to an "@" on line ' + str(counter))
                         
-                home_team = self._import_team(season, home_team_name, Subdivision.FCS)
+                home_team = self._import_service.import_team(home_team_name)
+                self._import_service.import_affiliation(season, home_team, Subdivision.FCS)
                 
-                away_team = self._import_team(season, away_team_name, Subdivision.FCS)
+                away_team = self._import_service.import_team(away_team_name)
+                self._import_service.import_affiliation(season, away_team, Subdivision.FCS)
                 
                 if (week >= postseason_start_week):
                     season_section = SeasonSection.POSTSEASON
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
-                self._import_game(season, week, game_date, season_section, home_team, away_team, home_team_score, away_team_score)
+                game = self._import_service.import_game(season, week, game_date, season_section, home_team, away_team)
                 
-    def _import_season(self, year):
-        season = self._repository.find_season_by_year(year)
-        if season is None:
-            season = self._repository.add_season(year)
-            
-        return season
-                
-    def _import_team(self, season, name, subdivision):
-        team = self._repository.find_team_by_name(name)
-        if team is None:
-            team = self._repository.add_team(name)
-            self._repository.add_affiliation(season, team, subdivision)
-        else:
-            affiliation = self._repository.find_affiliation_by_season_team(season, team)
-            if affiliation is None:
-                self._repository.add_affiliation(season, team, subdivision)
-        
-        return team
-        
-    def _import_game(self, *args, **kwargs):
-        self._repository.add_game(*args, **kwargs)
+                if home_team_score is not None and away_team_score is not None:
+                    game.complete(home_team_score, away_team_score)

@@ -1,6 +1,8 @@
+from uuid import uuid4
 from enum import Enum
 
 from fbsrankings.common.identifier import Identifier
+from fbsrankings.common.event import Event, EventBus
 from fbsrankings.domain.season import Season, SeasonID
 from fbsrankings.domain.team import Team, TeamID
 
@@ -15,7 +17,11 @@ class AffiliationID (Identifier):
 
 
 class Affiliation (object):
-    def __init__(self, ID, season, team, subdivision):
+    def __init__(self, event_bus, ID, season, team, subdivision):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
         if not isinstance(ID, AffiliationID):
             raise TypeError('ID must be of type AffiliationID')
         self.ID = ID
@@ -39,8 +45,24 @@ class Affiliation (object):
         self.subdivision = subdivision
 
 
+class AffiliationFactory (object):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+        self._event_bus.register_type(AffiliationRegisteredEvent)
+        
+    def new_affiliation(self, *args, **kwargs):
+        ID = AffiliationID(uuid4())
+        affiliation = Affiliation(self._event_bus, ID, *args, **kwargs)
+        affiliation._event_bus.raise_event(AffiliationRegisteredEvent(ID, *args, **kwargs))
+        
+        return affiliation
+
+
 class AffiliationRepository (object):
-    def add_affiliation(self, season, team, *args, **kwargs):
+    def add_affiliation(self, affiliation):
         raise NotImplementedError
 
     def find_affiliation(self, ID):
@@ -51,4 +73,11 @@ class AffiliationRepository (object):
         
     def find_affiliations_by_season(self, season):
         raise NotImplementedError
-    
+
+
+class AffiliationRegisteredEvent (Event):
+    def __init__(self, ID, season_ID, team_ID, subdivision):
+        self.ID = ID
+        self.season_ID = season_ID
+        self.team_ID = team_ID
+        self.subdivision = subdivision
