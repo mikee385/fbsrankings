@@ -1,8 +1,7 @@
 from uuid import uuid4
 from enum import Enum
 
-from fbsrankings.common.identifier import Identifier
-from fbsrankings.common.event import Event, EventBus
+from fbsrankings.common import Identifier, Event, EventBus
 from fbsrankings.domain.season import Season, SeasonID
 from fbsrankings.domain.team import Team, TeamID
 
