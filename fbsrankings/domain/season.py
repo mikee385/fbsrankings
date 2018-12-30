@@ -7,7 +7,8 @@ from fbsrankings.common import Identifier, Event, EventBus
 class SeasonSection(Enum):
     PRESEASON = 0
     REGULAR_SEASON = 1
-    POSTSEASON = 2
+    CONFERENCE_CHAMPIONSHIP = 2
+    POSTSEASON = 3
 
 
 class SeasonID (Identifier):

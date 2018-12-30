@@ -39,6 +39,7 @@ class SportsReference (object):
         rank_index = row.index('Rk')
         week_index = row.index('Wk')
         date_index = row.index('Date')
+        notes_index = row.index('Notes')
         
         first_team_index = [index for index, column in enumerate(row) if column.startswith('Winner')][0]
         
@@ -102,12 +103,16 @@ class SportsReference (object):
                 away_team = self._import_service.import_team(away_team_name)
                 self._import_service.import_affiliation(season, away_team, Subdivision.FCS)
                 
+                notes = row[notes_index]
+                
                 if (week >= postseason_start_week):
                     season_section = SeasonSection.POSTSEASON
+                elif 'Championship' in notes:
+                    season_section = SeasonSection.CONFERENCE_CHAMPIONSHIP
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
                 game = self._import_service.import_game(season, week, game_date, season_section, home_team, away_team)
                 
-                if home_team_score is not None and away_team_score is not None:
+                if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
                     game.complete(home_team_score, away_team_score)
