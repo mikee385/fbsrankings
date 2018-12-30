@@ -51,10 +51,10 @@ class AffiliationFactory (object):
         
         self._event_bus.register_type(AffiliationRegisteredEvent)
         
-    def new_affiliation(self, *args, **kwargs):
+    def new_affiliation(self, season, team, subdivision):
         ID = AffiliationID(uuid4())
-        affiliation = Affiliation(self._event_bus, ID, *args, **kwargs)
-        affiliation._event_bus.raise_event(AffiliationRegisteredEvent(ID, *args, **kwargs))
+        affiliation = Affiliation(self._event_bus, ID, season, team, subdivision)
+        affiliation._event_bus.raise_event(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
         
         return affiliation
 

@@ -24,6 +24,7 @@ class Season (object):
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
         self.ID = ID
+        
         self.year = year
 
 
@@ -35,10 +36,10 @@ class SeasonFactory (object):
         
         self._event_bus.register_type(SeasonRegisteredEvent)
         
-    def new_season(self, *args, **kwargs):
+    def new_season(self, year):
         ID = SeasonID(uuid4())
-        season = Season(self._event_bus, ID, *args, **kwargs)
-        season._event_bus.raise_event(SeasonRegisteredEvent(ID, *args, **kwargs))
+        season = Season(self._event_bus, ID, year)
+        season._event_bus.raise_event(SeasonRegisteredEvent(season.ID, season.year))
         
         return season
 

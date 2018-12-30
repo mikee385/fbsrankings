@@ -28,10 +28,10 @@ class TeamFactory (object):
         
         self._event_bus.register_type(TeamRegisteredEvent)
         
-    def new_team(self, *args, **kwargs):
+    def new_team(self, name):
         ID = TeamID(uuid4())
-        team = Team(self._event_bus, ID, *args, **kwargs)
-        team._event_bus.raise_event(TeamRegisteredEvent(ID, *args, **kwargs))
+        team = Team(self._event_bus, ID, name)
+        team._event_bus.raise_event(TeamRegisteredEvent(team.ID, team.name))
         
         return team
 
