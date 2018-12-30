@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fbsrankings.domain import SeasonSection,  Subdivision, ImportService
+from fbsrankings.domain import SeasonSection,  Subdivision, GameStatus, ImportService
 
 
 class SportsReference (object):
