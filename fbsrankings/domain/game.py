@@ -17,7 +17,7 @@ class GameID (Identifier):
 
 
 class Game (object):
-    def __init__(self, event_bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score):
+    def __init__(self, event_bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -45,8 +45,6 @@ class Game (object):
             raise TypeError('season_section must be of type SeasonSection')
         self.season_section = season_section
         
-        self.status = GameStatus.SCHEDULED
-        
         if isinstance(home_team, Team):
             self.home_team_ID = home_team.ID
         elif isinstance(home_team, TeamID):
@@ -62,14 +60,25 @@ class Game (object):
             raise TypeError('away_team must be of type Team or TeamID')
              
         if home_team_score is not None and away_team_score is not None:
+            if status != GameStatus.COMPLETED:
+                raise ValueError('Game status must be COMPLETED in order to have a score')
+                
             self._set_score(home_team_score, away_team_score)
+            
         else:
+            if status == GameStatus.COMPLETED:
+                raise ValueError('Game status must be have a score in order to be COMPLETED')
+                
             self.home_team_score = None
             self.away_team_score = None
             self.winning_team_ID = None
             self.winning_team_score = None
             self.losing_team_ID = None
             self.losing_team_score = None
+        
+        if not isinstance(status, GameStatus):
+            raise TypeError('status must be of type GameStatus')
+        self.status = status
         
     def reschedule(self, week, date_):
         old_week = self.week
@@ -95,6 +104,7 @@ class Game (object):
         if away_team_score is None:
             raise ValueError('away_team_score cannot be None')
         self._set_score(home_team_score, away_team_score)
+        self.status = GameStatus.COMPLETED
         
         self._event_bus.raise_event(GameCompletedEvent(self.ID, home_team_score, away_team_score))
         
@@ -106,8 +116,6 @@ class Game (object):
         if not isinstance(away_team_score, int):
             raise TypeError('away_team_score must be of type int')
         self.away_team_score = away_team_score
-        
-        self.status = GameStatus.COMPLETED
             
         if home_team_score > away_team_score:
             self.winning_team_ID = self.home_team_ID
@@ -139,7 +147,7 @@ class GameFactory (object):
         
     def new_game(self, season, week, date_, season_section, home_team, away_team):
         ID = GameID(uuid4())
-        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None)
+        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED)
         game._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID))
         
         return game
