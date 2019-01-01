@@ -1,7 +1,7 @@
+import csv
 from datetime import datetime
 
-from fbsrankings.domain import SeasonSection,  Subdivision, GameStatus, ImportService
-
+from fbsrankings.domain import SeasonSection, Subdivision, GameStatus, ImportService
 
 class SportsReference (object):
     def __init__(self, import_service):
@@ -9,49 +9,69 @@ class SportsReference (object):
             raise TypeError('import_service must be of type ImportService')
         self._import_service = import_service
         
-    def import_teams_from_csv(self, year, csv_reader):
+    def import_season_csv_files(self, year, postseason_start_week, team_filename, game_filename):
+        self.import_team_csv_file(year, team_filename)
+        self.import_game_csv_file(year, postseason_start_week, game_filename)
+        
+    def import_season_csv_readers(self, year, postseason_start_week, team_reader, game_reader):
+        self.import_team_reader(year, team_reader)
+        self.import_game_reader(year, postseason_start_week, game_reader)
+        
+    def import_team_csv_file(self, year, filename):
+        with open(filename, 'r') as file:
+            self.import_team_reader(year, csv.reader(file))
+        
+    def import_team_reader(self, year, reader):
+        self.import_team_rows(year, iter(reader))
+
+    def import_game_csv_file(self, year, postseason_start_week, filename):
+        with open(filename, 'r') as file:
+            self.import_game_reader(year, postseason_start_week, csv.reader(file))
+        
+    def import_game_reader(self, year, postseason_start_week, reader):
+        self.import_game_rows(year, postseason_start_week, iter(reader))
+
+    def import_team_rows(self, year, row_iter):
         season = self._import_service.import_season(year)
         
-        iterrows = iter(csv_reader)
-        row = next(iterrows)
-        if row[0] == '':
-            row = next(iterrows)
+        header_row = next(row_iter)
+        if header_row[0] == '':
+            header_row = next(row_iter)
         
-        rank_index = row.index('Rk')
-        name_index = row.index('School')
+        rank_index = header_row.index('Rk')
+        name_index = header_row.index('School')
 
-        for row in iterrows:
+        for row in row_iter:
             if row[rank_index].isdigit():
                 name = row[name_index]
                 team = self._import_service.import_team(name)
                 self._import_service.import_affiliation(season, team, Subdivision.FBS)
-                
-    def import_games_from_csv(self, year, postseason_start_week, csv_reader):
+        
+    def import_game_rows(self, year, postseason_start_week, row_iter):
         season = self._import_service._repository.find_season_by_year(year)
         if season is None:
             raise ValueError('Teams for season ' + year + 'must be imported before games can be imported')
             
-        iterrows = iter(csv_reader)
-        row = next(iterrows)
-        if row[0] == '':
-            row = next(iterrows)
+        header_row = next(row_iter)
+        if header_row[0] == '':
+            header_row = next(row_iter)
             
-        rank_index = row.index('Rk')
-        week_index = row.index('Wk')
-        date_index = row.index('Date')
-        notes_index = row.index('Notes')
+        rank_index = header_row.index('Rk')
+        week_index = header_row.index('Wk')
+        date_index = header_row.index('Date')
+        notes_index = header_row.index('Notes')
         
-        first_team_index = [index for index, column in enumerate(row) if column.startswith('Winner')][0]
+        first_team_index = [index for index, column in enumerate(header_row) if column.startswith('Winner')][0]
         
         first_score_index = first_team_index + 1
         
-        second_team_index = [index for index, column in enumerate(row) if column.startswith('Loser')][0]
+        second_team_index = [index for index, column in enumerate(header_row) if column.startswith('Loser')][0]
         
         second_score_index = second_team_index + 1
         
         home_away_index = first_score_index + 1
         
-        for counter, row in enumerate(csv_reader):
+        for counter, row in enumerate(row_iter):
             if row[rank_index].isdigit():
                 week_string = row[week_index]
                 date_string = row[date_index]
