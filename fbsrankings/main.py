@@ -13,7 +13,7 @@ repository = Repository()
 application = Application(factory, repository)
 
 data_directory = 'fbsrankings/data'
-index_csv_filename = os.path.join(data_directory, 'index.csv')
+index_csv_filename = os.path.join(data_directory, 'files.csv')
 with open(index_csv_filename, 'r') as index_file:
     index_reader = csv.reader(index_file)
             

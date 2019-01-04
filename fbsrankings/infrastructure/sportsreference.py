@@ -1,7 +1,10 @@
 import csv
 from datetime import datetime
+from urllib.request import urlopen
+from bs4 import BeautifulSoup, Tag
 
 from fbsrankings.domain import SeasonSection, Subdivision, GameStatus, ImportService
+
 
 class SportsReference (object):
     def __init__(self, import_service):
@@ -9,13 +12,22 @@ class SportsReference (object):
             raise TypeError('import_service must be of type ImportService')
         self._import_service = import_service
         
+    def import_season_urls(self, year, postseason_start_week, team_url, game_url):
+        self.import_team_url(year, team_url)
+        self.import_game_url(year, postseason_start_week, game_url)
+        
     def import_season_csv_files(self, year, postseason_start_week, team_filename, game_filename):
         self.import_team_csv_file(year, team_filename)
         self.import_game_csv_file(year, postseason_start_week, game_filename)
         
-    def import_season_csv_readers(self, year, postseason_start_week, team_reader, game_reader):
+    def import_season_readers(self, year, postseason_start_week, team_reader, game_reader):
         self.import_team_reader(year, team_reader)
         self.import_game_reader(year, postseason_start_week, game_reader)
+        
+    def import_team_url(self, year, url):
+        html = urlopen(url)
+        soup = BeautifulSoup(html, "html5lib")
+        self.import_team_rows(year, _html_iter(soup))
         
     def import_team_csv_file(self, year, filename):
         with open(filename, 'r') as file:
@@ -23,6 +35,11 @@ class SportsReference (object):
         
     def import_team_reader(self, year, reader):
         self.import_team_rows(year, iter(reader))
+        
+    def import_game_url(self, year, postseason_start_week, url):
+        html = urlopen(url)
+        soup = BeautifulSoup(html, "html5lib")
+        self.import_game_rows(year, postseason_start_week, _html_iter(soup))
 
     def import_game_csv_file(self, year, postseason_start_week, filename):
         with open(filename, 'r') as file:
@@ -83,7 +100,10 @@ class SportsReference (object):
                 
                 week = int(week_string)
                 
-                game_date = datetime.strptime(date_string, '%b %d %Y').date()
+                try:
+                    game_date = datetime.strptime(date_string, '%b %d %Y').date()
+                except ValueError:
+                    game_date = datetime.strptime(date_string, '%b %d, %Y').date()
                 
                 if (first_team_name.startswith('(')):
                     start = first_team_name.find(')')
@@ -136,3 +156,9 @@ class SportsReference (object):
                 
                 if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
                     game.complete(home_team_score, away_team_score)
+                    
+
+def _html_iter(soup):
+    row_iter = iter(soup.find_all('tr'))
+    for row in row_iter:
+        yield [child.getText() for child in filter(lambda c: isinstance(c, Tag), row.children)]

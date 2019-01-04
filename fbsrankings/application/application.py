@@ -1,6 +1,4 @@
-import csv
-
-from fbsrankings.domain import Subdivision,  GameStatus, ImportService, CancelService
+from fbsrankings.domain import Subdivision, GameStatus, ImportService, CancelService
 from fbsrankings.infrastructure import SportsReference
 
 
