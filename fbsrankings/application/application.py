@@ -1,6 +1,6 @@
 import os
 
-from fbsrankings.domain import Subdivision, GameStatus, ImportService, CancelService
+from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
 from fbsrankings.infrastructure import SportsReference
 
 
@@ -16,7 +16,8 @@ class Application (object):
         
     def import_sports_reference_season(self, year, postseason_start_week, team_source, game_source):
         import_service = ImportService(self._factory, self._repository)
-        sports_reference = SportsReference(import_service, self._common_name_map)
+        validation_service = ValidationService()
+        sports_reference = SportsReference(import_service, validation_service, self._common_name_map)
         
         if os.path.isfile(team_source) and os.path.isfile(game_source):
             sports_reference.import_season_csv_files(year, postseason_start_week, team_source, game_source)
