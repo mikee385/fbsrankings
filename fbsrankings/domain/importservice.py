@@ -44,7 +44,7 @@ class ImportService (object):
             self._repository.add_affiliation(affiliation)
         return affiliation
         
-    def import_game(self, season_ID, week, date_, season_section, home_team_ID, away_team_ID):
-        game = self._factory.new_game(season_ID, week, date_, season_section, home_team_ID, away_team_ID)
+    def import_game(self, season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes):
+        game = self._factory.new_game(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
         self._repository.add_game(game)
         return game

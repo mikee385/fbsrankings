@@ -1,4 +1,3 @@
-import csv
 import os
 
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, CancelService
@@ -65,4 +64,5 @@ class Application (object):
             print(str(game.status) + ', ' + str(game.home_team_score) + ' to ' + str(game.away_team_score))
         else:
             print(game.status)
+        print(game.notes)
         print()

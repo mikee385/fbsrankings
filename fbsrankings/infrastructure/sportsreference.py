@@ -156,7 +156,7 @@ class SportsReference (object):
                 away_team = self._import_service.import_team(away_team_name)
                 self._import_service.import_affiliation(season, away_team, Subdivision.FCS)
                 
-                notes = row[notes_index]
+                notes = row[notes_index].strip()
                 
                 if (week >= postseason_start_week):
                     season_section = SeasonSection.POSTSEASON
@@ -165,7 +165,7 @@ class SportsReference (object):
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
-                game = self._import_service.import_game(season, week, game_date, season_section, home_team, away_team)
+                game = self._import_service.import_game(season, week, game_date, season_section, home_team, away_team, notes)
                 
                 if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
                     game.complete(home_team_score, away_team_score)

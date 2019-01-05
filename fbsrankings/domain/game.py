@@ -17,7 +17,7 @@ class GameID (Identifier):
 
 
 class Game (object):
-    def __init__(self, event_bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status):
+    def __init__(self, event_bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status, notes):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -79,6 +79,10 @@ class Game (object):
         if not isinstance(status, GameStatus):
             raise TypeError('status must be of type GameStatus')
         self.status = status
+        
+        if not isinstance(notes, str):
+            raise TypeError('notes must be of type str')
+        self.notes = notes
         
     def reschedule(self, week, date_):
         old_week = self.week
@@ -145,10 +149,10 @@ class GameFactory (object):
         self._event_bus.register_type(GameCanceledEvent)
         self._event_bus.register_type(GameCompletedEvent)
         
-    def new_game(self, season, week, date_, season_section, home_team, away_team):
+    def new_game(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
-        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED)
-        game._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID))
+        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
+        game._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
         
         return game
 
@@ -168,7 +172,7 @@ class GameRepository (object):
 
 
 class GameScheduledEvent (Event):
-    def __init__(self, ID, season_ID, week, date_, season_section, home_team_ID, away_team_ID):
+    def __init__(self, ID, season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes):
         self.ID = ID
         self.season_ID = season_ID
         self.week = week
@@ -176,6 +180,7 @@ class GameScheduledEvent (Event):
         self.season_section = season_section
         self.home_team_ID = home_team_ID
         self.away_team_ID = away_team_ID
+        self.notes = notes
     
 
 class GameRescheduledEvent (Event):
