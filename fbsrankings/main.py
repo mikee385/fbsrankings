@@ -28,7 +28,7 @@ factory = Factory(event_bus)
 repository = Repository()
 application = Application(factory, repository, common_name_map)
 
-index_csv_filename = os.path.join(data_directory, 'files.csv')
+index_csv_filename = os.path.join(data_directory, 'urls.csv')
 with open(index_csv_filename, 'r') as index_file:
     index_reader = csv.reader(index_file)
             
@@ -38,10 +38,15 @@ with open(index_csv_filename, 'r') as index_file:
     for row in iterrows:
         year = int(row[0])
         postseason_start_week = int(row[1])
-        team_csv_filename = os.path.join(data_directory, row[2])
-        game_csv_filename = os.path.join(data_directory, row[3])
-        application.import_sports_reference_season(year, postseason_start_week, team_csv_filename, game_csv_filename)
+        team_url = row[2]
+        game_url = row[3]
+        
+        print(str(year) + ': Importing Data')
+        
+        application.import_sports_reference_season(year, postseason_start_week, team_url, game_url)
+        
+        print(str(year) + ': Calculating Rankings')
             
         application.calculate_rankings(year)
-    
+
     application.display()
