@@ -7,22 +7,15 @@ from fbsrankings.domain import SeasonSection, Subdivision, GameStatus, ImportSer
 
 
 class SportsReference (object):
-    def __init__(self, import_service):
+    def __init__(self, import_service, common_name_map):
         if not isinstance(import_service, ImportService):
             raise TypeError('import_service must be of type ImportService')
         self._import_service = import_service
         
-        self._common_name_map = {
-            'Alabama-Birmingham': 'UAB',
-            'Central Florida': 'UCF',
-            'Louisiana State': 'LSU',
-            'Mississippi': 'Ole Miss',
-            'Pittsburgh': 'Pitt',
-            'Southern California': 'USC',
-            'Southern Methodist': 'SMU',
-            'Texas-El Paso': 'UTEP',
-            'Texas-San Antonio': 'UTSA'
-        }
+        if common_name_map is not None:
+            self.common_name_map = common_name_map
+        else:
+            self.common_name_map = {}
         
     def import_season_urls(self, year, postseason_start_week, team_url, game_url):
         self.import_team_url(year, team_url)
@@ -73,8 +66,8 @@ class SportsReference (object):
         for row in row_iter:
             if row[rank_index].isdigit():
                 name = row[name_index].strip()
-                if name in self._common_name_map:
-                    name = self._common_name_map[name]
+                if name in self.common_name_map:
+                    name = self.common_name_map[name]
                 team = self._import_service.import_team(name)
                 self._import_service.import_affiliation(season, team, Subdivision.FBS)
         
@@ -123,8 +116,8 @@ class SportsReference (object):
                     start = first_team_name.find(')')
                     first_team_name = first_team_name[start + 2:].strip()
                 
-                if first_team_name in self._common_name_map:
-                    first_team_name = self._common_name_map[first_team_name]
+                if first_team_name in self.common_name_map:
+                    first_team_name = self.common_name_map[first_team_name]
                 
                 if first_score_string == '':
                     first_score = None
@@ -135,8 +128,8 @@ class SportsReference (object):
                     start = second_team_name.find(')')
                     second_team_name = second_team_name[start + 2:].strip()
                     
-                if second_team_name in self._common_name_map:
-                    second_team_name = self._common_name_map[second_team_name]
+                if second_team_name in self.common_name_map:
+                    second_team_name = self.common_name_map[second_team_name]
                     
                 if second_score_string == '':
                     second_score = None

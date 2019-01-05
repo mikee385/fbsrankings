@@ -7,12 +7,27 @@ from fbsrankings.infrastructure.local import Repository
 from fbsrankings.application import Application
 
 
+data_directory = 'fbsrankings/data'
+
+common_name_map = {}
+name_csv_filename = os.path.join(data_directory, 'names.csv')
+with open(name_csv_filename, 'r') as name_file:
+    name_reader = csv.reader(name_file)
+    
+    iterrows = iter(name_reader)
+    next(iterrows)
+    
+    for row in iterrows:
+        name = row[0].strip()
+        alternate_name = row[1].strip()
+        
+        common_name_map[alternate_name] = name
+
 event_bus = EventBus()
 factory = Factory(event_bus)
 repository = Repository()
-application = Application(factory, repository)
+application = Application(factory, repository, common_name_map)
 
-data_directory = 'fbsrankings/data'
 index_csv_filename = os.path.join(data_directory, 'files.csv')
 with open(index_csv_filename, 'r') as index_file:
     index_reader = csv.reader(index_file)
