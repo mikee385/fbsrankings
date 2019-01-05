@@ -12,6 +12,18 @@ class SportsReference (object):
             raise TypeError('import_service must be of type ImportService')
         self._import_service = import_service
         
+        self._common_name_map = {
+            'Alabama-Birmingham': 'UAB',
+            'Central Florida': 'UCF',
+            'Louisiana State': 'LSU',
+            'Mississippi': 'Ole Miss',
+            'Pittsburgh': 'Pitt',
+            'Southern California': 'USC',
+            'Southern Methodist': 'SMU',
+            'Texas-El Paso': 'UTEP',
+            'Texas-San Antonio': 'UTSA'
+        }
+        
     def import_season_urls(self, year, postseason_start_week, team_url, game_url):
         self.import_team_url(year, team_url)
         self.import_game_url(year, postseason_start_week, game_url)
@@ -60,7 +72,9 @@ class SportsReference (object):
 
         for row in row_iter:
             if row[rank_index].isdigit():
-                name = row[name_index]
+                name = row[name_index].strip()
+                if name in self._common_name_map:
+                    name = self._common_name_map[name]
                 team = self._import_service.import_team(name)
                 self._import_service.import_affiliation(season, team, Subdivision.FBS)
         
@@ -90,13 +104,13 @@ class SportsReference (object):
         
         for counter, row in enumerate(row_iter):
             if row[rank_index].isdigit():
-                week_string = row[week_index]
-                date_string = row[date_index]
-                first_team_name = row[first_team_index]
-                first_score_string = row[first_score_index]
-                home_away_symbol = row[home_away_index]
-                second_team_name = row[second_team_index]
-                second_score_string = row[second_score_index]
+                week_string = row[week_index].strip()
+                date_string = row[date_index].strip()
+                first_team_name = row[first_team_index].strip()
+                first_score_string = row[first_score_index].strip()
+                home_away_symbol = row[home_away_index].strip()
+                second_team_name = row[second_team_index].strip()
+                second_score_string = row[second_score_index].strip()
                 
                 week = int(week_string)
                 
@@ -107,7 +121,10 @@ class SportsReference (object):
                 
                 if (first_team_name.startswith('(')):
                     start = first_team_name.find(')')
-                    first_team_name = first_team_name[start + 2:]
+                    first_team_name = first_team_name[start + 2:].strip()
+                
+                if first_team_name in self._common_name_map:
+                    first_team_name = self._common_name_map[first_team_name]
                 
                 if first_score_string == '':
                     first_score = None
@@ -116,7 +133,10 @@ class SportsReference (object):
                     
                 if (second_team_name.startswith('(')):
                     start = second_team_name.find(')')
-                    second_team_name = second_team_name[start + 2:]
+                    second_team_name = second_team_name[start + 2:].strip()
+                    
+                if second_team_name in self._common_name_map:
+                    second_team_name = self._common_name_map[second_team_name]
                     
                 if second_score_string == '':
                     second_score = None
