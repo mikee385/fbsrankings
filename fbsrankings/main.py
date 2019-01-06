@@ -30,11 +30,11 @@ with open(index_csv_filename, 'r') as index_file:
         team_url = row[2]
         game_url = row[3]
         
-        print(str(year) + ': Importing Data')
+        print(f'{year}: Importing Data')
         
         application.import_sports_reference_season(year, postseason_start_week, team_url, game_url)
         
-        print(str(year) + ': Calculating Rankings')
+        print(f'{year}: Calculating Rankings')
             
         application.calculate_rankings(year)
 

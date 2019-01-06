@@ -84,7 +84,7 @@ class SportsReference (object):
     def import_game_rows(self, year, postseason_start_week, row_iter):
         season = self._import_service._repository.find_season_by_year(year)
         if season is None:
-            raise ValueError('Teams for season ' + year + 'must be imported before games can be imported')
+            raise ValueError(f'Teams for season {year} must be imported before games can be imported')
             
         header_row = next(row_iter)
         if header_row[0] == '':
@@ -157,8 +157,7 @@ class SportsReference (object):
                     home_team_name = second_team_name
                     home_team_score = second_score
                 else:
-                    raise ValueError(
-                        'Unable to convert symbol "' + home_away_symbol + '" to an "@" on line ' + str(counter))
+                    raise ValueError(f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}')
                         
                 home_team = self._import_service.import_team(home_team_name)
                 home_team_affiliation = self._import_service.import_affiliation(season.ID, home_team.ID, Subdivision.FCS)

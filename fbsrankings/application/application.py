@@ -32,18 +32,18 @@ class Application (object):
         
     def display(self):
         seasons = self._repository.all_seasons()
-        print('Total Seasons: ' + str(len(seasons)))
+        print(f'Total Seasons: {len(seasons)}')
         for season in seasons:
             print()
-            print(str(season.year) + ' Season:')
+            print(f'{season.year} Season:')
     
             affiliations = self._repository.find_affiliations_by_season(season)
-            print('Total Teams: ' + str(len(affiliations)))
-            print('FBS Teams: ' + str(sum(x.subdivision == Subdivision.FBS for x in affiliations)))
-            print('FCS Teams: ' + str(sum(x.subdivision == Subdivision.FCS for x in affiliations)))
+            print(f'Total Teams: {len(affiliations)}')
+            print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
+            print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
     
             games = self._repository.find_games_by_season(season)
-            print('Total Games: ' + str(len(games)))
+            print(f'Total Games: {len(games)}')
         
         print()
         for game in self._repository.all_games():
@@ -58,11 +58,11 @@ class Application (object):
         season = self._repository.find_season(game.season_ID)
         home_team = self._repository.find_team(game.home_team_ID)
         away_team = self._repository.find_team(game.away_team_ID)
-        print('Year ' + str(season.year) + ', Week ' + str(game.week))
+        print(f'Year {season.year}, Week {game.week}')
         print(game.date)
-        print(home_team.name + ' vs. ' + away_team.name)
+        print(f'{home_team.name} vs. {away_team.name}')
         if game.home_team_score is not None and game.away_team_score is not None:
-            print(str(game.status) + ', ' + str(game.home_team_score) + ' to ' + str(game.away_team_score))
+            print(f'{game.status}, {game.home_team_score} to {game.away_team_score}')
         else:
             print(game.status)
         print(game.notes)

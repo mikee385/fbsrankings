@@ -8,7 +8,7 @@ class TeamRepository(BaseRepository):
     
     def add_team(self, team):
         if team.name in self._team_name_dict:
-            raise ValueError('Team already exists for name ' + str(team.name))
+            raise ValueError(f'Team already exists for name {team.name}')
             
         self._team_id_dict[team.ID] = team
         self._team_name_dict[team.name] = team

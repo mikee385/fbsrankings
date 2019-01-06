@@ -11,7 +11,7 @@ class SeasonRepository(BaseRepository):
             raise TypeError('season must be of type Season')
         
         if season.year in self._season_year_dict:
-            raise ValueError('Season already exists for year ' + str(season.year))
+            raise ValueError(f'Season already exists for year {season.year}')
 
         self._season_id_dict[season.ID] = season
         self._season_year_dict[season.year] = season

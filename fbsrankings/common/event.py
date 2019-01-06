@@ -23,7 +23,7 @@ class EventBus (object):
         if not callable(handler):
             raise TypeError('handler must be a callable type')
         if event_type not in self._handlers:
-            raise ValueError('Type ' + event_type.__name__ + ' has not been registered with this EventBus')
+            raise ValueError(f'Type {event_type.__name__} has not been registered with this EventBus')
             
         self._handlers[event_type].append(handler)
         
@@ -31,7 +31,7 @@ class EventBus (object):
         if not isinstance(event, Event):
             raise TypeError('event must be of type Event')
         if type(event) not in self._handlers:
-            raise ValueError('Type ' + type(event).__name__ + ' has not been registered with this EventBus')
+            raise ValueError(f'Type {type(event).__name__} has not been registered with this EventBus')
             
         for handler in self._handlers[type(event)]:
             handler(event)
