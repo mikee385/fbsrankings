@@ -60,7 +60,7 @@ class SportsReference (object):
     def import_team_rows(self, year, row_iter):
         season = self._import_service.import_season(year)
         if self._validation_service is not None:
-            self._validation_service.validate_season(season, year)
+            self._validation_service.validate_season_data(season, year)
         
         header_row = next(row_iter)
         if header_row[0] == '':
@@ -79,7 +79,8 @@ class SportsReference (object):
                 
                 if self._validation_service is not None:
                     self._validation_service.validate_team(team, name)
-                    self._validation_service.validate_affiliation(affiliation, season.ID, team.ID, affiliation.subdivision)
+                    self._validation_service.validate_team_data(team, name)
+                    self._validation_service.validate_affiliation_data(affiliation, season.ID, team.ID, affiliation.subdivision)
         
     def import_game_rows(self, year, postseason_start_week, row_iter):
         season = self._import_service._repository.find_season_by_year(year)
@@ -118,9 +119,9 @@ class SportsReference (object):
                 week = int(week_string)
                 
                 try:
-                    game_date = datetime.strptime(date_string, '%b %d %Y').date()
+                    date_ = datetime.strptime(date_string, '%b %d %Y').date()
                 except ValueError:
-                    game_date = datetime.strptime(date_string, '%b %d, %Y').date()
+                    date_ = datetime.strptime(date_string, '%b %d, %Y').date()
                 
                 if (first_team_name.startswith('(')):
                     start = first_team_name.find(')')
@@ -166,11 +167,11 @@ class SportsReference (object):
                 away_team_affiliation = self._import_service.import_affiliation(season.ID, away_team.ID, Subdivision.FCS)
                 
                 if self._validation_service is not None:
-                    self._validation_service.validate_team(home_team, home_team_name)
-                    self._validation_service.validate_affiliation(home_team_affiliation, season.ID, home_team.ID, home_team_affiliation.subdivision)
+                    self._validation_service.validate_team_data(home_team, home_team_name)
+                    self._validation_service.validate_affiliation_data(home_team_affiliation, season.ID, home_team.ID, home_team_affiliation.subdivision)
                     
-                    self._validation_service.validate_team(away_team, away_team_name)
-                    self._validation_service.validate_affiliation(away_team_affiliation, season.ID, away_team.ID, away_team_affiliation.subdivision)
+                    self._validation_service.validate_team_data(away_team, away_team_name)
+                    self._validation_service.validate_affiliation_data(away_team_affiliation, season.ID, away_team.ID, away_team_affiliation.subdivision)
                 
                 notes = row[notes_index].strip()
                 
@@ -187,8 +188,9 @@ class SportsReference (object):
                     game.complete(home_team_score, away_team_score)
                     
                 if self._validation_service is not None:
-                    self._validation_service.validate_game(game, season.ID, week, game_date, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
+                    self._validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
                     
+
 
 def _html_iter(soup):
     row_iter = iter(soup.find_all('tr'))

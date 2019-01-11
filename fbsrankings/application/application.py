@@ -3,11 +3,15 @@ import os
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
 from fbsrankings.infrastructure import SportsReference
 
+from fbsrankings.domain.service.validationservice import RaiseBehavior, DuplicateGameValidationError
+
 
 class Application (object):
     def __init__(self, factory, repository, common_name_map):
         self._factory = factory
         self._repository = repository
+        self._validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
+        self._import_service = ImportService(self._factory, self._repository)
         
         if common_name_map is not None:
             self._common_name_map = common_name_map
