@@ -38,4 +38,7 @@ with open(index_csv_filename, 'r') as index_file:
             
         application.calculate_rankings(year)
 
-    application.display()
+    print()
+    application.print_results()
+    print()
+    application.print_errors()

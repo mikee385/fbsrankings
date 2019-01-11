@@ -19,9 +19,7 @@ class Application (object):
             self._common_name_map = {}
         
     def import_sports_reference_season(self, year, postseason_start_week, team_source, game_source):
-        import_service = ImportService(self._factory, self._repository)
-        validation_service = ValidationService()
-        sports_reference = SportsReference(import_service, validation_service, self._common_name_map)
+        sports_reference = SportsReference(self._import_service, self._validation_service, self._common_name_map)
         
         if os.path.isfile(team_source) and os.path.isfile(game_source):
             sports_reference.import_season_csv_files(year, postseason_start_week, team_source, game_source)
@@ -34,7 +32,7 @@ class Application (object):
     def calculate_rankings(self, year):
         pass
         
-    def display(self):
+    def print_results(self):
         seasons = self._repository.all_seasons()
         print(f'Total Seasons: {len(seasons)}')
         for season in seasons:
@@ -52,22 +50,50 @@ class Application (object):
         print()
         for game in self._repository.all_games():
             if game.status == GameStatus.CANCELED:
+                print()
                 print('Canceled Game:')
                 self._print_game_summary(game)
             elif game.status != GameStatus.COMPLETED:
+                
                 print('Unknown Status')
                 self._print_game_summary(game)
         
+    def print_errors(self):
+        duplicate_game_errors = []
+        other_errors = []
+        for error in self._validation_service.errors:
+            if isinstance(error, DuplicateGameValidationError):
+                duplicate_game_errors.append(error)
+            else:
+                other_errors.append(error)
+
+        if len(duplicate_game_errors) > 0:
+            print()
+            print('Duplicate Games:')
+            for error in duplicate_game_errors:
+                first_game = self._repository.find_game(error.first_game_ID)
+                print()
+                self._print_game_summary(first_game)
+                second_game = self._repository.find_game(error.second_game_ID)
+                print()
+                self._print_game_summary(second_game)
+
+        if len(other_errors) > 0:
+            print()
+            print('Other Errors:')
+            for error in other_errors:
+                print(error)
+
     def _print_game_summary(self, game):
         season = self._repository.find_season(game.season_ID)
         home_team = self._repository.find_team(game.home_team_ID)
         away_team = self._repository.find_team(game.away_team_ID)
         print(f'Year {season.year}, Week {game.week}')
         print(game.date)
+        print(game.season_section)
         print(f'{home_team.name} vs. {away_team.name}')
         if game.home_team_score is not None and game.away_team_score is not None:
             print(f'{game.status}, {game.home_team_score} to {game.away_team_score}')
         else:
             print(game.status)
         print(game.notes)
-        print()
