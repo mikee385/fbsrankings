@@ -164,6 +164,9 @@ class GameRepository (object):
     def find_game(self, ID):
         raise NotImplementedError
         
+    def find_game_by_season_teams(self, season, season_section, team1, team2):
+        raise NotImplementedError
+        
     def find_games_by_season(self, season):
         raise NotImplementedError
         
