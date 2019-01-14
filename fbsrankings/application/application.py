@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
 from fbsrankings.infrastructure import SportsReference
@@ -6,27 +7,43 @@ from fbsrankings.infrastructure import SportsReference
 from fbsrankings.domain.service.validationservice import RaiseBehavior, DuplicateGameValidationError
 
 
+class SourceType (Enum):
+        CSV = 0
+        URL = 1
+
 class Application (object):
     def __init__(self, factory, repository, common_name_map):
         self._factory = factory
         self._repository = repository
-        self._validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
-        self._import_service = ImportService(self._factory, self._repository)
         
         if common_name_map is not None:
             self._common_name_map = common_name_map
         else:
             self._common_name_map = {}
-        
-    def import_sports_reference_season(self, year, postseason_start_week, team_source, game_source):
-        sports_reference = SportsReference(self._import_service, self._validation_service, self._common_name_map)
-        
-        if os.path.isfile(team_source) and os.path.isfile(game_source):
-            sports_reference.import_season_csv_files(year, postseason_start_week, team_source, game_source)
-        else:
-            sports_reference.import_season_urls(year, postseason_start_week, team_source, game_source)
             
+        self.errors = []
+            
+    def import_season_csv_files(self, year, postseason_start_week, team_csv_file, game_csv_file):
+        self._import_season(SourceType.CSV, year, postseason_start_week, team_csv_file, game_csv_file)
+        
+    def import_season_urls(self, year, postseason_start_week, team_url, game_url):
+        self._import_season(SourceType.URL, year, postseason_start_week, team_url, game_url)
+        
+    def _import_season(self, source_type, year, postseason_start_week, team_source, game_source):
+        import_service = ImportService(self._factory, self._repository)
+        validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
         cancel_service = CancelService(self._repository)
+        
+        sports_reference = SportsReference(import_service, validation_service, self._common_name_map)
+        
+        if source_type == SourceType.CSV:
+            sports_reference.import_season_csv_files(year, postseason_start_week, team_source, game_source)
+        elif source_type == SourceType.URL:
+            sports_reference.import_season_urls(year, postseason_start_week, team_source, game_source)
+        else:
+            raise ValueError(f'Unknown source type: {source_type}')
+            
+        self.errors.extend(validation_service.errors)
         cancel_service.cancel_past_games(year)
 
     def calculate_rankings(self, year):
@@ -61,7 +78,7 @@ class Application (object):
     def print_errors(self):
         duplicate_game_errors = []
         other_errors = []
-        for error in self._validation_service.errors:
+        for error in self.errors:
             if isinstance(error, DuplicateGameValidationError):
                 duplicate_game_errors.append(error)
             else:
