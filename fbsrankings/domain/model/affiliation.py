@@ -5,7 +5,7 @@ from fbsrankings.common import Identifier, Event, EventBus
 from fbsrankings.domain import Season, SeasonID, Team, TeamID
 
 
-class Subdivision(Enum):
+class Subdivision (Enum):
     FBS = 1
     FCS = 2
 

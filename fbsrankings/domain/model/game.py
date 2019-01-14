@@ -6,7 +6,7 @@ from fbsrankings.common import Identifier, Event, EventBus
 from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID
 
 
-class GameStatus(Enum):
+class GameStatus (Enum):
     SCHEDULED = 0
     COMPLETED = 1
     CANCELED = 2

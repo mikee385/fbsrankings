@@ -4,7 +4,7 @@ from enum import Enum
 from fbsrankings.common import Identifier, Event, EventBus
 
 
-class SeasonSection(Enum):
+class SeasonSection (Enum):
     PRESEASON = 0
     REGULAR_SEASON = 1
     CONFERENCE_CHAMPIONSHIP = 2
