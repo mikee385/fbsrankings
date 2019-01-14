@@ -16,7 +16,7 @@ class GameRepository(BaseRepository):
             self._game_season_dict[game.season_ID] = season_dict
         season_dict[game.ID] = game
         
-        key = self._get_key(game.season_ID, game.season_section, game.home_team_ID, game.away_team_ID)
+        key = self._get_key(game.season_ID, game.season_section, game.week, game.home_team_ID, game.away_team_ID)
         self._game_team_dict[key] = game
 
     def find_game(self, ID):
@@ -24,7 +24,7 @@ class GameRepository(BaseRepository):
             raise TypeError('ID must be of type GameID')
         return self._game_id_dict.get(ID)
 
-    def find_game_by_season_teams(self, season, season_section, team1, team2):
+    def find_game_by_season_teams(self, season, season_section, week, team1, team2):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
@@ -49,7 +49,7 @@ class GameRepository(BaseRepository):
         else:
             raise TypeError('team2 must be of type Team or TeamID')
             
-        key = self._get_key(season_ID, season_section, team1_ID, team2_ID)
+        key = self._get_key(season_ID, season_section, week, team1_ID, team2_ID)
         return self._game_team_dict.get(key)
         
     def find_games_by_season(self, season):
@@ -68,8 +68,8 @@ class GameRepository(BaseRepository):
     def all_games(self):
         return self._game_id_dict.values()
         
-    def _get_key(self, season_ID, season_section, team1_ID, team2_ID):
+    def _get_key(self, season_ID, season_section, week, team1_ID, team2_ID):
         if team1_ID < team2_ID:
-            return (season_ID, season_section, team1_ID, team2_ID)
+            return (season_ID, season_section, week, team1_ID, team2_ID)
         else:
-            return (season_ID, season_section, team2_ID, team1_ID)
+            return (season_ID, season_section, week, team2_ID, team1_ID)
