@@ -14,6 +14,13 @@ class GameStatus (Enum):
 
 class GameID (Identifier):
     pass
+    
+
+class GameStatusError (Exception):
+    def __init__(self, message, game_ID, status):
+        super().__init__(message)
+        self.game_ID = game_ID
+        self.status = status
 
 
 class Game (object):
@@ -58,17 +65,23 @@ class Game (object):
             self.away_team_ID = away_team
         else:
             raise TypeError('away_team must be of type Team or TeamID')
-             
+            
         if home_team_score is not None and away_team_score is not None:
             if status != GameStatus.COMPLETED:
-                raise ValueError('Game status must be COMPLETED in order to have a score')
-                
-            self._set_score(home_team_score, away_team_score)
+                raise ValueError('Game must be COMPLETED in order to have scores')
             
+            self._set_score(home_team_score, away_team_score)
+
+        elif home_team_score is not None:
+            raise ValueError('Home team score must be None if away team score is None')
+
+        elif away_team_score is not None:
+            raise ValueError('Away team score must be None if home team score is None')
+
+        elif status == GameStatus.COMPLETED:
+                raise ValueError('Game must be have scores in order to be COMPLETED')
+
         else:
-            if status == GameStatus.COMPLETED:
-                raise ValueError('Game status must be have a score in order to be COMPLETED')
-                
             self.home_team_score = None
             self.away_team_score = None
             self.winning_team_ID = None
@@ -85,8 +98,8 @@ class Game (object):
         self.notes = notes
         
     def reschedule(self, week, date_):
-        old_week = self.week
-        old_date = self.date
+        if self.status != GameStatus.SCHEDULED:
+            raise GameStatusError('Game can only be rescheduled if it is still scheduled', self.ID, self.status)
         
         if not isinstance(week, int):
             raise TypeError('week must be of type int')
@@ -96,17 +109,28 @@ class Game (object):
             raise TypeError('date_ must be of type date')
         self.date = date_
         
+        old_week = self.week
+        old_date = self.date
+        
         self._event_bus.raise_event(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
         
     def cancel(self):
+        if self.status != GameStatus.SCHEDULED:
+            raise GameStatusError('Game can only be canceled if it is still scheduled', self.ID, self.status)
+        
         self.status = GameStatus.CANCELED
         self._event_bus.raise_event(GameCanceledEvent(self.ID))
         
     def complete(self, home_team_score, away_team_score):
+        if self.status != GameStatus.SCHEDULED:
+            raise GameStatusError('Game can only be completed if it is still scheduled', self.ID, self.status)
+            
         if home_team_score is None:
-            raise ValueError('home_team_score cannot be None')
+            raise ValueError('Home team score cannot be None')
+
         if away_team_score is None:
-            raise ValueError('away_team_score cannot be None')
+            raise ValueError('Away team score cannot be None')
+        
         self._set_score(home_team_score, away_team_score)
         self.status = GameStatus.COMPLETED
         

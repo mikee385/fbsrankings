@@ -49,15 +49,6 @@ class GameDataValidationError (ValidationError):
         self.expected_value = expected_value
 
 
-class GameStatusValidationError (ValidationError):
-    def __init__(self, message, game_ID, status, home_team_score, away_team_score):
-        ValidationError.__init__(self, message)
-        self.game_ID = game_ID
-        self.status = status
-        self.home_team_score = home_team_score
-        self.away_team_score = away_team_score
-
-
 class DuplicateGameValidationError (ValidationError):
     def __init__(self, message, first_game_ID, second_game_ID):
         ValidationError.__init__(self, message)
@@ -126,20 +117,6 @@ class ValidationService (object):
             self._handle_error(GameDataValidationError(f'Game.status does not match status: {game.status} vs. {status}', game.ID, 'status', game.status, status))
         if game.notes != notes:
             self._handle_error(GameDataValidationError(f'Game.notes does not match notes: {game.notes} vs. {notes}', game.ID, 'notes', game.notes, notes))
-            
-    def validate_game(self, game):
-        if game.home_team_score is None:
-            if game.away_team_score is None:
-                if game.status != GameStatus.SCHEDULED and game.status != GameStatus.CANCELED:
-                    self._handle_error(GameStatusValidationError('Game.status must be SCHEDULED or CANCELED when it doesn\' have a final score', game.ID, game.status, game.home_team_score, game.away_team_score))
-            else:
-                self._handle_error(GameStatusValidationError('Game.away_team_score must be None if game.home_team_score is None', game.ID, game.status, game.home_team_score, game.away_team_score))
-        else:
-            if game.away_team_score is None:
-                self._handle_error(GameStatusValidationError('Game.home_team_score must be None if game.away_team_score is None', game.ID, game.status, game.home_team_score, game.away_team_score))
-            else:
-                if game.status != GameStatus.COMPLETED:
-                    self._handle_error(GameStatusValidationError('Game.status must be COMPLETED when it has a final score', game.ID, game.status, game.home_team_score, game.away_team_score))
 
     def validate_games(self, affiliations, games):
         fbs_game_counts = {}
