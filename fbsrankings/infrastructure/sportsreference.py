@@ -190,8 +190,6 @@ class SportsReference (object):
                 
                 if self._validation_service is not None:
                     self._validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
-                    
-                    self._validation_service.validate_game(game)
         
         if self._validation_service is not None:
             affiliations = [a for a in self._import_service.affiliations() if a.season_ID == season.ID]
