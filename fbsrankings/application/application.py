@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
@@ -10,6 +9,7 @@ from fbsrankings.domain.service.validationservice import RaiseBehavior, Duplicat
 class SourceType (Enum):
         CSV = 0
         URL = 1
+
 
 class Application (object):
     def __init__(self, factory, repository, common_name_map):
