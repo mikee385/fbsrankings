@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fbsrankings.domain import Subdivision, GameStatus
+from fbsrankings.domain import Subdivision
 
 
 class ValidationError (ValueError):

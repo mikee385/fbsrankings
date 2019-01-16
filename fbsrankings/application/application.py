@@ -1,9 +1,8 @@
 from enum import Enum
 
-from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
+from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure import SportsReference
 
-from fbsrankings.domain.service.validationservice import RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 
 class SourceType (Enum):
         CSV = 0
