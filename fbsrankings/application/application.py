@@ -3,8 +3,7 @@ from enum import Enum
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService
 from fbsrankings.infrastructure import SportsReference
 
-from fbsrankings.domain.service.validationservice import RaiseBehavior, DuplicateGameValidationError
-
+from fbsrankings.domain.service.validationservice import RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 
 class SourceType (Enum):
         CSV = 0
@@ -77,10 +76,19 @@ class Application (object):
         
     def print_errors(self):
         duplicate_game_errors = []
+        fbs_team_errors = []
+        fcs_team_errors = []
+        game_errors = []
         other_errors = []
         for error in self.errors:
             if isinstance(error, DuplicateGameValidationError):
                 duplicate_game_errors.append(error)
+            elif isinstance(error, FBSGameCountValidationError):
+                fbs_team_errors.append(error)
+            elif isinstance(error, FCSGameCountValidationError):
+                fcs_team_errors.append(error)
+            elif isinstance(error, GameDataValidationError):
+                game_errors.append(error)
             else:
                 other_errors.append(error)
 
@@ -94,6 +102,34 @@ class Application (object):
                 second_game = self._repository.find_game(error.second_game_ID)
                 print()
                 self._print_game_summary(second_game)
+
+        if len(fbs_team_errors) > 0:
+            print()
+            print('FBS teams with too few games:')
+            for error in fbs_team_errors:
+                season = self._repository.find_season(error.season_ID)
+                team = self._repository.find_team(error.team_ID)
+                print()
+                print(f'{season.year} {team.name}: {error.game_count}')
+                
+        if len(fcs_team_errors) > 0:
+            print()
+            print('FCS teams with too many games:')
+            for error in fcs_team_errors:
+                season = self._repository.find_season(error.season_ID)
+                team = self._repository.find_team(error.team_ID)
+                print()
+                print(f'{season.year} {team.name}: {error.game_count}')
+                
+        if len(game_errors) > 0:
+            print()
+            print('Game errors:')
+            for error in game_errors:
+                game = self._repository.find_game(error.game_ID)
+                
+                print()
+                self._print_game_summary(game)
+                print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
 
         if len(other_errors) > 0:
             print()

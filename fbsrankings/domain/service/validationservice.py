@@ -57,15 +57,17 @@ class DuplicateGameValidationError (ValidationError):
 
 
 class FBSGameCountValidationError (ValidationError):
-    def __init__(self, message, team_ID, game_count):
+    def __init__(self, message, season_ID, team_ID, game_count):
         ValidationError.__init__(self, message)
+        self.season_ID = season_ID
         self.team_ID = team_ID
         self.game_count = game_count
 
 
 class FCSGameCountValidationError (ValidationError):
-    def __init__(self, message, team_ID, game_count):
+    def __init__(self, message, season_ID, team_ID, game_count):
         ValidationError.__init__(self, message)
+        self.season_ID = season_ID
         self.team_ID = team_ID
         self.game_count = game_count
 
@@ -154,13 +156,13 @@ class ValidationService (object):
             else:
                 self._handle_error(GameDataValidationError('Unknown away team', game.ID, 'away_team', game.away_team_ID, None))
         
-        for team, game_count in fbs_game_counts.items():
+        for team_ID, game_count in fbs_game_counts.items():
             if game_count < 10:
-                self._handle_error(FBSGameCountValidationError('FBS team has too few games', team, game_count))
+                self._handle_error(FBSGameCountValidationError('FBS team has too few games', affiliations[0].season_ID, team_ID, game_count))
                 
-        for team, game_count in fcs_game_counts.items():
+        for team_ID, game_count in fcs_game_counts.items():
             if game_count > 3:
-                self._handle_error(FCSGameCountValidationError('FCS team had too many games', team, game_count))
+                self._handle_error(FCSGameCountValidationError('FCS team had too many games', affiliations[0].season_ID, team_ID, game_count))
                 
     def raise_errors(self):
         if len(self.errors) == 1:
