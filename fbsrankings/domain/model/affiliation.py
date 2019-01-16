@@ -22,25 +22,41 @@ class Affiliation (object):
         
         if not isinstance(ID, AffiliationID):
             raise TypeError('ID must be of type AffiliationID')
-        self.ID = ID
+        self._ID = ID
         
         if isinstance(season, Season):
-            self.season_ID = season.ID
+            self._season_ID = season.ID
         elif isinstance(season, SeasonID):
-            self.season_ID = season
+            self._season_ID = season
         else:
             raise TypeError('season must be of type Season or SeasonID')
             
         if isinstance(team, Team):
-            self.team_ID = team.ID
+            self._team_ID = team.ID
         elif isinstance(team, TeamID):
-            self.team_ID = team
+            self._team_ID = team
         else:
             raise TypeError('team must be of type Team or TeamID')
         
         if not isinstance(subdivision, Subdivision):
             raise TypeError('subdivision must be of type Subdivision')
-        self.subdivision = subdivision
+        self._subdivision = subdivision
+        
+    @property
+    def ID(self):
+        return self._ID
+        
+    @property
+    def season_ID(self):
+        return self._season_ID
+        
+    @property
+    def team_ID(self):
+        return self._team_ID
+        
+    @property
+    def subdivision(self):
+        return self._subdivision
 
 
 class AffiliationFactory (object):

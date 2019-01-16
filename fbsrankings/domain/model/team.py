@@ -15,9 +15,17 @@ class Team (object):
         
         if not isinstance(ID, TeamID):
             raise TypeError('ID must be of type TeamID')
-        self.ID = ID
+        self._ID = ID
         
-        self.name = name
+        self._name = name
+        
+    @property
+    def ID(self):
+        return self._ID
+        
+    @property
+    def name(self):
+        return self._name
 
 
 class TeamFactory (object):

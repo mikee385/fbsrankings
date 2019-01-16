@@ -23,9 +23,17 @@ class Season (object):
         
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
-        self.ID = ID
+        self._ID = ID
         
-        self.year = year
+        self._year = year
+        
+    @property
+    def ID(self):
+        return self._ID
+        
+    @property
+    def year(self):
+        return self._year
 
 
 class SeasonFactory (object):

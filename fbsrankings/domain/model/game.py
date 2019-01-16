@@ -31,38 +31,38 @@ class Game (object):
         
         if not isinstance(ID, GameID):
             raise TypeError('ID must be of type GameID')
-        self.ID = ID
+        self._ID = ID
         
         if isinstance(season, Season):
-            self.season_ID = season.ID
+            self._season_ID = season.ID
         elif isinstance(season, SeasonID):
-            self.season_ID = season
+            self._season_ID = season
         else:
             raise TypeError('season must be of type Season or SeasonID')
             
         if not isinstance(week, int):
             raise TypeError('week must be of type int')
-        self.week = week
+        self._week = week
             
         if not isinstance(date_, date):
             raise TypeError('date_ must be of type date')
-        self.date = date_
+        self._date = date_
         
         if not isinstance(season_section, SeasonSection):
             raise TypeError('season_section must be of type SeasonSection')
-        self.season_section = season_section
+        self._season_section = season_section
         
         if isinstance(home_team, Team):
-            self.home_team_ID = home_team.ID
+            self._home_team_ID = home_team.ID
         elif isinstance(home_team, TeamID):
-            self.home_team_ID = home_team
+            self._home_team_ID = home_team
         else:
             raise TypeError('home_team must be of type Team or TeamID')
         
         if isinstance(away_team, Team):
-            self.away_team_ID = away_team.ID
+            self._away_team_ID = away_team.ID
         elif isinstance(away_team, TeamID):
-            self.away_team_ID = away_team
+            self._away_team_ID = away_team
         else:
             raise TypeError('away_team must be of type Team or TeamID')
             
@@ -82,20 +82,64 @@ class Game (object):
                 raise ValueError('Game must be have scores in order to be COMPLETED')
 
         else:
-            self.home_team_score = None
-            self.away_team_score = None
-            self.winning_team_ID = None
-            self.winning_team_score = None
-            self.losing_team_ID = None
-            self.losing_team_score = None
+            self._home_team_score = None
+            self._away_team_score = None
+            self._winning_team_ID = None
+            self._winning_team_score = None
+            self._losing_team_ID = None
+            self._losing_team_score = None
         
         if not isinstance(status, GameStatus):
             raise TypeError('status must be of type GameStatus')
-        self.status = status
+        self._status = status
         
         if not isinstance(notes, str):
             raise TypeError('notes must be of type str')
-        self.notes = notes
+        self._notes = notes
+        
+    @property
+    def ID(self):
+        return self._ID
+        
+    @property
+    def season_ID(self):
+        return self._season_ID
+        
+    @property
+    def week(self):
+        return self._week
+        
+    @property
+    def date(self):
+        return self._date
+        
+    @property
+    def season_section(self):
+        return self._season_section
+    
+    @property
+    def home_team_ID(self):
+        return self._home_team_ID
+        
+    @property
+    def away_team_ID(self):
+        return self._away_team_ID
+        
+    @property
+    def home_team_score(self):
+        return self._home_team_score
+        
+    @property
+    def away_team_score(self):
+        return self._away_team_score
+        
+    @property
+    def status(self):
+        return self._status
+    
+    @property
+    def notes(self):
+        return self._notes
         
     def reschedule(self, week, date_):
         if self.status != GameStatus.SCHEDULED:
@@ -103,11 +147,11 @@ class Game (object):
         
         if not isinstance(week, int):
             raise TypeError('week must be of type int')
-        self.week = week
+        self._week = week
             
         if not isinstance(date_, date):
             raise TypeError('date_ must be of type date')
-        self.date = date_
+        self._date = date_
         
         old_week = self.week
         old_date = self.date
@@ -118,7 +162,7 @@ class Game (object):
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError('Game can only be canceled if it is still scheduled', self.ID, self.status)
         
-        self.status = GameStatus.CANCELED
+        self._status = GameStatus.CANCELED
         self._event_bus.raise_event(GameCanceledEvent(self.ID))
         
     def complete(self, home_team_score, away_team_score):
@@ -132,34 +176,34 @@ class Game (object):
             raise ValueError('Away team score cannot be None')
         
         self._set_score(home_team_score, away_team_score)
-        self.status = GameStatus.COMPLETED
+        self._status = GameStatus.COMPLETED
         
         self._event_bus.raise_event(GameCompletedEvent(self.ID, home_team_score, away_team_score))
         
     def _set_score(self, home_team_score, away_team_score):
         if not isinstance(home_team_score, int):
             raise TypeError('home_team_score must be of type int')
-        self.home_team_score = home_team_score
+        self._home_team_score = home_team_score
             
         if not isinstance(away_team_score, int):
             raise TypeError('away_team_score must be of type int')
-        self.away_team_score = away_team_score
+        self._away_team_score = away_team_score
             
         if home_team_score > away_team_score:
-            self.winning_team_ID = self.home_team_ID
-            self.winning_team_score = self.home_team_score
-            self.losing_team_ID = self.away_team_ID
-            self.losing_team_score = self.away_team_score
+            self._winning_team_ID = self.home_team_ID
+            self._winning_team_score = self.home_team_score
+            self._losing_team_ID = self.away_team_ID
+            self._losing_team_score = self.away_team_score
         elif away_team_score > home_team_score:
-            self.winning_team_ID = self.away_team_ID
-            self.winning_team_score = self.away_team_score
-            self.losing_team_ID = self.home_team_ID
-            self.losing_team_score = self.home_team_score
+            self._winning_team_ID = self.away_team_ID
+            self._winning_team_score = self.away_team_score
+            self._losing_team_ID = self.home_team_ID
+            self._losing_team_score = self.home_team_score
         else:
-            self.winning_team_ID = None
-            self.winning_team_score = None
-            self.losing_team_ID = None
-            self.losing_team_score = None
+            self._winning_team_ID = None
+            self._winning_team_score = None
+            self._losing_team_ID = None
+            self._losing_team_score = None
             
 
 class GameFactory (object):

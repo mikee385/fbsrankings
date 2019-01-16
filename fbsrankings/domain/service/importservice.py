@@ -28,15 +28,19 @@ class ImportService (object):
         self._affiliations = {}
         self._games = {}
         
+    @property
     def seasons(self):
         return self._seasons.values()
-        
+     
+    @property   
     def teams(self):
         return self._teams.values()
         
+    @property
     def affiliations(self):
         return self._affiliations.values()
         
+    @property
     def games(self):
         return self._games.values()
         
