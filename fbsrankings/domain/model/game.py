@@ -208,6 +208,7 @@ class Game (object):
 
 class GameFactory (object):
     def __init__(self, event_bus):
+        print('Game Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -217,7 +218,7 @@ class GameFactory (object):
         self._event_bus.register_type(GameCanceledEvent)
         self._event_bus.register_type(GameCompletedEvent)
         
-    def new_game(self, season, week, date_, season_section, home_team, away_team, notes):
+    def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
         game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
         game._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))

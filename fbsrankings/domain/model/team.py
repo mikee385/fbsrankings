@@ -30,13 +30,14 @@ class Team (object):
 
 class TeamFactory (object):
     def __init__(self, event_bus):
+        print('Team Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
         
         self._event_bus.register_type(TeamRegisteredEvent)
         
-    def new_team(self, name):
+    def register(self, name):
         ID = TeamID(uuid4())
         team = Team(self._event_bus, ID, name)
         team._event_bus.raise_event(TeamRegisteredEvent(team.ID, team.name))

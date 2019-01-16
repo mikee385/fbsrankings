@@ -1,16 +1,10 @@
-from fbsrankings.domain import SeasonFactory, SeasonRepository, TeamFactory, TeamRepository, AffiliationFactory, AffiliationRepository, GameFactory, GameRepository
+from fbsrankings.domain import Factory, SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
 
 
 class ImportService (object):
     def __init__(self, factory, repository):
-        if not isinstance(factory, SeasonFactory):
-            raise TypeError('factory must be of type SeasonFactory')
-        if not isinstance(factory, TeamFactory):
-            raise TypeError('factory must be of type TeamFactory')
-        if not isinstance(factory, AffiliationFactory):
-            raise TypeError('factory must be of type AffiliationFactory')
-        if not isinstance(factory, GameFactory):
-            raise TypeError('factory must be of type GameFactory')
+        if not isinstance(factory, Factory):
+            raise TypeError('factory must be of type Factory')
         self._factory = factory
         
         if not isinstance(repository, SeasonRepository):
@@ -51,7 +45,7 @@ class ImportService (object):
         if season is None:
             season = self._repository.find_season_by_year(year)
             if season is None:
-                season = self._factory.new_season(year)
+                season = self._factory.season.register(year)
                 self._repository.add_season(season)
             self._seasons[key] = season
             
@@ -64,7 +58,7 @@ class ImportService (object):
         if team is None:
             team = self._repository.find_team_by_name(name)
             if team is None:
-                team = self._factory.new_team(name)
+                team = self._factory.team.register(name)
                 self._repository.add_team(team)
             self._teams[key] = team
             
@@ -77,7 +71,7 @@ class ImportService (object):
         if affiliation is None:
             affiliation = self._repository.find_affiliation_by_season_team(season_ID, team_ID)
             if affiliation is None:
-                affiliation = self._factory.new_affiliation(season_ID, team_ID, subdivision)
+                affiliation = self._factory.affiliation.register(season_ID, team_ID, subdivision)
                 self._repository.add_affiliation(affiliation)
             self._affiliations[key] = affiliation
             
@@ -93,7 +87,7 @@ class ImportService (object):
         if game is None:
             self._repository.find_game_by_season_teams(season_ID, season_section, week, home_team_ID, away_team_ID)
             if game is None:
-                game = self._factory.new_game(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
+                game = self._factory.game.schedule(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
                 self._repository.add_game(game)
             self._games[key] = game
             

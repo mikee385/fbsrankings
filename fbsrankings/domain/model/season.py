@@ -38,13 +38,14 @@ class Season (object):
 
 class SeasonFactory (object):
     def __init__(self, event_bus):
+        print('Season Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
         
         self._event_bus.register_type(SeasonRegisteredEvent)
         
-    def new_season(self, year):
+    def register(self, year):
         ID = SeasonID(uuid4())
         season = Season(self._event_bus, ID, year)
         season._event_bus.raise_event(SeasonRegisteredEvent(season.ID, season.year))
