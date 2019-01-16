@@ -82,7 +82,7 @@ class SportsReference (object):
                     self._validation_service.validate_affiliation_data(affiliation, season.ID, team.ID, affiliation.subdivision)
         
     def import_game_rows(self, year, postseason_start_week, row_iter):
-        season = next((s for s in self._import_service.seasons() if s.year == year), None)
+        season = next((s for s in self._import_service.seasons if s.year == year), None)
         if season is None:
             season = self._import_service._repository.find_season_by_year(year)
             if season is None:
@@ -192,11 +192,11 @@ class SportsReference (object):
                     self._validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
         
         if self._validation_service is not None:
-            affiliations = [a for a in self._import_service.affiliations() if a.season_ID == season.ID]
+            affiliations = [a for a in self._import_service.affiliations if a.season_ID == season.ID]
             if len(affiliations) == 0:
                 affiliations = self._import_service._repository.find_affiliations_by_season(season)
                 
-            games = [g for g in self._import_service.games() if g.season_ID == season.ID]
+            games = [g for g in self._import_service.games if g.season_ID == season.ID]
             if len(games) == 0:
                 games = self._import_service._repository.find_games_by_season(season)
             self._validation_service.validate_games(affiliations, games)
