@@ -10,7 +10,6 @@ class ValidationError (ValueError):
 
 class MultipleValidationError (ValidationError):
     def __init__(self, errors):
-        def __init__(self):
         super().__init__('Multiple validation errors have occurred. See the errors property for more details.')
         self.errors = errors
 
