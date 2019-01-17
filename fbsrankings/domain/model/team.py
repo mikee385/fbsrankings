@@ -30,7 +30,6 @@ class Team (object):
 
 class TeamFactory (object):
     def __init__(self, event_bus):
-        print('Team Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -46,16 +45,16 @@ class TeamFactory (object):
 
 
 class TeamRepository (object):
-    def add_team(self, team):
+    def add(self, team):
         raise NotImplementedError
 
-    def find_team(self, ID):
+    def find_by_ID(self, ID):
         raise NotImplementedError
         
-    def find_team_by_name(self, name):
+    def find_by_name(self, name):
         raise NotImplementedError
     
-    def all_teams(self):
+    def all(self):
         raise NotImplementedError
 
 

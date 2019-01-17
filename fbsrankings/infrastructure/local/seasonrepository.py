@@ -6,7 +6,7 @@ class SeasonRepository(BaseRepository):
         self._season_id_dict = {}
         self._season_year_dict = {}
     
-    def add_season(self, season):
+    def add(self, season):
         if not isinstance(season, Season):
             raise TypeError('season must be of type Season')
         
@@ -16,13 +16,13 @@ class SeasonRepository(BaseRepository):
         self._season_id_dict[season.ID] = season
         self._season_year_dict[season.year] = season
 
-    def find_season(self, ID):
+    def find_by_ID(self, ID):
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
         return self._season_id_dict.get(ID)
         
-    def find_season_by_year(self, year):
+    def find_by_year(self, year):
         return self._season_year_dict.get(year)
         
-    def all_seasons(self):
+    def all(self):
         return self._season_year_dict.values()

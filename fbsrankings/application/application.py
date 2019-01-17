@@ -48,22 +48,22 @@ class Application (object):
         pass
         
     def print_results(self):
-        seasons = self._repository.season.all_seasons()
+        seasons = self._repository.season.all()
         print(f'Total Seasons: {len(seasons)}')
         for season in seasons:
             print()
             print(f'{season.year} Season:')
     
-            affiliations = self._repository.affiliation.find_affiliations_by_season(season)
+            affiliations = self._repository.affiliation.find_by_season(season)
             print(f'Total Teams: {len(affiliations)}')
             print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
             print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
     
-            games = self._repository.game.find_games_by_season(season)
+            games = self._repository.game.find_by_season(season)
             print(f'Total Games: {len(games)}')
         
         print()
-        for game in self._repository.game.all_games():
+        for game in self._repository.game.all():
             if game.status == GameStatus.CANCELED:
                 print()
                 print('Canceled Game:')
@@ -95,10 +95,10 @@ class Application (object):
             print()
             print('Duplicate Games:')
             for error in duplicate_game_errors:
-                first_game = self._repository.game.find_game(error.first_game_ID)
+                first_game = self._repository.game.find_by_ID(error.first_game_ID)
                 print()
                 self._print_game_summary(first_game)
-                second_game = self._repository.game.find_game(error.second_game_ID)
+                second_game = self._repository.game.find_by_ID(error.second_game_ID)
                 print()
                 self._print_game_summary(second_game)
 
@@ -106,8 +106,8 @@ class Application (object):
             print()
             print('FBS teams with too few games:')
             for error in fbs_team_errors:
-                season = self._repository.season.find_season(error.season_ID)
-                team = self._repository.team.find_team(error.team_ID)
+                season = self._repository.season.find_by_ID(error.season_ID)
+                team = self._repository.team.find_by_ID(error.team_ID)
                 print()
                 print(f'{season.year} {team.name}: {error.game_count}')
                 
@@ -115,8 +115,8 @@ class Application (object):
             print()
             print('FCS teams with too many games:')
             for error in fcs_team_errors:
-                season = self._repository.season.find_season(error.season_ID)
-                team = self._repository.team.find_team(error.team_ID)
+                season = self._repository.season.find_by_ID(error.season_ID)
+                team = self._repository.team.find_by_ID(error.team_ID)
                 print()
                 print(f'{season.year} {team.name}: {error.game_count}')
                 
@@ -124,7 +124,7 @@ class Application (object):
             print()
             print('Game errors:')
             for error in game_errors:
-                game = self._repository.game.find_game(error.game_ID)
+                game = self._repository.game.find_by_ID(error.game_ID)
                 
                 print()
                 self._print_game_summary(game)
@@ -137,9 +137,9 @@ class Application (object):
                 print(error)
 
     def _print_game_summary(self, game):
-        season = self._repository.season.find_season(game.season_ID)
-        home_team = self._repository.team.find_team(game.home_team_ID)
-        away_team = self._repository.team.find_team(game.away_team_ID)
+        season = self._repository.season.find_by_ID(game.season_ID)
+        home_team = self._repository.team.find_by_ID(game.home_team_ID)
+        away_team = self._repository.team.find_by_ID(game.away_team_ID)
         print(f'Year {season.year}, Week {game.week}')
         print(game.date)
         print(game.season_section)

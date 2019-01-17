@@ -38,7 +38,6 @@ class Season (object):
 
 class SeasonFactory (object):
     def __init__(self, event_bus):
-        print('Season Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -54,16 +53,16 @@ class SeasonFactory (object):
 
 
 class SeasonRepository (object):
-    def add_season(self, season):
+    def add(self, season):
         raise NotImplementedError
 
-    def find_season(self, ID):
+    def find_by_ID(self, ID):
         raise NotImplementedError
         
-    def find_season_by_year(self, year):
+    def find_by_year(self, year):
         raise NotImplementedError
         
-    def all_seasons(self):
+    def all(self):
         raise NotImplementedError
         
 

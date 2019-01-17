@@ -61,7 +61,6 @@ class Affiliation (object):
 
 class AffiliationFactory (object):
     def __init__(self, event_bus):
-        print('Affiliation Factory')
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
@@ -77,16 +76,16 @@ class AffiliationFactory (object):
 
 
 class AffiliationRepository (object):
-    def add_affiliation(self, affiliation):
+    def add(self, affiliation):
         raise NotImplementedError
 
-    def find_affiliation(self, ID):
+    def find_by_ID(self, ID):
         raise NotImplementedError
         
-    def find_affiliation_by_season_team(self, season, team):
+    def find_by_season_team(self, season, team):
         raise NotImplementedError
         
-    def find_affiliations_by_season(self, season):
+    def find_by_season(self, season):
         raise NotImplementedError
 
 
