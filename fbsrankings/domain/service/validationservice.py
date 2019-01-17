@@ -4,18 +4,20 @@ from fbsrankings.domain import Subdivision
 
 
 class ValidationError (ValueError):
-    pass
-    
+    def __init__(self, message):
+        super().__init__(message)
+
 
 class MultipleValidationError (ValidationError):
     def __init__(self, errors):
-        ValidationError.__init__(self, 'Multiple validation errors have occurred. See the errors property for more details.')
+        def __init__(self):
+        super().__init__('Multiple validation errors have occurred. See the errors property for more details.')
         self.errors = errors
 
 
 class SeasonDataValidationError (ValidationError):
     def __init__(self, message, season_ID, attribute_name, attribute_value, expected_value):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.season_ID = season_ID
         self.attribute_name = attribute_name
         self.attribute_value = attribute_value
@@ -24,7 +26,7 @@ class SeasonDataValidationError (ValidationError):
 
 class TeamDataValidationError (ValidationError):
     def __init__(self, message, team_ID, attribute_name, attribute_value, expected_value):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.team_ID = team_ID
         self.attribute_name = attribute_name
         self.attribute_value = attribute_value
@@ -33,7 +35,7 @@ class TeamDataValidationError (ValidationError):
 
 class AffiliationDataValidationError (ValidationError):
     def __init__(self, message, affiliation_ID, attribute_name, attribute_value, expected_value):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.affiliation_ID = affiliation_ID
         self.attribute_name = attribute_name
         self.attribute_value = attribute_value
@@ -42,7 +44,7 @@ class AffiliationDataValidationError (ValidationError):
 
 class GameDataValidationError (ValidationError):
     def __init__(self, message, game_ID, attribute_name, attribute_value, expected_value):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.game_ID = game_ID
         self.attribute_name = attribute_name
         self.attribute_value = attribute_value
@@ -51,14 +53,14 @@ class GameDataValidationError (ValidationError):
 
 class DuplicateGameValidationError (ValidationError):
     def __init__(self, message, first_game_ID, second_game_ID):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.first_game_ID = first_game_ID
         self.second_game_ID = second_game_ID
 
 
 class FBSGameCountValidationError (ValidationError):
     def __init__(self, message, season_ID, team_ID, game_count):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.season_ID = season_ID
         self.team_ID = team_ID
         self.game_count = game_count
@@ -66,7 +68,7 @@ class FBSGameCountValidationError (ValidationError):
 
 class FCSGameCountValidationError (ValidationError):
     def __init__(self, message, season_ID, team_ID, game_count):
-        ValidationError.__init__(self, message)
+        super().__init__(message)
         self.season_ID = season_ID
         self.team_ID = team_ID
         self.game_count = game_count
