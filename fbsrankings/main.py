@@ -2,9 +2,8 @@ import csv
 import os
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Factory
 from fbsrankings.infrastructure import TeamNameMap
-from fbsrankings.infrastructure.local import Repository
+from fbsrankings.infrastructure.local import UnitOfWork
 from fbsrankings.application import Application
 
 
@@ -13,9 +12,8 @@ team_map_filename = os.path.join(data_directory, 'names.csv')
 team_name_map = TeamNameMap.from_csv_file(team_map_filename)
 
 event_bus = EventBus()
-factory = Factory(event_bus)
-repository = Repository()
-application = Application(factory, repository, team_name_map)
+unit_of_work = UnitOfWork(event_bus)
+application = Application(unit_of_work, team_name_map)
 
 index_csv_filename = os.path.join(data_directory, 'urls.csv')
 with open(index_csv_filename, 'r') as index_file:

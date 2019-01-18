@@ -1,8 +1,13 @@
+from fbsrankings.common import EventBus
 from fbsrankings.domain import TeamID, TeamRepository as BaseRepository
 
 
 class TeamRepository(BaseRepository):
-    def __init__(self):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
         self._team_id_dict = {}
         self._team_name_dict = {}
     

@@ -4,4 +4,4 @@ from fbsrankings.infrastructure.local.seasonrepository import SeasonRepository
 from fbsrankings.infrastructure.local.teamrepository import TeamRepository
 from fbsrankings.infrastructure.local.affiliationrepository import AffiliationRepository
 from fbsrankings.infrastructure.local.gamerepository import GameRepository
-from fbsrankings.infrastructure.local.repository import Repository
+from fbsrankings.infrastructure.local.unitofwork import UnitOfWork
