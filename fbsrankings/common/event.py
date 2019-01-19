@@ -6,6 +6,7 @@ class EventBus (object):
     def __init__(self):
         self._handlers = {}
         
+    @property
     def types(self):
         return self._handlers.keys()
         
@@ -35,4 +36,24 @@ class EventBus (object):
             
         for handler in self._handlers[type(event)]:
             handler(event)
+
+class EventRecorder (EventBus):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        self.events = []
         
+    @property
+    def types(self):
+        self._event_bus.types
+        
+    def register_type(self, event_type):
+        self._event_bus.register_type(event_type)
+        
+    def register_handler(self, event_type, handler):
+        self._event_bus.register_handler(handler)
+        
+    def raise_event(self, event):
+        self.events.append(event)
+        self._event_bus.raise_event(event)
