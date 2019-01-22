@@ -37,6 +37,7 @@ class EventBus (object):
         for handler in self._handlers[type(event)]:
             handler(event)
 
+
 class EventRecorder (EventBus):
     def __init__(self, event_bus):
         if not isinstance(event_bus, EventBus):
@@ -46,7 +47,7 @@ class EventRecorder (EventBus):
         
     @property
     def types(self):
-        self._event_bus.types
+        return self._event_bus.types
         
     def register_type(self, event_type):
         self._event_bus.register_type(event_type)

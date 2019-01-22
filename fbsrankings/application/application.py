@@ -1,8 +1,9 @@
 from enum import Enum
 
+from fbsrankings.common import EventBus, EventRecorder
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure import SportsReference
-from fbsrankings.infrastructure.local import UnitOfWork
+from fbsrankings.infrastructure.memory import UnitOfWorkFactory
 
 
 class SourceType (Enum):
@@ -11,16 +12,17 @@ class SourceType (Enum):
 
 
 class Application (object):
-    def __init__(self, unit_of_work, common_name_map):
-        if not isinstance(unit_of_work, UnitOfWork):
-            raise TypeError('unit_of_work must be of type UnitOfWork')
-        self._unit_of_work = unit_of_work
+    def __init__(self, unit_of_work_factory, common_name_map):
+        if not isinstance(unit_of_work_factory, UnitOfWorkFactory):
+            raise TypeError('unit_of_work_factory must be of type UnitOfWorkFactory')
+        self._unit_of_work_factory = unit_of_work_factory
         
         if common_name_map is not None:
             self._common_name_map = common_name_map
         else:
             self._common_name_map = {}
-            
+        
+        self.event_bus = EventBus()
         self.errors = []
             
     def import_season_csv_files(self, year, postseason_start_week, team_csv_file, game_csv_file):
@@ -30,7 +32,10 @@ class Application (object):
         self._import_season(SourceType.URL, year, postseason_start_week, team_url, game_url)
         
     def _import_season(self, source_type, year, postseason_start_week, team_source, game_source):
-        import_service = ImportService(self._unit_of_work.season_factory, self._unit_of_work.team_factory, self._unit_of_work.affiliation_factory, self._unit_of_work.game_factory, self._unit_of_work.season_repository, self._unit_of_work.team_repository, self._unit_of_work.affiliation_repository, self._unit_of_work.game_repository)
+        event_bus = EventRecorder(EventBus())
+        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        
+        import_service = ImportService(unit_of_work.factory, unit_of_work.repository)
         validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
         cancel_service = CancelService()
         
@@ -45,35 +50,54 @@ class Application (object):
             
         self.errors.extend(validation_service.errors)
         cancel_service.cancel_past_games(import_service.games)
+        
+        unit_of_work.commit()
+        
+        for event_type in event_bus.types:
+            self.event_bus.register_type(event_type)
+        
+        for event in event_bus.events:
+            self.event_bus.raise_event(event)
 
     def calculate_rankings(self, year):
         pass
         
     def print_results(self):
-        seasons = self._unit_of_work.season_repository.all()
+        event_bus = EventRecorder(EventBus())
+        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        
+        seasons = unit_of_work.repository.season.all()
         print(f'Total Seasons: {len(seasons)}')
         for season in seasons:
             print()
             print(f'{season.year} Season:')
     
-            affiliations = self._unit_of_work.affiliation_repository.find_by_season(season)
+            affiliations = unit_of_work.repository.affiliation.find_by_season(season)
             print(f'Total Teams: {len(affiliations)}')
             print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
             print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
     
-            games = self._unit_of_work.game_repository.find_by_season(season)
+            games = unit_of_work.repository.game.find_by_season(season)
             print(f'Total Games: {len(games)}')
         
-        print()
-        for game in self._unit_of_work.game_repository.all():
-            if game.status == GameStatus.CANCELED:
+        canceled_games = [game for game in unit_of_work.repository.game.all() if game.status == GameStatus.CANCELED]
+        if canceled_games:
+            print()
+            print('Canceled Game:')
+            for game in canceled_games:
                 print()
-                print('Canceled Game:')
-                self._print_game_summary(game)
-            elif game.status != GameStatus.COMPLETED:
+                self._print_game_summary(unit_of_work.repository, game)
+        
+        unknown_games = [game for game in unit_of_work.repository.game.all() if game.status != GameStatus.COMPLETED and game.status != GameStatus.CANCELED]
+        if unknown_games:
+            print()
+            print('Unknown Status:')
+            for game in unknown_games:
+                print()
+                self._print_game_summary(unit_of_work.repository, game)
                 
-                print('Unknown Status')
-                self._print_game_summary(game)
+        if event_bus.events:
+            raise ValueError('Domain should not have been modified during print_results')
         
     def print_errors(self):
         duplicate_game_errors = []
@@ -93,55 +117,61 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        if len(duplicate_game_errors) > 0:
+        event_bus = EventRecorder(EventBus())
+        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        
+        if duplicate_game_errors:
             print()
             print('Duplicate Games:')
             for error in duplicate_game_errors:
-                first_game = self._unit_of_work.game_repository.find_by_ID(error.first_game_ID)
+                first_game = unit_of_work.repository.game.find_by_ID(error.first_game_ID)
                 print()
-                self._print_game_summary(first_game)
-                second_game = self._unit_of_work.game_repository.find_by_ID(error.second_game_ID)
+                self._print_game_summary(unit_of_work.repository, first_game)
+                second_game = unit_of_work.repository.game.find_by_ID(error.second_game_ID)
                 print()
-                self._print_game_summary(second_game)
+                self._print_game_summary(unit_of_work.repository, second_game)
 
-        if len(fbs_team_errors) > 0:
+        if fbs_team_errors:
             print()
             print('FBS teams with too few games:')
             for error in fbs_team_errors:
-                season = self._unit_of_work.season_repository.find_by_ID(error.season_ID)
-                team = self._unit_of_work.team_repository.find_by_ID(error.team_ID)
+                season = unit_of_work.repository.season.find_by_ID(error.season_ID)
+                team = unit_of_work.repository.team.find_by_ID(error.team_ID)
                 print()
                 print(f'{season.year} {team.name}: {error.game_count}')
                 
-        if len(fcs_team_errors) > 0:
+        if fcs_team_errors:
             print()
             print('FCS teams with too many games:')
             for error in fcs_team_errors:
-                season = self._unit_of_work.season_repository.find_by_ID(error.season_ID)
-                team = self._unit_of_work.team_repository.find_by_ID(error.team_ID)
+                season = unit_of_work.repository.season.find_by_ID(error.season_ID)
+                team = unit_of_work.repository.team.find_by_ID(error.team_ID)
                 print()
                 print(f'{season.year} {team.name}: {error.game_count}')
                 
-        if len(game_errors) > 0:
+        if game_errors:
             print()
             print('Game errors:')
             for error in game_errors:
-                game = self._unit_of_work.game_repository.find_by_ID(error.game_ID)
+                game = unit_of_work.repository.game.find_by_ID(error.game_ID)
                 
                 print()
-                self._print_game_summary(game)
+                self._print_game_summary(unit_of_work.repository, game)
                 print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
 
-        if len(other_errors) > 0:
+        if other_errors:
             print()
             print('Other Errors:')
             for error in other_errors:
                 print(error)
+                
+        if event_bus.events:
+            raise ValueError('Domain should not have been modified during print_errors')
 
-    def _print_game_summary(self, game):
-        season = self._unit_of_work.season_repository.find_by_ID(game.season_ID)
-        home_team = self._unit_of_work.team_repository.find_by_ID(game.home_team_ID)
-        away_team = self._unit_of_work.team_repository.find_by_ID(game.away_team_ID)
+    def _print_game_summary(self, repository, game):
+        season = repository.season.find_by_ID(game.season_ID)
+        home_team = repository.team.find_by_ID(game.home_team_ID)
+        away_team = repository.team.find_by_ID(game.away_team_ID)
         print(f'Year {season.year}, Week {game.week}')
         print(game.date)
         print(game.season_section)

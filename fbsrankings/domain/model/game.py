@@ -141,6 +141,11 @@ class Game (object):
     def notes(self):
         return self._notes
         
+    def copy(self, event_bus=None):
+        if event_bus is None:
+            event_bus = self._event_bus
+        return Game(event_bus, self.ID, self.season_ID, self.week, self.date, self.season_section, self.home_team_ID, self.away_team_ID, self.home_team_score, self.away_team_score, self.status, self.notes)
+        
     def reschedule(self, week, date_):
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError('Game can only be rescheduled if it is still scheduled', self.ID, self.status)

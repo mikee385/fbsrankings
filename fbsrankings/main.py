@@ -3,7 +3,7 @@ import os
 
 from fbsrankings.common import EventBus
 from fbsrankings.infrastructure import TeamNameMap
-from fbsrankings.infrastructure.local import UnitOfWork
+from fbsrankings.infrastructure.memory import DataStore, UnitOfWorkFactory
 from fbsrankings.application import Application
 
 
@@ -12,8 +12,9 @@ team_map_filename = os.path.join(data_directory, 'names.csv')
 team_name_map = TeamNameMap.from_csv_file(team_map_filename)
 
 event_bus = EventBus()
-unit_of_work = UnitOfWork(event_bus)
-application = Application(unit_of_work, team_name_map)
+data_store = DataStore(event_bus)
+uow_factory = UnitOfWorkFactory(data_store)
+application = Application(uow_factory, team_name_map)
 
 index_csv_filename = os.path.join(data_directory, 'urls.csv')
 with open(index_csv_filename, 'r') as index_file:
@@ -38,5 +39,4 @@ with open(index_csv_filename, 'r') as index_file:
 
     print()
     application.print_results()
-    print()
     application.print_errors()

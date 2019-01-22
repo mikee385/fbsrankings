@@ -1,8 +1,8 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, AffiliationID, AffiliationRepository as BaseRepository
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, AffiliationRegisteredEvent
 
 
-class AffiliationRepository (BaseRepository):
+class AffiliationDataStore (BaseRepository):
     def __init__(self, event_bus):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
@@ -12,6 +12,10 @@ class AffiliationRepository (BaseRepository):
         self._affiliation_season_dict = {}
     
     def add(self, affiliation):
+        if not isinstance(affiliation, Affiliation):
+            raise TypeError('affiliation must be of type Affiliation')
+            
+        affiliation = affiliation.copy(self._event_bus)
         self._affiliation_id_dict[affiliation.ID] = affiliation
         
         season_dict = self._affiliation_season_dict.get(affiliation.season_ID)
@@ -57,3 +61,37 @@ class AffiliationRepository (BaseRepository):
         if season_dict is None:
             return None
         return list(season_dict.values())
+        
+
+class AffiliationRepository (BaseRepository):
+    def __init__(self, data_store, event_bus):
+        if not isinstance(data_store, AffiliationDataStore):
+            raise TypeError('data_store must be of type AffiliationDataStore')
+        self._data_store = data_store
+        
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+    def add(self, affiliation):
+        # Handled through events
+        pass
+
+    def find_by_ID(self, ID):
+        return self._copy(self._data_store.find_by_ID(ID))
+        
+    def find_by_season_team(self, season, team):
+        return self._copy(self._data_store.find_by_season_team(season, team))
+        
+    def find_by_season(self, season):
+        return [self._copy(item) for item in self._data_store.find_by_season(season)]
+        
+    def _copy(self, affiliation):
+        return affiliation.copy(self._event_bus) if affiliation is not None else None
+        
+    def try_handle_event(self, event):
+        if isinstance(event, AffiliationRegisteredEvent):
+            self._data_store.add(Affiliation(self._event_bus, event.ID, event.season_ID, event.team_ID, event.subdivision))
+            return True
+        else:
+            return False

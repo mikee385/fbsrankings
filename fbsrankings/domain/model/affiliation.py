@@ -57,6 +57,11 @@ class Affiliation (object):
     @property
     def subdivision(self):
         return self._subdivision
+        
+    def copy(self, event_bus=None):
+        if event_bus is None:
+            event_bus = self._event_bus
+        return Affiliation(event_bus, self.ID, self.season_ID, self.team_ID, self.subdivision)
 
 
 class AffiliationFactory (object):
