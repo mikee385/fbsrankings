@@ -3,7 +3,7 @@ from enum import Enum
 from fbsrankings.common import EventBus, EventRecorder
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure import SportsReference
-from fbsrankings.infrastructure.memory import UnitOfWorkFactory
+from fbsrankings.infrastructure import UnitOfWorkFactory
 
 
 class SourceType (Enum):
