@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameStatus, GameRepository as BaseRepository, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent
+from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameRepository as BaseRepository, GameStatus, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent
 
 
 class GameDataStore (BaseRepository):
