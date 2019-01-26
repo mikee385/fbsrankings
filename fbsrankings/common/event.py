@@ -58,3 +58,29 @@ class EventRecorder (EventBus):
     def raise_event(self, event):
         self.events.append(event)
         self._event_bus.raise_event(event)
+        
+
+class EventCounter (EventBus):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        self.counts = {}
+        
+    @property
+    def types(self):
+        return self._event_bus.types
+        
+    def register_type(self, event_type):
+        self._event_bus.register_type(event_type)
+        
+    def register_handler(self, event_type, handler):
+        self._event_bus.register_handler(handler)
+        
+    def raise_event(self, event):
+        count = self.counts.get(type(event))
+        if count is None:
+            self.counts[type(event)] = 1
+        else:
+            self.counts[type(event)] += 1
+        self._event_bus.raise_event(event)
