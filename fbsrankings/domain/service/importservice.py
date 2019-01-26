@@ -79,7 +79,7 @@ class ImportService (object):
             
         game = self._games.get(key)
         if game is None:
-            self._repository.game.find_by_season_teams(season_ID, season_section, week, home_team_ID, away_team_ID)
+            game = self._repository.game.find_by_season_teams(season_ID, season_section, week, home_team_ID, away_team_ID)
             if game is None:
                 game = self._factory.game.schedule(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
                 self._repository.game.add(game)
