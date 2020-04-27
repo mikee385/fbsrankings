@@ -34,16 +34,13 @@ class GameDataStore (BaseRepository):
             raise TypeError('ID must be of type GameID')
         return self._game_id_dict.get(ID)
 
-    def find_by_season_teams(self, season, season_section, week, team1, team2):
+    def find_by_season_teams(self, season, week, team1, team2):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
             season_ID = season
         else:
             raise TypeError('season must be of type Season or SeasonID')
-            
-        if not isinstance(season_section, SeasonSection):
-            raise TypeError('season_section must be of type SeasonSection')
         
         if isinstance(team1, Team):
             team1_ID = team1.ID
@@ -59,7 +56,7 @@ class GameDataStore (BaseRepository):
         else:
             raise TypeError('team2 must be of type Team or TeamID')
             
-        key = self._get_key(season_ID, season_section, week, team1_ID, team2_ID)
+        key = self._get_key(season_ID, week, team1_ID, team2_ID)
         return self._game_team_dict.get(key)
         
     def find_by_season(self, season):
@@ -78,11 +75,11 @@ class GameDataStore (BaseRepository):
     def all(self):
         return self._game_id_dict.values()
         
-    def _get_key(self, season_ID, season_section, week, team1_ID, team2_ID):
+    def _get_key(self, season_ID, week, team1_ID, team2_ID):
         if team1_ID < team2_ID:
-            return (season_ID, season_section, week, team1_ID, team2_ID)
+            return (season_ID, week, team1_ID, team2_ID)
         else:
-            return (season_ID, season_section, week, team2_ID, team1_ID)
+            return (season_ID, week, team2_ID, team1_ID)
         
 
 class GameRepository (BaseRepository):
@@ -98,8 +95,8 @@ class GameRepository (BaseRepository):
     def find_by_ID(self, ID):
         return self._copy(self._data_store.find_by_ID(ID))
         
-    def find_by_season_teams(self, season, season_section, week, team1, team2):
-        return self._copy(self._data_store.find_by_season_teams(season, season_section, week, team1, team2))
+    def find_by_season_teams(self, season, week, team1, team2):
+        return self._copy(self._data_store.find_by_season_teams(season, week, team1, team2))
         
     def find_by_season(self, season):
         return [self._copy(item) for item in self._data_store.find_by_season(season)]

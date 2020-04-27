@@ -72,7 +72,7 @@ class GameRepository (BaseRepository):
         row = cursor.fetchone()
         return self._game_from_row(row)
         
-    def find_by_season_teams(self, season, season_section, week, team1, team2):
+    def find_by_season_teams(self, season, week, team1, team2):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):

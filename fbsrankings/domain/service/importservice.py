@@ -70,13 +70,13 @@ class ImportService (object):
         
     def import_game(self, season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes):
         if home_team_ID < away_team_ID:
-            key = (season_ID, season_section, week, home_team_ID, away_team_ID)
+            key = (season_ID, week, home_team_ID, away_team_ID)
         else:
-            key = (season_ID, season_section, week, away_team_ID, home_team_ID)
+            key = (season_ID, week, away_team_ID, home_team_ID)
             
         game = self._games.get(key)
         if game is None:
-            game = self._repository.game.find_by_season_teams(season_ID, season_section, week, home_team_ID, away_team_ID)
+            game = self._repository.game.find_by_season_teams(season_ID, week, home_team_ID, away_team_ID)
             if game is None:
                 game = self._factory.game.schedule(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
             self._games[key] = game
