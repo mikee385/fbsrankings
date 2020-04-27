@@ -186,6 +186,9 @@ class SportsReference (object):
                 if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
                     game.complete(home_team_score, away_team_score)
                 
+                if game.notes != notes:
+                    game.update_notes(notes)
+                
                 if self._validation_service is not None:
                     self._validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
         

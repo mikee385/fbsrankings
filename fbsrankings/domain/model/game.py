@@ -152,15 +152,13 @@ class Game (object):
         
         if not isinstance(week, int):
             raise TypeError('week must be of type int')
+        old_week = self._week
         self._week = week
             
         if not isinstance(date_, date):
             raise TypeError('date_ must be of type date')
+        old_date = self._date
         self._date = date_
-        
-        old_week = self.week
-        old_date = self.date
-        
         self._event_bus.raise_event(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
         
     def cancel(self):
@@ -209,7 +207,14 @@ class Game (object):
             self._winning_team_score = None
             self._losing_team_ID = None
             self._losing_team_score = None
-            
+
+    def update_notes(self, notes):
+        if not isinstance(notes, str):
+            raise TypeError('notes must be of type str')
+        old_notes = self._notes
+        self._notes = notes
+        
+        self._event_bus.raise_event(GameNotesUpdatedEvent(self.ID, old_notes, notes))
 
 class GameFactory (object):
     def __init__(self, event_bus):
@@ -221,6 +226,7 @@ class GameFactory (object):
         self._event_bus.register_type(GameRescheduledEvent)
         self._event_bus.register_type(GameCanceledEvent)
         self._event_bus.register_type(GameCompletedEvent)
+        self._event_bus.register_type(GameNotesUpdatedEvent)
         
     def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
@@ -275,3 +281,10 @@ class GameCompletedEvent (Event):
         self.ID = ID
         self.home_team_score = home_team_score
         self.away_team_score = away_team_score
+        
+
+class GameNotesUpdatedEvent (Event):
+    def __init__(self, ID, old_notes, notes):
+        self.ID = ID
+        self.old_notes = old_notes
+        self.notes = notes

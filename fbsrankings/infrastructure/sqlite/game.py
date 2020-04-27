@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameStatus, GameRepository as BaseRepository, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent
+from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameStatus, GameRepository as BaseRepository, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
 
 
 class GameStatusTable (object):
@@ -145,6 +145,10 @@ class GameRepository (BaseRepository):
         elif isinstance(event, GameCompletedEvent):
             cursor = self._connection.cursor()
             cursor.execute(f'UPDATE {self._table} SET HomeTeamScore=?, AwayTeamScore=?, Status=? WHERE UUID=?', [event.home_team_score, event.away_team_score, GameStatus.COMPLETED.name, str(event.ID.value)])
+            return True
+        elif isinstance(event, GameNotesUpdatedEvent):
+            cursor = self._connection.cursor()
+            cursor.execute(f'UPDATE {self._table} SET Notes=? WHERE UUID=?', [event.notes, str(event.ID.value)])
             return True
         else:
             return False

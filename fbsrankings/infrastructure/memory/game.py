@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameRepository as BaseRepository, GameStatus, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent
+from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID, Game, GameID, GameRepository as BaseRepository, GameStatus, GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
 
 
 class GameDataStore (BaseRepository):
@@ -123,5 +123,10 @@ class GameRepository (BaseRepository):
             game = self._data_store.find_by_ID(event.ID)
             game.complete(event.home_team_score, event.away_team_score)
             return True
+        elif isinstance(event, GameNotesUpdatedEvent):
+            game = self._data_store.find_by_ID(event.ID)
+            game.update_notes(event.notes)
+            return True
+        elif isinstance(event
         else:
             return False
