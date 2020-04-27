@@ -1,7 +1,7 @@
 from enum import Enum
 
 from fbsrankings.common import EventBus, EventRecorder
-from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, DuplicateGameValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure import SportsReference
 from fbsrankings.infrastructure import UnitOfWorkFactory
 
@@ -83,7 +83,7 @@ class Application (object):
         canceled_games = [game for game in unit_of_work.repository.game.all() if game.status == GameStatus.CANCELED]
         if canceled_games:
             print()
-            print('Canceled Game:')
+            print('Canceled Games:')
             for game in canceled_games:
                 print()
                 self._print_game_summary(unit_of_work.repository, game)
@@ -100,15 +100,12 @@ class Application (object):
             raise ValueError('Domain should not have been modified during print_results')
         
     def print_errors(self):
-        duplicate_game_errors = []
         fbs_team_errors = []
         fcs_team_errors = []
         game_errors = []
         other_errors = []
         for error in self.errors:
-            if isinstance(error, DuplicateGameValidationError):
-                duplicate_game_errors.append(error)
-            elif isinstance(error, FBSGameCountValidationError):
+            if isinstance(error, FBSGameCountValidationError):
                 fbs_team_errors.append(error)
             elif isinstance(error, FCSGameCountValidationError):
                 fcs_team_errors.append(error)
@@ -120,17 +117,6 @@ class Application (object):
         event_bus = EventRecorder(EventBus())
         unit_of_work = self._unit_of_work_factory.create(event_bus)
         
-        if duplicate_game_errors:
-            print()
-            print('Duplicate Games:')
-            for error in duplicate_game_errors:
-                first_game = unit_of_work.repository.game.find_by_ID(error.first_game_ID)
-                print()
-                self._print_game_summary(unit_of_work.repository, first_game)
-                second_game = unit_of_work.repository.game.find_by_ID(error.second_game_ID)
-                print()
-                self._print_game_summary(unit_of_work.repository, second_game)
-
         if fbs_team_errors:
             print()
             print('FBS teams with too few games:')
@@ -151,7 +137,7 @@ class Application (object):
                 
         if game_errors:
             print()
-            print('Game errors:')
+            print('Game Errors:')
             for error in game_errors:
                 game = unit_of_work.repository.game.find_by_ID(error.game_ID)
                 

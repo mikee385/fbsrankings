@@ -50,13 +50,6 @@ class GameDataValidationError (ValidationError):
         self.expected_value = expected_value
 
 
-class DuplicateGameValidationError (ValidationError):
-    def __init__(self, message, first_game_ID, second_game_ID):
-        super().__init__(message)
-        self.first_game_ID = first_game_ID
-        self.second_game_ID = second_game_ID
-
-
 class FBSGameCountValidationError (ValidationError):
     def __init__(self, message, season_ID, team_ID, game_count):
         super().__init__(message)
@@ -132,17 +125,7 @@ class ValidationService (object):
             else:
                 self._handle_error(AffiliationDataValidationError(f'Unknown subdivision: {affiliation.subdivision}', affiliation.ID, 'subdivision', affiliation.subdivision, None))
         
-        game_keys = {}
         for game in games:
-            if game.home_team_ID < game.away_team_ID:
-                key = (game.season_ID, game.season_section, game.home_team_ID, game.away_team_ID)
-            else:
-                key = (game.season_ID, game.season_section, game.away_team_ID, game.home_team_ID)
-            if key in game_keys:
-                self._handle_error(DuplicateGameValidationError('Duplicate games detected', game_keys[key].ID, game.ID))
-            else:
-                game_keys[key] = game
-                
             if game.home_team_ID in fbs_game_counts:
                 fbs_game_counts[game.home_team_ID] += 1
             elif game.home_team_ID in fcs_game_counts:
