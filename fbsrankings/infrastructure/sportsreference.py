@@ -178,8 +178,6 @@ class SportsReference (object):
                 
                 if (week >= postseason_start_week):
                     season_section = SeasonSection.POSTSEASON
-                elif 'Championship' in notes:
-                    season_section = SeasonSection.CONFERENCE_CHAMPIONSHIP
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
