@@ -50,9 +50,6 @@ class TeamFactory (object):
 
 
 class TeamRepository (object):
-    def add(self, team):
-        raise NotImplementedError
-
     def find_by_ID(self, ID):
         raise NotImplementedError
         

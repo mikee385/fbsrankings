@@ -81,9 +81,6 @@ class AffiliationFactory (object):
 
 
 class AffiliationRepository (object):
-    def add(self, affiliation):
-        raise NotImplementedError
-
     def find_by_ID(self, ID):
         raise NotImplementedError
         

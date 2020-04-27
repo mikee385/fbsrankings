@@ -231,9 +231,6 @@ class GameFactory (object):
 
 
 class GameRepository (object):
-    def add(self, game):
-        raise NotImplementedError
-
     def find_by_ID(self, ID):
         raise NotImplementedError
         

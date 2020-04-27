@@ -44,10 +44,6 @@ class SeasonRepository (BaseRepository):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
-        
-    def add(self, season):
-        # Handled through events
-        pass
 
     def find_by_ID(self, ID):
         return self._copy(self._data_store.find_by_ID(ID))

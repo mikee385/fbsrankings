@@ -52,10 +52,6 @@ class SeasonRepository (BaseRepository):
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self._table} 
             (UUID TEXT NOT NULL UNIQUE,
              Year INT  NOT NULL UNIQUE);''')
-             
-    def add(self, season):
-        # Handled through events
-        pass
 
     def find_by_ID(self, ID):
         if not isinstance(ID, SeasonID):

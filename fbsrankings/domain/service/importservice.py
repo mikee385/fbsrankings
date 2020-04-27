@@ -40,7 +40,6 @@ class ImportService (object):
             season = self._repository.season.find_by_year(year)
             if season is None:
                 season = self._factory.season.register(year)
-                self._repository.season.add(season)
             self._seasons[key] = season
             
         return season
@@ -53,7 +52,6 @@ class ImportService (object):
             team = self._repository.team.find_by_name(name)
             if team is None:
                 team = self._factory.team.register(name)
-                self._repository.team.add(team)
             self._teams[key] = team
             
         return team
@@ -66,7 +64,6 @@ class ImportService (object):
             affiliation = self._repository.affiliation.find_by_season_team(season_ID, team_ID)
             if affiliation is None:
                 affiliation = self._factory.affiliation.register(season_ID, team_ID, subdivision)
-                self._repository.affiliation.add(affiliation)
             self._affiliations[key] = affiliation
             
         return affiliation
@@ -82,7 +79,6 @@ class ImportService (object):
             game = self._repository.game.find_by_season_teams(season_ID, season_section, week, home_team_ID, away_team_ID)
             if game is None:
                 game = self._factory.game.schedule(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
-                self._repository.game.add(game)
             self._games[key] = game
             
         return game

@@ -54,10 +54,6 @@ class AffiliationRepository (BaseRepository):
              SeasonID TEXT NOT NULL REFERENCES season(UUID),
              TeamID TEXT NOT NULL REFERENCES team(UUID),
              Subdivision TEXT NOT NULL REFERENCES subdivision(Name), UNIQUE(SeasonID, TeamID));''')
-        
-    def add(self, affiliation):
-        # Handled through events
-        pass
 
     def find_by_ID(self, ID):
         if not isinstance(ID, AffiliationID):

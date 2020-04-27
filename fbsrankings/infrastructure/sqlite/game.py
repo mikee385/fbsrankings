@@ -62,10 +62,6 @@ class GameRepository (BaseRepository):
              AwayTeamScore INT NULL,
              Status TEXT NOT NULL REFERENCES gamestatus(Name),
              Notes TEXT NOT NULL, UNIQUE(SeasonID, Week, HomeTeamID, AwayTeamID));''')
-        
-    def add(self, game):
-        # Handled through events
-        pass
 
     def find_by_ID(self, ID):
         if not isinstance(ID, GameID):

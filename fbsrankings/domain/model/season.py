@@ -58,9 +58,6 @@ class SeasonFactory (object):
 
 
 class SeasonRepository (object):
-    def add(self, season):
-        raise NotImplementedError
-
     def find_by_ID(self, ID):
         raise NotImplementedError
         

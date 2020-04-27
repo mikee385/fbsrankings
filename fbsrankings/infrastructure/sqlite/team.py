@@ -22,10 +22,6 @@ class TeamRepository (BaseRepository):
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self._table}
             (UUID TEXT NOT NULL UNIQUE,
              Name TEXT NOT NULL UNIQUE);''')
-        
-    def add(self, team):
-        # Handled through events
-        pass
 
     def find_by_ID(self, ID):
         if not isinstance(ID, TeamID):
