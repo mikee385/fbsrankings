@@ -3,11 +3,11 @@ import os
 import sqlite3
 
 from fbsrankings.infrastructure import TeamNameMap
-from fbsrankings.infrastructure.sqlite import UnitOfWorkFactory
+from fbsrankings.infrastructure.sqlite import DataStore
 from fbsrankings.application import Application
 
 
-data_directory = 'fbsrankings/data'
+data_directory = os.path.join('fbsrankings', 'data')
 team_map_filename = os.path.join(data_directory, 'names.csv')
 team_name_map = TeamNameMap.from_csv_file(team_map_filename)
 
@@ -16,8 +16,8 @@ connection = sqlite3.connect(db_filename)
 try:
     connection.execute('PRAGMA foreign_keys = ON')
     
-    uow_factory = UnitOfWorkFactory(connection)
-    application = Application(uow_factory, team_name_map)
+    data_store = DataStore(connection)
+    application = Application(data_store, team_name_map)
 
     index_csv_filename = os.path.join(data_directory, 'urls.csv')
     with open(index_csv_filename, 'r') as index_file:

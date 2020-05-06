@@ -12,10 +12,10 @@ class SourceType (Enum):
 
 
 class Application (object):
-    def __init__(self, unit_of_work_factory, common_name_map):
-        if not isinstance(unit_of_work_factory, UnitOfWorkFactory):
-            raise TypeError('unit_of_work_factory must be of type UnitOfWorkFactory')
-        self._unit_of_work_factory = unit_of_work_factory
+    def __init__(self, data_store, common_name_map):
+        if not isinstance(data_store, UnitOfWorkFactory):
+            raise TypeError('data_store must be of type UnitOfWorkFactory')
+        self._data_store = data_store
         
         if common_name_map is not None:
             self._common_name_map = common_name_map
@@ -32,8 +32,7 @@ class Application (object):
         self._import_season(SourceType.URL, year, postseason_start_week, team_url, game_url)
         
     def _import_season(self, source_type, year, postseason_start_week, team_source, game_source):
-        event_bus = EventRecorder(EventBus())
-        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        unit_of_work = self._data_store.unit_of_work(self.event_bus)
         
         import_service = ImportService(unit_of_work.factory, unit_of_work.repository)
         validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
@@ -52,19 +51,13 @@ class Application (object):
         cancel_service.cancel_past_games(import_service.games)
         
         unit_of_work.commit()
-        
-        for event_type in event_bus.types:
-            self.event_bus.register_type(event_type)
-        
-        for event in event_bus.events:
-            self.event_bus.raise_event(event)
 
     def calculate_rankings(self, year):
         pass
         
     def print_results(self):
         event_bus = EventRecorder(EventBus())
-        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        unit_of_work = self._data_store.unit_of_work(event_bus)
         
         seasons = unit_of_work.repository.season.all()
         print(f'Total Seasons: {len(seasons)}')
@@ -115,7 +108,7 @@ class Application (object):
                 other_errors.append(error)
 
         event_bus = EventRecorder(EventBus())
-        unit_of_work = self._unit_of_work_factory.create(event_bus)
+        unit_of_work = self._data_store.unit_of_work(event_bus)
         
         if fbs_team_errors:
             print()

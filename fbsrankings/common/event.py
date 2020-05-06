@@ -58,6 +58,9 @@ class EventRecorder (EventBus):
     def raise_event(self, event):
         self.events.append(event)
         self._event_bus.raise_event(event)
+
+    def clear(self):
+        self.events = []
         
 
 class EventCounter (EventBus):
@@ -84,3 +87,6 @@ class EventCounter (EventBus):
         else:
             self.counts[type(event)] += 1
         self._event_bus.raise_event(event)
+
+    def clear(self):
+        self.counts = {}
