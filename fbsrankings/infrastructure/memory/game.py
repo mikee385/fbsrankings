@@ -127,6 +127,5 @@ class GameRepository (BaseRepository):
             game = self._data_store.find_by_ID(event.ID)
             game.update_notes(event.notes)
             return True
-        elif isinstance(event
         else:
             return False
