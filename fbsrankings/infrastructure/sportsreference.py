@@ -3,64 +3,93 @@ from datetime import datetime
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, Tag
 
-from fbsrankings.domain import SeasonSection, Subdivision, GameStatus, ImportService, ValidationService
+from fbsrankings.domain import SeasonSection, Subdivision, GameStatus, ImportService, ValidationService, CancelService
+
+
+class SeasonSource:
+    def __init__(self, postseason_start_week, source_type, team_source, game_source):
+        self.postseason_start_week = postseason_start_week
+        self.source_type = source_type
+        self.team_source = team_source
+        self.game_source = game_source
 
 
 class SportsReference (object):
-    def __init__(self, import_service, validation_service, common_name_map):
+    def __init__(self, alternate_names):        
+        if alternate_names is not None:
+            self._alternate_names = alternate_names
+        else:
+            self._alternate_names = {}
+
+        self._season_sources = {}
+
+    def add_season_source(self, year, postseason_start_week, source_type, team_source, game_source):
+        self._season_sources[year] = SeasonSource(postseason_start_week, source_type, team_source, game_source)
+
+    def import_season(self, year, import_service, validation_service, cancel_service):
         if not isinstance(import_service, ImportService):
             raise TypeError('import_service must be of type ImportService')
-        self._import_service = import_service
         
         if validation_service is not None and not isinstance(validation_service, ValidationService):
             raise TypeError('validation_service must be of type ValidationService')
-        self._validation_service = validation_service
         
-        if common_name_map is not None:
-            self._common_name_map = common_name_map
+        if cancel_service is not None and not isinstance(cancel_service, CancelService):
+            raise TypeError('cancel_service must be of type CancelService')
+
+        season_source = self._season_sources.get(year)
+        if season_source is None:
+            raise ValueError(f'Season data is not available for {year}')
+
+        if season_source.source_type == 'CSV':
+            self._import_season_from_csv_files(year, season_source.postseason_start_week, season_source.team_source, season_source.game_source, import_service, validation_service)
+        elif season_source.source_type == 'URL':
+            self._import_season_from_urls(year, season_source.postseason_start_week, season_source.team_source, season_source.game_source, import_service, validation_service)
         else:
-            self._common_name_map = {}
+            raise ValueError(f'Unknown source type: {season_source.source_type}')
         
-    def import_season_urls(self, year, postseason_start_week, team_url, game_url):
-        self.import_team_url(year, team_url)
-        self.import_game_url(year, postseason_start_week, game_url)
+        if cancel_service is not None:
+            cancel_service.cancel_past_games(import_service.games)
         
-    def import_season_csv_files(self, year, postseason_start_week, team_filename, game_filename):
-        self.import_team_csv_file(year, team_filename)
-        self.import_game_csv_file(year, postseason_start_week, game_filename)
+    def _import_season_from_urls(self, year, postseason_start_week, team_url, game_url, import_service, validation_service):
+        self._import_teams_from_url(year, team_url, import_service, validation_service)
+        self._import_games_from_url(year, postseason_start_week, game_url, import_service, validation_service)
         
-    def import_season_readers(self, year, postseason_start_week, team_reader, game_reader):
-        self.import_team_reader(year, team_reader)
-        self.import_game_reader(year, postseason_start_week, game_reader)
+    def _import_season_from_csv_files(self, year, postseason_start_week, team_filename, game_filename, import_service, validation_service):
+        self._import_teams_from_csv_file(year, team_filename, import_service, validation_service)
+        self._import_games_from_csv_file(year, postseason_start_week, game_filename, import_service, validation_service)
         
-    def import_team_url(self, year, url):
+    def _import_season_from_readers(self, year, postseason_start_week, team_reader, game_reader, import_service, validation_service):
+        self._import_teams_from_reader(year, team_reader, import_service, validation_service)
+        self._import_games_from_reader(year, postseason_start_week, game_reader, import_service, validation_service)
+        
+    def _import_teams_from_url(self, year, url, import_service, validation_service):
         html = urlopen(url)
         soup = BeautifulSoup(html, "html5lib")
-        self.import_team_rows(year, _html_iter(soup))
+        self._import_teams_from_rows(year, _html_iter(soup), import_service, validation_service)
         
-    def import_team_csv_file(self, year, filename):
+    def _import_teams_from_csv_file(self, year, filename, import_service, validation_service):
         with open(filename, 'r') as file:
-            self.import_team_reader(year, csv.reader(file))
+            self._import_teams_from_reader(year, csv.reader(file), import_service, validation_service)
         
-    def import_team_reader(self, year, reader):
-        self.import_team_rows(year, iter(reader))
+    def _import_teams_from_reader(self, year, reader):
+        self._import_teams_from_rows(year, iter(reader), import_service, validation_service)
         
-    def import_game_url(self, year, postseason_start_week, url):
+    def _import_games_from_url(self, year, postseason_start_week, url, import_service, validation_service):
         html = urlopen(url)
         soup = BeautifulSoup(html, "html5lib")
-        self.import_game_rows(year, postseason_start_week, _html_iter(soup))
+        self._import_games_from_rows(year, postseason_start_week, _html_iter(soup), import_service, validation_service)
 
-    def import_game_csv_file(self, year, postseason_start_week, filename):
+    def _import_games_from_csv_file(self, year, postseason_start_week, filename, import_service, validation_service):
         with open(filename, 'r') as file:
-            self.import_game_reader(year, postseason_start_week, csv.reader(file))
+            self._import_games_from_reader(year, postseason_start_week, csv.reader(file), import_service, validation_service)
         
-    def import_game_reader(self, year, postseason_start_week, reader):
-        self.import_game_rows(year, postseason_start_week, iter(reader))
+    def _import_games_from_reader(self, year, postseason_start_week, reader, import_service, validation_service):
+        self._import_games_from_rows(year, postseason_start_week, iter(reader), import_service, validation_service)
 
-    def import_team_rows(self, year, row_iter):
-        season = self._import_service.import_season(year)
-        if self._validation_service is not None:
-            self._validation_service.validate_season_data(season, year)
+    def _import_teams_from_rows(self, year, row_iter, import_service, validation_service):
+        season = import_service.import_season(year)
+        if validation_service is not None:
+            validation_service.validate_season_data(season, year)
         
         header_row = next(row_iter)
         if header_row[0] == '':
@@ -72,19 +101,19 @@ class SportsReference (object):
         for row in row_iter:
             if row[rank_index].isdigit():
                 name = row[name_index].strip()
-                if name in self._common_name_map:
-                    name = self._common_name_map[name]
-                team = self._import_service.import_team(name)
-                affiliation = self._import_service.import_affiliation(season.ID, team.ID, Subdivision.FBS)
+                if name in self._alternate_names:
+                    name = self._alternate_names[name]
+                team = import_service.import_team(name)
+                affiliation = import_service.import_affiliation(season.ID, team.ID, Subdivision.FBS)
                 
-                if self._validation_service is not None:
-                    self._validation_service.validate_team_data(team, name)
-                    self._validation_service.validate_affiliation_data(affiliation, season.ID, team.ID, affiliation.subdivision)
+                if validation_service is not None:
+                    validation_service.validate_team_data(team, name)
+                    validation_service.validate_affiliation_data(affiliation, season.ID, team.ID, affiliation.subdivision)
         
-    def import_game_rows(self, year, postseason_start_week, row_iter):
-        season = next((s for s in self._import_service.seasons if s.year == year), None)
+    def _import_games_from_rows(self, year, postseason_start_week, row_iter, import_service, validation_service):
+        season = next((s for s in import_service.seasons if s.year == year), None)
         if season is None:
-            season = self._import_service._season_repository.find_by_year(year)
+            season = import_service._season_repository.find_by_year(year)
             if season is None:
                 raise ValueError(f'Teams for season {year} must be imported before games can be imported')
             
@@ -128,8 +157,8 @@ class SportsReference (object):
                     start = first_team_name.find(')')
                     first_team_name = first_team_name[start + 2:].strip()
                 
-                if first_team_name in self._common_name_map:
-                    first_team_name = self._common_name_map[first_team_name]
+                if first_team_name in self._alternate_names:
+                    first_team_name = self._alternate_names[first_team_name]
                 
                 if first_score_string == '':
                     first_score = None
@@ -140,8 +169,8 @@ class SportsReference (object):
                     start = second_team_name.find(')')
                     second_team_name = second_team_name[start + 2:].strip()
                     
-                if second_team_name in self._common_name_map:
-                    second_team_name = self._common_name_map[second_team_name]
+                if second_team_name in self._alternate_names:
+                    second_team_name = self._alternate_names[second_team_name]
                     
                 if second_score_string == '':
                     second_score = None
@@ -161,18 +190,18 @@ class SportsReference (object):
                 else:
                     raise ValueError(f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}')
                         
-                home_team = self._import_service.import_team(home_team_name)
-                home_team_affiliation = self._import_service.import_affiliation(season.ID, home_team.ID, Subdivision.FCS)
+                home_team = import_service.import_team(home_team_name)
+                home_team_affiliation = import_service.import_affiliation(season.ID, home_team.ID, Subdivision.FCS)
                 
-                away_team = self._import_service.import_team(away_team_name)
-                away_team_affiliation = self._import_service.import_affiliation(season.ID, away_team.ID, Subdivision.FCS)
+                away_team = import_service.import_team(away_team_name)
+                away_team_affiliation = import_service.import_affiliation(season.ID, away_team.ID, Subdivision.FCS)
                 
-                if self._validation_service is not None:
-                    self._validation_service.validate_team_data(home_team, home_team_name)
-                    self._validation_service.validate_affiliation_data(home_team_affiliation, season.ID, home_team.ID, home_team_affiliation.subdivision)
+                if validation_service is not None:
+                    validation_service.validate_team_data(home_team, home_team_name)
+                    validation_service.validate_affiliation_data(home_team_affiliation, season.ID, home_team.ID, home_team_affiliation.subdivision)
                     
-                    self._validation_service.validate_team_data(away_team, away_team_name)
-                    self._validation_service.validate_affiliation_data(away_team_affiliation, season.ID, away_team.ID, away_team_affiliation.subdivision)
+                    validation_service.validate_team_data(away_team, away_team_name)
+                    validation_service.validate_affiliation_data(away_team_affiliation, season.ID, away_team.ID, away_team_affiliation.subdivision)
                 
                 notes = row[notes_index].strip()
                 
@@ -181,7 +210,7 @@ class SportsReference (object):
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
-                game = self._import_service.import_game(season.ID, week, date_, season_section, home_team.ID, away_team.ID, notes)
+                game = import_service.import_game(season.ID, week, date_, season_section, home_team.ID, away_team.ID, notes)
                 
                 if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
                     game.complete(home_team_score, away_team_score)
@@ -189,18 +218,18 @@ class SportsReference (object):
                 if game.notes != notes:
                     game.update_notes(notes)
                 
-                if self._validation_service is not None:
-                    self._validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
+                if validation_service is not None:
+                    validation_service.validate_game_data(game, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, game.status, notes)
         
-        if self._validation_service is not None:
-            affiliations = [a for a in self._import_service.affiliations if a.season_ID == season.ID]
+        if validation_service is not None:
+            affiliations = [a for a in import_service.affiliations if a.season_ID == season.ID]
             if len(affiliations) == 0:
-                affiliations = self._import_service._affiliation_repository.find_by_season(season)
+                affiliations = import_service._affiliation_repository.find_by_season(season)
                 
-            games = [g for g in self._import_service.games if g.season_ID == season.ID]
+            games = [g for g in import_service.games if g.season_ID == season.ID]
             if len(games) == 0:
-                games = self._import_service._game_repository.find_by_season(season)
-            self._validation_service.validate_games(affiliations, games)
+                games = import_service._game_repository.find_by_season(season)
+            validation_service.validate_games(affiliations, games)
 
 
 def _html_iter(soup):

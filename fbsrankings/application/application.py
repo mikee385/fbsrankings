@@ -1,54 +1,59 @@
-from enum import Enum
-
 from fbsrankings.common import EventBus, EventRecorder
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure import SportsReference
-from fbsrankings.infrastructure import UnitOfWorkFactory
-
-
-class SourceType (Enum):
-        CSV = 0
-        URL = 1
+from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
+from fbsrankings.infrastructure.sqlite import DataStore as SqliteDataStore
 
 
 class Application (object):
-    def __init__(self, data_store, common_name_map):
-        if not isinstance(data_store, UnitOfWorkFactory):
-            raise TypeError('data_store must be of type UnitOfWorkFactory')
-        self._data_store = data_store
-        
-        if common_name_map is not None:
-            self._common_name_map = common_name_map
+    def __init__(self, config):
+        storage_type = config['settings']['storage_type']
+        if storage_type == 'memory':
+            self._data_store = MemoryDataStore()
+
+        elif storage_type == 'sqlite':
+            db_filename = config['settings']['sqlite_db_file']
+            self._data_store = SqliteDataStore(db_filename)
+
         else:
-            self._common_name_map = {}
-        
+            raise ValueError(f'Unknown storage type: {storage_type}')
+                
+        alternate_names = config.get('alternate_names')
+        if alternate_names is None:
+            alternate_names = {}
+            
+        self.seasons = []
+        self._sports_reference = SportsReference(alternate_names)
+        for season in config['seasons']:
+            self.seasons.append(season['year'])
+            self._sports_reference.add_season_source(
+                season['year'],
+                season['postseason_start_week'],
+                season['source_type'],
+                season['teams'],
+                season['games']
+            )
+
         self.event_bus = EventBus()
         self.errors = []
-            
-    def import_season_csv_files(self, year, postseason_start_week, team_csv_file, game_csv_file):
-        self._import_season(SourceType.CSV, year, postseason_start_week, team_csv_file, game_csv_file)
-        
-    def import_season_urls(self, year, postseason_start_week, team_url, game_url):
-        self._import_season(SourceType.URL, year, postseason_start_week, team_url, game_url)
-        
-    def _import_season(self, source_type, year, postseason_start_week, team_source, game_source):
+
+    def __enter__(self):
+        self._data_store.__enter__()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        return self._data_store.__exit__(type, value, traceback)
+
+    def import_season(self, year):
         unit_of_work = self._data_store.unit_of_work(self.event_bus)
         
         import_service = ImportService(unit_of_work.factory, unit_of_work.repository)
         validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
         cancel_service = CancelService()
+
+        self._sports_reference.import_season(year, import_service, validation_service, cancel_service)
         
-        sports_reference = SportsReference(import_service, validation_service, self._common_name_map)
-        
-        if source_type == SourceType.CSV:
-            sports_reference.import_season_csv_files(year, postseason_start_week, team_source, game_source)
-        elif source_type == SourceType.URL:
-            sports_reference.import_season_urls(year, postseason_start_week, team_source, game_source)
-        else:
-            raise ValueError(f'Unknown source type: {source_type}')
-            
         self.errors.extend(validation_service.errors)
-        cancel_service.cancel_past_games(import_service.games)
         
         unit_of_work.commit()
 

@@ -13,6 +13,12 @@ class DataStore (UnitOfWorkFactory):
         self.team = TeamDataStore(self.event_bus)
         self.affiliation = AffiliationDataStore(self.event_bus)
         self.game = GameDataStore(self.event_bus)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        pass
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self, event_bus)
