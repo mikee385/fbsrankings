@@ -97,6 +97,9 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
+# Visual Studio project settings
+/.vs
+
 # mkdocs documentation
 /site
 
@@ -105,4 +108,3 @@ venv.bak/
 
 # Project output
 fbsrankings/data/*.db
-/.vs
