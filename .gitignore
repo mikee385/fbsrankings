@@ -105,3 +105,4 @@ venv.bak/
 
 # Project output
 fbsrankings/data/*.db
+/.vs
