@@ -26,7 +26,7 @@ class GameDataStore (BaseRepository):
             self._game_season_dict[game.season_ID] = season_dict
         season_dict[game.ID] = game
         
-        key = self._get_key(game.season_ID, game.season_section, game.week, game.home_team_ID, game.away_team_ID)
+        key = self._get_key(game.season_ID, game.week, game.home_team_ID, game.away_team_ID)
         self._game_team_dict[key] = game
 
     def find_by_ID(self, ID):
