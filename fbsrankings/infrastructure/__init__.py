@@ -2,4 +2,3 @@
 
 from fbsrankings.infrastructure.unitofwork import UnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.sportsreference import SportsReference
-from fbsrankings.infrastructure.teamnamemap import TeamNameMap
