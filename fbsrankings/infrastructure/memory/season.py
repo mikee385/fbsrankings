@@ -1,5 +1,6 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, SeasonRepository as BaseRepository, SeasonRegisteredEvent
+from fbsrankings.domain import Season, SeasonID, SeasonRepository as BaseRepository
+from fbsrankings.event import SeasonRegisteredEvent
 
 
 class SeasonDataStore (BaseRepository):

@@ -2,7 +2,8 @@ import sqlite3
 from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, SeasonRepository as BaseRepository, SeasonSection, SeasonRegisteredEvent
+from fbsrankings.domain import Season, SeasonID, SeasonRepository as BaseRepository, SeasonSection
+from fbsrankings.event import SeasonRegisteredEvent
 
 
 class SeasonSectionTable (object):

@@ -1,7 +1,8 @@
 from uuid import uuid4
 from enum import Enum
 
-from fbsrankings.common import Identifier, Event, EventBus
+from fbsrankings.common import Identifier, EventBus
+from fbsrankings.event import SeasonRegisteredEvent
 
 
 class SeasonSection (Enum):
@@ -65,9 +66,3 @@ class SeasonRepository (object):
         
     def all(self):
         raise NotImplementedError
-        
-
-class SeasonRegisteredEvent (Event):
-    def __init__(self, ID, year):
-        self.ID = ID
-        self.year = year

@@ -1,6 +1,7 @@
 from uuid import uuid4
 
-from fbsrankings.common import Identifier, Event, EventBus
+from fbsrankings.common import Identifier, EventBus
+from fbsrankings.event import TeamRegisteredEvent
 
 
 class TeamID (Identifier):
@@ -58,9 +59,3 @@ class TeamRepository (object):
     
     def all(self):
         raise NotImplementedError
-
-
-class TeamRegisteredEvent (Event):
-    def __init__(self, ID, name):
-        self.ID = ID
-        self.name = name

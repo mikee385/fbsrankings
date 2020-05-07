@@ -1,5 +1,6 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Team, TeamID, TeamRepository as BaseRepository, TeamRegisteredEvent
+from fbsrankings.domain import Team, TeamID, TeamRepository as BaseRepository
+from fbsrankings.event import TeamRegisteredEvent
 
 
 class TeamDataStore (BaseRepository):

@@ -1,5 +1,6 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, AffiliationRegisteredEvent
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository
+from fbsrankings.event import AffiliationRegisteredEvent
 
 
 class AffiliationDataStore (BaseRepository):

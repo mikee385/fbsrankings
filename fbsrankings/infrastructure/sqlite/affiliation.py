@@ -2,7 +2,8 @@ import sqlite3
 from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, Subdivision, AffiliationRegisteredEvent
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, Subdivision
+from fbsrankings.event import AffiliationRegisteredEvent
 
 
 class SubdivisionTable (object):

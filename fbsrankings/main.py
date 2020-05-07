@@ -14,8 +14,6 @@ for year in application.seasons:
     print(f'{year}: Calculating Rankings')
     application.calculate_rankings(year)
 
-    break
-
 print()
 application.print_results()
 application.print_errors()

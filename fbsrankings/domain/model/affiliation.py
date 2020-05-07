@@ -1,8 +1,9 @@
 from uuid import uuid4
 from enum import Enum
 
-from fbsrankings.common import Identifier, Event, EventBus
+from fbsrankings.common import Identifier, EventBus
 from fbsrankings.domain import Season, SeasonID, Team, TeamID
+from fbsrankings.event import AffiliationRegisteredEvent
 
 
 class Subdivision (Enum):
@@ -89,11 +90,3 @@ class AffiliationRepository (object):
         
     def find_by_season(self, season):
         raise NotImplementedError
-
-
-class AffiliationRegisteredEvent (Event):
-    def __init__(self, ID, season_ID, team_ID, subdivision):
-        self.ID = ID
-        self.season_ID = season_ID
-        self.team_ID = team_ID
-        self.subdivision = subdivision
