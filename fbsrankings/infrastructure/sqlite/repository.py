@@ -10,13 +10,6 @@ class DataStore (UnitOfWorkFactory):
     def __init__(self, db_filename):
         self._connection = sqlite3.connect(db_filename)
         self._connection.execute('PRAGMA foreign_keys = ON')
-
-    def __enter__(self):
-        self._connection.__enter__()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        return self._connection.__exit__(type, value, traceback)
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self._connection, event_bus)

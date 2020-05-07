@@ -37,13 +37,6 @@ class Application (object):
         self.event_bus = EventBus()
         self.errors = []
 
-    def __enter__(self):
-        self._data_store.__enter__()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        return self._data_store.__exit__(type, value, traceback)
-
     def import_season(self, year):
         unit_of_work = self._data_store.unit_of_work(self.event_bus)
         
