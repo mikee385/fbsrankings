@@ -9,10 +9,10 @@ class DataStore (UnitOfWorkFactory):
     def __init__(self):
         self.event_bus = EventBus()
 
-        self.season = SeasonDataStore(self.event_bus)
-        self.team = TeamDataStore(self.event_bus)
-        self.affiliation = AffiliationDataStore(self.event_bus)
-        self.game = GameDataStore(self.event_bus)
+        self.season = SeasonDataStore()
+        self.team = TeamDataStore()
+        self.affiliation = AffiliationDataStore()
+        self.game = GameDataStore()
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self, event_bus)

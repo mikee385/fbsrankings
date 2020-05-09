@@ -27,11 +27,6 @@ class Team (object):
     @property
     def name(self):
         return self._name
-        
-    def copy(self, event_bus=None):
-        if event_bus is None:
-            event_bus = self._event_bus
-        return Team(event_bus, self.ID, self.name)
 
 
 class TeamFactory (object):

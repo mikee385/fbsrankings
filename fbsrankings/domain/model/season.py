@@ -34,11 +34,6 @@ class Season (object):
     @property
     def year(self):
         return self._year
-        
-    def copy(self, event_bus=None):
-        if event_bus is None:
-            event_bus = self._event_bus
-        return Season(event_bus, self.ID, self.year)
 
 
 class SeasonFactory (object):
