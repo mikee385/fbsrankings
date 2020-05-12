@@ -36,6 +36,11 @@ class EventBus (object):
             
         for handler in self._handlers[type(event)]:
             handler(event)
+            
+            
+class ReadOnlyEventBus (EventBus):
+    def raise_event(self, event):
+        raise ValueError('Domain should not have been modified')
 
 
 class EventRecorder (EventBus):
