@@ -19,13 +19,15 @@ class AffiliationDataStore (object):
     def add(self, affiliation):
         if not isinstance(affiliation, AffiliationDto):
             raise TypeError('affiliation must be of type AffiliationDto')
-        self._affiliation_id_dict[affiliation.ID] = affiliation
         
         season_dict = self._affiliation_season_dict.get(affiliation.season_ID)
         if season_dict is None:
             season_dict = {}
             self._affiliation_season_dict[affiliation.season_ID] = season_dict
+        elif affiliation.team_ID in season_dict:
+            raise ValueError(f'Affiliation already exists for team {affiliation.team_ID} in season {affiliation.season_ID}')
         season_dict[affiliation.team_ID] = affiliation
+        self._affiliation_id_dict[affiliation.ID] = affiliation
 
     def find_by_ID(self, ID):
         return self._affiliation_id_dict.get(ID)

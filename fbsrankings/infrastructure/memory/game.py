@@ -27,6 +27,11 @@ class GameDataStore (object):
     def add(self, game):
         if not isinstance(game, GameDto):
             raise TypeError('game must be of type GameDto')
+            
+        key = self._get_key(game.season_ID, game.week, game.home_team_ID, game.away_team_ID)
+        if key in self._game_team_dict:
+            raise ValueError(f'Game already exists for week {game.week} in season {game.season_ID} between {game.home_team_ID} and {game.away_team_ID}')
+        self._game_team_dict[key] = game
         
         self._game_id_dict[game.ID] = game
         
@@ -35,9 +40,6 @@ class GameDataStore (object):
             season_dict = {}
             self._game_season_dict[game.season_ID] = season_dict
         season_dict[game.ID] = game
-        
-        key = self._get_key(game.season_ID, game.week, game.home_team_ID, game.away_team_ID)
-        self._game_team_dict[key] = game
 
     def find_by_ID(self, ID):
         return self._game_id_dict.get(ID)

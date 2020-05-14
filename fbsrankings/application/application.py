@@ -1,6 +1,6 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus
-from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, CancelService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
-from fbsrankings.infrastructure import SportsReference
+from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
 from fbsrankings.infrastructure.sqlite import DataStore as SqliteDataStore
 
@@ -26,7 +26,7 @@ class Application (object):
         self._sports_reference = SportsReference(alternate_names)
         for season in config['seasons']:
             self.seasons.append(season['year'])
-            self._sports_reference.add_season_source(
+            self._sports_reference.add_source(
                 season['year'],
                 season['postseason_start_week'],
                 season['source_type'],
@@ -35,18 +35,19 @@ class Application (object):
             )
 
         self.event_bus = EventBus()
-        self.errors = []
+        self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
+        
+    @property
+    def errors(self):
+        return self.validation_service.errors
 
     def import_season(self, year):
+        self._sports_reference.load_from_source(year)
+        
         unit_of_work = self._data_store.unit_of_work(self.event_bus)
         
-        import_service = ImportService(unit_of_work.factory, unit_of_work.repository)
-        validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
-        cancel_service = CancelService()
-
-        self._sports_reference.import_season(year, import_service, validation_service, cancel_service)
-        
-        self.errors.extend(validation_service.errors)
+        import_service = ImportService(unit_of_work.factory, unit_of_work.repository, self.validation_service)
+        import_service.import_for_year(self._sports_reference, year)
         
         unit_of_work.commit()
 
