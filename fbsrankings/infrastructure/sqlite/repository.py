@@ -26,7 +26,7 @@ class UnitOfWork (BaseUnitOfWork):
             raise TypeError('connection must be of type sqlite3.Connection')
         self._connection = connection
         
-        self.factory = Factory(self._inner_event_bus)    
+        self.factory = Factory(self._inner_event_bus)
         self.repository = Repository(self._connection, self._inner_event_bus)
 
     def commit(self):
@@ -45,7 +45,7 @@ class UnitOfWork (BaseUnitOfWork):
                     raise ValueError(f'Unknown event type: {type(event)}')
                 
         for event_type in self._inner_event_bus.types:
-            self._outer_event_bus.register_type(event_type)        
+            self._outer_event_bus.register_type(event_type)
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()
@@ -57,8 +57,8 @@ class Repository (BaseRepository):
             raise TypeError('connection must be of type sqlite3.Connection')
         
         super().__init__(
-            SeasonRepository(connection, event_bus), 
-            TeamRepository(connection, event_bus), 
-            AffiliationRepository(connection, event_bus), 
+            SeasonRepository(connection, event_bus),
+            TeamRepository(connection, event_bus),
+            AffiliationRepository(connection, event_bus),
             GameRepository(connection, event_bus)
         )

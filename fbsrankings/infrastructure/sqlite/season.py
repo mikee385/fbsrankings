@@ -50,7 +50,7 @@ class SeasonRepository (BaseRepository):
         self._columns = 'UUID, Year'
         
         cursor = self._connection.cursor()
-        cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self._table} 
+        cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self._table}
             (UUID TEXT NOT NULL UNIQUE,
              Year INT  NOT NULL UNIQUE);''')
 

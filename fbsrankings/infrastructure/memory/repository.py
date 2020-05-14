@@ -29,7 +29,7 @@ class UnitOfWork (BaseUnitOfWork):
             raise TypeError('data_store must be of type DataStore')
         self.data_store = data_store
         
-        self.factory = Factory(self._inner_event_bus)    
+        self.factory = Factory(self._inner_event_bus)
         self.repository = Repository(data_store, self._inner_event_bus)
 
     def commit(self):
@@ -48,7 +48,7 @@ class UnitOfWork (BaseUnitOfWork):
                 raise ValueError(f'Unknown event type: {type(event)}')
                 
         for event_type in self._inner_event_bus.types:
-            self._outer_event_bus.register_type(event_type)        
+            self._outer_event_bus.register_type(event_type)
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()
@@ -60,8 +60,8 @@ class Repository (BaseRepository):
             raise TypeError('data_store must be of type DataStore')
         
         super().__init__(
-            SeasonRepository(data_store.season, event_bus), 
-            TeamRepository(data_store.team, event_bus), 
-            AffiliationRepository(data_store.affiliation, event_bus), 
+            SeasonRepository(data_store.season, event_bus),
+            TeamRepository(data_store.team, event_bus),
+            AffiliationRepository(data_store.affiliation, event_bus),
             GameRepository(data_store.game, event_bus)
         )

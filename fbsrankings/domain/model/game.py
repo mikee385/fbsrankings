@@ -212,6 +212,7 @@ class Game (object):
         
         self._event_bus.raise_event(GameNotesUpdatedEvent(self.ID, old_notes, notes))
 
+
 class GameFactory (object):
     def __init__(self, event_bus):
         if not isinstance(event_bus, EventBus):

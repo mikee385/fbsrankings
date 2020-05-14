@@ -36,9 +36,9 @@ class Repository (BaseRepository):
             self._alternate_names = {}
             
         super().__init__(
-            SeasonRepository(self, self._repository.season), 
-            TeamRepository(self, self._repository.team), 
-            AffiliationRepository(self, self._repository.affiliation), 
+            SeasonRepository(self, self._repository.season),
+            TeamRepository(self, self._repository.team),
+            AffiliationRepository(self, self._repository.affiliation),
             GameRepository(self, self._repository.game)
         )
         
@@ -74,7 +74,7 @@ class Repository (BaseRepository):
         self._load_from_source(source)
         
     def _load_from_source(self, source):
-        if source.is_loaded == True:
+        if source.is_loaded:
             return
         
         if source.source_type == 'CSV':
@@ -122,7 +122,7 @@ class Repository (BaseRepository):
                 team = unit_of_work.repository.team.find_by_name(name)
                 if team is None:
                     team = unit_of_work.factory.team.register(name)
-                affiliation = unit_of_work.factory.affiliation.register(source.ID, team.ID, Subdivision.FBS)
+                unit_of_work.factory.affiliation.register(source.ID, team.ID, Subdivision.FBS)
                 fbs_teams[name] = team
                 
         games = []

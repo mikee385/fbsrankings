@@ -106,8 +106,7 @@ class AffiliationRepository (BaseRepository):
     
     def _affiliation_from_row(self, row):
         if row is not None:
-            return Affiliation(self._event_bus, AffiliationID(UUID(row[0])), SeasonID(UUID(row[1])), TeamID(UUID(row[2])),
-            Subdivision[row[3]])
+            return Affiliation(self._event_bus, AffiliationID(UUID(row[0])), SeasonID(UUID(row[1])), TeamID(UUID(row[2])), Subdivision[row[3]])
         else:
             return None
         

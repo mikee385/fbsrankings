@@ -23,7 +23,7 @@ class ImportService (object):
         
     def import_for_year(self, source, year):
         source_season = source.season.find_by_year(year)
-        season = self.import_season(year)
+        self.import_season(year)
     
         affiliations = []
         source_affiliations = source.affiliation.find_by_season(source_season)
