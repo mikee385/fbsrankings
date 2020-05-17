@@ -36,6 +36,8 @@ class Application (object):
 
         self.event_bus = EventBus()
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
+
+        self.event_bus = EventCounter(EventBus())
         
     @property
     def errors(self):
