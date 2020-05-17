@@ -1,5 +1,6 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventCounter
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.event import GameCompletedEvent
 from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
 from fbsrankings.infrastructure.sqlite import DataStore as SqliteDataStore
@@ -25,6 +26,8 @@ class Application (object):
         self.seasons = []
         self._sports_reference = SportsReference(alternate_names)
         for season in config['seasons']:
+            if season['year'] == 2008 or season['year'] == 2009 or season['year'] == 2011 or season['year'] == 2014:
+                continue
             self.seasons.append(season['year'])
             self._sports_reference.add_source(
                 season['year'],
@@ -33,8 +36,7 @@ class Application (object):
                 season['teams'],
                 season['games']
             )
-
-        self.event_bus = EventBus()
+            
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
         self.event_bus = EventCounter(EventBus())
@@ -139,6 +141,16 @@ class Application (object):
             print('Other Errors:')
             for error in other_errors:
                 print(error)
+                
+    def print_counts(self):
+        print()
+        print('Events:')
+        print()
+        if self.event_bus.counts:
+            for event, count in self.event_bus.counts.items():
+                print(f'{event.__name__}: {count}')
+        else:
+            print('None')
                 
     def _print_game_summary(self, repository, game):
         season = repository.season.find_by_ID(game.season_ID)
