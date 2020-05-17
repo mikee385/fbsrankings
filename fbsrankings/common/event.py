@@ -6,36 +6,26 @@ class EventBus (object):
     def __init__(self):
         self._handlers = {}
         
-    @property
-    def types(self):
-        return self._handlers.keys()
-        
-    def register_type(self, event_type):
-        if not issubclass(event_type, Event):
-            raise TypeError('event_type must be a type derived from Event')
-        
-        handlers = self._handlers.get(event_type)
-        if handlers is None:
-            self._handlers[event_type] = []
-        
     def register_handler(self, event_type, handler):
         if not issubclass(event_type, Event):
             raise TypeError('event_type must be a type derived from Event')
         if not callable(handler):
             raise TypeError('handler must be a callable type')
-        if event_type not in self._handlers:
-            raise ValueError(f'Type {event_type.__name__} has not been registered with this EventBus')
-            
-        self._handlers[event_type].append(handler)
+        
+        handlers = self._handlers.get(event_type)
+        if handlers is not None:
+            handlers.append(handler)
+        else:
+            self._handlers[event_type] = [handler]
         
     def raise_event(self, event):
         if not isinstance(event, Event):
             raise TypeError('event must be of type Event')
-        if type(event) not in self._handlers:
-            raise ValueError(f'Type {type(event).__name__} has not been registered with this EventBus')
-            
-        for handler in self._handlers[type(event)]:
-            handler(event)
+        
+        handlers = self._handlers.get(type(event))
+        if handlers is not None:
+            for handler in handlers:
+                handler(event)
             
             
 class ReadOnlyEventBus (EventBus):
@@ -49,10 +39,6 @@ class LocalEventHandler (EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._global_bus = event_bus
         self._local_bus = EventBus()
-        
-    def register_type(self, event_type):
-        self._local_bus.register_type(event_type)
-        self._global_bus.register_type(event_type)
         
     def register_handler(self, event_type, handler):
         self._local_bus.register_handler(event_type, handler)
@@ -68,13 +54,6 @@ class EventRecorder (EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
         self.events = []
-        
-    @property
-    def types(self):
-        return self._event_bus.types
-        
-    def register_type(self, event_type):
-        self._event_bus.register_type(event_type)
         
     def register_handler(self, event_type, handler):
         self._event_bus.register_handler(handler)
@@ -93,13 +72,6 @@ class EventCounter (EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
         self.counts = {}
-        
-    @property
-    def types(self):
-        return self._event_bus.types
-        
-    def register_type(self, event_type):
-        self._event_bus.register_type(event_type)
         
     def register_handler(self, event_type, handler):
         self._event_bus.register_handler(handler)

@@ -34,9 +34,7 @@ class TeamFactory (object):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
-        
-        self._event_bus.register_type(TeamRegisteredEvent)
-        
+    
     def register(self, name):
         ID = TeamID(uuid4())
         team = Team(self._event_bus, ID, name)

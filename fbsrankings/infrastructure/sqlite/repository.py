@@ -43,9 +43,7 @@ class UnitOfWork (BaseUnitOfWork):
             
                 if not handled:
                     raise ValueError(f'Unknown event type: {type(event)}')
-                
-        for event_type in self._inner_event_bus.types:
-            self._outer_event_bus.register_type(event_type)
+
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()

@@ -219,12 +219,6 @@ class GameFactory (object):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
         
-        self._event_bus.register_type(GameScheduledEvent)
-        self._event_bus.register_type(GameRescheduledEvent)
-        self._event_bus.register_type(GameCanceledEvent)
-        self._event_bus.register_type(GameCompletedEvent)
-        self._event_bus.register_type(GameNotesUpdatedEvent)
-        
     def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
         game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)

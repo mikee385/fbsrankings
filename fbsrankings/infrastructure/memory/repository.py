@@ -33,9 +33,6 @@ class UnitOfWork (BaseUnitOfWork):
         self.repository = Repository(data_store, self._inner_event_bus)
 
     def commit(self):
-        for event_type in self._inner_event_bus.types:
-            self.data_store.event_bus.register_type(event_type)
-            
         for event in self._inner_event_bus.events:
             handled = False
             
@@ -46,9 +43,7 @@ class UnitOfWork (BaseUnitOfWork):
             
             if not handled:
                 raise ValueError(f'Unknown event type: {type(event)}')
-                
-        for event_type in self._inner_event_bus.types:
-            self._outer_event_bus.register_type(event_type)
+
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()

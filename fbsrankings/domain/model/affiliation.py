@@ -65,9 +65,7 @@ class AffiliationFactory (object):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._event_bus = event_bus
-        
-        self._event_bus.register_type(AffiliationRegisteredEvent)
-        
+
     def register(self, season, team, subdivision):
         ID = AffiliationID(uuid4())
         affiliation = Affiliation(self._event_bus, ID, season, team, subdivision)

@@ -142,7 +142,6 @@ class Application (object):
     def print_counts(self):
         print()
         print('Events:')
-        print()
         if self.event_bus.counts:
             for event, count in self.event_bus.counts.items():
                 print(f'{event.__name__}: {count}')
