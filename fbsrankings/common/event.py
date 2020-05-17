@@ -41,6 +41,25 @@ class EventBus (object):
 class ReadOnlyEventBus (EventBus):
     def raise_event(self, event):
         raise ValueError('Domain should not have been modified')
+        
+
+class LocalEventHandler (EventBus):
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._global_bus = event_bus
+        self._local_bus = EventBus()
+        
+    def register_type(self, event_type):
+        self._local_bus.register_type(event_type)
+        self._global_bus.register_type(event_type)
+        
+    def register_handler(self, event_type, handler):
+        self._local_bus.register_handler(event_type, handler)
+        
+    def raise_event(self, event):
+        self._local_bus.raise_event(event)
+        self._global_bus.raise_event(event)
 
 
 class EventRecorder (EventBus):
