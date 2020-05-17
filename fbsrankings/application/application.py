@@ -1,4 +1,4 @@
-from fbsrankings.common import EventBus, ReadOnlyEventBus
+from fbsrankings.common import EventBus, ReadOnlyEventBus, EventCounter
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore

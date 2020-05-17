@@ -17,3 +17,4 @@ for year in application.seasons:
 print()
 application.print_results()
 application.print_errors()
+application.print_counts()
