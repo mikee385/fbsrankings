@@ -1,6 +1,5 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventCounter
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
-from fbsrankings.event import GameCompletedEvent
 from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
 from fbsrankings.infrastructure.sqlite import DataStore as SqliteDataStore
@@ -26,8 +25,6 @@ class Application (object):
         self.seasons = []
         self._sports_reference = SportsReference(alternate_names)
         for season in config['seasons']:
-            if season['year'] == 2008 or season['year'] == 2009 or season['year'] == 2011 or season['year'] == 2014:
-                continue
             self.seasons.append(season['year'])
             self._sports_reference.add_source(
                 season['year'],
