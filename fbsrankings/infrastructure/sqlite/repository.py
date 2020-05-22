@@ -1,6 +1,6 @@
 import sqlite3
 
-from fbsrankings.common import EventBus, EventRecorder
+from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.domain import Factory, Repository as BaseRepository
 from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.sqlite import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
@@ -10,6 +10,8 @@ class DataStore (UnitOfWorkFactory):
     def __init__(self, db_filename):
         self._connection = sqlite3.connect(db_filename)
         self._connection.execute('PRAGMA foreign_keys = ON')
+        
+        self.queries = Repository(self._connection, ReadOnlyEventBus())
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self._connection, event_bus)

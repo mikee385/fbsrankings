@@ -1,4 +1,4 @@
-from fbsrankings.common import EventBus, EventRecorder
+from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.domain import Factory, Repository as BaseRepository
 from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.memory import SeasonDataStore, TeamDataStore, AffiliationDataStore, GameDataStore
@@ -13,6 +13,8 @@ class DataStore (UnitOfWorkFactory):
         self.team = TeamDataStore()
         self.affiliation = AffiliationDataStore()
         self.game = GameDataStore()
+        
+        self.queries = Repository(self, ReadOnlyEventBus())
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self, event_bus)

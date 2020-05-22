@@ -1,4 +1,4 @@
-from fbsrankings.common import EventBus, ReadOnlyEventBus, EventCounter
+from fbsrankings.common import EventBus, EventCounter
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
@@ -56,7 +56,7 @@ class Application (object):
         pass
         
     def print_results(self):
-        repository = self._data_store.unit_of_work(ReadOnlyEventBus()).repository
+        repository = self._data_store.queries
         
         seasons = repository.season.all()
         print(f'Total Seasons: {len(seasons)}')
@@ -103,7 +103,7 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        repository = self._data_store.unit_of_work(ReadOnlyEventBus())
+        repository = self._data_store.queries
         
         if fbs_team_errors:
             print()

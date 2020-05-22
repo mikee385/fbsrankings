@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, Tag
 
-from fbsrankings.common import EventBus, ReadOnlyEventBus
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Repository as BaseRepository, SeasonSection, Subdivision, GameStatus
 from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
 from fbsrankings.infrastructure.sportsreference import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
@@ -25,7 +25,7 @@ class SeasonSource (object):
 class Repository (BaseRepository):
     def __init__(self, alternate_names):
         self._cache = MemoryDataStore()
-        self._repository = self._cache.unit_of_work(ReadOnlyEventBus()).repository
+        self._repository = self._cache.queries
         
         self._sources_by_year = {}
         self._sources_by_ID = {}
