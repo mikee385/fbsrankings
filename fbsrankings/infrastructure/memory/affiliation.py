@@ -90,9 +90,23 @@ class AffiliationQueryHandler (AffiliationRepository):
             
         return [self._to_affiliation(item) for item in self._data_source.find_by_season(season_ID)]
         
-    def try_handle_event(self, event):
+        
+class AffiliationEventHandler (object):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, AffiliationDataSource):
+            raise TypeError('data_source must be of type AffiliationDataSource')
+        self._data_source = data_source
+        
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+    def handle(self, event):
         if isinstance(event, AffiliationRegisteredEvent):
-            self._data_source.add(AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision))
+            self._handle_affiliation_registered(event)
             return True
         else:
             return False
+        
+    def _handle_affiliation_registered(self, event):
+        self._data_source.add(AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision))

@@ -119,28 +119,54 @@ class GameQueryHandler (GameRepository):
     def all(self):
         return [self._to_game(item) for item in self._data_source.all()]
         
-    def try_handle_event(self, event):
+        
+class GameEventHandler (object):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, GameDataSource):
+            raise TypeError('data_source must be of type GameDataSource')
+        self._data_source = data_source
+        
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+    def handle(self, event):
         if isinstance(event, GameScheduledEvent):
-            self._data_source.add(GameDto(event.ID, event.season_ID, event.week, event.date, event.season_section, event.home_team_ID, event.away_team_ID, None, None, GameStatus.SCHEDULED, event.notes))
+            self._handle_game_scheduled(event)
             return True
         elif isinstance(event, GameRescheduledEvent):
-            dto = self._data_source.find_by_ID(event.ID)
-            dto.week = event.week
-            dto.date = event.date
+            self._handle_game_rescheduled(event)
             return True
         elif isinstance(event, GameCanceledEvent):
-            dto = self._data_source.find_by_ID(event.ID)
-            dto.status = GameStatus.CANCELED
+            self._handle_game_canceled(event)
             return True
         elif isinstance(event, GameCompletedEvent):
-            dto = self._data_source.find_by_ID(event.ID)
-            dto.home_team_score = event.home_team_score
-            dto.away_team_score = event.away_team_score
-            dto.status = GameStatus.COMPLETED
+            self._handle_game_completed(event)
             return True
         elif isinstance(event, GameNotesUpdatedEvent):
-            dto = self._data_source.find_by_ID(event.ID)
-            dto.notes = event.notes
+            self._handle_game_notes_updated(event)
             return True
         else:
             return False
+        
+    def _handle_game_scheduled(self, event):
+        self._data_source.add(GameDto(event.ID, event.season_ID, event.week, event.date, event.season_section, event.home_team_ID, event.away_team_ID, None, None, GameStatus.SCHEDULED, event.notes))
+        
+    def _handle_game_rescheduled(self, event):
+        dto = self._data_source.find_by_ID(event.ID)
+        dto.week = event.week
+        dto.date = event.date
+    
+    def _handle_game_canceled(self, event):
+        dto = self._data_source.find_by_ID(event.ID)
+        dto.status = GameStatus.CANCELED
+
+    def _handle_game_completed(self, event):
+        dto = self._data_source.find_by_ID(event.ID)
+        dto.home_team_score = event.home_team_score
+        dto.away_team_score = event.away_team_score
+        dto.status = GameStatus.COMPLETED
+    
+    def _handle_game_notes_updated(self, event):
+        dto = self._data_source.find_by_ID(event.ID)
+        dto.notes = event.notes

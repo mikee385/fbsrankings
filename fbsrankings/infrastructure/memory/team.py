@@ -58,9 +58,23 @@ class TeamQueryHandler (TeamRepository):
     def all(self):
         return [self._to_team(item) for item in self._data_source.all()]
         
-    def try_handle_event(self, event):
+        
+class TeamEventHandler (object):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, TeamDataSource):
+            raise TypeError('data_source must be of type TeamDataSource')
+        self._data_source = data_source
+        
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+        
+    def handle(self, event):
         if isinstance(event, TeamRegisteredEvent):
-            self._data_source.add(TeamDto(event.ID, event.name))
+            self._handle_team_registered(event)
             return True
         else:
             return False
+        
+    def _handle_team_registered(self, event):
+        self._data_source.add(TeamDto(event.ID, event.name))

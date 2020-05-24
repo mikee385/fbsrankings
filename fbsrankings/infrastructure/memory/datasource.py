@@ -1,10 +1,10 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.domain import Factory
 from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
-from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler
+from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler, EventHandler
 
 
-class DataSource (UnitOfWorkFactory):
+class DataSource (QueryFactory, UnitOfWorkFactory):
     def __init__(self):
         self.event_bus = EventBus()
 
@@ -47,16 +47,11 @@ class UnitOfWork (BaseUnitOfWork):
         
         self.factory = Factory(self._inner_event_bus)
         self.repository = QueryHandler(data_source, self._inner_event_bus)
+        self.event_handler = EventHandler(data_source, self._inner_event_bus)
 
     def commit(self):
         for event in self._inner_event_bus.events:
-            handled = False
-            
-            handled = self.repository.season.try_handle_event(event) or handled
-            handled = self.repository.team.try_handle_event(event) or handled
-            handled = self.repository.affiliation.try_handle_event(event) or handled
-            handled = self.repository.game.try_handle_event(event) or handled
-            
+            handled = self.event_handler.handle(event)
             if not handled:
                 raise ValueError(f'Unknown event type: {type(event)}')
 

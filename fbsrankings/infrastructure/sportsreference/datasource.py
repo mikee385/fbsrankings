@@ -22,7 +22,7 @@ class SeasonSource (object):
         self.is_loaded = False
 
 
-class DataSource (Repository):
+class DataSource (QueryFactory):
     def __init__(self, alternate_names):
         self._cache = MemoryDataSource()
         
