@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Team, TeamRepository as BaseRepository
+from fbsrankings.domain import Team, TeamRepository
 from fbsrankings.event import TeamRegisteredEvent
 
 
@@ -9,7 +9,7 @@ class TeamDto (object):
         self.name = name
 
 
-class TeamDataStore (object):
+class TeamDataSource (object):
     def __init__(self):
         self._team_id_dict = {}
         self._team_name_dict = {}
@@ -34,11 +34,11 @@ class TeamDataStore (object):
         return [item for item in self._team_name_dict.values()]
         
 
-class TeamRepository (BaseRepository):
-    def __init__(self, data_store, event_bus):
-        if not isinstance(data_store, TeamDataStore):
-            raise TypeError('data_store must be of type TeamDataStore')
-        self._data_store = data_store
+class TeamQueryHandler (TeamRepository):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, TeamDataSource):
+            raise TypeError('data_source must be of type TeamDataSource')
+        self._data_source = data_source
         
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
@@ -50,17 +50,17 @@ class TeamRepository (BaseRepository):
         return None
 
     def find_by_ID(self, ID):
-        return self._to_team(self._data_store.find_by_ID(ID))
+        return self._to_team(self._data_source.find_by_ID(ID))
         
     def find_by_name(self, name):
-        return self._to_team(self._data_store.find_by_name(name))
+        return self._to_team(self._data_source.find_by_name(name))
         
     def all(self):
-        return [self._to_team(item) for item in self._data_store.all()]
+        return [self._to_team(item) for item in self._data_source.all()]
         
     def try_handle_event(self, event):
         if isinstance(event, TeamRegisteredEvent):
-            self._data_store.add(TeamDto(event.ID, event.name))
+            self._data_source.add(TeamDto(event.ID, event.name))
             return True
         else:
             return False

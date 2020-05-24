@@ -1,19 +1,19 @@
 from fbsrankings.common import EventBus, EventCounter
 from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
-from fbsrankings.infrastructure.sportsreference import Repository as SportsReference
-from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
-from fbsrankings.infrastructure.sqlite import DataStore as SqliteDataStore
+from fbsrankings.infrastructure.sportsreference import DataSource as SportsReference
+from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
+from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 
 
 class Application (object):
     def __init__(self, config):
         storage_type = config['settings']['storage_type']
         if storage_type == 'memory':
-            self._data_store = MemoryDataStore()
+            self._data_source = MemoryDataSource()
 
         elif storage_type == 'sqlite':
             db_filename = config['settings']['sqlite_db_file']
-            self._data_store = SqliteDataStore(db_filename)
+            self._data_source = SqliteDataSource(db_filename)
 
         else:
             raise ValueError(f'Unknown storage type: {storage_type}')
@@ -45,9 +45,9 @@ class Application (object):
     def import_season(self, year):
         self._sports_reference.load_from_source(year)
         
-        with self._data_store.unit_of_work(self.event_bus) as unit_of_work:
+        with self._data_source.unit_of_work(self.event_bus) as unit_of_work, self._sports_reference.queries() as sports_reference:
             import_service = ImportService(unit_of_work.factory, unit_of_work.repository, self.validation_service)
-            import_service.import_for_year(self._sports_reference, year)
+            import_service.import_for_year(sports_reference, year)
         
             unit_of_work.commit()
 
@@ -55,7 +55,7 @@ class Application (object):
         pass
         
     def print_results(self):
-        with self._data_store.queries() as repository:
+        with self._data_source.queries() as repository:
             seasons = repository.season.all()
             print(f'Total Seasons: {len(seasons)}')
             for season in seasons:
@@ -101,7 +101,7 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        with self._data_store.queries() as repository:
+        with self._data_source.queries() as repository:
             if fbs_team_errors:
                 print()
                 print('FBS teams with too few games:')
@@ -161,12 +161,10 @@ class Application (object):
         
     def close(self):
         self.event_bus.clear()
-        self._sports_reference.close()
         
     def __enter__(self):
         return self
         
     def __exit__(self, type, value, traceback):
-        self.event_bus.clear()
-        self._sports_reference.__exit__(type, value, traceback)
+        self.close()
         return False

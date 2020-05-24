@@ -4,4 +4,5 @@ from fbsrankings.infrastructure.sqlite.season import SeasonSectionTable, SeasonT
 from fbsrankings.infrastructure.sqlite.team import TeamTable, TeamQueryHandler, TeamEventHandler
 from fbsrankings.infrastructure.sqlite.affiliation import SubdivisionTable, AffiliationTable, AffiliationQueryHandler, AffiliationEventHandler
 from fbsrankings.infrastructure.sqlite.game import GameStatusTable, GameTable, GameQueryHandler, GameEventHandler
-from fbsrankings.infrastructure.sqlite.repository import DataStore, QueryHandler, EventHandler, QueryProvider, UnitOfWork
+from fbsrankings.infrastructure.sqlite.handler import QueryHandler, EventHandler
+from fbsrankings.infrastructure.sqlite.datasource import DataSource, QueryProvider, UnitOfWork

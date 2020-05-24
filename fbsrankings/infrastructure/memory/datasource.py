@@ -1,18 +1,17 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import Factory, Repository
+from fbsrankings.domain import Factory
 from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
-from fbsrankings.infrastructure.memory import SeasonDataStore, TeamDataStore, AffiliationDataStore, GameDataStore
-from fbsrankings.infrastructure.memory import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
+from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler
 
 
-class DataStore (UnitOfWorkFactory):
+class DataSource (UnitOfWorkFactory):
     def __init__(self):
         self.event_bus = EventBus()
 
-        self.season = SeasonDataStore()
-        self.team = TeamDataStore()
-        self.affiliation = AffiliationDataStore()
-        self.game = GameDataStore()
+        self.season = SeasonDataSource()
+        self.team = TeamDataSource()
+        self.affiliation = AffiliationDataSource()
+        self.game = GameDataSource()
         
     def queries (self):
         return QueryProvider(self)
@@ -21,22 +20,9 @@ class DataStore (UnitOfWorkFactory):
         return UnitOfWork(self, event_bus)
         
 
-class QueryHandler (Repository):
-    def __init__(self, data_store, event_bus):
-        if not isinstance(data_store, DataStore):
-            raise TypeError('data_store must be of type DataStore')
-        
-        super().__init__(
-            SeasonRepository(data_store.season, event_bus),
-            TeamRepository(data_store.team, event_bus),
-            AffiliationRepository(data_store.affiliation, event_bus),
-            GameRepository(data_store.game, event_bus)
-        )
-        
-
 class QueryProvider (QueryHandler):
-    def __init__(self, data_store):
-        super().__init__(data_store, ReadOnlyEventBus())
+    def __init__(self, data_source):
+        super().__init__(data_source, ReadOnlyEventBus())
         
     def close(self):
         pass
@@ -49,18 +35,18 @@ class QueryProvider (QueryHandler):
 
 
 class UnitOfWork (BaseUnitOfWork):
-    def __init__(self, data_store, event_bus):
+    def __init__(self, data_source, event_bus):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         self._outer_event_bus = event_bus
         self._inner_event_bus = EventRecorder(EventBus())
         
-        if not isinstance(data_store, DataStore):
-            raise TypeError('data_store must be of type DataStore')
-        self.data_store = data_store
+        if not isinstance(data_source, DataSource):
+            raise TypeError('data_source must be of type DataSource')
+        self.data_source = data_source
         
         self.factory = Factory(self._inner_event_bus)
-        self.repository = QueryHandler(data_store, self._inner_event_bus)
+        self.repository = QueryHandler(data_source, self._inner_event_bus)
 
     def commit(self):
         for event in self._inner_event_bus.events:

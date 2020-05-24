@@ -1,12 +1,12 @@
 import sqlite3
 
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import Factory, Repository
-from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
-from fbsrankings.infrastructure.sqlite import SeasonSectionTable, SeasonTable, SeasonQueryHandler, SeasonEventHandler, TeamTable, TeamQueryHandler, TeamEventHandler, SubdivisionTable, AffiliationTable, AffiliationQueryHandler, AffiliationEventHandler, GameStatusTable, GameTable, GameQueryHandler, GameEventHandler
+from fbsrankings.domain import Factory
+from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
+from fbsrankings.infrastructure.sqlite import SeasonSectionTable, SeasonTable, TeamTable, SubdivisionTable, AffiliationTable, GameStatusTable, GameTable, QueryHandler, EventHandler
         
  
-class DataStore (UnitOfWorkFactory):
+class DataSource (QueryFactory, UnitOfWorkFactory):
     def __init__(self, database):
         self._database = database
         
@@ -41,30 +41,6 @@ class DataStore (UnitOfWorkFactory):
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self._database, event_bus)
-        
-
-class QueryHandler (Repository):
-    def __init__(self, connection, event_bus):
-        if not isinstance(connection, sqlite3.Connection):
-            raise TypeError('connection must be of type sqlite3.Connection')
-        
-        super().__init__(
-            SeasonQueryHandler(connection, event_bus),
-            TeamQueryHandler(connection, event_bus),
-            AffiliationQueryHandler(connection, event_bus),
-            GameQueryHandler(connection, event_bus)
-        )
-        
-
-class EventHandler (object):
-    def __init__(self, cursor, event_bus):
-        if not isinstance(cursor, sqlite3.Cursor):
-            raise TypeError('connection must be of type sqlite3.Cursor')
-        
-        self.season = SeasonEventHandler(cursor, event_bus),
-        self.team = TeamEventHandler(cursor, event_bus),
-        self.affiliation = AffiliationEventHandler(cursor, event_bus),
-        self.game = GameEventHandler(cursor, event_bus)
         
 
 class QueryProvider (QueryHandler):

@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, Game, GameRepository as BaseRepository, GameStatus
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Game, GameRepository, GameStatus
 from fbsrankings.event import GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
 
 
@@ -18,7 +18,7 @@ class GameDto (object):
         self.notes = notes
 
 
-class GameDataStore (object):
+class GameDataSource (object):
     def __init__(self):
         self._game_id_dict = {}
         self._game_season_dict = {}
@@ -64,11 +64,11 @@ class GameDataStore (object):
             return (season_ID, week, team2_ID, team1_ID)
         
 
-class GameRepository (BaseRepository):
-    def __init__(self, data_store, event_bus):
-        if not isinstance(data_store, GameDataStore):
-            raise TypeError('data_store must be of type GameDataStore')
-        self._data_store = data_store
+class GameQueryHandler (GameRepository):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, GameDataSource):
+            raise TypeError('data_source must be of type GameDataSource')
+        self._data_source = data_source
         
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
@@ -80,7 +80,7 @@ class GameRepository (BaseRepository):
         return None
 
     def find_by_ID(self, ID):
-        return self._to_game(self._data_store.find_by_ID(ID))
+        return self._to_game(self._data_source.find_by_ID(ID))
         
     def find_by_season_teams(self, season, week, team1, team2):
         if isinstance(season, Season):
@@ -104,7 +104,7 @@ class GameRepository (BaseRepository):
         else:
             raise TypeError('team2 must be of type Team or TeamID')
             
-        return self._to_game(self._data_store.find_by_season_teams(season_ID, week, team1_ID, team2_ID))
+        return self._to_game(self._data_source.find_by_season_teams(season_ID, week, team1_ID, team2_ID))
         
     def find_by_season(self, season):
         if isinstance(season, Season):
@@ -114,32 +114,32 @@ class GameRepository (BaseRepository):
         else:
             raise TypeError('season must be of type Season or SeasonID')
 
-        return [self._to_game(item) for item in self._data_store.find_by_season(season_ID)]
+        return [self._to_game(item) for item in self._data_source.find_by_season(season_ID)]
         
     def all(self):
-        return [self._to_game(item) for item in self._data_store.all()]
+        return [self._to_game(item) for item in self._data_source.all()]
         
     def try_handle_event(self, event):
         if isinstance(event, GameScheduledEvent):
-            self._data_store.add(GameDto(event.ID, event.season_ID, event.week, event.date, event.season_section, event.home_team_ID, event.away_team_ID, None, None, GameStatus.SCHEDULED, event.notes))
+            self._data_source.add(GameDto(event.ID, event.season_ID, event.week, event.date, event.season_section, event.home_team_ID, event.away_team_ID, None, None, GameStatus.SCHEDULED, event.notes))
             return True
         elif isinstance(event, GameRescheduledEvent):
-            dto = self._data_store.find_by_ID(event.ID)
+            dto = self._data_source.find_by_ID(event.ID)
             dto.week = event.week
             dto.date = event.date
             return True
         elif isinstance(event, GameCanceledEvent):
-            dto = self._data_store.find_by_ID(event.ID)
+            dto = self._data_source.find_by_ID(event.ID)
             dto.status = GameStatus.CANCELED
             return True
         elif isinstance(event, GameCompletedEvent):
-            dto = self._data_store.find_by_ID(event.ID)
+            dto = self._data_source.find_by_ID(event.ID)
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
             dto.status = GameStatus.COMPLETED
             return True
         elif isinstance(event, GameNotesUpdatedEvent):
-            dto = self._data_store.find_by_ID(event.ID)
+            dto = self._data_source.find_by_ID(event.ID)
             dto.notes = event.notes
             return True
         else:

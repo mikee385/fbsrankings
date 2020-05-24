@@ -1,11 +1,11 @@
-from fbsrankings.domain import Season, SeasonID, AffiliationRepository as BaseRepository
+from fbsrankings.domain import Season, SeasonID, AffiliationRepository
 
 
-class AffiliationRepository (BaseRepository):
+class AffiliationQueryHandler (AffiliationRepository):
     def __init__(self, parent, repository):
         self._parent = parent
         
-        if not isinstance(repository, BaseRepository):
+        if not isinstance(repository, AffiliationRepository):
             raise TypeError('repository must be of type AffiliationRepository')
         self._repository = repository
         

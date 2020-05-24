@@ -1,11 +1,11 @@
-from fbsrankings.domain import SeasonRepository as BaseRepository
+from fbsrankings.domain import SeasonRepository
 
 
-class SeasonRepository (BaseRepository):
+class SeasonQueryHandler (SeasonRepository):
     def __init__(self, parent, repository):
         self._parent = parent
         
-        if not isinstance(repository, BaseRepository):
+        if not isinstance(repository, SeasonRepository):
             raise TypeError('repository must be of type GameRepository')
         self._repository = repository
 

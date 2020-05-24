@@ -4,9 +4,9 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup, Tag
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Repository as BaseRepository, SeasonSection, Subdivision, GameStatus
-from fbsrankings.infrastructure.memory import DataStore as MemoryDataStore
-from fbsrankings.infrastructure.sportsreference import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
+from fbsrankings.domain import Repository, SeasonSection, Subdivision, GameStatus
+from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
+from fbsrankings.infrastructure.sportsreference import QueryHandler
 
 
 class SeasonSource (object):
@@ -22,10 +22,9 @@ class SeasonSource (object):
         self.is_loaded = False
 
 
-class Repository (BaseRepository):
+class DataSource (Repository):
     def __init__(self, alternate_names):
-        self._cache = MemoryDataStore()
-        self._repository = self._cache.queries()
+        self._cache = MemoryDataSource()
         
         self._sources_by_year = {}
         self._sources_by_ID = {}
@@ -34,13 +33,9 @@ class Repository (BaseRepository):
             self._alternate_names = alternate_names
         else:
             self._alternate_names = {}
-            
-        super().__init__(
-            SeasonRepository(self, self._repository.season),
-            TeamRepository(self, self._repository.team),
-            AffiliationRepository(self, self._repository.affiliation),
-            GameRepository(self, self._repository.game)
-        )
+        
+    def queries (self):
+        return QueryProvider(self, self._cache)
         
     def add_source(self, year, postseason_start_week, source_type, team_source, game_source):
         if self._sources_by_year.get(year) is not None:
@@ -249,18 +244,28 @@ class Repository (BaseRepository):
         unit_of_work.commit()
         source.is_loaded = True
         
-    def close(self):
-        self._repository.close()
-    
-    def __enter__(self):
-        return self
-        
-    def __exit__(self, type, value, traceback):
-        self._repository.__exit__(type, value, traceback)
-        return False
-        
 
 def _html_iter(soup):
     row_iter = iter(soup.find_all('tr'))
     for row in row_iter:
         yield [child.getText() for child in filter(lambda c: isinstance(c, Tag), row.children)]
+        
+        
+class QueryProvider (QueryHandler):
+    def __init__(self, data_source, cache):
+        if not isinstance(data_source, DataSource):
+            raise TypeError('data_source must be of type DataSource')
+        self._provider = cache.queries()
+        
+        super().__init__(data_source, self._provider)
+        
+    def close(self):
+        self._provider.close()
+    
+    def __enter__(self):
+        self._provider.__enter__()
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        self._provider.__exit__(type, value, traceback)
+        return False

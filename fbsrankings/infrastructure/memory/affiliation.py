@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationRepository as BaseRepository
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationRepository
 from fbsrankings.event import AffiliationRegisteredEvent
 
 
@@ -11,7 +11,7 @@ class AffiliationDto (object):
         self.subdivision = subdivision
 
 
-class AffiliationDataStore (object):
+class AffiliationDataSource (object):
     def __init__(self):
         self._affiliation_id_dict = {}
         self._affiliation_season_dict = {}
@@ -45,11 +45,11 @@ class AffiliationDataStore (object):
         return [item for item in season_dict.values()]
         
 
-class AffiliationRepository (BaseRepository):
-    def __init__(self, data_store, event_bus):
-        if not isinstance(data_store, AffiliationDataStore):
-            raise TypeError('data_store must be of type AffiliationDataStore')
-        self._data_store = data_store
+class AffiliationQueryHandler (AffiliationRepository):
+    def __init__(self, data_source, event_bus):
+        if not isinstance(data_source, AffiliationDataSource):
+            raise TypeError('data_source must be of type AffiliationDataSource')
+        self._data_source = data_source
         
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
@@ -61,7 +61,7 @@ class AffiliationRepository (BaseRepository):
         return None
 
     def find_by_ID(self, ID):
-        return self._to_affiliation(self._data_store.find_by_ID(ID))
+        return self._to_affiliation(self._data_source.find_by_ID(ID))
         
     def find_by_season_team(self, season, team):
         if isinstance(season, Season):
@@ -78,7 +78,7 @@ class AffiliationRepository (BaseRepository):
         else:
             raise TypeError('team must be of type Team or TeamID')
             
-        return self._to_affiliation(self._data_store.find_by_season_team(season_ID, team_ID))
+        return self._to_affiliation(self._data_source.find_by_season_team(season_ID, team_ID))
         
     def find_by_season(self, season):
         if isinstance(season, Season):
@@ -88,11 +88,11 @@ class AffiliationRepository (BaseRepository):
         else:
             raise TypeError('season must be of type Season or SeasonID')
             
-        return [self._to_affiliation(item) for item in self._data_store.find_by_season(season_ID)]
+        return [self._to_affiliation(item) for item in self._data_source.find_by_season(season_ID)]
         
     def try_handle_event(self, event):
         if isinstance(event, AffiliationRegisteredEvent):
-            self._data_store.add(AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision))
+            self._data_source.add(AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision))
             return True
         else:
             return False
