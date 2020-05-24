@@ -249,6 +249,16 @@ class Repository (BaseRepository):
         unit_of_work.commit()
         source.is_loaded = True
         
+    def close(self):
+        self._repository.close()
+    
+    def __enter__(self):
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        self._repository.__exit__(type, value, traceback)
+        return False
+        
 
 def _html_iter(soup):
     row_iter = iter(soup.find_all('tr'))

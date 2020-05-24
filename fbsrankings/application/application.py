@@ -45,48 +45,46 @@ class Application (object):
     def import_season(self, year):
         self._sports_reference.load_from_source(year)
         
-        unit_of_work = self._data_store.unit_of_work(self.event_bus)
+        with self._data_store.unit_of_work(self.event_bus) as unit_of_work:
+            import_service = ImportService(unit_of_work.factory, unit_of_work.repository, self.validation_service)
+            import_service.import_for_year(self._sports_reference, year)
         
-        import_service = ImportService(unit_of_work.factory, unit_of_work.repository, self.validation_service)
-        import_service.import_for_year(self._sports_reference, year)
-        
-        unit_of_work.commit()
+            unit_of_work.commit()
 
     def calculate_rankings(self, year):
         pass
         
     def print_results(self):
-        repository = self._data_store.queries()
-        
-        seasons = repository.season.all()
-        print(f'Total Seasons: {len(seasons)}')
-        for season in seasons:
-            print()
-            print(f'{season.year} Season:')
-    
-            affiliations = repository.affiliation.find_by_season(season)
-            print(f'Total Teams: {len(affiliations)}')
-            print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
-            print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
-    
-            games = repository.game.find_by_season(season)
-            print(f'Total Games: {len(games)}')
-        
-        canceled_games = [game for game in repository.game.all() if game.status == GameStatus.CANCELED]
-        if canceled_games:
-            print()
-            print('Canceled Games:')
-            for game in canceled_games:
+        with self._data_store.queries() as repository:
+            seasons = repository.season.all()
+            print(f'Total Seasons: {len(seasons)}')
+            for season in seasons:
                 print()
-                self._print_game_summary(repository, game)
+                print(f'{season.year} Season:')
+    
+                affiliations = repository.affiliation.find_by_season(season)
+                print(f'Total Teams: {len(affiliations)}')
+                print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
+                print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
+    
+                games = repository.game.find_by_season(season)
+                print(f'Total Games: {len(games)}')
         
-        unknown_games = [game for game in repository.game.all() if game.status != GameStatus.COMPLETED and game.status != GameStatus.CANCELED]
-        if unknown_games:
-            print()
-            print('Unknown Status:')
-            for game in unknown_games:
+            canceled_games = [game for game in repository.game.all() if game.status == GameStatus.CANCELED]
+            if canceled_games:
                 print()
-                self._print_game_summary(repository, game)
+                print('Canceled Games:')
+                for game in canceled_games:
+                    print()
+                    self._print_game_summary(repository, game)
+        
+            unknown_games = [game for game in repository.game.all() if game.status != GameStatus.COMPLETED and game.status != GameStatus.CANCELED]
+            if unknown_games:
+                print()
+                print('Unknown Status:')
+                for game in unknown_games:
+                    print()
+                    self._print_game_summary(repository, game)
         
     def print_errors(self):
         fbs_team_errors = []
@@ -103,35 +101,34 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        repository = self._data_store.queries()
-        
-        if fbs_team_errors:
-            print()
-            print('FBS teams with too few games:')
-            for error in fbs_team_errors:
-                season = repository.season.find_by_ID(error.season_ID)
-                team = repository.team.find_by_ID(error.team_ID)
+        with self._data_store.queries() as repository:
+            if fbs_team_errors:
                 print()
-                print(f'{season.year} {team.name}: {error.game_count}')
+                print('FBS teams with too few games:')
+                for error in fbs_team_errors:
+                    season = repository.season.find_by_ID(error.season_ID)
+                    team = repository.team.find_by_ID(error.team_ID)
+                    print()
+                    print(f'{season.year} {team.name}: {error.game_count}')
                 
-        if fcs_team_errors:
-            print()
-            print('FCS teams with too many games:')
-            for error in fcs_team_errors:
-                season = repository.season.find_by_ID(error.season_ID)
-                team = repository.team.find_by_ID(error.team_ID)
+            if fcs_team_errors:
                 print()
-                print(f'{season.year} {team.name}: {error.game_count}')
+                print('FCS teams with too many games:')
+                for error in fcs_team_errors:
+                    season = repository.season.find_by_ID(error.season_ID)
+                    team = repository.team.find_by_ID(error.team_ID)
+                    print()
+                    print(f'{season.year} {team.name}: {error.game_count}')
                 
-        if game_errors:
-            print()
-            print('Game Errors:')
-            for error in game_errors:
-                game = repository.game.find_by_ID(error.game_ID)
-                
+            if game_errors:
                 print()
-                self._print_game_summary(repository, game)
-                print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
+                print('Game Errors:')
+                for error in game_errors:
+                    game = repository.game.find_by_ID(error.game_ID)
+                
+                    print()
+                    self._print_game_summary(repository, game)
+                    print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
 
         if other_errors:
             print()
@@ -161,3 +158,15 @@ class Application (object):
         else:
             print(game.status)
         print(game.notes)
+        
+    def close(self):
+        self.event_bus.clear()
+        self._sports_reference.close()
+        
+    def __enter__(self):
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        self.event_bus.clear()
+        self._sports_reference.__exit__(type, value, traceback)
+        return False

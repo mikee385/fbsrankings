@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import Factory, Repository as BaseRepository
+from fbsrankings.domain import Factory, Repository
 from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.memory import SeasonDataStore, TeamDataStore, AffiliationDataStore, GameDataStore
 from fbsrankings.infrastructure.memory import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
@@ -15,13 +15,13 @@ class DataStore (UnitOfWorkFactory):
         self.game = GameDataStore()
         
     def queries (self):
-        return QueryHandler(self)
+        return QueryProvider(self)
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self, event_bus)
         
 
-class Repository (BaseRepository):
+class QueryHandler (Repository):
     def __init__(self, data_store, event_bus):
         if not isinstance(data_store, DataStore):
             raise TypeError('data_store must be of type DataStore')
@@ -34,9 +34,18 @@ class Repository (BaseRepository):
         )
         
 
-class QueryHandler (Repository):
+class QueryProvider (QueryHandler):
     def __init__(self, data_store):
         super().__init__(data_store, ReadOnlyEventBus())
+        
+    def close(self):
+        pass
+    
+    def __enter__(self):
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        return False
 
 
 class UnitOfWork (BaseUnitOfWork):
@@ -51,7 +60,7 @@ class UnitOfWork (BaseUnitOfWork):
         self.data_store = data_store
         
         self.factory = Factory(self._inner_event_bus)
-        self.repository = Repository(data_store, self._inner_event_bus)
+        self.repository = QueryHandler(data_store, self._inner_event_bus)
 
     def commit(self):
         for event in self._inner_event_bus.events:
@@ -68,3 +77,16 @@ class UnitOfWork (BaseUnitOfWork):
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()
+        
+    def rollback(self):
+        self._inner_event_bus.clear()
+        
+    def close(self):
+        self._inner_event_bus.clear()
+    
+    def __enter__(self):
+        return self
+        
+    def __exit__(self, type, value, traceback):
+        self.close()
+        return False
