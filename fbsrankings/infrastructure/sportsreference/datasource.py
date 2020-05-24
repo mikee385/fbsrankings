@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup, Tag
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Repository, SeasonSection, Subdivision, GameStatus
+from fbsrankings.infrastructure import QueryFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import QueryHandler
 

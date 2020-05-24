@@ -1,6 +1,6 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.domain import Factory
-from fbsrankings.infrastructure import UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
+from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler, EventHandler
 
 
