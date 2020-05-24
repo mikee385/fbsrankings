@@ -14,10 +14,29 @@ class DataStore (UnitOfWorkFactory):
         self.affiliation = AffiliationDataStore()
         self.game = GameDataStore()
         
-        self.queries = Repository(self, ReadOnlyEventBus())
+    def queries (self):
+        return QueryHandler(self)
         
     def unit_of_work(self, event_bus):
         return UnitOfWork(self, event_bus)
+        
+
+class Repository (BaseRepository):
+    def __init__(self, data_store, event_bus):
+        if not isinstance(data_store, DataStore):
+            raise TypeError('data_store must be of type DataStore')
+        
+        super().__init__(
+            SeasonRepository(data_store.season, event_bus),
+            TeamRepository(data_store.team, event_bus),
+            AffiliationRepository(data_store.affiliation, event_bus),
+            GameRepository(data_store.game, event_bus)
+        )
+        
+
+class QueryHandler (Repository):
+    def __init__(self, data_store):
+        super().__init__(data_store, ReadOnlyEventBus())
 
 
 class UnitOfWork (BaseUnitOfWork):
@@ -49,16 +68,3 @@ class UnitOfWork (BaseUnitOfWork):
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
         self._inner_event_bus.clear()
-
-
-class Repository (BaseRepository):
-    def __init__(self, data_store, event_bus):
-        if not isinstance(data_store, DataStore):
-            raise TypeError('data_store must be of type DataStore')
-        
-        super().__init__(
-            SeasonRepository(data_store.season, event_bus),
-            TeamRepository(data_store.team, event_bus),
-            AffiliationRepository(data_store.affiliation, event_bus),
-            GameRepository(data_store.game, event_bus)
-        )

@@ -56,7 +56,7 @@ class Application (object):
         pass
         
     def print_results(self):
-        repository = self._data_store.queries
+        repository = self._data_store.queries()
         
         seasons = repository.season.all()
         print(f'Total Seasons: {len(seasons)}')
@@ -103,7 +103,7 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        repository = self._data_store.queries
+        repository = self._data_store.queries()
         
         if fbs_team_errors:
             print()

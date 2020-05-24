@@ -25,7 +25,7 @@ class SeasonSource (object):
 class Repository (BaseRepository):
     def __init__(self, alternate_names):
         self._cache = MemoryDataStore()
-        self._repository = self._cache.queries
+        self._repository = self._cache.queries()
         
         self._sources_by_year = {}
         self._sources_by_ID = {}
