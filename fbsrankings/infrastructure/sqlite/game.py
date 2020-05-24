@@ -165,6 +165,25 @@ class GameEventHandler (object):
         
         self.table = GameTable()
         
+    def handle(self, event):
+        if isinstance(event, GameScheduledEvent):
+            self._handle_game_scheduled(event)
+            return True
+        elif isinstance(event, GameRescheduledEvent):
+            self._handle_game_rescheduled(event)
+            return True
+        elif isinstance(event, GameCanceledEvent):
+            self._handle_game_canceled(event)
+            return True
+        elif isinstance(event, GameCompletedEvent):
+            self._handle_game_completed(event)
+            return True
+        elif isinstance(event, GameNotesUpdatedEvent):
+            self._handle_game_notes_updated(event)
+            return True
+        else:
+            return False
+        
     def _handle_game_scheduled(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), event.week, event.date, event.season_section.name, str(event.home_team_ID.value), str(event.away_team_ID.value), None, None, GameStatus.SCHEDULED.name, event.notes])
     

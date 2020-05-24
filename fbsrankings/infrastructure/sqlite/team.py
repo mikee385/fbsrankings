@@ -85,6 +85,13 @@ class TeamEventHandler (object):
         event_bus.register_handler(TeamRegisteredEvent, self._handle_team_registered)
         
         self.table = TeamTable()
+        
+    def handle(self, event):
+        if isinstance(event, TeamRegisteredEvent):
+            self._handle_team_registered(event)
+            return True
+        else:
+            return False
 
     def _handle_team_registered(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)', [str(event.ID.value), event.name])

@@ -33,3 +33,13 @@ class EventHandler (object):
         self.team = TeamEventHandler(cursor, event_bus),
         self.affiliation = AffiliationEventHandler(cursor, event_bus),
         self.game = GameEventHandler(cursor, event_bus)
+        
+    def handle(self, event):
+        handled = False
+        
+        handled = self.season.handle(event) or handled
+        handled = self.team.handle(event) or handled
+        handled = self.affiliation.handle(event) or handled
+        handled = self.game.handle(event) or handled
+        
+        return handled

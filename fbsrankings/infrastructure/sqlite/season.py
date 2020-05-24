@@ -115,6 +115,13 @@ class SeasonEventHandler (object):
         event_bus.register_handler(SeasonRegisteredEvent, self._handle_season_registered)
         
         self.table = SeasonTable()
+        
+    def handle(self, event):
+        if isinstance(event, SeasonRegisteredEvent):
+            self._handle_season_registered(event)
+            return True
+        else:
+            return False
 
     def _handle_season_registered(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)', [str(event.ID.value), event.year])

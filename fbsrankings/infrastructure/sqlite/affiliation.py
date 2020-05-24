@@ -139,5 +139,12 @@ class AffiliationEventHandler (object):
         
         self.table = AffiliationTable()
         
+    def handle(self, event):
+        if isinstance(event, AffiliationRegisteredEvent):
+            self._handle_affiliation_registered(event)
+            return True
+        else:
+            return False
+        
     def _handle_affiliation_registered(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), str(event.team_ID.value), event.subdivision.name])
