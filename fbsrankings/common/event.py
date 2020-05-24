@@ -56,7 +56,7 @@ class EventRecorder (EventBus):
         self.events = []
         
     def register_handler(self, event_type, handler):
-        self._event_bus.register_handler(handler)
+        self._event_bus.register_handler(event_type, handler)
         
     def raise_event(self, event):
         self.events.append(event)
@@ -74,7 +74,7 @@ class EventCounter (EventBus):
         self.counts = {}
         
     def register_handler(self, event_type, handler):
-        self._event_bus.register_handler(handler)
+        self._event_bus.register_handler(event_type, handler)
         
     def raise_event(self, event):
         count = self.counts.get(type(event))
