@@ -68,7 +68,6 @@ class UnitOfWork (BaseUnitOfWork):
         self._outer_event_bus = event_bus
         self._inner_event_bus = EventRecorder(EventBus())
         
-        self._isclosed = False
         self._connection = sqlite3.connect(database)
         self._connection.isolation_level = None
         self._connection.execute('PRAGMA foreign_keys = ON')
@@ -84,7 +83,6 @@ class UnitOfWork (BaseUnitOfWork):
         self._cursor.execute("commit")
         self._cursor.close()
         self._connection.close()
-        self._isclosed = True
         
         for event in self._inner_event_bus.events:
             self._outer_event_bus.raise_event(event)
@@ -94,14 +92,15 @@ class UnitOfWork (BaseUnitOfWork):
         self._cursor.execute("rollback")
         self._cursor.close()
         self._connection.close()
-        self._isclosed = True
         
         self._inner_event_bus.clear()
         
     def close(self):
-        if self._isclosed == False:
+        try:
             self._cursor.close()
             self._connection.close()
+        except sqlite3.ProgrammingError:
+            pass
         
         self._inner_event_bus.clear()
     
