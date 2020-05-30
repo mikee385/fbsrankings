@@ -46,7 +46,7 @@ class Application (object):
         self._sports_reference.load_from_source(year)
         
         with self._data_source.unit_of_work(self.event_bus) as unit_of_work, self._sports_reference.queries() as sports_reference:
-            import_service = ImportService(unit_of_work.factory, unit_of_work.repository, self.validation_service)
+            import_service = ImportService(unit_of_work, self.validation_service)
             import_service.import_for_year(sports_reference, year)
         
             unit_of_work.commit()

@@ -1,7 +1,7 @@
 import sqlite3
 
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import Factory
+from fbsrankings.domain import SeasonManager, TeamManager, AffiliationManager, GameManager
 from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.sqlite import SeasonSectionTable, SeasonTable, TeamTable, SubdivisionTable, AffiliationTable, GameStatusTable, GameTable, QueryHandler, EventHandler
         
@@ -75,9 +75,13 @@ class UnitOfWork (BaseUnitOfWork):
         self._cursor = self._connection.cursor()
         self._cursor.execute("begin")
         
-        self.factory = Factory(self._inner_event_bus)
-        self.repository = QueryHandler(self._connection, self._inner_event_bus)
-        self.event_handler = EventHandler(self._cursor, self._inner_event_bus)
+        self._query_handler = QueryHandler(self._connection, self._inner_event_bus)
+        self._event_handler = EventHandler(self._cursor, self._inner_event_bus)
+        
+        self.season = SeasonManager(self._query_handler.season)
+        self.team = TeamManager(self._query_handler.team)
+        self.affiliation = AffiliationManager(self._query_handler.affiliation)
+        self.game = GameManager(self._query_handler.game)
 
     def commit(self):
         self._cursor.execute("commit")

@@ -36,21 +36,11 @@ class Season (object):
         return self._year
 
 
-class SeasonFactory (object):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
-   
-    def register(self, year):
-        ID = SeasonID(uuid4())
-        season = Season(self._event_bus, ID, year)
-        season._event_bus.raise_event(SeasonRegisteredEvent(season.ID, season.year))
-        
-        return season
-
-
 class SeasonRepository (object):
+    @property
+    def event_bus(self):
+        raise NotImplementedError
+        
     def find_by_ID(self, ID):
         raise NotImplementedError
         
@@ -59,3 +49,30 @@ class SeasonRepository (object):
         
     def all(self):
         raise NotImplementedError
+        
+
+class SeasonManager (SeasonRepository):
+    def __init__(self, repository):
+        if not isinstance(repository, SeasonRepository):
+            raise TypeError('repository must be of type SeasonRepository')
+        self._repository = repository
+        
+    @property
+    def event_bus(self):
+        return self._repository.event_bus
+   
+    def register(self, year):
+        ID = SeasonID(uuid4())
+        season = Season(self.event_bus, ID, year)
+        self.event_bus.raise_event(SeasonRegisteredEvent(season.ID, season.year))
+        
+        return season
+        
+    def find_by_ID(self, ID):
+        return self._repository.find_by_ID(ID)
+        
+    def find_by_year(self, year):
+        return self._repository.find_by_year(year)
+        
+    def all(self):
+        return self._repository.all()

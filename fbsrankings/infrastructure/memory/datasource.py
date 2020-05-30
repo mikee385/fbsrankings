@@ -1,5 +1,5 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import Factory
+from fbsrankings.domain import SeasonManager, TeamManager, AffiliationManager, GameManager
 from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler, EventHandler
 
@@ -13,7 +13,7 @@ class DataSource (QueryFactory, UnitOfWorkFactory):
         self.affiliation = AffiliationDataSource()
         self.game = GameDataSource()
         
-    def queries (self):
+    def queries(self):
         return QueryProvider(self)
         
     def unit_of_work(self, event_bus):
@@ -45,13 +45,17 @@ class UnitOfWork (BaseUnitOfWork):
             raise TypeError('data_source must be of type DataSource')
         self.data_source = data_source
         
-        self.factory = Factory(self._inner_event_bus)
-        self.repository = QueryHandler(data_source, self._inner_event_bus)
-        self.event_handler = EventHandler(data_source, self._inner_event_bus)
+        self._query_handler = QueryHandler(data_source, self._inner_event_bus)
+        self._event_handler = EventHandler(data_source, self._inner_event_bus)
+        
+        self.season = SeasonManager(self._query_handler.season)
+        self.team = TeamManager(self._query_handler.team)
+        self.affiliation = AffiliationManager(self._query_handler.affiliation)
+        self.game = GameManager(self._query_handler.game)
 
     def commit(self):
         for event in self._inner_event_bus.events:
-            handled = self.event_handler.handle(event)
+            handled = self._event_handler.handle(event)
             if not handled:
                 raise ValueError(f'Unknown event type: {type(event)}')
 

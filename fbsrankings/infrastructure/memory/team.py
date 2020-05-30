@@ -48,6 +48,10 @@ class TeamQueryHandler (TeamRepository):
         if dto is not None:
             return Team(self._event_bus, dto.ID, dto.name)
         return None
+        
+    @property
+    def event_bus(self):
+        return self._event_bus
 
     def find_by_ID(self, ID):
         return self._to_team(self._data_source.find_by_ID(ID))

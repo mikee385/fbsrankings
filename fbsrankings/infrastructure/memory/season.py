@@ -48,6 +48,10 @@ class SeasonQueryHandler (SeasonRepository):
         if dto is not None:
             return Season(self._event_bus, dto.ID, dto.year)
         return None
+        
+    @property
+    def event_bus(self):
+        return self._event_bus
 
     def find_by_ID(self, ID):
         return self._to_season(self._data_source.find_by_ID(ID))

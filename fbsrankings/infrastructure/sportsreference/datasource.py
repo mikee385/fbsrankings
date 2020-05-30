@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup, Tag
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Repository, SeasonSection, Subdivision, GameStatus
+from fbsrankings.domain import SeasonSection, Subdivision, GameStatus
 from fbsrankings.infrastructure import QueryFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import QueryHandler
@@ -35,7 +35,7 @@ class DataSource (QueryFactory):
         else:
             self._alternate_names = {}
         
-    def queries (self):
+    def queries(self):
         return QueryProvider(self, self._cache)
         
     def add_source(self, year, postseason_start_week, source_type, team_source, game_source):
@@ -43,7 +43,7 @@ class DataSource (QueryFactory):
             raise ValueError(f'Source already exists for year {year}')
             
         unit_of_work = self._cache.unit_of_work(EventBus())
-        season = unit_of_work.factory.season.register(year)
+        season = unit_of_work.season.register(year)
         unit_of_work.commit()
             
         source = SeasonSource(season.ID, year, postseason_start_week, source_type, team_source, game_source)
@@ -115,10 +115,10 @@ class DataSource (QueryFactory):
                 name = row[name_index].strip()
                 if name in self._alternate_names:
                     name = self._alternate_names[name]
-                team = unit_of_work.repository.team.find_by_name(name)
+                team = unit_of_work.team.find_by_name(name)
                 if team is None:
-                    team = unit_of_work.factory.team.register(name)
-                unit_of_work.factory.affiliation.register(source.ID, team.ID, Subdivision.FBS)
+                    team = unit_of_work.team.register(name)
+                unit_of_work.affiliation.register(source.ID, team.ID, Subdivision.FBS)
                 fbs_teams[name] = team
                 
         games = []
@@ -200,20 +200,20 @@ class DataSource (QueryFactory):
                 if home_team is None:
                     home_team = fcs_teams.get(home_team_name)
                     if home_team is None:
-                        home_team = unit_of_work.repository.team.find_by_name(home_team_name)
+                        home_team = unit_of_work.team.find_by_name(home_team_name)
                         if home_team is None:
-                            home_team = unit_of_work.factory.team.register(home_team_name)
-                        unit_of_work.factory.affiliation.register(source.ID, home_team.ID, Subdivision.FCS)
+                            home_team = unit_of_work.team.register(home_team_name)
+                        unit_of_work.affiliation.register(source.ID, home_team.ID, Subdivision.FCS)
                         fcs_teams[home_team_name] = home_team
                 
                 away_team = fbs_teams.get(away_team_name)
                 if away_team is None:
                     away_team = fcs_teams.get(away_team_name)
                     if away_team is None:
-                        away_team = unit_of_work.repository.team.find_by_name(away_team_name)
+                        away_team = unit_of_work.team.find_by_name(away_team_name)
                         if away_team is None:
-                            away_team = unit_of_work.factory.team.register(away_team_name)
-                        unit_of_work.factory.affiliation.register(source.ID, away_team.ID, Subdivision.FCS)
+                            away_team = unit_of_work.team.register(away_team_name)
+                        unit_of_work.affiliation.register(source.ID, away_team.ID, Subdivision.FCS)
                         fcs_teams[away_team_name] = away_team
                 
                 notes = row[notes_index].strip()
@@ -223,7 +223,7 @@ class DataSource (QueryFactory):
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
-                game = unit_of_work.factory.game.schedule(source.ID, week, date_, season_section, home_team.ID, away_team.ID, notes)
+                game = unit_of_work.game.schedule(source.ID, week, date_, season_section, home_team.ID, away_team.ID, notes)
                 games.append(game)
                 
                 if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:

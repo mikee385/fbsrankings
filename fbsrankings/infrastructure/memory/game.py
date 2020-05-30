@@ -78,6 +78,10 @@ class GameQueryHandler (GameRepository):
         if dto is not None:
             return Game(self._event_bus, dto.ID, dto.season_ID, dto.week, dto.date, dto.season_section, dto.home_team_ID, dto.away_team_ID, dto.home_team_score, dto.away_team_score, dto.status, dto.notes)
         return None
+        
+    @property
+    def event_bus(self):
+        return self._event_bus
 
     def find_by_ID(self, ID):
         return self._to_game(self._data_source.find_by_ID(ID))

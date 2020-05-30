@@ -72,6 +72,10 @@ class SeasonQueryHandler (SeasonRepository):
         self._event_bus = event_bus
         
         self.table = SeasonTable()
+        
+    @property
+    def event_bus(self):
+        return self._event_bus
 
     def find_by_ID(self, ID):
         if not isinstance(ID, SeasonID):

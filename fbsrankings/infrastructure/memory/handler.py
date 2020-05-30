@@ -1,19 +1,16 @@
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Repository
 from fbsrankings.infrastructure.memory import SeasonQueryHandler, SeasonEventHandler, TeamQueryHandler, TeamEventHandler, AffiliationQueryHandler, AffiliationEventHandler, GameQueryHandler, GameEventHandler
 
 
-class QueryHandler (Repository):
+class QueryHandler (object):
     def __init__(self, data_source, event_bus):
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
         
-        super().__init__(
-            SeasonQueryHandler(data_source.season, event_bus),
-            TeamQueryHandler(data_source.team, event_bus),
-            AffiliationQueryHandler(data_source.affiliation, event_bus),
-            GameQueryHandler(data_source.game, event_bus)
-        )
+        self.season = SeasonQueryHandler(data_source.season, event_bus)
+        self.team = TeamQueryHandler(data_source.team, event_bus)
+        self.affiliation = AffiliationQueryHandler(data_source.affiliation, event_bus)
+        self.game = GameQueryHandler(data_source.game, event_bus)
         
 
 class EventHandler (object):
