@@ -1,12 +1,12 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
-from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler, EventHandler
+from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource
+from fbsrankings.infrastructure.memory import SeasonQueryHandler, TeamQueryHandler, AffiliationQueryHandler, GameQueryHandler
+from fbsrankings.infrastructure.memory import SeasonEventHandler, TeamEventHandler, AffiliationEventHandler, GameEventHandler
 
 
 class DataSource (QueryFactory, UnitOfWorkFactory):
     def __init__(self):
-        self.event_bus = EventBus()
-
         self.season = SeasonDataSource()
         self.team = TeamDataSource()
         self.affiliation = AffiliationDataSource()
@@ -19,9 +19,14 @@ class DataSource (QueryFactory, UnitOfWorkFactory):
         return UnitOfWork(self, event_bus)
         
 
-class QueryProvider (QueryHandler):
+class QueryProvider (object):
     def __init__(self, data_source):
-        super().__init__(data_source, ReadOnlyEventBus())
+        event_bus = ReadOnlyEventBus()
+        
+        self.season = SeasonQueryHandler(data_source.season, event_bus)
+        self.team = TeamQueryHandler(data_source.team, event_bus)
+        self.affiliation = AffiliationQueryHandler(data_source.affiliation, event_bus)
+        self.game = GameQueryHandler(data_source.game, event_bus)
         
     def close(self):
         pass
@@ -44,17 +49,25 @@ class UnitOfWork (BaseUnitOfWork):
             raise TypeError('data_source must be of type DataSource')
         self.data_source = data_source
         
-        self._query_handler = QueryHandler(data_source, self._inner_event_bus)
-        self._event_handler = EventHandler(data_source, self._inner_event_bus)
+        self._season_handler = SeasonEventHandler(data_source.season, self._inner_event_bus)
+        self._team_handler = TeamEventHandler(data_source.team, self._inner_event_bus)
+        self._affiliation_handler = AffiliationEventHandler(data_source.affiliation, self._inner_event_bus)
+        self._game_handler = GameEventHandler(data_source.game, self._inner_event_bus)
         
-        self.season = self._query_handler.season
-        self.team = self._query_handler.team
-        self.affiliation = self._query_handler.affiliation
-        self.game = self._query_handler.game
+        self.season = SeasonQueryHandler(data_source.season, self._inner_event_bus)
+        self.team = TeamQueryHandler(data_source.team, self._inner_event_bus)
+        self.affiliation = AffiliationQueryHandler(data_source.affiliation, self._inner_event_bus)
+        self.game = GameQueryHandler(data_source.game, self._inner_event_bus)
 
     def commit(self):
         for event in self._inner_event_bus.events:
-            handled = self._event_handler.handle(event)
+            handled = False
+        
+            handled = self._season_handler.handle(event) or handled
+            handled = self._team_handler.handle(event) or handled
+            handled = self._affiliation_handler.handle(event) or handled
+            handled = self._game_handler.handle(event) or handled
+            
             if not handled:
                 raise ValueError(f'Unknown event type: {type(event)}')
 

@@ -9,6 +9,8 @@ class AffiliationQueryHandler (AffiliationRepository):
             raise TypeError('repository must be of type AffiliationRepository')
         self._repository = repository
         
+        super().__init__(self._repository._event_bus)
+        
     def find_by_ID(self, ID):
         return self._repository.find_by_ID(ID)
         

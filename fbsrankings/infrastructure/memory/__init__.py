@@ -4,5 +4,4 @@ from fbsrankings.infrastructure.memory.season import SeasonDataSource, SeasonQue
 from fbsrankings.infrastructure.memory.team import TeamDataSource, TeamQueryHandler, TeamEventHandler
 from fbsrankings.infrastructure.memory.affiliation import AffiliationDataSource, AffiliationQueryHandler, AffiliationEventHandler
 from fbsrankings.infrastructure.memory.game import GameDataSource, GameQueryHandler, GameEventHandler
-from fbsrankings.infrastructure.memory.handler import QueryHandler, EventHandler
 from fbsrankings.infrastructure.memory.datasource import DataSource, QueryProvider, UnitOfWork

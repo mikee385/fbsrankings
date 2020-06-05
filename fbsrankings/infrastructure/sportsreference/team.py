@@ -8,6 +8,8 @@ class TeamQueryHandler (TeamRepository):
         if not isinstance(repository, TeamRepository):
             raise TypeError('repository must be of type GameRepository')
         self._repository = repository
+        
+        super().__init__(self._repository._event_bus)
 
     def find_by_ID(self, ID):
         return self._repository.find_by_ID(ID)

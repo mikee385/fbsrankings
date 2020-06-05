@@ -7,7 +7,7 @@ from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonSection, Subdivision, GameStatus
 from fbsrankings.infrastructure import QueryFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
-from fbsrankings.infrastructure.sportsreference import QueryHandler
+from fbsrankings.infrastructure.sportsreference import SeasonQueryHandler, TeamQueryHandler, AffiliationQueryHandler, GameQueryHandler
 
 
 class SeasonSource (object):
@@ -252,13 +252,16 @@ def _html_iter(soup):
         yield [child.getText() for child in filter(lambda c: isinstance(c, Tag), row.children)]
         
         
-class QueryProvider (QueryHandler):
+class QueryProvider (object):
     def __init__(self, data_source, cache):
         if not isinstance(data_source, DataSource):
             raise TypeError('data_source must be of type DataSource')
         self._provider = cache.queries()
         
-        super().__init__(data_source, self._provider)
+        self.season = SeasonQueryHandler(data_source, self._provider.season)
+        self.team = TeamQueryHandler(data_source, self._provider.team)
+        self.affiliation = AffiliationQueryHandler(data_source, self._provider.affiliation)
+        self.game = GameQueryHandler(data_source, self._provider.game)
         
     def close(self):
         self._provider.close()

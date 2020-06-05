@@ -2,7 +2,9 @@ import sqlite3
 
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
 from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
-from fbsrankings.infrastructure.sqlite import SeasonSectionTable, SeasonTable, TeamTable, SubdivisionTable, AffiliationTable, GameStatusTable, GameTable, QueryHandler, EventHandler
+from fbsrankings.infrastructure.sqlite import SeasonSectionTable, SeasonTable, TeamTable, SubdivisionTable, AffiliationTable, GameStatusTable, GameTable
+from fbsrankings.infrastructure.sqlite import SeasonQueryHandler, TeamQueryHandler, AffiliationQueryHandler, GameQueryHandler
+from fbsrankings.infrastructure.sqlite import SeasonEventHandler, TeamEventHandler, AffiliationEventHandler, GameEventHandler
         
  
 class DataSource (QueryFactory, UnitOfWorkFactory):
@@ -42,12 +44,17 @@ class DataSource (QueryFactory, UnitOfWorkFactory):
         return UnitOfWork(self._database, event_bus)
         
 
-class QueryProvider (QueryHandler):
+class QueryProvider (object):
     def __init__(self, database):
         self._connection = sqlite3.connect(database)
         self._connection.execute('PRAGMA query_only = ON')
         
-        super().__init__(self._connection, ReadOnlyEventBus())
+        event_bus = ReadOnlyEventBus()
+        
+        self.season = SeasonQueryHandler(self._connection, event_bus)
+        self.team = TeamQueryHandler(self._connection, event_bus)
+        self.affiliation = AffiliationQueryHandler(self._connection, event_bus)
+        self.game = GameQueryHandler(self._connection, event_bus)
         
     def close(self):
         self._connection.close()
@@ -74,13 +81,15 @@ class UnitOfWork (BaseUnitOfWork):
         self._cursor = self._connection.cursor()
         self._cursor.execute("begin")
         
-        self._query_handler = QueryHandler(self._connection, self._inner_event_bus)
-        self._event_handler = EventHandler(self._cursor, self._inner_event_bus)
+        self._season_handler = SeasonEventHandler(self._cursor, self._inner_event_bus)
+        self._team_handler = TeamEventHandler(self._cursor, self._inner_event_bus)
+        self._affiliation_handler = AffiliationEventHandler(self._cursor, self._inner_event_bus)
+        self._game_handler = GameEventHandler(self._cursor, self._inner_event_bus)
         
-        self.season = self._query_handler.season
-        self.team = self._query_handler.team
-        self.affiliation = self._query_handler.affiliation
-        self.game = self._query_handler.game
+        self.season = SeasonQueryHandler(self._connection, self._inner_event_bus)
+        self.team = TeamQueryHandler(self._connection, self._inner_event_bus)
+        self.affiliation = AffiliationQueryHandler(self._connection, self._inner_event_bus)
+        self.game = GameQueryHandler(self._connection, self._inner_event_bus)
 
     def commit(self):
         self._cursor.execute("commit")
