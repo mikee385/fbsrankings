@@ -214,44 +214,26 @@ class Game (object):
 
 
 class GameRepository (object):
-    def find_by_ID(self, ID):
-        raise NotImplementedError
-        
-    def find_by_season_teams(self, season, week, team1, team2):
-        raise NotImplementedError
-        
-    def find_by_season(self, season):
-        raise NotImplementedError
-        
-    def all(self):
-        raise NotImplementedError
-
-
-class GameManager (GameRepository):
-    def __init__(self, repository):
-        if not isinstance(repository, GameRepository):
-            raise TypeError('repository must be of type GameRepository')
-        self._repository = repository
-        
-    @property
-    def event_bus(self):
-        return self._repository.event_bus
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
         
     def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
-        game = Game(self.event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
-        self.event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
+        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
+        self._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
         
         return game
-        
+    
     def find_by_ID(self, ID):
-        return self._repository.find_by_ID(ID)
+        raise NotImplementedError
         
     def find_by_season_teams(self, season, week, team1, team2):
-        return self._repository.find_by_season_teams(season, week, team1, team2)
+        raise NotImplementedError
         
     def find_by_season(self, season):
-        return self._repository.find_by_season(season)
+        raise NotImplementedError
         
     def all(self):
-        return self._repository.all()
+        raise NotImplementedError

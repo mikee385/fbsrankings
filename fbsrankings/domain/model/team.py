@@ -30,42 +30,23 @@ class Team (object):
 
 
 class TeamRepository (object):
-    @property
-    def event_bus(self):
-        raise NotImplementedError
-
-    def find_by_ID(self, ID):
-        raise NotImplementedError
-        
-    def find_by_name(self, name):
-        raise NotImplementedError
-    
-    def all(self):
-        raise NotImplementedError
-        
-
-class TeamManager (TeamRepository):
-    def __init__(self, repository):
-        if not isinstance(repository, TeamRepository):
-            raise TypeError('event_bus must be of type TeamRepository')
-        self._repository = repository
-        
-    @property
-    def event_bus(self):
-        return self._repository.event_bus
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
     
     def register(self, name):
         ID = TeamID(uuid4())
-        team = Team(self.event_bus, ID, name)
-        self.event_bus.raise_event(TeamRegisteredEvent(team.ID, team.name))
+        team = Team(self._event_bus, ID, name)
+        self._event_bus.raise_event(TeamRegisteredEvent(team.ID, team.name))
         
         return team
-        
+
     def find_by_ID(self, ID):
-        return self._repository.find_by_ID(ID)
+        raise NotImplementedError
         
     def find_by_name(self, name):
-        return self._repository.find_by_name(name)
+        raise NotImplementedError
     
     def all(self):
-        return self._repository.all()
+        raise NotImplementedError

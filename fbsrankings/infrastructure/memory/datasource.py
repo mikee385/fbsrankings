@@ -1,5 +1,4 @@
 from fbsrankings.common import EventBus, ReadOnlyEventBus, EventRecorder
-from fbsrankings.domain import SeasonManager, TeamManager, AffiliationManager, GameManager
 from fbsrankings.infrastructure import QueryFactory, UnitOfWork as BaseUnitOfWork, UnitOfWorkFactory
 from fbsrankings.infrastructure.memory import SeasonDataSource, TeamDataSource, AffiliationDataSource, GameDataSource, QueryHandler, EventHandler
 
@@ -48,10 +47,10 @@ class UnitOfWork (BaseUnitOfWork):
         self._query_handler = QueryHandler(data_source, self._inner_event_bus)
         self._event_handler = EventHandler(data_source, self._inner_event_bus)
         
-        self.season = SeasonManager(self._query_handler.season)
-        self.team = TeamManager(self._query_handler.team)
-        self.affiliation = AffiliationManager(self._query_handler.affiliation)
-        self.game = GameManager(self._query_handler.game)
+        self.season = self._query_handler.season
+        self.team = self._query_handler.team
+        self.affiliation = self._query_handler.affiliation
+        self.game = self._query_handler.game
 
     def commit(self):
         for event in self._inner_event_bus.events:

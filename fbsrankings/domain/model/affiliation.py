@@ -61,42 +61,23 @@ class Affiliation (object):
 
 
 class AffiliationRepository (object):
-    @property
-    def event_bus(self):
-        raise NotImplementedError
-
-    def find_by_ID(self, ID):
-        raise NotImplementedError
-        
-    def find_by_season_team(self, season, team):
-        raise NotImplementedError
-        
-    def find_by_season(self, season):
-        raise NotImplementedError
-        
-
-class AffiliationManager (AffiliationRepository):
-    def __init__(self, repository):
-        if not isinstance(repository, AffiliationRepository):
-            raise TypeError('event_bus must be of type AffiliationRepository')
-        self._repository = repository
-        
-    @property
-    def event_bus(self):
-        return self._repository.event_bus
-
+    def __init__(self, event_bus):
+        if not isinstance(event_bus, EventBus):
+            raise TypeError('event_bus must be of type EventBus')
+        self._event_bus = event_bus
+    
     def register(self, season, team, subdivision):
         ID = AffiliationID(uuid4())
-        affiliation = Affiliation(self.event_bus, ID, season, team, subdivision)
-        self.event_bus.raise_event(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
+        affiliation = Affiliation(self._event_bus, ID, season, team, subdivision)
+        self._event_bus.raise_event(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
         
         return affiliation
-        
+
     def find_by_ID(self, ID):
-        return self._repository.find_by_ID(ID)
+        raise NotImplementedError
         
     def find_by_season_team(self, season, team):
-        return self._repository.find_by_season_team(season, team)
+        raise NotImplementedError
         
     def find_by_season(self, season):
-        return self._repository.find_by_season(season)
+        raise NotImplementedError

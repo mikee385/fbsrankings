@@ -33,19 +33,13 @@ class TeamTable (object):
 
 class TeamQueryHandler (TeamRepository):
     def __init__(self, connection, event_bus):
+        super().__init__(event_bus)
+        
         if not isinstance(connection, sqlite3.Connection):
             raise TypeError('connection must be of type sqlite3.Connection')
         self._connection = connection
         
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
-        
         self.table = TeamTable()
-        
-    @property
-    def event_bus(self):
-        return self._event_bus
 
     def find_by_ID(self, ID):
         if not isinstance(ID, TeamID):

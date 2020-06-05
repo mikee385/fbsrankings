@@ -36,22 +36,16 @@ class SeasonDataSource (object):
 
 class SeasonQueryHandler (SeasonRepository):
     def __init__(self, data_source, event_bus):
+        super().__init__(event_bus)
+        
         if not isinstance(data_source, SeasonDataSource):
             raise TypeError('repository must be of type SeasonDataSource')
         self._data_source = data_source
-        
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
         
     def _to_season(self, dto):
         if dto is not None:
             return Season(self._event_bus, dto.ID, dto.year)
         return None
-        
-    @property
-    def event_bus(self):
-        return self._event_bus
 
     def find_by_ID(self, ID):
         return self._to_season(self._data_source.find_by_ID(ID))

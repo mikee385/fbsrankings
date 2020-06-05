@@ -36,22 +36,16 @@ class TeamDataSource (object):
 
 class TeamQueryHandler (TeamRepository):
     def __init__(self, data_source, event_bus):
-        if not isinstance(data_source, TeamDataSource):
-            raise TypeError('data_source must be of type TeamDataSource')
-        self._data_source = data_source
+        super().__init__(event_bus)
         
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+        if not isinstance(data_source, TeamDataSource):
+            raise TypeError('repository must be of type TeamDataSource')
+        self._data_source = data_source
         
     def _to_team(self, dto):
         if dto is not None:
             return Team(self._event_bus, dto.ID, dto.name)
         return None
-        
-    @property
-    def event_bus(self):
-        return self._event_bus
 
     def find_by_ID(self, ID):
         return self._to_team(self._data_source.find_by_ID(ID))
