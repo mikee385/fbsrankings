@@ -1,6 +1,6 @@
 from fbsrankings.common import EventBus, EventCounter
-from fbsrankings.domain import Subdivision, GameStatus, ImportService, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
-from fbsrankings.infrastructure.sportsreference import DataSource as SportsReference
+from fbsrankings.domain import Subdivision, GameStatus, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 
@@ -22,8 +22,10 @@ class Application (object):
         if alternate_names is None:
             alternate_names = {}
             
+        self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
+            
         self.seasons = []
-        self._sports_reference = SportsReference(alternate_names)
+        self._sports_reference = SportsReference(alternate_names, self.validation_service)
         for season in config['seasons']:
             self.seasons.append(season['year'])
             self._sports_reference.add_source(
@@ -33,8 +35,6 @@ class Application (object):
                 season['teams'],
                 season['games']
             )
-            
-        self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
         self.event_bus = EventCounter(EventBus())
         
@@ -43,11 +43,8 @@ class Application (object):
         return self.validation_service.errors
 
     def import_season(self, year):
-        self._sports_reference.load_from_source(year)
-        
-        with self._data_source.unit_of_work(self.event_bus) as unit_of_work, self._sports_reference.queries() as sports_reference:
-            import_service = ImportService(unit_of_work, self.validation_service)
-            import_service.import_for_year(sports_reference, year)
+        with self._data_source.unit_of_work(self.event_bus) as unit_of_work:
+            self._sports_reference.import_season(year, unit_of_work)
         
             unit_of_work.commit()
 

@@ -114,7 +114,7 @@ class ValidationService (object):
         if game.notes != notes:
             self._handle_error(GameDataValidationError(f'Game.notes does not match notes: {game.notes} vs. {notes}', game.ID, 'notes', game.notes, notes))
 
-    def validate_games(self, affiliations, games):
+    def validate_season_games(self, affiliations, games):
         fbs_game_counts = {}
         fcs_game_counts = {}
         for affiliation in affiliations:
