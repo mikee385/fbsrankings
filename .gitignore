@@ -107,4 +107,4 @@ venv.bak/
 .mypy_cache/
 
 # Project output
-fbsrankings/data/*.db
+*.db
