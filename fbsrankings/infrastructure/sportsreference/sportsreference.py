@@ -1,4 +1,3 @@
-import csv
 from datetime import datetime
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, Tag
@@ -38,20 +37,6 @@ class SportsReference (object):
         if source is None:
             raise ValueError(f'Source has not been added for year {year}')
         
-        if source.source_type == 'CSV':
-            self._import_from_csv(source, repository)
-        elif source.source_type == 'URL':
-            self._import_from_url(source, repository)
-        else:
-            raise ValueError(f'Unknown source type: {source.source_type}')
-        
-    def _import_from_csv(self, source, repository):
-        with open(source.team_source, 'r') as team_file, open(source.game_source, 'r') as game_file:
-            team_rows = iter(csv.reader(team_file))
-            game_rows = iter(csv.reader(game_file))
-            self._import_from_rows(source, team_rows, game_rows, repository)
-        
-    def _import_from_url(self, source, repository):
         team_html = urlopen(source.team_source)
         team_soup = BeautifulSoup(team_html, "html5lib")
         team_rows = _html_iter(team_soup)
@@ -60,14 +45,11 @@ class SportsReference (object):
         game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
         
-        self._import_from_rows(source, team_rows, game_rows, repository)
+        season = self._import_season(repository, source.year)
         
-    def _import_from_rows(self, source, team_rows, game_rows, repository):
         teams = {}
         affiliations = {}
         games = {}
-        
-        season = self._import_season(repository, source.year)
         
         header_row = next(team_rows)
         if header_row[0] == '':
