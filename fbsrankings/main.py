@@ -3,7 +3,7 @@ import json
 from fbsrankings.application import Application
 
 
-with open('config_urls.json') as config_file:
+with open('config.json') as config_file:
     config = json.load(config_file)
 
 with Application(config) as application:
