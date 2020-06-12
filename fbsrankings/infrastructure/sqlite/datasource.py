@@ -40,8 +40,8 @@ class DataSource (QueryFactory, UnitOfWorkFactory):
     def queries(self):
         return QueryProvider(self._database)
         
-    def unit_of_work(self, event_bus):
-        return UnitOfWork(self._database, event_bus)
+    def unit_of_work(self, bus):
+        return UnitOfWork(self._database, bus)
         
 
 class QueryProvider (object):
@@ -49,12 +49,12 @@ class QueryProvider (object):
         self._connection = sqlite3.connect(database)
         self._connection.execute('PRAGMA query_only = ON')
         
-        event_bus = ReadOnlyEventBus()
+        bus = ReadOnlyEventBus()
         
-        self.season = SeasonQueryHandler(self._connection, event_bus)
-        self.team = TeamQueryHandler(self._connection, event_bus)
-        self.affiliation = AffiliationQueryHandler(self._connection, event_bus)
-        self.game = GameQueryHandler(self._connection, event_bus)
+        self.season = SeasonQueryHandler(self._connection, bus)
+        self.team = TeamQueryHandler(self._connection, bus)
+        self.affiliation = AffiliationQueryHandler(self._connection, bus)
+        self.game = GameQueryHandler(self._connection, bus)
         
     def close(self):
         self._connection.close()
@@ -68,11 +68,11 @@ class QueryProvider (object):
 
 
 class UnitOfWork (BaseUnitOfWork):
-    def __init__(self, database, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._outer_event_bus = event_bus
-        self._inner_event_bus = EventRecorder(EventBus())
+    def __init__(self, database, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._outer_bus = bus
+        self._inner_bus = EventRecorder(EventBus())
         
         self._connection = sqlite3.connect(database)
         self._connection.isolation_level = None
@@ -81,31 +81,31 @@ class UnitOfWork (BaseUnitOfWork):
         self._cursor = self._connection.cursor()
         self._cursor.execute("begin")
         
-        self._season_handler = SeasonEventHandler(self._cursor, self._inner_event_bus)
-        self._team_handler = TeamEventHandler(self._cursor, self._inner_event_bus)
-        self._affiliation_handler = AffiliationEventHandler(self._cursor, self._inner_event_bus)
-        self._game_handler = GameEventHandler(self._cursor, self._inner_event_bus)
+        self._season_handler = SeasonEventHandler(self._cursor, self._inner_bus)
+        self._team_handler = TeamEventHandler(self._cursor, self._inner_bus)
+        self._affiliation_handler = AffiliationEventHandler(self._cursor, self._inner_bus)
+        self._game_handler = GameEventHandler(self._cursor, self._inner_bus)
         
-        self.season = SeasonQueryHandler(self._connection, self._inner_event_bus)
-        self.team = TeamQueryHandler(self._connection, self._inner_event_bus)
-        self.affiliation = AffiliationQueryHandler(self._connection, self._inner_event_bus)
-        self.game = GameQueryHandler(self._connection, self._inner_event_bus)
+        self.season = SeasonQueryHandler(self._connection, self._inner_bus)
+        self.team = TeamQueryHandler(self._connection, self._inner_bus)
+        self.affiliation = AffiliationQueryHandler(self._connection, self._inner_bus)
+        self.game = GameQueryHandler(self._connection, self._inner_bus)
 
     def commit(self):
         self._cursor.execute("commit")
         self._cursor.close()
         self._connection.close()
         
-        for event in self._inner_event_bus.events:
-            self._outer_event_bus.raise_event(event)
-        self._inner_event_bus.clear()
+        for event in self._inner_bus.events:
+            self._outer_bus.publish(event)
+        self._inner_bus.clear()
         
     def rollback(self):
         self._cursor.execute("rollback")
         self._cursor.close()
         self._connection.close()
         
-        self._inner_event_bus.clear()
+        self._inner_bus.clear()
         
     def close(self):
         try:
@@ -114,7 +114,7 @@ class UnitOfWork (BaseUnitOfWork):
         except sqlite3.ProgrammingError:
             pass
         
-        self._inner_event_bus.clear()
+        self._inner_bus.clear()
     
     def __enter__(self):
         return self

@@ -65,8 +65,8 @@ class GameDataSource (object):
         
 
 class GameQueryHandler (GameRepository):
-    def __init__(self, data_source, event_bus):
-        super().__init__(event_bus)
+    def __init__(self, data_source, bus):
+        super().__init__(bus)
         
         if not isinstance(data_source, GameDataSource):
             raise TypeError('data_source must be of type GameDataSource')
@@ -74,7 +74,7 @@ class GameQueryHandler (GameRepository):
         
     def _to_game(self, dto):
         if dto is not None:
-            return Game(self._event_bus, dto.ID, dto.season_ID, dto.week, dto.date, dto.season_section, dto.home_team_ID, dto.away_team_ID, dto.home_team_score, dto.away_team_score, dto.status, dto.notes)
+            return Game(self._bus, dto.ID, dto.season_ID, dto.week, dto.date, dto.season_section, dto.home_team_ID, dto.away_team_ID, dto.home_team_score, dto.away_team_score, dto.status, dto.notes)
         return None
 
     def find_by_ID(self, ID):
@@ -119,14 +119,14 @@ class GameQueryHandler (GameRepository):
         
         
 class GameEventHandler (object):
-    def __init__(self, data_source, event_bus):
+    def __init__(self, data_source, bus):
         if not isinstance(data_source, GameDataSource):
             raise TypeError('data_source must be of type GameDataSource')
         self._data_source = data_source
         
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
     def handle(self, event):
         if isinstance(event, GameScheduledEvent):

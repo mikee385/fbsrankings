@@ -62,8 +62,8 @@ class SeasonTable (object):
 
 
 class SeasonQueryHandler (SeasonRepository):
-    def __init__(self, connection, event_bus):
-        super().__init__(event_bus)
+    def __init__(self, connection, bus):
+        super().__init__(bus)
         
         if not isinstance(connection, sqlite3.Connection):
             raise TypeError('connection must be of type sqlite3.Connection')
@@ -97,20 +97,20 @@ class SeasonQueryHandler (SeasonRepository):
     
     def _season_from_row(self, row):
         if row is not None:
-            return Season(self._event_bus, SeasonID(UUID(row[0])), row[1])
+            return Season(self._bus, SeasonID(UUID(row[0])), row[1])
         else:
             return None
             
 
 class SeasonEventHandler (object):
-    def __init__(self, cursor, event_bus):
+    def __init__(self, cursor, bus):
         if not isinstance(cursor, sqlite3.Cursor):
             raise TypeError('cursor must be of type sqlite3.Cursor')
         self._cursor = cursor
         
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        event_bus.register_handler(SeasonRegisteredEvent, self._handle_season_registered)
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        bus.register_handler(SeasonRegisteredEvent, self._handle_season_registered)
         
         self.table = SeasonTable()
         

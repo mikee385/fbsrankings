@@ -16,10 +16,10 @@ class SeasonID (Identifier):
 
 
 class Season (object):
-    def __init__(self, event_bus, ID, year):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus, ID, year):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
         if not isinstance(ID, SeasonID):
             raise TypeError('ID must be of type SeasonID')
@@ -37,15 +37,15 @@ class Season (object):
 
 
 class SeasonRepository (object):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
     def register(self, year):
         ID = SeasonID(uuid4())
-        season = Season(self._event_bus, ID, year)
-        self._event_bus.raise_event(SeasonRegisteredEvent(season.ID, season.year))
+        season = Season(self._bus, ID, year)
+        self._bus.publish(SeasonRegisteredEvent(season.ID, season.year))
         
         return season
         

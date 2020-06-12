@@ -25,10 +25,10 @@ class GameStatusError (Exception):
 
 
 class Game (object):
-    def __init__(self, event_bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status, notes):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status, notes):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
         if not isinstance(ID, GameID):
             raise TypeError('ID must be of type GameID')
@@ -155,14 +155,14 @@ class Game (object):
             raise TypeError('date_ must be of type date')
         old_date = self._date
         self._date = date_
-        self._event_bus.raise_event(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
+        self._bus.publish(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
         
     def cancel(self):
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError('Game can only be canceled if it is still scheduled', self.ID, self.status)
         
         self._status = GameStatus.CANCELED
-        self._event_bus.raise_event(GameCanceledEvent(self.ID))
+        self._bus.publish(GameCanceledEvent(self.ID))
         
     def complete(self, home_team_score, away_team_score):
         if self.status != GameStatus.SCHEDULED:
@@ -177,7 +177,7 @@ class Game (object):
         self._set_score(home_team_score, away_team_score)
         self._status = GameStatus.COMPLETED
         
-        self._event_bus.raise_event(GameCompletedEvent(self.ID, home_team_score, away_team_score))
+        self._bus.publish(GameCompletedEvent(self.ID, home_team_score, away_team_score))
         
     def _set_score(self, home_team_score, away_team_score):
         if not isinstance(home_team_score, int):
@@ -210,19 +210,19 @@ class Game (object):
         old_notes = self._notes
         self._notes = notes
         
-        self._event_bus.raise_event(GameNotesUpdatedEvent(self.ID, old_notes, notes))
+        self._bus.publish(GameNotesUpdatedEvent(self.ID, old_notes, notes))
 
 
 class GameRepository (object):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
     def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
-        game = Game(self._event_bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
-        self._event_bus.raise_event(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
+        game = Game(self._bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
+        self._bus.publish(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
         
         return game
     

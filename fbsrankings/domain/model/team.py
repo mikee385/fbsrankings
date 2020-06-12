@@ -9,10 +9,10 @@ class TeamID (Identifier):
 
 
 class Team (object):
-    def __init__(self, event_bus, ID, name):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus, ID, name):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
         if not isinstance(ID, TeamID):
             raise TypeError('ID must be of type TeamID')
@@ -30,15 +30,15 @@ class Team (object):
 
 
 class TeamRepository (object):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
     
     def register(self, name):
         ID = TeamID(uuid4())
-        team = Team(self._event_bus, ID, name)
-        self._event_bus.raise_event(TeamRegisteredEvent(team.ID, team.name))
+        team = Team(self._bus, ID, name)
+        self._bus.publish(TeamRegisteredEvent(team.ID, team.name))
         
         return team
 

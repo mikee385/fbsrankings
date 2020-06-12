@@ -46,8 +46,8 @@ class AffiliationDataSource (object):
         
 
 class AffiliationQueryHandler (AffiliationRepository):
-    def __init__(self, data_source, event_bus):
-        super().__init__(event_bus)
+    def __init__(self, data_source, bus):
+        super().__init__(bus)
         
         if not isinstance(data_source, AffiliationDataSource):
             raise TypeError('data_source must be of type AffiliationDataSource')
@@ -55,7 +55,7 @@ class AffiliationQueryHandler (AffiliationRepository):
         
     def _to_affiliation(self, dto):
         if dto is not None:
-            return Affiliation(self._event_bus, dto.ID, dto.season_ID, dto.team_ID, dto.subdivision)
+            return Affiliation(self._bus, dto.ID, dto.season_ID, dto.team_ID, dto.subdivision)
         return None
 
     def find_by_ID(self, ID):
@@ -90,14 +90,14 @@ class AffiliationQueryHandler (AffiliationRepository):
         
         
 class AffiliationEventHandler (object):
-    def __init__(self, data_source, event_bus):
+    def __init__(self, data_source, bus):
         if not isinstance(data_source, AffiliationDataSource):
             raise TypeError('data_source must be of type AffiliationDataSource')
         self._data_source = data_source
         
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
     def handle(self, event):
         if isinstance(event, AffiliationRegisteredEvent):

@@ -16,10 +16,10 @@ class AffiliationID (Identifier):
 
 
 class Affiliation (object):
-    def __init__(self, event_bus, ID, season, team, subdivision):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus, ID, season, team, subdivision):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
         
         if not isinstance(ID, AffiliationID):
             raise TypeError('ID must be of type AffiliationID')
@@ -61,15 +61,15 @@ class Affiliation (object):
 
 
 class AffiliationRepository (object):
-    def __init__(self, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._event_bus = event_bus
+    def __init__(self, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._bus = bus
     
     def register(self, season, team, subdivision):
         ID = AffiliationID(uuid4())
-        affiliation = Affiliation(self._event_bus, ID, season, team, subdivision)
-        self._event_bus.raise_event(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
+        affiliation = Affiliation(self._bus, ID, season, team, subdivision)
+        self._bus.publish(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
         
         return affiliation
 

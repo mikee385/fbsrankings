@@ -15,18 +15,18 @@ class DataSource (QueryFactory, UnitOfWorkFactory):
     def queries(self):
         return QueryProvider(self)
         
-    def unit_of_work(self, event_bus):
-        return UnitOfWork(self, event_bus)
+    def unit_of_work(self, bus):
+        return UnitOfWork(self, bus)
         
 
 class QueryProvider (object):
     def __init__(self, data_source):
-        event_bus = ReadOnlyEventBus()
+        bus = ReadOnlyEventBus()
         
-        self.season = SeasonQueryHandler(data_source.season, event_bus)
-        self.team = TeamQueryHandler(data_source.team, event_bus)
-        self.affiliation = AffiliationQueryHandler(data_source.affiliation, event_bus)
-        self.game = GameQueryHandler(data_source.game, event_bus)
+        self.season = SeasonQueryHandler(data_source.season, bus)
+        self.team = TeamQueryHandler(data_source.team, bus)
+        self.affiliation = AffiliationQueryHandler(data_source.affiliation, bus)
+        self.game = GameQueryHandler(data_source.game, bus)
         
     def close(self):
         pass
@@ -39,28 +39,28 @@ class QueryProvider (object):
 
 
 class UnitOfWork (BaseUnitOfWork):
-    def __init__(self, data_source, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
-        self._outer_event_bus = event_bus
-        self._inner_event_bus = EventRecorder(EventBus())
+    def __init__(self, data_source, bus):
+        if not isinstance(bus, EventBus):
+            raise TypeError('bus must be of type EventBus')
+        self._outer_bus = bus
+        self._inner_bus = EventRecorder(EventBus())
         
         if not isinstance(data_source, DataSource):
             raise TypeError('data_source must be of type DataSource')
         self.data_source = data_source
         
-        self._season_handler = SeasonEventHandler(data_source.season, self._inner_event_bus)
-        self._team_handler = TeamEventHandler(data_source.team, self._inner_event_bus)
-        self._affiliation_handler = AffiliationEventHandler(data_source.affiliation, self._inner_event_bus)
-        self._game_handler = GameEventHandler(data_source.game, self._inner_event_bus)
+        self._season_handler = SeasonEventHandler(data_source.season, self._inner_bus)
+        self._team_handler = TeamEventHandler(data_source.team, self._inner_bus)
+        self._affiliation_handler = AffiliationEventHandler(data_source.affiliation, self._inner_bus)
+        self._game_handler = GameEventHandler(data_source.game, self._inner_bus)
         
-        self.season = SeasonQueryHandler(data_source.season, self._inner_event_bus)
-        self.team = TeamQueryHandler(data_source.team, self._inner_event_bus)
-        self.affiliation = AffiliationQueryHandler(data_source.affiliation, self._inner_event_bus)
-        self.game = GameQueryHandler(data_source.game, self._inner_event_bus)
+        self.season = SeasonQueryHandler(data_source.season, self._inner_bus)
+        self.team = TeamQueryHandler(data_source.team, self._inner_bus)
+        self.affiliation = AffiliationQueryHandler(data_source.affiliation, self._inner_bus)
+        self.game = GameQueryHandler(data_source.game, self._inner_bus)
 
     def commit(self):
-        for event in self._inner_event_bus.events:
+        for event in self._inner_bus.events:
             handled = False
         
             handled = self._season_handler.handle(event) or handled
@@ -71,15 +71,15 @@ class UnitOfWork (BaseUnitOfWork):
             if not handled:
                 raise ValueError(f'Unknown event type: {type(event)}')
 
-        for event in self._inner_event_bus.events:
-            self._outer_event_bus.raise_event(event)
-        self._inner_event_bus.clear()
+        for event in self._inner_bus.events:
+            self._outer_bus.publish(event)
+        self._inner_bus.clear()
         
     def rollback(self):
-        self._inner_event_bus.clear()
+        self._inner_bus.clear()
         
     def close(self):
-        self._inner_event_bus.clear()
+        self._inner_bus.clear()
     
     def __enter__(self):
         return self

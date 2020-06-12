@@ -4,5 +4,5 @@ class UnitOfWork (object):
         
 
 class UnitOfWorkFactory (object):
-    def unit_of_work(self, event_bus):
+    def unit_of_work(self, bus):
         raise NotImplementedError
