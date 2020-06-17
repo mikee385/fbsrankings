@@ -93,7 +93,7 @@ class GameRepository (BaseRepository):
             return None
 
     def _handle_game_scheduled(self, event):
-        self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), event.week, event.date, event.season_section, str(event.home_team_ID.value), str(event.away_team_ID.value), None, None, GameStatus.SCHEDULED.name, event.notes])
+        self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), event.week, event.date, event.season_section.name, str(event.home_team_ID.value), str(event.away_team_ID.value), None, None, GameStatus.SCHEDULED.name, event.notes])
     
     def _handle_game_rescheduled(self, event):
         self._cursor.execute(f'UPDATE {self.table.name} SET Week=?, Date=? WHERE UUID=?', [event.week, event.date, str(event.ID.value)])

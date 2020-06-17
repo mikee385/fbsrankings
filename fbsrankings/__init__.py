@@ -1,4 +1,4 @@
 """Import college football teams and games from an external source and calculate rankings for the Division I Football Bowl Subdivision (FBS) teams"""
 
-__version__ = "0.23.1"
+__version__ = "0.23.2"
 __author__ = "Michael Stephen Pierce"
