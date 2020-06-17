@@ -13,7 +13,6 @@ event_bus = EventCounter(EventBus())
 
 with Application(config, event_bus) as application:
     for year in application.seasons:
-        break
         print(f'{year}: Importing Data')
         application.import_season(year)
         
