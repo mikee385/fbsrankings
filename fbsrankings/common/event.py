@@ -12,9 +12,9 @@ class EventBus (object):
         if not callable(handler):
             raise TypeError('handler must be a callable type')
         
-        handlers = self._handlers.get(type)
-        if handlers is not None:
-            handlers.append(handler)
+        existing = self._handlers.get(type)
+        if existing is not None:
+            existing.append(handler)
         else:
             self._handlers[type] = [handler]
         
@@ -26,26 +26,6 @@ class EventBus (object):
         if handlers is not None:
             for handler in handlers:
                 handler(event)
-            
-            
-class ReadOnlyEventBus (EventBus):
-    def publish(self, event):
-        raise ValueError('Domain should not have been modified')
-        
-
-class LocalEventHandler (EventBus):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
-        self._global_bus = bus
-        self._local_bus = EventBus()
-        
-    def register_handler(self, type, handler):
-        self._local_bus.register_handler(type, handler)
-        
-    def publish(self, event):
-        self._local_bus.publish(event)
-        self._global_bus.publish(event)
 
 
 class EventRecorder (EventBus):

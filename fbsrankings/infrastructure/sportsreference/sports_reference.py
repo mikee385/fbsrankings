@@ -166,7 +166,7 @@ class SportsReference (object):
                     game.cancel()
                     
         if self._validation_service is not None:
-            self._validation_service.validate_season_games(affiliations.values(), games.values())
+            self._validation_service.validate_season_games(season.ID, affiliations.values(), games.values())
                     
     def _import_season(self, repository, year):
         season = repository.season.find_by_year(year)

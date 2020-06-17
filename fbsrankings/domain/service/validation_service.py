@@ -114,7 +114,7 @@ class ValidationService (object):
         if game.notes != notes:
             self._handle_error(GameDataValidationError(f'Game.notes does not match notes: {game.notes} vs. {notes}', game.ID, 'notes', game.notes, notes))
 
-    def validate_season_games(self, affiliations, games):
+    def validate_season_games(self, season_ID, affiliations, games):
         fbs_game_counts = {}
         fcs_game_counts = {}
         for affiliation in affiliations:
@@ -142,11 +142,11 @@ class ValidationService (object):
         
         for team_ID, game_count in fbs_game_counts.items():
             if game_count < 10:
-                self._handle_error(FBSGameCountValidationError('FBS team has too few games', affiliations[0].season_ID, team_ID, game_count))
+                self._handle_error(FBSGameCountValidationError('FBS team has too few games', season_ID, team_ID, game_count))
 
         for team_ID, game_count in fcs_game_counts.items():
             if game_count > 5:
-                self._handle_error(FCSGameCountValidationError('FCS team had too many games', affiliations[0].season_ID, team_ID, game_count))
+                self._handle_error(FCSGameCountValidationError('FCS team had too many games', season_ID, team_ID, game_count))
                 
     def raise_errors(self):
         if len(self.errors) == 1:

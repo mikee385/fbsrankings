@@ -1,8 +1,10 @@
-from fbsrankings.common import EventBus, EventCounter
-from fbsrankings.domain import Subdivision, GameStatus, ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.common import QueryBus, EventBus, EventCounter
+from fbsrankings.domain import ValidationService, RaiseBehavior, GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
+from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
+from fbsrankings.query import AffiliationCountBySeasonQuery, CanceledGamesQuery, GameByIDQuery, GameCountBySeasonQuery, SeasonByIDQuery, SeasonsQuery, TeamByIDQuery, TeamCountBySeasonQuery
 
 
 class Application (object):
@@ -36,14 +38,17 @@ class Application (object):
                 season['games']
             )
 
-        self.event_bus = EventCounter(EventBus())
+        self._query_bus = QueryBus()
+        self._query_handler = self._data_source.query_handler(self._query_bus)
+        
+        self._event_bus = EventCounter(EventBus())
         
     @property
     def errors(self):
         return self.validation_service.errors
 
     def import_season(self, year):
-        with self._data_source.unit_of_work(self.event_bus) as unit_of_work:
+        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
             self._sports_reference.import_season(year, unit_of_work)
         
             unit_of_work.commit()
@@ -52,36 +57,33 @@ class Application (object):
         pass
         
     def print_results(self):
-        with self._data_source.queries() as repository:
-            seasons = repository.season.all()
-            print(f'Total Seasons: {len(seasons)}')
-            for season in seasons:
-                print()
-                print(f'{season.year} Season:')
+        seasons = self._query_bus.query(SeasonsQuery()).seasons
+        print(f'Total Seasons: {len(seasons)}')
+        for season in seasons:
+            print()
+            print(f'{season.year} Season:')
     
-                affiliations = repository.affiliation.find_by_season(season)
-                print(f'Total Teams: {len(affiliations)}')
-                print(f'FBS Teams: {sum(x.subdivision == Subdivision.FBS for x in affiliations)}')
-                print(f'FCS Teams: {sum(x.subdivision == Subdivision.FCS for x in affiliations)}')
+            team_count = self._query_bus.query(TeamCountBySeasonQuery(season.ID))
+            print(f'Total Teams: {team_count.count}')
+            
+            affiliation_count = self._query_bus.query(AffiliationCountBySeasonQuery(season.ID))
+            print(f'FBS Teams: {affiliation_count.fbs_count}')
+            print(f'FCS Teams: {affiliation_count.fcs_count}')
     
-                games = repository.game.find_by_season(season)
-                print(f'Total Games: {len(games)}')
+            game_count = self._query_bus.query(GameCountBySeasonQuery(season.ID))
+            print(f'Total Games: {game_count.count}')
         
-            canceled_games = [game for game in repository.game.all() if game.status == GameStatus.CANCELED]
-            if canceled_games:
+        canceled_games = self._query_bus.query(CanceledGamesQuery()).games
+        if canceled_games:
+            print()
+            print('Canceled Games:')
+            for game in canceled_games:
                 print()
-                print('Canceled Games:')
-                for game in canceled_games:
-                    print()
-                    self._print_game_summary(repository, game)
-        
-            unknown_games = [game for game in repository.game.all() if game.status != GameStatus.COMPLETED and game.status != GameStatus.CANCELED]
-            if unknown_games:
-                print()
-                print('Unknown Status:')
-                for game in unknown_games:
-                    print()
-                    self._print_game_summary(repository, game)
+                print(f'Year {game.year}, Week {game.week}')
+                print(game.date)
+                print(game.season_section)
+                print(f'{game.home_team_name} vs. {game.away_team_name}')
+                print(game.notes)
         
     def print_errors(self):
         fbs_team_errors = []
@@ -98,66 +100,62 @@ class Application (object):
             else:
                 other_errors.append(error)
 
-        with self._data_source.queries() as repository:
-            if fbs_team_errors:
-                print()
-                print('FBS teams with too few games:')
-                for error in fbs_team_errors:
-                    season = repository.season.find_by_ID(error.season_ID)
-                    team = repository.team.find_by_ID(error.team_ID)
-                    print()
-                    print(f'{season.year} {team.name}: {error.game_count}')
+        if fbs_team_errors:
+            print()
+            print('FBS teams with too few games:')
+            print()
+            for error in fbs_team_errors:
+                season = self._query_bus.query(SeasonByIDQuery(error.season_ID))
+                team = self._query_bus.query(TeamByIDQuery(error.team_ID))
+                print(f'{season.year} {team.name}: {error.game_count}')
                 
-            if fcs_team_errors:
-                print()
-                print('FCS teams with too many games:')
-                for error in fcs_team_errors:
-                    season = repository.season.find_by_ID(error.season_ID)
-                    team = repository.team.find_by_ID(error.team_ID)
-                    print()
-                    print(f'{season.year} {team.name}: {error.game_count}')
+        if fcs_team_errors:
+            print()
+            print('FCS teams with too many games:')
+            print()
+            for error in fcs_team_errors:
+                season = self._query_bus.query(SeasonByIDQuery(error.season_ID))
+                team = self._query_bus.query(TeamByIDQuery(error.team_ID))
+                print(f'{season.year} {team.name}: {error.game_count}')
                 
-            if game_errors:
-                print()
-                print('Game Errors:')
-                for error in game_errors:
-                    game = repository.game.find_by_ID(error.game_ID)
+        if game_errors:
+            print()
+            print('Game Errors:')
+            for error in game_errors:
+                game = self._query_bus.query(GameByIDQuery(error.game_ID))
                 
-                    print()
-                    self._print_game_summary(repository, game)
-                    print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
+                print()
+                print(f'Year {game.year}, Week {game.week}')
+                print(game.date)
+                print(game.season_section)
+                print(f'{game.home_team_name} vs. {game.away_team_name}')
+                if game.home_team_score is not None and game.away_team_score is not None:
+                    print(f'{game.status}, {game.home_team_score} to {game.away_team_score}')
+                else:
+                    print(game.status)
+                print(game.notes)
+                print(f'For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}')
 
         if other_errors:
             print()
             print('Other Errors:')
+            print()
             for error in other_errors:
                 print(error)
                 
     def print_counts(self):
         print()
         print('Events:')
-        if self.event_bus.counts:
-            for event, count in self.event_bus.counts.items():
+        print()
+        if self._event_bus.counts:
+            for event, count in self._event_bus.counts.items():
                 print(f'{event.__name__}: {count}')
         else:
             print('None')
-                
-    def _print_game_summary(self, repository, game):
-        season = repository.season.find_by_ID(game.season_ID)
-        home_team = repository.team.find_by_ID(game.home_team_ID)
-        away_team = repository.team.find_by_ID(game.away_team_ID)
-        print(f'Year {season.year}, Week {game.week}')
-        print(game.date)
-        print(game.season_section)
-        print(f'{home_team.name} vs. {away_team.name}')
-        if game.home_team_score is not None and game.away_team_score is not None:
-            print(f'{game.status}, {game.home_team_score} to {game.away_team_score}')
-        else:
-            print(game.status)
-        print(game.notes)
         
     def close(self):
-        self.event_bus.clear()
+        self._query_handler.close()
+        self._event_bus.clear()
         
     def __enter__(self):
         return self
