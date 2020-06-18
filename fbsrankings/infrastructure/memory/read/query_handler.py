@@ -5,24 +5,31 @@ from fbsrankings.infrastructure.memory.read import AffiliationCountBySeasonQuery
 
 
 class QueryHandler (object):
-    def __init__(self, storage, bus):
+    def __init__(self, storage, query_bus):
         if not isinstance(storage, Storage):
             raise TypeError('storage must be of type Storage')
             
-        if not isinstance(bus, QueryBus):
-            raise TypeError('bus must be of type QueryBus')
-            
-        bus.register_handler(AffiliationCountBySeasonQuery, AffiliationCountBySeasonQueryHandler(storage))
-        bus.register_handler(CanceledGamesQuery, CanceledGamesQueryHandler(storage))
-        bus.register_handler(GameByIDQuery, GameByIDQueryHandler(storage))
-        bus.register_handler(GameCountBySeasonQuery, GameCountBySeasonQueryHandler(storage))
-        bus.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(storage))
-        bus.register_handler(SeasonsQuery, SeasonsQueryHandler(storage))
-        bus.register_handler(TeamByIDQuery, TeamByIDQueryHandler(storage))
-        bus.register_handler(TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(storage))
+        if not isinstance(query_bus, QueryBus):
+            raise TypeError('query_bus must be of type QueryBus')
+        self._bus = query_bus
+        
+        self._handlers = {}
+        
+        self._handlers[AffiliationCountBySeasonQuery] = AffiliationCountBySeasonQueryHandler(storage)
+        self._handlers[CanceledGamesQuery] = CanceledGamesQueryHandler(storage)
+        self._handlers[GameByIDQuery] = GameByIDQueryHandler(storage)
+        self._handlers[GameCountBySeasonQuery] = GameCountBySeasonQueryHandler(storage)
+        self._handlers[SeasonByIDQuery] = SeasonByIDQueryHandler(storage)
+        self._handlers[SeasonsQuery] = SeasonsQueryHandler(storage)
+        self._handlers[TeamByIDQuery] = TeamByIDQueryHandler(storage)
+        self._handlers[TeamCountBySeasonQuery] = TeamCountBySeasonQueryHandler(storage)
+        
+        for query, handler in self._handlers.items():
+            self._bus.register_handler(query, handler)
         
     def close(self):
-        pass
+        for query, handler in self._handlers.items():
+            self._bus.unregister_handler(query, handler)
     
     def __enter__(self):
         return self

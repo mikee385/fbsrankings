@@ -16,6 +16,9 @@ class CommandBus (object):
         else:
             self._handlers[type] = handler
             
+    def unregister_handler(self, type, handler):
+        self._handlers.pop(type)
+            
     def send(self, command):
         if not isinstance(command, Command):
             raise TypeError('command must be of type Command')

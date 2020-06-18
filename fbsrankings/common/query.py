@@ -15,6 +15,9 @@ class QueryBus (object):
             raise ValueError(f'A handler has already been registered for {type}')
         else:
             self._handlers[type] = handler
+            
+    def unregister_handler(self, type, handler):
+        self._handlers.pop(type)
         
     def query(self, query):
         if not isinstance(query, Query):

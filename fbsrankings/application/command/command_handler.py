@@ -11,14 +11,20 @@ class CommandHandler (object):
             
         if not isinstance(command_bus, CommandBus):
             raise TypeError('command_bus must be of type CommandBus')
+        self._bus = command_bus
         
         if not isinstance(event_bus, EventBus):
             raise TypeError('event_bus must be of type EventBus')
             
-        command_bus.register_handler(ImportSeasonByYearCommand, ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus))
+        self._handlers = {}
+        self._handlers[ImportSeasonByYearCommand] = ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus)
+        
+        for command, handler in self._handlers.items():
+            self._bus.register_handler(command, handler)
         
     def close(self):
-        pass
+        for command, handler in self._handlers.items():
+            self._bus.unregister_handler(command, handler)
     
     def __enter__(self):
         return self
