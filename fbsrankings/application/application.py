@@ -1,6 +1,6 @@
-from fbsrankings.common import QueryBus, EventBus
+from fbsrankings.application.command import CommandHandler
+from fbsrankings.common import CommandBus, EventBus, QueryBus
 from fbsrankings.domain import ValidationService, RaiseBehavior
-from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
@@ -40,6 +40,9 @@ class Application (object):
                 season['teams'],
                 season['games']
             )
+            
+        self._command_bus = CommandBus()
+        self._command_handler = CommandHandler(self._sports_reference, self._data_source, self._command_bus, self._event_bus)
 
         self._query_bus = QueryBus()
         self._query_handler = self._data_source.query_handler(self._query_bus)
@@ -47,21 +50,16 @@ class Application (object):
     @property
     def errors(self):
         return self.validation_service.errors
-
-    def import_season(self, year):
-        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
-            self._sports_reference.import_season(year, unit_of_work)
         
-            unit_of_work.commit()
-
-    def calculate_rankings(self, year):
-        pass
+    def send(self, command):
+        self._command_bus.send(command)
         
     def query(self, query):
         return self._query_bus.query(query)
         
     def close(self):
         self._query_handler.close()
+        self._command_handler.close()
         
     def __enter__(self):
         return self

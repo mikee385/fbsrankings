@@ -1,6 +1,7 @@
 import json
 
 from fbsrankings.application import Application
+from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus, EventCounter
 from fbsrankings.domain import GameDataValidationError, FBSGameCountValidationError, FCSGameCountValidationError
 from fbsrankings.query import AffiliationCountBySeasonQuery, CanceledGamesQuery, GameByIDQuery, GameCountBySeasonQuery, SeasonByIDQuery, SeasonsQuery, TeamByIDQuery, TeamCountBySeasonQuery
@@ -14,10 +15,7 @@ event_bus = EventCounter(EventBus())
 with Application(config, event_bus) as application:
     for year in application.seasons:
         print(f'{year}: Importing Data')
-        application.import_season(year)
-        
-        print(f'{year}: Calculating Rankings')
-        application.calculate_rankings(year)
+        application.send(ImportSeasonByYearCommand(year))
 
     print()
     
