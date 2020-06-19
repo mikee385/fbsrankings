@@ -1,7 +1,7 @@
 from fbsrankings.common import Event
 
 
-class GameScheduledEvent (Event):
+class GameCreatedEvent (Event):
     def __init__(self, ID, season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes):
         self.ID = ID
         self.season_ID = season_ID

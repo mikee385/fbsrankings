@@ -2,7 +2,7 @@ import sqlite3
 from uuid import UUID
 
 from fbsrankings.domain import Team, TeamID, TeamRepository as BaseRepository
-from fbsrankings.event import TeamRegisteredEvent
+from fbsrankings.event import TeamCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import TeamTable
 
 
@@ -20,9 +20,9 @@ class TeamRepository (BaseRepository):
         
         self.table = TeamTable()
         
-        bus.register_handler(TeamRegisteredEvent, self._handle_team_registered)
+        bus.register_handler(TeamCreatedEvent, self._handle_team_created)
 
-    def find_by_ID(self, ID):
+    def get(self, ID):
         if not isinstance(ID, TeamID):
             raise TypeError('ID must be of type TeamID')
             
@@ -30,27 +30,20 @@ class TeamRepository (BaseRepository):
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?', [str(ID.value)])
         row = cursor.fetchone()
         cursor.close()
-        return self._team_from_row(row)
+        return self._to_team(row)
         
-    def find_by_name(self, name):
+    def find(self, name):
         cursor = self._connection.cursor()
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name}  WHERE Name=?', [name])
         row = cursor.fetchone()
         cursor.close()
-        return self._team_from_row(row)
-        
-    def all(self):
-        cursor = self._connection.cursor()
-        cursor.execute(f'SELECT {self._columns} FROM {self._table}')
-        items = [self._team_from_row(row) for row in cursor.fetchall()]
-        cursor.close()
-        return items
+        return self._to_team(row)
     
-    def _team_from_row(self, row):
+    def _to_team(self, row):
         if row is not None:
             return Team(self._bus, TeamID(UUID(row[0])), row[1])
         else:
             return None
 
-    def _handle_team_registered(self, event):
+    def _handle_team_created(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)', [str(event.ID.value), event.name])

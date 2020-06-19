@@ -169,9 +169,9 @@ class SportsReference (object):
             self._validation_service.validate_season_games(season.ID, affiliations.values(), games.values())
                     
     def _import_season(self, repository, year):
-        season = repository.season.find_by_year(year)
+        season = repository.season.find(year)
         if season is None:
-            season = repository.season.register(year)
+            season = repository.season.create(year)
             
         if self._validation_service is not None:
             self._validation_service.validate_season_data(season, year)
@@ -183,9 +183,9 @@ class SportsReference (object):
         
         team = cache.get(key)
         if team is None:
-            team = repository.team.find_by_name(name)
+            team = repository.team.find(name)
             if team is None:
-                team = repository.team.register(name)
+                team = repository.team.create(name)
             cache[key] = team
             
         if self._validation_service is not None:
@@ -198,9 +198,9 @@ class SportsReference (object):
         
         affiliation = cache.get(key)
         if affiliation is None:
-            affiliation = repository.affiliation.find_by_season_team(season_ID, team_ID)
+            affiliation = repository.affiliation.find(season_ID, team_ID)
             if affiliation is None:
-                affiliation = repository.affiliation.register(season_ID, team_ID, subdivision)
+                affiliation = repository.affiliation.create(season_ID, team_ID, subdivision)
             cache[key] = affiliation
             
         if self._validation_service is not None:
@@ -216,9 +216,9 @@ class SportsReference (object):
             
         game = cache.get(key)
         if game is None:
-            game = repository.game.find_by_season_teams(season_ID, week, home_team_ID, away_team_ID)
+            game = repository.game.find(season_ID, week, home_team_ID, away_team_ID)
             if game is None:
-                game = repository.game.schedule(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
+                game = repository.game.create(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
             cache[key] = game
         
         if date_ != game.date:

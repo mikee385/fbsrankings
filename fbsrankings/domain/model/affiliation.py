@@ -3,7 +3,7 @@ from enum import Enum
 
 from fbsrankings.common import Identifier, EventBus
 from fbsrankings.domain import Season, SeasonID, Team, TeamID
-from fbsrankings.event import AffiliationRegisteredEvent
+from fbsrankings.event import AffiliationCreatedEvent
 
 
 class Subdivision (Enum):
@@ -66,18 +66,15 @@ class AffiliationRepository (object):
             raise TypeError('bus must be of type EventBus')
         self._bus = bus
     
-    def register(self, season, team, subdivision):
+    def create(self, season, team, subdivision):
         ID = AffiliationID(uuid4())
         affiliation = Affiliation(self._bus, ID, season, team, subdivision)
-        self._bus.publish(AffiliationRegisteredEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
+        self._bus.publish(AffiliationCreatedEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
         
         return affiliation
 
-    def find_by_ID(self, ID):
+    def get(self, ID):
         raise NotImplementedError
         
-    def find_by_season_team(self, season, team):
-        raise NotImplementedError
-        
-    def find_by_season(self, season):
+    def find(self, season, team):
         raise NotImplementedError

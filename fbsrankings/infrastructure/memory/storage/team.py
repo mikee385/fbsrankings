@@ -6,24 +6,24 @@ class TeamDto (object):
 
 class TeamStorage (object):
     def __init__(self):
-        self._team_id_dict = {}
-        self._team_name_dict = {}
+        self._by_ID = {}
+        self._by_key = {}
     
     def add(self, team):
         if not isinstance(team, TeamDto):
             raise TypeError('team must be of type TeamDto')
             
-        if team.name in self._team_name_dict:
+        if team.name in self._by_key:
             raise ValueError(f'Team already exists for name {team.name}')
             
-        self._team_id_dict[team.ID] = team
-        self._team_name_dict[team.name] = team
+        self._by_ID[team.ID] = team
+        self._by_key[team.name] = team
 
-    def find_by_ID(self, ID):
-        return self._team_id_dict.get(ID)
+    def get(self, ID):
+        return self._by_ID.get(ID)
         
-    def find_by_name(self, name):
-        return self._team_name_dict.get(name)
+    def find(self, name):
+        return self._by_key.get(name)
         
     def all(self):
-        return [item for item in self._team_name_dict.values()]
+        return self._by_key.values()

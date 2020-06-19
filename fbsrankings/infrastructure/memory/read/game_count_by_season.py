@@ -9,4 +9,4 @@ class GameCountBySeasonQueryHandler (object):
         self._storage = storage
 
     def handle(self, query):
-        return GameCountBySeasonResult(query.season_ID, len(self._storage.game.find_by_season(query.season_ID)))
+        return GameCountBySeasonResult(query.season_ID, len(self._storage.game.by_season(query.season_ID)))

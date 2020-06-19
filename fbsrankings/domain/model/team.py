@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from fbsrankings.common import Identifier, EventBus
-from fbsrankings.event import TeamRegisteredEvent
+from fbsrankings.event import TeamCreatedEvent
 
 
 class TeamID (Identifier):
@@ -35,18 +35,15 @@ class TeamRepository (object):
             raise TypeError('bus must be of type EventBus')
         self._bus = bus
     
-    def register(self, name):
+    def create(self, name):
         ID = TeamID(uuid4())
         team = Team(self._bus, ID, name)
-        self._bus.publish(TeamRegisteredEvent(team.ID, team.name))
+        self._bus.publish(TeamCreatedEvent(team.ID, team.name))
         
         return team
 
-    def find_by_ID(self, ID):
+    def get(self, ID):
         raise NotImplementedError
         
-    def find_by_name(self, name):
-        raise NotImplementedError
-    
-    def all(self):
+    def find(self, name):
         raise NotImplementedError

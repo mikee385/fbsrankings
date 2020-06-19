@@ -4,7 +4,7 @@ from datetime import date
 
 from fbsrankings.common import Identifier, EventBus
 from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID
-from fbsrankings.event import GameScheduledEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
+from fbsrankings.event import GameCreatedEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
 
 
 class GameStatus (Enum):
@@ -219,21 +219,15 @@ class GameRepository (object):
             raise TypeError('bus must be of type EventBus')
         self._bus = bus
         
-    def schedule(self, season, week, date_, season_section, home_team, away_team, notes):
+    def create(self, season, week, date_, season_section, home_team, away_team, notes):
         ID = GameID(uuid4())
         game = Game(self._bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
-        self._bus.publish(GameScheduledEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
+        self._bus.publish(GameCreatedEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
         
         return game
     
-    def find_by_ID(self, ID):
+    def get(self, ID):
         raise NotImplementedError
         
-    def find_by_season_teams(self, season, week, team1, team2):
-        raise NotImplementedError
-        
-    def find_by_season(self, season):
-        raise NotImplementedError
-        
-    def all(self):
+    def find(self, season, week, team1, team2):
         raise NotImplementedError

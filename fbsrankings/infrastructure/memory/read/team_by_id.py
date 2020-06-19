@@ -9,7 +9,7 @@ class TeamByIDQueryHandler (object):
         self._storage = storage
 
     def handle(self, query):
-        team = self._storage.team.find_by_ID(query.ID)
+        team = self._storage.team.get(query.ID)
         if team is not None:
             return TeamByIDResult(team.ID, team.name)
         else:

@@ -8,33 +8,39 @@ class AffiliationDto (object):
 
 class AffiliationStorage (object):
     def __init__(self):
-        self._affiliation_id_dict = {}
-        self._affiliation_season_dict = {}
+        self._by_ID = {}
+        self._by_key = {}
+        self._by_season = {}
     
     def add(self, affiliation):
         if not isinstance(affiliation, AffiliationDto):
             raise TypeError('affiliation must be of type AffiliationDto')
         
-        season_dict = self._affiliation_season_dict.get(affiliation.season_ID)
-        if season_dict is None:
-            season_dict = {}
-            self._affiliation_season_dict[affiliation.season_ID] = season_dict
-        elif affiliation.team_ID in season_dict:
+        key = (affiliation.season_ID, affiliation.team_ID)
+        if key in self._by_key:
             raise ValueError(f'Affiliation already exists for team {affiliation.team_ID} in season {affiliation.season_ID}')
-        season_dict[affiliation.team_ID] = affiliation
-        self._affiliation_id_dict[affiliation.ID] = affiliation
+            
+        self._by_ID[affiliation.ID] = affiliation
+        self._by_key[key] = affiliation
+        
+        by_season = self._by_season.get(affiliation.season_ID)
+        if by_season is None:
+            by_season = []
+            self._by_season[affiliation.season_ID] = by_season
+        by_season.append(affiliation)
 
-    def find_by_ID(self, ID):
-        return self._affiliation_id_dict.get(ID)
+    def get(self, ID):
+        return self._by_ID.get(ID)
         
-    def find_by_season_team(self, season_ID, team_ID):
-        season_dict = self._affiliation_season_dict.get(season_ID)
-        if season_dict is None:
-            return None
-        return season_dict.get(team_ID)
+    def find(self, season_ID, team_ID):
+        key = (season_ID, team_ID)
+        return self._by_key.get(key)
         
-    def find_by_season(self, season_ID):
-        season_dict = self._affiliation_season_dict.get(season_ID)
-        if season_dict is None:
+    def by_season(self, season_ID):
+        by_season = self._by_season.get(season_ID)
+        if by_season is None:
             return []
-        return [item for item in season_dict.values()]
+        return list(by_season)
+        
+    def all(self):
+        return self._by_key.values()

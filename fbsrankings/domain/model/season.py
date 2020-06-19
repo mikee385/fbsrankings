@@ -2,7 +2,7 @@ from uuid import uuid4
 from enum import Enum
 
 from fbsrankings.common import Identifier, EventBus
-from fbsrankings.event import SeasonRegisteredEvent
+from fbsrankings.event import SeasonCreatedEvent
 
 
 class SeasonSection (Enum):
@@ -42,18 +42,15 @@ class SeasonRepository (object):
             raise TypeError('bus must be of type EventBus')
         self._bus = bus
         
-    def register(self, year):
+    def create(self, year):
         ID = SeasonID(uuid4())
         season = Season(self._bus, ID, year)
-        self._bus.publish(SeasonRegisteredEvent(season.ID, season.year))
+        self._bus.publish(SeasonCreatedEvent(season.ID, season.year))
         
         return season
         
-    def find_by_ID(self, ID):
+    def get(self, ID):
         raise NotImplementedError
         
-    def find_by_year(self, year):
-        raise NotImplementedError
-        
-    def all(self):
+    def find(self, year):
         raise NotImplementedError

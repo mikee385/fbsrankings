@@ -2,7 +2,7 @@ import sqlite3
 from uuid import UUID
 
 from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, Subdivision
-from fbsrankings.event import AffiliationRegisteredEvent
+from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 
@@ -20,9 +20,9 @@ class AffiliationRepository (BaseRepository):
         
         self.table = AffiliationTable()
     
-        bus.register_handler(AffiliationRegisteredEvent, self._handle_affiliation_registered)
+        bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
 
-    def find_by_ID(self, ID):
+    def get(self, ID):
         if not isinstance(ID, AffiliationID):
             raise TypeError('ID must be of type AffiliationID')
         
@@ -30,9 +30,9 @@ class AffiliationRepository (BaseRepository):
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?', [str(ID.value)])
         row = cursor.fetchone()
         cursor.close()
-        return self._affiliation_from_row(row)
+        return self._to_affiliation(row)
         
-    def find_by_season_team(self, season, team):
+    def find(self, season, team):
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
@@ -51,27 +51,13 @@ class AffiliationRepository (BaseRepository):
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name}  WHERE SeasonID=? AND TeamID=?', [str(season_ID.value), str(team_ID.value)])
         row = cursor.fetchone()
         cursor.close()
-        return self._affiliation_from_row(row)
-        
-    def find_by_season(self, season):
-        if isinstance(season, Season):
-            season_ID = season.ID
-        elif isinstance(season, SeasonID):
-            season_ID = season
-        else:
-            raise TypeError('season must be of type Season or SeasonID')
-            
-        cursor = self._connection.cursor()
-        cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name}  WHERE SeasonID=?', [str(season_ID.value)])
-        items = [self._affiliation_from_row(row) for row in cursor.fetchall()]
-        cursor.close()
-        return items
+        return self._to_affiliation(row)
     
-    def _affiliation_from_row(self, row):
+    def _to_affiliation(self, row):
         if row is not None:
             return Affiliation(self._bus, AffiliationID(UUID(row[0])), SeasonID(UUID(row[1])), TeamID(UUID(row[2])), Subdivision[row[3]])
         else:
             return None
         
-    def _handle_affiliation_registered(self, event):
+    def _handle_affiliation_created(self, event):
         self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), str(event.team_ID.value), event.subdivision.name])

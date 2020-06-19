@@ -15,42 +15,42 @@ class GameDto (object):
 
 class GameStorage (object):
     def __init__(self):
-        self._game_id_dict = {}
-        self._game_season_dict = {}
-        self._game_team_dict = {}
+        self._by_ID = {}
+        self._by_key = {}
+        self._by_season = {}
     
     def add(self, game):
         if not isinstance(game, GameDto):
             raise TypeError('game must be of type GameDto')
             
         key = self._get_key(game.season_ID, game.week, game.home_team_ID, game.away_team_ID)
-        if key in self._game_team_dict:
+        if key in self._by_key:
             raise ValueError(f'Game already exists for week {game.week} in season {game.season_ID} between {game.home_team_ID} and {game.away_team_ID}')
-        self._game_team_dict[key] = game
         
-        self._game_id_dict[game.ID] = game
+        self._by_ID[game.ID] = game
+        self._by_key[key] = game
         
-        season_dict = self._game_season_dict.get(game.season_ID)
-        if season_dict is None:
-            season_dict = {}
-            self._game_season_dict[game.season_ID] = season_dict
-        season_dict[game.ID] = game
+        by_season = self._by_season.get(game.season_ID)
+        if by_season is None:
+            by_season = []
+            self._by_season[game.season_ID] = by_season
+        by_season.append(game)
 
-    def find_by_ID(self, ID):
-        return self._game_id_dict.get(ID)
+    def get(self, ID):
+        return self._by_ID.get(ID)
 
-    def find_by_season_teams(self, season_ID, week, team1_ID, team2_ID):
+    def find(self, season_ID, week, team1_ID, team2_ID):
         key = self._get_key(season_ID, week, team1_ID, team2_ID)
-        return self._game_team_dict.get(key)
+        return self._by_key.get(key)
         
-    def find_by_season(self, season_ID):
-        season_dict = self._game_season_dict.get(season_ID)
-        if season_dict is None:
+    def by_season(self, season_ID):
+        by_season = self._by_season.get(season_ID)
+        if by_season is None:
             return []
-        return [item for item in season_dict.values()]
+        return list(by_season)
         
     def all(self):
-        return [item for item in self._game_id_dict.values()]
+        return self._by_key.values()
         
     def _get_key(self, season_ID, week, team1_ID, team2_ID):
         if team1_ID < team2_ID:

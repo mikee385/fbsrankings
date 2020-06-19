@@ -9,7 +9,7 @@ class SeasonByIDQueryHandler (object):
         self._storage = storage
 
     def handle(self, query):
-        season = self._storage.season.find_by_ID(query.ID)
+        season = self._storage.season.get(query.ID)
         if season is not None:
             return SeasonByIDResult(season.ID, season.year)
         else:
