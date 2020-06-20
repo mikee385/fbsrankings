@@ -56,8 +56,6 @@ class Affiliation (object):
 
 class AffiliationRepository (object):
     def __init__(self, bus: EventBus) -> None:
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
         self._bus = bus
     
     def create(self, season: SeasonID, team: TeamID, subdivision: Subdivision) -> Affiliation:

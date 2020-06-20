@@ -21,9 +21,6 @@ class TeamRepository (BaseRepository):
         bus.register_handler(TeamCreatedEvent, self._handle_team_created)
 
     def get(self, ID: TeamID) -> Optional[Team]:
-        if not isinstance(ID, TeamID):
-            raise TypeError('ID must be of type TeamID')
-            
         cursor = self._connection.cursor()
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?', [str(ID.value)])
         row = cursor.fetchone()
