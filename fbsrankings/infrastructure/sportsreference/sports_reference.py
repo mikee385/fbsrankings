@@ -1,6 +1,6 @@
 import datetime
 
-from bs4 import BeautifulSoup, Tag # type: ignore
+from bs4 import BeautifulSoup, Tag  # type: ignore
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 from urllib.request import urlopen
 
@@ -141,7 +141,7 @@ class SportsReference (object):
                 else:
                     raise ValueError(f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}')
                     
-                home_team = self._import_team(repository.team, teams, home_team_name)                    
+                home_team = self._import_team(repository.team, teams, home_team_name)
                 self._import_affiliation(repository.affiliation, affiliations, season.ID, home_team.ID, Subdivision.FCS)
                 
                 away_team = self._import_team(repository.team, teams, away_team_name)

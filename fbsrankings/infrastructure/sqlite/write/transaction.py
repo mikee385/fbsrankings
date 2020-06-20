@@ -1,7 +1,7 @@
 import sqlite3
 
 from fbsrankings.common import EventBus
-from fbsrankings.infrastructure import Transaction as  BaseTransaction
+from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.sqlite.write import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
 
 
@@ -23,19 +23,19 @@ class Transaction (BaseTransaction):
         
     @property
     def season(self) -> SeasonRepository:
-        return self._season;
+        return self._season
         
     @property
     def team(self) -> TeamRepository:
-        return self._team;
+        return self._team
         
     @property
     def affiliation(self) -> AffiliationRepository:
-        return self._affiliation;
+        return self._affiliation
         
     @property
     def game(self) -> GameRepository:
-        return self._game;
+        return self._game
         
     def commit(self) -> None:
         self._cursor.execute("commit")

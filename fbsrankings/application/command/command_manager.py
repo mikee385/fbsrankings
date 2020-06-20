@@ -2,7 +2,7 @@ from types import TracebackType
 from typing import Dict, Optional, Type
 from typing_extensions import Literal
 
-from fbsrankings.common import Command, CommandHandler, CommandBus, Event, EventBus
+from fbsrankings.common import Command, CommandHandler, CommandBus, EventBus
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.application.command import ImportSeasonByYearCommandHandler
 from fbsrankings.infrastructure import TransactionFactory
@@ -11,7 +11,7 @@ from fbsrankings.infrastructure.sportsreference import SportsReference
 
 class CommandManager (object):
     def __init__(self, sports_reference: SportsReference, data_source: TransactionFactory, command_bus: CommandBus, event_bus: EventBus) -> None:
-        self._bus = command_bus      
+        self._bus = command_bus
         self._handlers: Dict[Type[Command], CommandHandler] = {}
         
         self.register_hander(ImportSeasonByYearCommand, ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus))

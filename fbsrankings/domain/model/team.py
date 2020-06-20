@@ -12,7 +12,7 @@ class TeamID (Identifier):
 class Team (object):
     def __init__(self, bus: EventBus, ID: TeamID, name: str) -> None:
         self._bus = bus
-        self._ID = ID        
+        self._ID = ID
         self._name = name
         
     @property

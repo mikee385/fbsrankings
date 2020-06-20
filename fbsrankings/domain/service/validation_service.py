@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Any, Iterable, List, Optional
 from uuid import UUID
 
-from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, Game, GameID, SeasonSection, Subdivision, GameStatus
+from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, Game, SeasonSection, Subdivision, GameStatus
 
 
 class ValidationError (ValueError):

@@ -1,6 +1,6 @@
 {
     "settings": {
-        "storage_type": "sqlite",
+        "storage_type": "memory",
         "sqlite_db_file": "fbsrankings.db"
     },
     "alternate_names": {

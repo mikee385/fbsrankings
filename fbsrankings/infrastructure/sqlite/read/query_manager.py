@@ -23,5 +23,5 @@ class QueryManager (BaseQueryManager):
         self.register_hander(TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(self._connection))
         
     def close(self) -> None:
-        super().close()            
+        super().close()
         self._connection.close()

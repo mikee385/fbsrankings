@@ -6,7 +6,7 @@ from fbsrankings.infrastructure.sportsreference import SportsReference
 
 class ImportSeasonByYearCommandHandler (CommandHandler):
     def __init__(self, sports_reference: SportsReference, data_source: TransactionFactory, event_bus: EventBus) -> None:
-        self._sports_reference = sports_reference        
+        self._sports_reference = sports_reference
         self._data_source = data_source
         self._event_bus = event_bus
         

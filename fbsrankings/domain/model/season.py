@@ -19,7 +19,7 @@ class SeasonID (Identifier):
 class Season (object):
     def __init__(self, bus: EventBus, ID: SeasonID, year: int) -> None:
         self._bus = bus
-        self._ID = ID        
+        self._ID = ID
         self._year = year
         
     @property

@@ -1,9 +1,5 @@
-from types import TracebackType
-from typing import Optional, Type
-from typing_extensions import Literal
-
 from fbsrankings.common import EventBus, EventRecorder
-from fbsrankings.infrastructure import Transaction as  BaseTransaction
+from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write import SeasonRepository, TeamRepository, AffiliationRepository, GameRepository
 
@@ -19,19 +15,19 @@ class Transaction (BaseTransaction):
         
     @property
     def season(self) -> SeasonRepository:
-        return self._season;
+        return self._season
         
     @property
     def team(self) -> TeamRepository:
-        return self._team;
+        return self._team
         
     @property
     def affiliation(self) -> AffiliationRepository:
-        return self._affiliation;
+        return self._affiliation
         
     @property
     def game(self) -> GameRepository:
-        return self._game;
+        return self._game
 
     def commit(self) -> None:
         for event in self._bus.events:

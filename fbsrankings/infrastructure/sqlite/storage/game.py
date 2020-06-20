@@ -18,7 +18,7 @@ class GameStatusTable (object):
             if value.name not in existing:
                 cursor.execute(f'INSERT INTO {self.name} ({self.columns}) VALUES (?)', [value.name])
                     
-    def dump(self, connection: sqlite3.Connection) -> None:            
+    def dump(self, connection: sqlite3.Connection) -> None:
         print('Game Statuses:')
         cursor = connection.cursor()
         cursor.execute(f'SELECT rowid, * FROM {self.name}')

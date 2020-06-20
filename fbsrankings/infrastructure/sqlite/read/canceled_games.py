@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fbsrankings.common import Query, QueryHandler
 from fbsrankings.query import CanceledGamesQuery, CanceledGamesResult, CanceledGameResult
-from fbsrankings.domain import SeasonSection, GameStatus
+from fbsrankings.domain import GameStatus
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable, TeamTable, GameTable
 
 
