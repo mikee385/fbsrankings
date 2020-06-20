@@ -1,6 +1,8 @@
-from uuid import uuid4
+import datetime 
+
 from enum import Enum
-from datetime import date
+from typing import Optional, Union
+from uuid import UUID, uuid4
 
 from fbsrankings.common import Identifier, EventBus
 from fbsrankings.domain import Season, SeasonID, SeasonSection, Team, TeamID
@@ -18,20 +20,15 @@ class GameID (Identifier):
     
 
 class GameStatusError (Exception):
-    def __init__(self, message, game_ID, status):
+    def __init__(self, message: str, game_ID: UUID, status: str) -> None:
         super().__init__(message)
         self.game_ID = game_ID
         self.status = status
 
 
 class Game (object):
-    def __init__(self, bus, ID, season, week, date_, season_section, home_team, away_team, home_team_score, away_team_score, status, notes):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus, ID: GameID, season: Union[Season, SeasonID], week: int, date: datetime.date, season_section: SeasonSection, home_team: Union[Team, TeamID], away_team: Union[Team, TeamID], home_team_score: Optional[int], away_team_score: Optional[int], status: GameStatus, notes: str) -> None:
         self._bus = bus
-        
-        if not isinstance(ID, GameID):
-            raise TypeError('ID must be of type GameID')
         self._ID = ID
         
         if isinstance(season, Season):
@@ -41,16 +38,8 @@ class Game (object):
         else:
             raise TypeError('season must be of type Season or SeasonID')
             
-        if not isinstance(week, int):
-            raise TypeError('week must be of type int')
         self._week = week
-            
-        if not isinstance(date_, date):
-            raise TypeError('date_ must be of type date')
-        self._date = date_
-        
-        if not isinstance(season_section, SeasonSection):
-            raise TypeError('season_section must be of type SeasonSection')
+        self._date = date
         self._season_section = season_section
         
         if isinstance(home_team, Team):
@@ -66,6 +55,13 @@ class Game (object):
             self._away_team_ID = away_team
         else:
             raise TypeError('away_team must be of type Team or TeamID')
+
+        self._home_team_score: Optional[int]
+        self._away_team_score: Optional[int]
+        self._winning_team_ID: Optional[TeamID]
+        self._winning_team_score: Optional[int]
+        self._losing_team_ID: Optional[TeamID]
+        self._losing_team_score: Optional[int]
             
         if home_team_score is not None and away_team_score is not None:
             if status != GameStatus.COMPLETED:
@@ -90,83 +86,92 @@ class Game (object):
             self._losing_team_ID = None
             self._losing_team_score = None
         
-        if not isinstance(status, GameStatus):
-            raise TypeError('status must be of type GameStatus')
         self._status = status
-        
-        if not isinstance(notes, str):
-            raise TypeError('notes must be of type str')
         self._notes = notes
         
     @property
-    def ID(self):
+    def ID(self) -> GameID:
         return self._ID
         
     @property
-    def season_ID(self):
+    def season_ID(self) -> SeasonID:
         return self._season_ID
         
     @property
-    def week(self):
+    def week(self) -> int:
         return self._week
         
     @property
-    def date(self):
+    def date(self) -> datetime.date:
         return self._date
         
     @property
-    def season_section(self):
+    def season_section(self) -> SeasonSection:
         return self._season_section
     
     @property
-    def home_team_ID(self):
+    def home_team_ID(self) -> TeamID:
         return self._home_team_ID
         
     @property
-    def away_team_ID(self):
+    def away_team_ID(self) -> TeamID:
         return self._away_team_ID
         
     @property
-    def home_team_score(self):
+    def home_team_score(self) -> Optional[int]:
         return self._home_team_score
         
     @property
-    def away_team_score(self):
+    def away_team_score(self) -> Optional[int]:
         return self._away_team_score
         
     @property
-    def status(self):
+    def winning_team_ID(self) -> Optional[TeamID]:
+        return self._winning_team_ID
+        
+    @property
+    def winning_team_score(self) -> Optional[int]:
+        return self._winning_team_score
+        
+    @property
+    def losing_team_ID(self) -> Optional[TeamID]:
+        return self._losing_team_ID
+        
+    @property
+    def losing_team_score(self) -> Optional[int]:
+        return self._losing_team_score
+        
+    @property
+    def status(self) -> GameStatus:
         return self._status
     
     @property
-    def notes(self):
+    def notes(self) -> str:
         return self._notes
         
-    def reschedule(self, week, date_):
+    def reschedule(self, week: int, date: datetime.date) -> None:
         if self.status != GameStatus.SCHEDULED:
-            raise GameStatusError('Game can only be rescheduled if it is still scheduled', self.ID, self.status)
+            raise GameStatusError('Game can only be rescheduled if it is still scheduled', self.ID.value, self.status.name)
         
-        if not isinstance(week, int):
-            raise TypeError('week must be of type int')
         old_week = self._week
         self._week = week
             
-        if not isinstance(date_, date):
-            raise TypeError('date_ must be of type date')
         old_date = self._date
-        self._date = date_
-        self._bus.publish(GameRescheduledEvent(self.ID, old_week, old_date, week, date_))
+        self._date = date
+
+        self._bus.publish(GameRescheduledEvent(self.ID.value, old_week, old_date, week, date))
         
-    def cancel(self):
+    def cancel(self) -> None:
         if self.status != GameStatus.SCHEDULED:
-            raise GameStatusError('Game can only be canceled if it is still scheduled', self.ID, self.status)
+            raise GameStatusError('Game can only be canceled if it is still scheduled', self.ID.value, self.status.name)
         
         self._status = GameStatus.CANCELED
-        self._bus.publish(GameCanceledEvent(self.ID))
         
-    def complete(self, home_team_score, away_team_score):
+        self._bus.publish(GameCanceledEvent(self.ID.value))
+        
+    def complete(self, home_team_score: int, away_team_score: int) -> None:
         if self.status != GameStatus.SCHEDULED:
-            raise GameStatusError('Game can only be completed if it is still scheduled', self.ID, self.status)
+            raise GameStatusError('Game can only be completed if it is still scheduled', self.ID.value, self.status.name)
             
         if home_team_score is None:
             raise ValueError('Home team score cannot be None')
@@ -175,17 +180,13 @@ class Game (object):
             raise ValueError('Away team score cannot be None')
         
         self._set_score(home_team_score, away_team_score)
+
         self._status = GameStatus.COMPLETED
         
-        self._bus.publish(GameCompletedEvent(self.ID, home_team_score, away_team_score))
+        self._bus.publish(GameCompletedEvent(self.ID.value, home_team_score, away_team_score))
         
-    def _set_score(self, home_team_score, away_team_score):
-        if not isinstance(home_team_score, int):
-            raise TypeError('home_team_score must be of type int')
+    def _set_score(self, home_team_score: int, away_team_score: int) -> None:
         self._home_team_score = home_team_score
-            
-        if not isinstance(away_team_score, int):
-            raise TypeError('away_team_score must be of type int')
         self._away_team_score = away_team_score
             
         if home_team_score > away_team_score:
@@ -204,30 +205,26 @@ class Game (object):
             self._losing_team_ID = None
             self._losing_team_score = None
 
-    def update_notes(self, notes):
-        if not isinstance(notes, str):
-            raise TypeError('notes must be of type str')
+    def update_notes(self, notes: str) -> None:
         old_notes = self._notes
         self._notes = notes
         
-        self._bus.publish(GameNotesUpdatedEvent(self.ID, old_notes, notes))
+        self._bus.publish(GameNotesUpdatedEvent(self.ID.value, old_notes, notes))
 
 
 class GameRepository (object):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus) -> None:
         self._bus = bus
         
-    def create(self, season, week, date_, season_section, home_team, away_team, notes):
+    def create(self, season: Union[Season, SeasonID], week: int, date: datetime.date, season_section: SeasonSection, home_team: Union[Team, TeamID], away_team: Union[Team, TeamID], notes: str) -> Game:
         ID = GameID(uuid4())
-        game = Game(self._bus, ID, season, week, date_, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
-        self._bus.publish(GameCreatedEvent(game.ID, game.season_ID, game.week, game.date, game.season_section, game.home_team_ID, game.away_team_ID, game.notes))
+        game = Game(self._bus, ID, season, week, date, season_section, home_team, away_team, None, None, GameStatus.SCHEDULED, notes)
+        self._bus.publish(GameCreatedEvent(game.ID.value, game.season_ID.value, game.week, game.date, game.season_section.name, game.home_team_ID.value, game.away_team_ID.value, game.notes))
         
         return game
     
-    def get(self, ID):
+    def get(self, ID: GameID) -> Optional[Game]:
         raise NotImplementedError
         
-    def find(self, season, week, team1, team2):
+    def find(self, season: Union[Season, SeasonID], week: int, team1: Union[Team, TeamID], team2: Union[Team, TeamID]) -> Optional[Game]:
         raise NotImplementedError

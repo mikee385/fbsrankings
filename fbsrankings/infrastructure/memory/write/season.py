@@ -1,33 +1,33 @@
-from fbsrankings.domain import Season, SeasonRepository as BaseRepository
+from typing import Optional
+
+from fbsrankings.common import Event, EventBus
+from fbsrankings.domain import SeasonID, Season, SeasonRepository as BaseRepository
 from fbsrankings.event import SeasonCreatedEvent
 from fbsrankings.infrastructure.memory.storage import SeasonStorage, SeasonDto
         
 
 class SeasonRepository (BaseRepository):
-    def __init__(self, storage, bus):
+    def __init__(self, storage: SeasonStorage, bus: EventBus) -> None:
         super().__init__(bus)
-        
-        if not isinstance(storage, SeasonStorage):
-            raise TypeError('storage must be of type SeasonStorage')
         self._storage = storage
 
-    def get(self, ID):
-        return self._to_season(self._storage.get(ID))
+    def get(self, ID: SeasonID) -> Optional[Season]:
+        return self._to_season(self._storage.get(ID.value))
         
-    def find(self, year):
+    def find(self, year: int) -> Optional[Season]:
         return self._to_season(self._storage.find(year))
         
-    def _to_season(self, dto):
+    def _to_season(self, dto: Optional[SeasonDto]) -> Optional[Season]:
         if dto is not None:
-            return Season(self._bus, dto.ID, dto.year)
+            return Season(self._bus, SeasonID(dto.ID), dto.year)
         return None
         
-    def handle(self, event):
+    def handle(self, event: Event) -> bool:
         if isinstance(event, SeasonCreatedEvent):
             self._handle_season_created(event)
             return True
         else:
             return False
         
-    def _handle_season_created(self, event):
+    def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
         self._storage.add(SeasonDto(event.ID, event.year))

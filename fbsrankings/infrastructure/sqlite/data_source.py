@@ -1,15 +1,17 @@
+from fbsrankings.common import EventBus, QueryBus
+from fbsrankings.infrastructure import QueryManagerFactory, TransactionFactory
 from fbsrankings.infrastructure.sqlite.storage import Storage
-from fbsrankings.infrastructure.sqlite.read import QueryHandler
+from fbsrankings.infrastructure.sqlite.read import QueryManager
 from fbsrankings.infrastructure.sqlite.write import Transaction
 
 
-class DataSource (object):
-    def __init__(self, database):
+class DataSource (QueryManagerFactory, TransactionFactory):
+    def __init__(self, database: str) -> None:
         self._database = database
         self._storage = Storage(self._database)
         
-    def query_handler(self, query_bus):
-        return QueryHandler(self._database, query_bus)
+    def query_manager(self, query_bus: QueryBus) -> QueryManager:
+        return QueryManager(self._database, query_bus)
         
-    def transaction(self, event_bus):
+    def transaction(self, event_bus: EventBus) -> Transaction:
         return Transaction(self._database, event_bus)

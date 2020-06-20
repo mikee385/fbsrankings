@@ -1,18 +1,20 @@
 import sqlite3
 
-from fbsrankings.query import TeamCountBySeasonResult
+from fbsrankings.common import Query, QueryHandler
+from fbsrankings.query import TeamCountBySeasonQuery, TeamCountBySeasonResult
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 
-class TeamCountBySeasonQueryHandler (object):
-    def __init__(self, connection):
-        if not isinstance(connection, sqlite3.Connection):
-            raise TypeError('connection must be of type sqlite3.Connection')
+class TeamCountBySeasonQueryHandler (QueryHandler):
+    def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
         
         self.table = AffiliationTable()
+        
+    def handle(self, query: Query) -> TeamCountBySeasonResult:
+        if not isinstance(query, TeamCountBySeasonQuery):
+            raise TypeError('query must be of type TeamCountBySeasonQuery')
 
-    def handle(self, query):
         cursor = self._connection.cursor()
         cursor.execute(f'SELECT COUNT(*) FROM {self.table.name} WHERE SeasonID=?', [str(query.season_ID)])
         row = cursor.fetchone()

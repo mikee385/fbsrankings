@@ -1,16 +1,19 @@
-from fbsrankings.application.command import CommandHandler
-from fbsrankings.common import CommandBus, EventBus, QueryBus
-from fbsrankings.domain import ValidationService, RaiseBehavior
+from types import TracebackType
+from typing import Any, Dict, List, Optional, Type
+from typing_extensions import Literal
+
+from fbsrankings.application.command import CommandManager
+from fbsrankings.common import Command, CommandBus, EventBus, Query, QueryBus
+from fbsrankings.domain import ValidationService, RaiseBehavior, ValidationError
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 
 
 class Application (object):
-    def __init__(self, config, event_bus):
-        if not isinstance(event_bus, EventBus):
-            raise TypeError('event_bus must be of type EventBus')
+    def __init__(self, config: Any, event_bus: EventBus) -> None:
         self._event_bus = event_bus
+        self._data_source: Any
         
         storage_type = config['settings']['storage_type']
         if storage_type == 'memory':
@@ -42,28 +45,28 @@ class Application (object):
             )
             
         self._command_bus = CommandBus()
-        self._command_handler = CommandHandler(self._sports_reference, self._data_source, self._command_bus, self._event_bus)
+        self._command_manager = CommandManager(self._sports_reference, self._data_source, self._command_bus, self._event_bus)
 
         self._query_bus = QueryBus()
-        self._query_handler = self._data_source.query_handler(self._query_bus)
+        self._query_manager = self._data_source.query_manager(self._query_bus)
         
     @property
-    def errors(self):
+    def errors(self) -> List[ValidationError]:
         return self.validation_service.errors
         
-    def send(self, command):
+    def send(self, command: Command) -> None:
         self._command_bus.send(command)
         
-    def query(self, query):
+    def query(self, query: Query) -> Any:
         return self._query_bus.query(query)
         
-    def close(self):
-        self._query_handler.close()
-        self._command_handler.close()
+    def close(self) -> None:
+        self._query_manager.close()
+        self._command_manager.close()
         
-    def __enter__(self):
+    def __enter__(self) -> 'Application':
         return self
         
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type: Optional[Type[BaseException]], value: Optional[BaseException], traceback: Optional[TracebackType]) -> Literal[False]:
         self.close()
         return False

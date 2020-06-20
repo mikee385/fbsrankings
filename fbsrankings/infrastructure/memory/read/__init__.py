@@ -8,4 +8,4 @@ from fbsrankings.infrastructure.memory.read.season_by_id import SeasonByIDQueryH
 from fbsrankings.infrastructure.memory.read.seasons import SeasonsQueryHandler
 from fbsrankings.infrastructure.memory.read.team_by_id import TeamByIDQueryHandler
 from fbsrankings.infrastructure.memory.read.team_count_by_season import TeamCountBySeasonQueryHandler
-from fbsrankings.infrastructure.memory.read.query_handler import QueryHandler
+from fbsrankings.infrastructure.memory.read.query_manager import QueryManager

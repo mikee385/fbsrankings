@@ -1,29 +1,30 @@
+from typing import Dict, Iterable, Optional
+from uuid import UUID
+
+
 class SeasonDto (object):
-    def __init__(self, ID, year):
+    def __init__(self, ID: UUID, year: int) -> None:
         self.ID = ID
         self.year = year
 
 
 class SeasonStorage (object):
-    def __init__(self):
-        self._by_ID = {}
-        self._by_key = {}
+    def __init__(self) -> None:
+        self._by_ID: Dict[UUID, SeasonDto] = {}
+        self._by_key: Dict[int, SeasonDto] = {}
     
-    def add(self, season):
-        if not isinstance(season, SeasonDto):
-            raise TypeError('season must be of type SeasonDto')
-        
+    def add(self, season: SeasonDto) -> None:
         if season.year in self._by_key:
             raise ValueError(f'Season already exists for year {season.year}')
 
         self._by_ID[season.ID] = season
         self._by_key[season.year] = season
 
-    def get(self, ID):
+    def get(self, ID: UUID) -> Optional[SeasonDto]:
         return self._by_ID.get(ID)
         
-    def find(self, year):
+    def find(self, year: int) -> Optional[SeasonDto]:
         return self._by_key.get(year)
         
-    def all(self):
+    def all(self) -> Iterable[SeasonDto]:
         return self._by_key.values()

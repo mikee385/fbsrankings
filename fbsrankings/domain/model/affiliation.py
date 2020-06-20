@@ -1,5 +1,6 @@
-from uuid import uuid4
 from enum import Enum
+from typing import Optional, Union
+from uuid import uuid4
 
 from fbsrankings.common import Identifier, EventBus
 from fbsrankings.domain import Season, SeasonID, Team, TeamID
@@ -16,13 +17,8 @@ class AffiliationID (Identifier):
 
 
 class Affiliation (object):
-    def __init__(self, bus, ID, season, team, subdivision):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus, ID: AffiliationID, season: Union[Season, SeasonID], team: Union[Team, TeamID], subdivision: Subdivision) -> None:
         self._bus = bus
-        
-        if not isinstance(ID, AffiliationID):
-            raise TypeError('ID must be of type AffiliationID')
         self._ID = ID
         
         if isinstance(season, Season):
@@ -39,42 +35,40 @@ class Affiliation (object):
         else:
             raise TypeError('team must be of type Team or TeamID')
         
-        if not isinstance(subdivision, Subdivision):
-            raise TypeError('subdivision must be of type Subdivision')
         self._subdivision = subdivision
         
     @property
-    def ID(self):
+    def ID(self) -> AffiliationID:
         return self._ID
         
     @property
-    def season_ID(self):
+    def season_ID(self) -> SeasonID:
         return self._season_ID
         
     @property
-    def team_ID(self):
+    def team_ID(self) -> TeamID:
         return self._team_ID
         
     @property
-    def subdivision(self):
+    def subdivision(self) -> Subdivision:
         return self._subdivision
 
 
 class AffiliationRepository (object):
-    def __init__(self, bus):
+    def __init__(self, bus: EventBus) -> None:
         if not isinstance(bus, EventBus):
             raise TypeError('bus must be of type EventBus')
         self._bus = bus
     
-    def create(self, season, team, subdivision):
+    def create(self, season: SeasonID, team: TeamID, subdivision: Subdivision) -> Affiliation:
         ID = AffiliationID(uuid4())
         affiliation = Affiliation(self._bus, ID, season, team, subdivision)
-        self._bus.publish(AffiliationCreatedEvent(affiliation.ID, affiliation.season_ID, affiliation.team_ID, affiliation.subdivision))
+        self._bus.publish(AffiliationCreatedEvent(affiliation.ID.value, affiliation.season_ID.value, affiliation.team_ID.value, affiliation.subdivision.name))
         
         return affiliation
 
-    def get(self, ID):
+    def get(self, ID: AffiliationID) -> Optional[Affiliation]:
         raise NotImplementedError
         
-    def find(self, season, team):
+    def find(self, season: SeasonID, team: TeamID) -> Optional[Affiliation]:
         raise NotImplementedError

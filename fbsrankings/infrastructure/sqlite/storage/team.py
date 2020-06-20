@@ -2,22 +2,16 @@ import sqlite3
 
 
 class TeamTable (object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = 'team'
         self.columns = 'UUID, Name'
         
-    def create(self, cursor):
-        if not isinstance(cursor, sqlite3.Cursor):
-            raise TypeError('cursor must be of type sqlite3.Cursor')
-            
+    def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.name}
             (UUID TEXT NOT NULL UNIQUE,
              Name TEXT NOT NULL UNIQUE);''')
              
-    def dump(self, connection):
-        if not isinstance(connection, sqlite3.Connection):
-            raise TypeError('connection must be of type sqlite3.Connection')
-            
+    def dump(self, connection: sqlite3.Connection) -> None:
         print('Teams:')
         cursor = connection.cursor()
         cursor.execute(f'SELECT rowid, * FROM {self.name}')

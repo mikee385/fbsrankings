@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import uuid4
 
 from fbsrankings.common import Identifier, EventBus
@@ -9,41 +10,33 @@ class TeamID (Identifier):
 
 
 class Team (object):
-    def __init__(self, bus, ID, name):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus, ID: TeamID, name: str) -> None:
         self._bus = bus
-        
-        if not isinstance(ID, TeamID):
-            raise TypeError('ID must be of type TeamID')
-        self._ID = ID
-        
+        self._ID = ID        
         self._name = name
         
     @property
-    def ID(self):
+    def ID(self) -> TeamID:
         return self._ID
         
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
 
 class TeamRepository (object):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus) -> None:
         self._bus = bus
     
-    def create(self, name):
+    def create(self, name: str) -> Team:
         ID = TeamID(uuid4())
         team = Team(self._bus, ID, name)
-        self._bus.publish(TeamCreatedEvent(team.ID, team.name))
+        self._bus.publish(TeamCreatedEvent(team.ID.value, team.name))
         
         return team
 
-    def get(self, ID):
+    def get(self, ID: TeamID) -> Optional[Team]:
         raise NotImplementedError
         
-    def find(self, name):
+    def find(self, name: str) -> Optional[Team]:
         raise NotImplementedError

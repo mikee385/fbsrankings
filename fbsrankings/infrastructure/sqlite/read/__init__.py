@@ -8,4 +8,4 @@ from fbsrankings.infrastructure.sqlite.read.season_by_id import SeasonByIDQueryH
 from fbsrankings.infrastructure.sqlite.read.seasons import SeasonsQueryHandler
 from fbsrankings.infrastructure.sqlite.read.team_by_id import TeamByIDQueryHandler
 from fbsrankings.infrastructure.sqlite.read.team_count_by_season import TeamCountBySeasonQueryHandler
-from fbsrankings.infrastructure.sqlite.read.query_handler import QueryHandler
+from fbsrankings.infrastructure.sqlite.read.query_manager import QueryManager

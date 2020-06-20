@@ -1,5 +1,6 @@
-from uuid import uuid4
 from enum import Enum
+from typing import Optional
+from uuid import uuid4
 
 from fbsrankings.common import Identifier, EventBus
 from fbsrankings.event import SeasonCreatedEvent
@@ -16,41 +17,33 @@ class SeasonID (Identifier):
 
 
 class Season (object):
-    def __init__(self, bus, ID, year):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus, ID: SeasonID, year: int) -> None:
         self._bus = bus
-        
-        if not isinstance(ID, SeasonID):
-            raise TypeError('ID must be of type SeasonID')
-        self._ID = ID
-        
+        self._ID = ID        
         self._year = year
         
     @property
-    def ID(self):
+    def ID(self) -> SeasonID:
         return self._ID
         
     @property
-    def year(self):
+    def year(self) -> int:
         return self._year
 
 
 class SeasonRepository (object):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
+    def __init__(self, bus: EventBus) -> None:
         self._bus = bus
         
-    def create(self, year):
+    def create(self, year: int) -> Season:
         ID = SeasonID(uuid4())
         season = Season(self._bus, ID, year)
-        self._bus.publish(SeasonCreatedEvent(season.ID, season.year))
+        self._bus.publish(SeasonCreatedEvent(season.ID.value, season.year))
         
         return season
         
-    def get(self, ID):
+    def get(self, ID: SeasonID) -> Optional[Season]:
         raise NotImplementedError
         
-    def find(self, year):
+    def find(self, year: int) -> Optional[Season]:
         raise NotImplementedError

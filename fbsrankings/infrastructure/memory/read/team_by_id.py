@@ -1,14 +1,18 @@
-from fbsrankings.query import TeamByIDResult
+from typing import Optional
+
+from fbsrankings.common import Query, QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
+from fbsrankings.query import TeamByIDQuery, TeamByIDResult
 
 
-class TeamByIDQueryHandler (object):
-    def __init__(self, storage):
-        if not isinstance(storage, Storage):
-            raise TypeError('storage must be of type Storage')
+class TeamByIDQueryHandler (QueryHandler):
+    def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query):
+    def handle(self, query: Query) -> Optional[TeamByIDResult]:
+        if not isinstance(query, TeamByIDQuery):
+            raise TypeError('query must be of type TeamByIDQuery')
+
         team = self._storage.team.get(query.ID)
         if team is not None:
             return TeamByIDResult(team.ID, team.name)

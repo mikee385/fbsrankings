@@ -1,27 +1,22 @@
+from typing import Callable, List, Dict, Type
+
+
 class Event (object):
     pass
 
 
 class EventBus (object):
-    def __init__(self):
-        self._handlers = {}
+    def __init__(self) -> None:
+        self._handlers: Dict[Type[Event], List[Callable[[Event], None]]] = {}
         
-    def register_handler(self, type, handler):
-        if not issubclass(type, Event):
-            raise TypeError('type must be a type derived from Event')
-        if not callable(handler):
-            raise TypeError('handler must be a callable type')
-        
+    def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         existing = self._handlers.get(type)
         if existing is not None:
             existing.append(handler)
         else:
             self._handlers[type] = [handler]
         
-    def publish(self, event):
-        if not isinstance(event, Event):
-            raise TypeError('event must be of type Event')
-        
+    def publish(self, event: Event) -> None:
         handlers = self._handlers.get(type(event))
         if handlers is not None:
             for handler in handlers:
@@ -29,34 +24,30 @@ class EventBus (object):
 
 
 class EventRecorder (EventBus):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
-        self._bus = bus
-        self.events = []
+    def __init__(self, bus: EventBus) -> None:
+        self._bus: EventBus = bus
+        self.events: List[Event] = []
         
-    def register_handler(self, type, handler):
+    def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         self._bus.register_handler(type, handler)
         
-    def publish(self, event):
+    def publish(self, event: Event) -> None:
         self.events.append(event)
         self._bus.publish(event)
 
-    def clear(self):
+    def clear(self) -> None:
         self.events = []
         
 
 class EventCounter (EventBus):
-    def __init__(self, bus):
-        if not isinstance(bus, EventBus):
-            raise TypeError('bus must be of type EventBus')
-        self._bus = bus
-        self.counts = {}
+    def __init__(self, bus: EventBus) -> None:
+        self._bus: EventBus = bus
+        self.counts: Dict[Type[Event], int] = {}
         
-    def register_handler(self, type, handler):
+    def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         self._bus.register_handler(type, handler)
         
-    def publish(self, event):
+    def publish(self, event: Event) -> None:
         count = self.counts.get(type(event))
         if count is None:
             self.counts[type(event)] = 1
@@ -64,5 +55,5 @@ class EventCounter (EventBus):
             self.counts[type(event)] += 1
         self._bus.publish(event)
 
-    def clear(self):
+    def clear(self) -> None:
         self.counts = {}

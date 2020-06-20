@@ -1,12 +1,14 @@
-from datetime import datetime
-from urllib.request import urlopen
-from bs4 import BeautifulSoup, Tag
+import datetime
 
-from fbsrankings.domain import SeasonSection, Subdivision, GameStatus
+from bs4 import BeautifulSoup, Tag # type: ignore
+from typing import Any, Dict, Iterator, List, Optional, Tuple
+from urllib.request import urlopen
+
+from fbsrankings.domain import SeasonID, Season, SeasonRepository, TeamID, Team, TeamRepository, Affiliation, AffiliationRepository, Game, GameRepository, SeasonSection, Subdivision, GameStatus, ValidationService
 
 
 class SeasonSource (object):
-    def __init__(self, year, postseason_start_week, source_type, team_source, game_source):
+    def __init__(self, year: int, postseason_start_week: int, source_type: str, team_source: str, game_source: str) -> None:
         self.year = year
         self.postseason_start_week = postseason_start_week
         
@@ -16,8 +18,8 @@ class SeasonSource (object):
 
 
 class SportsReference (object):
-    def __init__(self, alternate_names, validation_service):
-        self._sources = {}
+    def __init__(self, alternate_names: Dict[str, str], validation_service: ValidationService) -> None:
+        self._sources: Dict[int, SeasonSource] = {}
         
         if alternate_names is not None:
             self._alternate_names = alternate_names
@@ -26,13 +28,13 @@ class SportsReference (object):
             
         self._validation_service = validation_service
         
-    def add_source(self, year, postseason_start_week, source_type, team_source, game_source):
+    def add_source(self, year: int, postseason_start_week: int, source_type: str, team_source: str, game_source: str) -> None:
         if self._sources.get(year) is not None:
             raise ValueError(f'Source already exists for year {year}')
         
         self._sources[year] = SeasonSource(year, postseason_start_week, source_type, team_source, game_source)
         
-    def import_season(self, year, repository):
+    def import_season(self, year: int, repository: Any) -> None:
         source = self._sources.get(year)
         if source is None:
             raise ValueError(f'Source has not been added for year {year}')
@@ -45,11 +47,11 @@ class SportsReference (object):
         game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
         
-        season = self._import_season(repository, source.year)
+        season = self._import_season(repository.season, source.year)
         
-        teams = {}
-        affiliations = {}
-        games = {}
+        teams: Dict[str, Team] = {}
+        affiliations: Dict[Tuple[SeasonID, TeamID], Affiliation] = {}
+        games: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game] = {}
         
         header_row = next(team_rows)
         if header_row[0] == '':
@@ -63,8 +65,8 @@ class SportsReference (object):
                 name = row[name_index].strip()
                 if name in self._alternate_names:
                     name = self._alternate_names[name]
-                team = self._import_team(repository, teams, name)
-                self._import_affiliation(repository, affiliations, season.ID, team.ID, Subdivision.FBS)
+                team = self._import_team(repository.team, teams, name)
+                self._import_affiliation(repository.affiliation, affiliations, season.ID, team.ID, Subdivision.FBS)
         
         header_row = next(game_rows)
         if header_row[0] == '':
@@ -98,9 +100,9 @@ class SportsReference (object):
                 week = int(week_string)
                 
                 try:
-                    date_ = datetime.strptime(date_string, '%b %d %Y').date()
+                    date = datetime.datetime.strptime(date_string, '%b %d %Y').date()
                 except ValueError:
-                    date_ = datetime.strptime(date_string, '%b %d, %Y').date()
+                    date = datetime.datetime.strptime(date_string, '%b %d, %Y').date()
                 
                 if (first_team_name.startswith('(')):
                     start = first_team_name.find(')')
@@ -139,12 +141,11 @@ class SportsReference (object):
                 else:
                     raise ValueError(f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}')
                     
-                home_team = self._import_team(repository, teams, home_team_name)
-                    
-                self._import_affiliation(repository, affiliations, season.ID, home_team.ID, Subdivision.FCS)
+                home_team = self._import_team(repository.team, teams, home_team_name)                    
+                self._import_affiliation(repository.affiliation, affiliations, season.ID, home_team.ID, Subdivision.FCS)
                 
-                away_team = self._import_team(repository, teams, away_team_name)
-                self._import_affiliation(repository, affiliations, season.ID, away_team.ID, Subdivision.FCS)
+                away_team = self._import_team(repository.team, teams, away_team_name)
+                self._import_affiliation(repository.affiliation, affiliations, season.ID, away_team.ID, Subdivision.FCS)
 
                 notes = row[notes_index].strip()
                 
@@ -153,7 +154,7 @@ class SportsReference (object):
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
                     
-                game = self._import_game(repository, games, season.ID, week, date_, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, notes)
+                game = self._import_game(repository.game, games, season.ID, week, date, season_section, home_team.ID, away_team.ID, home_team_score, away_team_score, notes)
         
         most_recent_completed_week = 0
         for game in games.values():
@@ -168,24 +169,24 @@ class SportsReference (object):
         if self._validation_service is not None:
             self._validation_service.validate_season_games(season.ID, affiliations.values(), games.values())
                     
-    def _import_season(self, repository, year):
-        season = repository.season.find(year)
+    def _import_season(self, repository: SeasonRepository, year: int) -> Season:
+        season = repository.find(year)
         if season is None:
-            season = repository.season.create(year)
+            season = repository.create(year)
             
         if self._validation_service is not None:
             self._validation_service.validate_season_data(season, year)
             
         return season
         
-    def _import_team(self, repository, cache, name):
+    def _import_team(self, repository: TeamRepository, cache: Dict[str, Team], name: str) -> Team:
         key = name
         
         team = cache.get(key)
         if team is None:
-            team = repository.team.find(name)
+            team = repository.find(name)
             if team is None:
-                team = repository.team.create(name)
+                team = repository.create(name)
             cache[key] = team
             
         if self._validation_service is not None:
@@ -193,14 +194,14 @@ class SportsReference (object):
             
         return team
         
-    def _import_affiliation(self, repository, cache, season_ID, team_ID, subdivision):
+    def _import_affiliation(self, repository: AffiliationRepository, cache: Dict[Tuple[SeasonID, TeamID], Affiliation], season_ID: SeasonID, team_ID: TeamID, subdivision: Subdivision) -> Affiliation:
         key = (season_ID, team_ID)
         
         affiliation = cache.get(key)
         if affiliation is None:
-            affiliation = repository.affiliation.find(season_ID, team_ID)
+            affiliation = repository.find(season_ID, team_ID)
             if affiliation is None:
-                affiliation = repository.affiliation.create(season_ID, team_ID, subdivision)
+                affiliation = repository.create(season_ID, team_ID, subdivision)
             cache[key] = affiliation
             
         if self._validation_service is not None:
@@ -208,7 +209,7 @@ class SportsReference (object):
             
         return affiliation
         
-    def _import_game(self, repository, cache, season_ID, week, date_, season_section, home_team_ID, away_team_ID, home_team_score, away_team_score, notes):
+    def _import_game(self, repository: GameRepository, cache: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game], season_ID: SeasonID, week: int, date: datetime.date, season_section: SeasonSection, home_team_ID: TeamID, away_team_ID: TeamID, home_team_score: Optional[int], away_team_score: Optional[int], notes: str) -> Game:
         if home_team_ID < away_team_ID:
             key = (season_ID, week, home_team_ID, away_team_ID)
         else:
@@ -216,13 +217,13 @@ class SportsReference (object):
             
         game = cache.get(key)
         if game is None:
-            game = repository.game.find(season_ID, week, home_team_ID, away_team_ID)
+            game = repository.find(season_ID, week, home_team_ID, away_team_ID)
             if game is None:
-                game = repository.game.create(season_ID, week, date_, season_section, home_team_ID, away_team_ID, notes)
+                game = repository.create(season_ID, week, date, season_section, home_team_ID, away_team_ID, notes)
             cache[key] = game
         
-        if date_ != game.date:
-            game.reschedule(week, date_)
+        if date != game.date:
+            game.reschedule(week, date)
             
         if home_team_score is not None and away_team_score is not None and game.status != GameStatus.COMPLETED:
             game.complete(home_team_score, away_team_score)
@@ -231,12 +232,12 @@ class SportsReference (object):
             game.update_notes(notes)
             
         if self._validation_service is not None:
-            self._validation_service.validate_game_data(game, season_ID, week, date_, season_section, home_team_ID, away_team_ID, home_team_score, away_team_score, game.status, notes)
+            self._validation_service.validate_game_data(game, season_ID, week, date, season_section, home_team_ID, away_team_ID, home_team_score, away_team_score, game.status, notes)
             
         return game
         
 
-def _html_iter(soup):
+def _html_iter(soup: BeautifulSoup) -> Iterator[List[Any]]:
     row_iter = iter(soup.find_all('tr'))
     for row in row_iter:
         yield [child.getText() for child in filter(lambda c: isinstance(c, Tag), row.children)]

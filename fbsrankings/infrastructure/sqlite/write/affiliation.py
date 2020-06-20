@@ -1,38 +1,33 @@
 import sqlite3
+
+from typing import Any, Optional, Union
 from uuid import UUID
 
+from fbsrankings.common import Event, EventBus
 from fbsrankings.domain import Season, SeasonID, Team, TeamID, Affiliation, AffiliationID, AffiliationRepository as BaseRepository, Subdivision
 from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 
 class AffiliationRepository (BaseRepository):
-    def __init__(self, connection, cursor, bus):
+    def __init__(self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus) -> None:
         super().__init__(bus)
         
-        if not isinstance(connection, sqlite3.Connection):
-            raise TypeError('connection must be of type sqlite3.Connection')
         self._connection = connection
-        
-        if not isinstance(cursor, sqlite3.Cursor):
-            raise TypeError('cursor must be of type sqlite3.Cursor')
         self._cursor = cursor
         
         self.table = AffiliationTable()
     
         bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
 
-    def get(self, ID):
-        if not isinstance(ID, AffiliationID):
-            raise TypeError('ID must be of type AffiliationID')
-        
+    def get(self, ID: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(f'SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?', [str(ID.value)])
         row = cursor.fetchone()
         cursor.close()
         return self._to_affiliation(row)
         
-    def find(self, season, team):
+    def find(self, season: Union[Season, SeasonID], team: Union[Team, TeamID]) -> Optional[Affiliation]:
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
@@ -53,11 +48,14 @@ class AffiliationRepository (BaseRepository):
         cursor.close()
         return self._to_affiliation(row)
     
-    def _to_affiliation(self, row):
+    def _to_affiliation(self, row: Any) -> Optional[Affiliation]:
         if row is not None:
             return Affiliation(self._bus, AffiliationID(UUID(row[0])), SeasonID(UUID(row[1])), TeamID(UUID(row[2])), Subdivision[row[3]])
         else:
             return None
         
-    def _handle_affiliation_created(self, event):
-        self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)', [str(event.ID.value), str(event.season_ID.value), str(event.team_ID.value), event.subdivision.name])
+    def _handle_affiliation_created(self, event: Event) -> None:
+        if not isinstance(event, AffiliationCreatedEvent):
+            raise TypeError('event must be of type AffiliationCreatedEvent')
+
+        self._cursor.execute(f'INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)', [str(event.ID), str(event.season_ID), str(event.team_ID), event.subdivision])

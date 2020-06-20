@@ -4,7 +4,7 @@ from fbsrankings.infrastructure.sqlite.storage import SeasonSectionTable, Season
 
 
 class Storage (object):
-    def __init__(self, database):
+    def __init__(self, database: str) -> None:
         self.database = database
         
         connection = sqlite3.connect(database)
