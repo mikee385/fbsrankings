@@ -8,7 +8,7 @@ from fbsrankings.common import Query, QueryHandler, QueryBus
 class QueryManager (object):
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
-        self._handlers: Dict[Type[Query], QueryHandler] = {}
+        self._handlers = {}  # type: Dict[Type[Query], QueryHandler]
 
     def register_hander(self, query: Type[Query], handler: QueryHandler) -> None:
         self._handlers[query] = handler

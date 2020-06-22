@@ -77,8 +77,8 @@ class RaiseBehavior (Enum):
 
 class ValidationService (object):
     def __init__(self, raise_behavior: RaiseBehavior=RaiseBehavior.IMMEDIATELY) -> None:
-        self.raise_behavior: RaiseBehavior = raise_behavior
-        self.errors: List[ValidationError] = []
+        self.raise_behavior = raise_behavior
+        self.errors = []  # type: List[ValidationError]
     
     def validate_season_data(self, season: Season, year: int) -> None:
         if season.year != year:

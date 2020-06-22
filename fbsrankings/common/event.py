@@ -7,7 +7,7 @@ class Event (object):
 
 class EventBus (object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Event], List[Callable[[Event], None]]] = {}
+        self._handlers = {}  # type: Dict[Type[Event], List[Callable[[Event], None]]]
         
     def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         existing = self._handlers.get(type)
@@ -25,8 +25,8 @@ class EventBus (object):
 
 class EventRecorder (EventBus):
     def __init__(self, bus: EventBus) -> None:
-        self._bus: EventBus = bus
-        self.events: List[Event] = []
+        self._bus = bus
+        self.events = []  # type: List[Event]
         
     def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         self._bus.register_handler(type, handler)
@@ -41,8 +41,8 @@ class EventRecorder (EventBus):
 
 class EventCounter (EventBus):
     def __init__(self, bus: EventBus) -> None:
-        self._bus: EventBus = bus
-        self.counts: Dict[Type[Event], int] = {}
+        self._bus = bus
+        self.counts = {}  # type: Dict[Type[Event], int]
         
     def register_handler(self, type: Type[Event], handler: Callable[[Event], None]) -> None:
         self._bus.register_handler(type, handler)

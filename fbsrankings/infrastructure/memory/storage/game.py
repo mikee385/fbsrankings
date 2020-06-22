@@ -21,9 +21,9 @@ class GameDto (object):
 
 class GameStorage (object):
     def __init__(self) -> None:
-        self._by_ID: Dict[UUID, GameDto] = {}
-        self._by_key: Dict[Tuple[UUID, int, UUID, UUID], GameDto] = {}
-        self._by_season: Dict[UUID, List[GameDto]] = {}
+        self._by_ID = {}  # type: Dict[UUID, GameDto]
+        self._by_key = {}  # type: Dict[Tuple[UUID, int, UUID, UUID], GameDto]
+        self._by_season = {}  # type: Dict[UUID, List[GameDto]]
     
     def add(self, game: GameDto) -> None:
         key = self._get_key(game.season_ID, game.week, game.home_team_ID, game.away_team_ID)

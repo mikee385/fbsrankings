@@ -12,9 +12,9 @@ class AffiliationDto (object):
 
 class AffiliationStorage (object):
     def __init__(self) -> None:
-        self._by_ID: Dict[UUID, AffiliationDto] = {}
-        self._by_key: Dict[Tuple[UUID, UUID], AffiliationDto] = {}
-        self._by_season: Dict[UUID, List[AffiliationDto]] = {}
+        self._by_ID = {}  # type: Dict[UUID, AffiliationDto]
+        self._by_key = {}  # type: Dict[Tuple[UUID, UUID], AffiliationDto]
+        self._by_season = {}  # type: Dict[UUID, List[AffiliationDto]]
     
     def add(self, affiliation: AffiliationDto) -> None:
         key = (affiliation.season_ID, affiliation.team_ID)

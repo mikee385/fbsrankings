@@ -19,7 +19,7 @@ class SeasonSource (object):
 
 class SportsReference (object):
     def __init__(self, alternate_names: Dict[str, str], validation_service: ValidationService) -> None:
-        self._sources: Dict[int, SeasonSource] = {}
+        self._sources = {}  # type: Dict[int, SeasonSource]
         
         if alternate_names is not None:
             self._alternate_names = alternate_names
@@ -49,9 +49,9 @@ class SportsReference (object):
         
         season = self._import_season(repository.season, source.year)
         
-        teams: Dict[str, Team] = {}
-        affiliations: Dict[Tuple[SeasonID, TeamID], Affiliation] = {}
-        games: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game] = {}
+        teams = {}  # type: Dict[str, Team]
+        affiliations = {}  # type: Dict[Tuple[SeasonID, TeamID], Affiliation]
+        games = {}  # type: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game]
         
         header_row = next(team_rows)
         if header_row[0] == '':

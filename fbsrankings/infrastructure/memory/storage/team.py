@@ -10,8 +10,8 @@ class TeamDto (object):
 
 class TeamStorage (object):
     def __init__(self) -> None:
-        self._by_ID: Dict[UUID, TeamDto] = {}
-        self._by_key: Dict[str, TeamDto] = {}
+        self._by_ID = {}  # type: Dict[UUID, TeamDto]
+        self._by_key = {}  # type: Dict[str, TeamDto]
     
     def add(self, team: TeamDto) -> None:
         if team.name in self._by_key:

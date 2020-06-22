@@ -12,7 +12,7 @@ from fbsrankings.infrastructure.sportsreference import SportsReference
 class CommandManager (object):
     def __init__(self, sports_reference: SportsReference, data_source: TransactionFactory, command_bus: CommandBus, event_bus: EventBus) -> None:
         self._bus = command_bus
-        self._handlers: Dict[Type[Command], CommandHandler] = {}
+        self._handlers = {}  # type: Dict[Type[Command], CommandHandler]
         
         self.register_hander(ImportSeasonByYearCommand, ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus))
 

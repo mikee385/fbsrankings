@@ -10,8 +10,8 @@ class SeasonDto (object):
 
 class SeasonStorage (object):
     def __init__(self) -> None:
-        self._by_ID: Dict[UUID, SeasonDto] = {}
-        self._by_key: Dict[int, SeasonDto] = {}
+        self._by_ID = {}  # type: Dict[UUID, SeasonDto]
+        self._by_key = {}  # type: Dict[int, SeasonDto]
     
     def add(self, season: SeasonDto) -> None:
         if season.year in self._by_key:

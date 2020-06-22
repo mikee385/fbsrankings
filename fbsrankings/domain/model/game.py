@@ -56,13 +56,13 @@ class Game (object):
         else:
             raise TypeError('away_team must be of type Team or TeamID')
 
-        self._home_team_score: Optional[int]
-        self._away_team_score: Optional[int]
-        self._winning_team_ID: Optional[TeamID]
-        self._winning_team_score: Optional[int]
-        self._losing_team_ID: Optional[TeamID]
-        self._losing_team_score: Optional[int]
-            
+        self._home_team_score = None  # type: Optional[int]
+        self._away_team_score = None  # type: Optional[int]
+        self._winning_team_ID = None  # type: Optional[TeamID]
+        self._winning_team_score = None  # type: Optional[int]
+        self._losing_team_ID = None  # type: Optional[TeamID]
+        self._losing_team_score = None  # type: Optional[int]
+                    
         if home_team_score is not None and away_team_score is not None:
             if status != GameStatus.COMPLETED:
                 raise ValueError('Game must be COMPLETED in order to have scores')
@@ -77,14 +77,6 @@ class Game (object):
 
         elif status == GameStatus.COMPLETED:
                 raise ValueError('Game must be have scores in order to be COMPLETED')
-
-        else:
-            self._home_team_score = None
-            self._away_team_score = None
-            self._winning_team_ID = None
-            self._winning_team_score = None
-            self._losing_team_ID = None
-            self._losing_team_score = None
         
         self._status = status
         self._notes = notes

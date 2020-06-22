@@ -12,7 +12,7 @@ class QueryHandler (object):
 
 class QueryBus (object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Query], QueryHandler] = {}
+        self._handlers = {}  # type: Dict[Type[Query], QueryHandler]
         
     def register_handler(self, type: Type[Query], handler: QueryHandler) -> None:
         existing = self._handlers.get(type)

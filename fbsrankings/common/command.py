@@ -12,7 +12,7 @@ class CommandHandler (object):
 
 class CommandBus (object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Command], CommandHandler] = {}
+        self._handlers = {}  # type: Dict[Type[Command], CommandHandler]
         
     def register_handler(self, type: type, handler: CommandHandler) -> None:
         existing = self._handlers.get(type)
