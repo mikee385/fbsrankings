@@ -1,10 +1,10 @@
 from uuid import UUID
 
 
-class Identifier (object):
+class Identifier(object):
     def __init__(self, value: UUID) -> None:
         self.value = value
-        
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -15,7 +15,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-        
+
     def __ne__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -26,7 +26,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-    
+
     def __lt__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -37,7 +37,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-        
+
     def __le__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -48,7 +48,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-        
+
     def __gt__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -59,7 +59,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-        
+
     def __ge__(self, other: object) -> bool:
         if isinstance(other, Identifier):
             if isinstance(other, type(self)) or isinstance(self, type(other)):
@@ -70,7 +70,7 @@ class Identifier (object):
                 return NotImplemented
             return NotImplemented
         return NotImplemented
-        
+
     def __hash__(self) -> int:
         return hash(self.value)
 

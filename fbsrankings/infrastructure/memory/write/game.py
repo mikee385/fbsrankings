@@ -1,48 +1,77 @@
 from typing import Optional, Union
 
 from fbsrankings.common import Event, EventBus
-from fbsrankings.domain import SeasonID, Season, SeasonSection, TeamID, Team, GameID, Game, GameRepository as BaseRepository, GameStatus
-from fbsrankings.event import GameCreatedEvent, GameRescheduledEvent, GameCanceledEvent, GameCompletedEvent, GameNotesUpdatedEvent
-from fbsrankings.infrastructure.memory.storage import GameStorage, GameDto
-        
+from fbsrankings.domain import Game, GameID
+from fbsrankings.domain import GameRepository as BaseRepository
+from fbsrankings.domain import GameStatus, Season, SeasonID, SeasonSection, Team, TeamID
+from fbsrankings.event import (
+    GameCanceledEvent,
+    GameCompletedEvent,
+    GameCreatedEvent,
+    GameNotesUpdatedEvent,
+    GameRescheduledEvent,
+)
+from fbsrankings.infrastructure.memory.storage import GameDto, GameStorage
 
-class GameRepository (BaseRepository):
+
+class GameRepository(BaseRepository):
     def __init__(self, storage: GameStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._storage = storage
 
     def get(self, ID: GameID) -> Optional[Game]:
         return self._to_game(self._storage.get(ID.value))
-        
-    def find(self, season: Union[Season, SeasonID], week: int, team1: Union[Team, TeamID], team2: Union[Team, TeamID]) -> Optional[Game]:
+
+    def find(
+        self,
+        season: Union[Season, SeasonID],
+        week: int,
+        team1: Union[Team, TeamID],
+        team2: Union[Team, TeamID],
+    ) -> Optional[Game]:
         if isinstance(season, Season):
             season_ID = season.ID
         elif isinstance(season, SeasonID):
             season_ID = season
         else:
-            raise TypeError('season must be of type Season or SeasonID')
-        
+            raise TypeError("season must be of type Season or SeasonID")
+
         if isinstance(team1, Team):
             team1_ID = team1.ID
         elif isinstance(team1, TeamID):
             team1_ID = team1
         else:
-            raise TypeError('team1 must be of type Team or TeamID')
-            
+            raise TypeError("team1 must be of type Team or TeamID")
+
         if isinstance(team2, Team):
             team2_ID = team2.ID
         elif isinstance(team2, TeamID):
             team2_ID = team2
         else:
-            raise TypeError('team2 must be of type Team or TeamID')
-            
-        return self._to_game(self._storage.find(season_ID.value, week, team1_ID.value, team2_ID.value))
-        
+            raise TypeError("team2 must be of type Team or TeamID")
+
+        return self._to_game(
+            self._storage.find(season_ID.value, week, team1_ID.value, team2_ID.value)
+        )
+
     def _to_game(self, dto: Optional[GameDto]) -> Optional[Game]:
         if dto is not None:
-            return Game(self._bus, GameID(dto.ID), SeasonID(dto.season_ID), dto.week, dto.date, SeasonSection[dto.season_section], TeamID(dto.home_team_ID), TeamID(dto.away_team_ID), dto.home_team_score, dto.away_team_score, GameStatus[dto.status], dto.notes)
+            return Game(
+                self._bus,
+                GameID(dto.ID),
+                SeasonID(dto.season_ID),
+                dto.week,
+                dto.date,
+                SeasonSection[dto.season_section],
+                TeamID(dto.home_team_ID),
+                TeamID(dto.away_team_ID),
+                dto.home_team_score,
+                dto.away_team_score,
+                GameStatus[dto.status],
+                dto.notes,
+            )
         return None
-        
+
     def handle(self, event: Event) -> bool:
         if isinstance(event, GameCreatedEvent):
             self._handle_game_created(event)
@@ -61,16 +90,30 @@ class GameRepository (BaseRepository):
             return True
         else:
             return False
-        
+
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
-        self._storage.add(GameDto(event.ID, event.season_ID, event.week, event.date, event.season_section, event.home_team_ID, event.away_team_ID, None, None, GameStatus.SCHEDULED.name, event.notes))
-        
+        self._storage.add(
+            GameDto(
+                event.ID,
+                event.season_ID,
+                event.week,
+                event.date,
+                event.season_section,
+                event.home_team_ID,
+                event.away_team_ID,
+                None,
+                None,
+                GameStatus.SCHEDULED.name,
+                event.notes,
+            )
+        )
+
     def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
         dto = self._storage.get(event.ID)
         if dto is not None:
             dto.week = event.week
             dto.date = event.date
-    
+
     def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
         dto = self._storage.get(event.ID)
         if dto is not None:
@@ -82,7 +125,7 @@ class GameRepository (BaseRepository):
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
             dto.status = GameStatus.COMPLETED.name
-    
+
     def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         dto = self._storage.get(event.ID)
         if dto is not None:

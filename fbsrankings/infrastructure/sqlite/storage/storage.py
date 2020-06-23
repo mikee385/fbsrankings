@@ -1,31 +1,40 @@
 import sqlite3
 
-from fbsrankings.infrastructure.sqlite.storage import SeasonSectionTable, SeasonTable, TeamTable, SubdivisionTable, AffiliationTable, GameStatusTable, GameTable
+from fbsrankings.infrastructure.sqlite.storage.affiliation import (
+    AffiliationTable,
+    SubdivisionTable,
+)
+from fbsrankings.infrastructure.sqlite.storage.game import GameStatusTable, GameTable
+from fbsrankings.infrastructure.sqlite.storage.season import (
+    SeasonSectionTable,
+    SeasonTable,
+)
+from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
 
 
-class Storage (object):
+class Storage(object):
     def __init__(self, database: str) -> None:
         self.database = database
-        
+
         connection = sqlite3.connect(database)
         try:
             connection.isolation_level = None
-            connection.execute('PRAGMA foreign_keys = ON')
-        
+            connection.execute("PRAGMA foreign_keys = ON")
+
             cursor = connection.cursor()
             cursor.execute("begin")
             try:
                 SeasonSectionTable().create(cursor)
                 SubdivisionTable().create(cursor)
                 GameStatusTable().create(cursor)
-        
+
                 SeasonTable().create(cursor)
                 TeamTable().create(cursor)
                 AffiliationTable().create(cursor)
                 GameTable().create(cursor)
-        
+
                 cursor.execute("commit")
-            except:
+            except:  # noqa: E722
                 cursor.execute("rollback")
                 raise
             finally:
