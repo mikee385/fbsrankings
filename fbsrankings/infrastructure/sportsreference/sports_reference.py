@@ -1,8 +1,9 @@
 import datetime
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup, Tag  # type: ignore
+from typing_extensions import Protocol
 
 from fbsrankings.domain import (
     Affiliation,
@@ -20,6 +21,24 @@ from fbsrankings.domain import (
     TeamRepository,
     ValidationService,
 )
+
+
+class RepositoryManager(Protocol):
+    @property
+    def season(self) -> SeasonRepository:
+        raise NotImplementedError
+
+    @property
+    def team(self) -> TeamRepository:
+        raise NotImplementedError
+
+    @property
+    def affiliation(self) -> AffiliationRepository:
+        raise NotImplementedError
+
+    @property
+    def game(self) -> GameRepository:
+        raise NotImplementedError
 
 
 class SeasonSource(object):
@@ -67,7 +86,7 @@ class SportsReference(object):
             year, postseason_start_week, source_type, team_source, game_source
         )
 
-    def import_season(self, year: int, repository: Any) -> None:
+    def import_season(self, year: int, repository: RepositoryManager) -> None:
         source = self._sources.get(year)
         if source is None:
             raise ValueError(f"Source has not been added for year {year}")
@@ -360,7 +379,7 @@ class SportsReference(object):
         return game
 
 
-def _html_iter(soup: BeautifulSoup) -> Iterator[List[Any]]:
+def _html_iter(soup: BeautifulSoup) -> Iterator[List[str]]:
     row_iter = iter(soup.find_all("tr"))
     for row in row_iter:
         yield [

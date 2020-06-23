@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Any, Optional, Union
+from typing import Optional, Tuple, Union
 from uuid import UUID
 
 from fbsrankings.common import Event, EventBus
@@ -59,7 +59,7 @@ class AffiliationRepository(BaseRepository):
         cursor.close()
         return self._to_affiliation(row)
 
-    def _to_affiliation(self, row: Any) -> Optional[Affiliation]:
+    def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Optional[Affiliation]:
         if row is not None:
             return Affiliation(
                 self._bus,

@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Any, Optional
+from typing import Optional, Tuple
 from uuid import UUID
 
 from fbsrankings.common import Event, EventBus
@@ -41,7 +41,7 @@ class SeasonRepository(BaseRepository):
         cursor.close()
         return self._to_season(row)
 
-    def _to_season(self, row: Any) -> Optional[Season]:
+    def _to_season(self, row: Tuple[str, int]) -> Optional[Season]:
         if row is not None:
             return Season(self._bus, SeasonID(UUID(row[0])), row[1])
         else:

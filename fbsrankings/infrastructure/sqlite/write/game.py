@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Optional, Tuple, Union
 from uuid import UUID
 
 from fbsrankings.common import Event, EventBus
@@ -88,7 +88,12 @@ class GameRepository(BaseRepository):
         cursor.close()
         return self._to_game(row)
 
-    def _to_game(self, row: Any) -> Optional[Game]:
+    def _to_game(
+        self,
+        row: Tuple[
+            str, str, int, str, str, str, str, Optional[int], Optional[int], str, str
+        ],
+    ) -> Optional[Game]:
         if row is not None:
             return Game(
                 self._bus,

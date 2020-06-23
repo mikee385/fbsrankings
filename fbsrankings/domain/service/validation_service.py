@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from typing import Any, Iterable, List, Optional
+from typing import Iterable, List, Optional
 from uuid import UUID
 
 from fbsrankings.domain import (
@@ -35,8 +35,8 @@ class SeasonDataValidationError(ValidationError):
         message: str,
         season_ID: UUID,
         attribute_name: str,
-        attribute_value: Any,
-        expected_value: Any,
+        attribute_value: object,
+        expected_value: object,
     ) -> None:
         super().__init__(message)
         self.season_ID = season_ID
@@ -51,8 +51,8 @@ class TeamDataValidationError(ValidationError):
         message: str,
         team_ID: UUID,
         attribute_name: str,
-        attribute_value: Any,
-        expected_value: Any,
+        attribute_value: object,
+        expected_value: object,
     ) -> None:
         super().__init__(message)
         self.team_ID = team_ID
@@ -67,8 +67,8 @@ class AffiliationDataValidationError(ValidationError):
         message: str,
         affiliation_ID: UUID,
         attribute_name: str,
-        attribute_value: Any,
-        expected_value: Any,
+        attribute_value: object,
+        expected_value: object,
     ) -> None:
         super().__init__(message)
         self.affiliation_ID = affiliation_ID
@@ -83,8 +83,8 @@ class GameDataValidationError(ValidationError):
         message: str,
         game_ID: UUID,
         attribute_name: str,
-        attribute_value: Any,
-        expected_value: Any,
+        attribute_value: object,
+        expected_value: object,
     ) -> None:
         super().__init__(message)
         self.game_ID = game_ID
