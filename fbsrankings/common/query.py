@@ -1,11 +1,13 @@
+from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, Type
 
 
-class Query(object):
+class Query(metaclass=ABCMeta):
     pass
 
 
-class QueryHandler(object):
+class QueryHandler(metaclass=ABCMeta):
+    @abstractmethod
     def handle(self, query: Query) -> Any:
         raise NotImplementedError
 

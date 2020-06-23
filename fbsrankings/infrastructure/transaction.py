@@ -1,4 +1,5 @@
-﻿from types import TracebackType
+﻿from abc import ABCMeta, abstractmethod
+from types import TracebackType
 from typing import Optional, Type
 
 from typing_extensions import Literal
@@ -12,29 +13,36 @@ from fbsrankings.domain import (
 )
 
 
-class Transaction(object):
+class Transaction(metaclass=ABCMeta):
     @property
+    @abstractmethod
     def season(self) -> SeasonRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def team(self) -> TeamRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def affiliation(self) -> AffiliationRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def game(self) -> GameRepository:
         raise NotImplementedError
 
+    @abstractmethod
     def commit(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def rollback(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def close(self) -> None:
         raise NotImplementedError
 
@@ -51,6 +59,7 @@ class Transaction(object):
         return False
 
 
-class TransactionFactory(object):
+class TransactionFactory(metaclass=ABCMeta):
+    @abstractmethod
     def transaction(self, event_bus: EventBus) -> Transaction:
         raise NotImplementedError

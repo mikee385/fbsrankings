@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from enum import Enum
 from typing import Optional
 from uuid import uuid4
@@ -31,7 +32,7 @@ class Season(object):
         return self._year
 
 
-class SeasonRepository(object):
+class SeasonRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -42,8 +43,10 @@ class SeasonRepository(object):
 
         return season
 
+    @abstractmethod
     def get(self, ID: SeasonID) -> Optional[Season]:
         raise NotImplementedError
 
+    @abstractmethod
     def find(self, year: int) -> Optional[Season]:
         raise NotImplementedError

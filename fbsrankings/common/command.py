@@ -1,11 +1,13 @@
+from abc import ABCMeta, abstractmethod
 from typing import Dict, Type
 
 
-class Command(object):
+class Command(metaclass=ABCMeta):
     pass
 
 
-class CommandHandler(object):
+class CommandHandler(metaclass=ABCMeta):
+    @abstractmethod
     def handle(self, command: Command) -> None:
         raise NotImplementedError
 

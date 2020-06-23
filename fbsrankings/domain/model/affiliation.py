@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from enum import Enum
 from typing import Optional, Union
 from uuid import uuid4
@@ -62,7 +63,7 @@ class Affiliation(object):
         return self._subdivision
 
 
-class AffiliationRepository(object):
+class AffiliationRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -82,8 +83,10 @@ class AffiliationRepository(object):
 
         return affiliation
 
+    @abstractmethod
     def get(self, ID: AffiliationID) -> Optional[Affiliation]:
         raise NotImplementedError
 
+    @abstractmethod
     def find(self, season: SeasonID, team: TeamID) -> Optional[Affiliation]:
         raise NotImplementedError

@@ -1,4 +1,5 @@
 import datetime
+from abc import ABCMeta, abstractmethod
 from enum import Enum
 from typing import Optional, Union
 from uuid import UUID, uuid4
@@ -248,7 +249,7 @@ class Game(object):
         self._bus.publish(GameNotesUpdatedEvent(self.ID.value, old_notes, notes))
 
 
-class GameRepository(object):
+class GameRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -292,9 +293,11 @@ class GameRepository(object):
 
         return game
 
+    @abstractmethod
     def get(self, ID: GameID) -> Optional[Game]:
         raise NotImplementedError
 
+    @abstractmethod
     def find(
         self,
         season: Union[Season, SeasonID],

@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from typing import Optional
 from uuid import uuid4
 
@@ -24,7 +25,7 @@ class Team(object):
         return self._name
 
 
-class TeamRepository(object):
+class TeamRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -35,8 +36,10 @@ class TeamRepository(object):
 
         return team
 
+    @abstractmethod
     def get(self, ID: TeamID) -> Optional[Team]:
         raise NotImplementedError
 
+    @abstractmethod
     def find(self, name: str) -> Optional[Team]:
         raise NotImplementedError

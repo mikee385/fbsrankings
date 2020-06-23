@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from types import TracebackType
 from typing import Dict, Optional, Type
 
@@ -32,6 +33,7 @@ class QueryManager(object):
         return False
 
 
-class QueryManagerFactory(object):
+class QueryManagerFactory(metaclass=ABCMeta):
+    @abstractmethod
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
         raise NotImplementedError
