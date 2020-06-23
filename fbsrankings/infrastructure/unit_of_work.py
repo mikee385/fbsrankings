@@ -1,7 +1,7 @@
 from types import TracebackType
 from typing import Optional, Type
 
-from typing_extensions import Literal
+from typing_extensions import ContextManager, Literal
 
 from fbsrankings.common import EventBus, EventRecorder
 from fbsrankings.domain import (
@@ -13,7 +13,7 @@ from fbsrankings.domain import (
 from fbsrankings.infrastructure.transaction import TransactionFactory
 
 
-class UnitOfWork(object):
+class UnitOfWork(ContextManager["UnitOfWork"]):
     def __init__(self, data_source: TransactionFactory, bus: EventBus) -> None:
         self._outer_bus = bus
         self._inner_bus = EventRecorder(EventBus())

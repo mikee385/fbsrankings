@@ -2,7 +2,7 @@
 from types import TracebackType
 from typing import Optional, Type
 
-from typing_extensions import Literal
+from typing_extensions import ContextManager, Literal, Protocol
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import (
@@ -13,7 +13,7 @@ from fbsrankings.domain import (
 )
 
 
-class Transaction(metaclass=ABCMeta):
+class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
     @property
     @abstractmethod
     def season(self) -> SeasonRepository:
@@ -59,7 +59,6 @@ class Transaction(metaclass=ABCMeta):
         return False
 
 
-class TransactionFactory(metaclass=ABCMeta):
-    @abstractmethod
+class TransactionFactory(Protocol):
     def transaction(self, event_bus: EventBus) -> Transaction:
         raise NotImplementedError

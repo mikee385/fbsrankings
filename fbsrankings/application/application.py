@@ -1,20 +1,25 @@
 from types import TracebackType
 from typing import Any, List, Optional, Type
 
-from typing_extensions import Literal
+from typing_extensions import ContextManager, Literal, Protocol
 
 from fbsrankings.application.command import CommandManager
 from fbsrankings.common import Command, CommandBus, EventBus, Query, QueryBus
 from fbsrankings.domain import RaiseBehavior, ValidationError, ValidationService
+from fbsrankings.infrastructure import QueryManagerFactory, TransactionFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 
 
-class Application(object):
+class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
+    pass
+
+
+class Application(ContextManager["Application"]):
     def __init__(self, config: Any, event_bus: EventBus) -> None:
         self._event_bus = event_bus
-        self._data_source: Any
+        self._data_source: DataSource
 
         storage_type = config["settings"]["storage_type"]
         if storage_type == "memory":

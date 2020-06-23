@@ -1,13 +1,12 @@
-from abc import ABCMeta, abstractmethod
 from types import TracebackType
 from typing import Dict, Optional, Type
 
-from typing_extensions import Literal
+from typing_extensions import ContextManager, Literal, Protocol
 
 from fbsrankings.common import Query, QueryBus, QueryHandler
 
 
-class QueryManager(object):
+class QueryManager(ContextManager["QueryManager"]):
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
         self._handlers: Dict[Type[Query], QueryHandler] = {}
@@ -33,7 +32,6 @@ class QueryManager(object):
         return False
 
 
-class QueryManagerFactory(metaclass=ABCMeta):
-    @abstractmethod
+class QueryManagerFactory(Protocol):
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
         raise NotImplementedError

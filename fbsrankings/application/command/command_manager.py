@@ -1,7 +1,7 @@
 from types import TracebackType
 from typing import Dict, Optional, Type
 
-from typing_extensions import Literal
+from typing_extensions import ContextManager, Literal
 
 from fbsrankings.application.command.import_season_by_year import (
     ImportSeasonByYearCommandHandler,
@@ -12,7 +12,7 @@ from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.sportsreference import SportsReference
 
 
-class CommandManager(object):
+class CommandManager(ContextManager["CommandManager"]):
     def __init__(
         self,
         sports_reference: SportsReference,
