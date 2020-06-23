@@ -1,4 +1,4 @@
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.domain import GameStatus
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import (
@@ -8,14 +8,11 @@ from fbsrankings.query import (
 )
 
 
-class CanceledGamesQueryHandler(QueryHandler):
+class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: Query) -> CanceledGamesResult:
-        if not isinstance(query, CanceledGamesQuery):
-            raise TypeError("query must be of type CanceledGamesQuery")
-
+    def handle(self, query: CanceledGamesQuery) -> CanceledGamesResult:
         games = []
         for game in self._storage.game.all():
             if game.status == GameStatus.CANCELED.name:

@@ -2,7 +2,7 @@ import sqlite3
 from typing import Optional, Tuple, Union
 from uuid import UUID
 
-from fbsrankings.common import Event, EventBus
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation, AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
 from fbsrankings.domain import Season, SeasonID, Subdivision, Team, TeamID
@@ -71,10 +71,7 @@ class AffiliationRepository(BaseRepository):
         else:
             return None
 
-    def _handle_affiliation_created(self, event: Event) -> None:
-        if not isinstance(event, AffiliationCreatedEvent):
-            raise TypeError("event must be of type AffiliationCreatedEvent")
-
+    def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
         self._cursor.execute(
             f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)",
             [

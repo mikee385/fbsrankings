@@ -1,4 +1,4 @@
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.domain import Subdivision
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import (
@@ -7,14 +7,13 @@ from fbsrankings.query import (
 )
 
 
-class AffiliationCountBySeasonQueryHandler(QueryHandler):
+class AffiliationCountBySeasonQueryHandler(QueryHandler[AffiliationCountBySeasonQuery]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: Query) -> AffiliationCountBySeasonResult:
-        if not isinstance(query, AffiliationCountBySeasonQuery):
-            raise TypeError("query must be of type AffiliationCountBySeasonQuery")
-
+    def handle(
+        self, query: AffiliationCountBySeasonQuery
+    ) -> AffiliationCountBySeasonResult:
         fbs_count = 0
         fcs_count = 0
 

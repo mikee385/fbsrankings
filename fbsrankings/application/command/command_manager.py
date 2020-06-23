@@ -1,5 +1,5 @@
 from types import TracebackType
-from typing import Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, TypeVar
 
 from typing_extensions import ContextManager, Literal
 
@@ -11,6 +11,8 @@ from fbsrankings.common import Command, CommandBus, CommandHandler, EventBus
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.sportsreference import SportsReference
 
+C = TypeVar("C", bound=Command)
+
 
 class CommandManager(ContextManager["CommandManager"]):
     def __init__(
@@ -21,14 +23,14 @@ class CommandManager(ContextManager["CommandManager"]):
         event_bus: EventBus,
     ) -> None:
         self._bus = command_bus
-        self._handlers: Dict[Type[Command], CommandHandler] = {}
+        self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 
         self.register_hander(
             ImportSeasonByYearCommand,
             ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus),
         )
 
-    def register_hander(self, command: Type[Command], handler: CommandHandler) -> None:
+    def register_hander(self, command: Type[C], handler: CommandHandler[C]) -> None:
         self._handlers[command] = handler
         self._bus.register_handler(command, handler)
 

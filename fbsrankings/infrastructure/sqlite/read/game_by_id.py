@@ -2,12 +2,12 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import GameTable, SeasonTable, TeamTable
 from fbsrankings.query import GameByIDQuery, GameByIDResult
 
 
-class GameByIDQueryHandler(QueryHandler):
+class GameByIDQueryHandler(QueryHandler[GameByIDQuery]):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
@@ -15,10 +15,7 @@ class GameByIDQueryHandler(QueryHandler):
         self.team_table = TeamTable()
         self.game_table = GameTable()
 
-    def handle(self, query: Query) -> Optional[GameByIDResult]:
-        if not isinstance(query, GameByIDQuery):
-            raise TypeError("query must be of type GameByIDQuery")
-
+    def handle(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT game.UUID, game.SeasonID, season.Year, game.Week, game.Date, game.SeasonSection, game.HomeTeamID, home_team.Name, game.AwayTeamID, away_team.name, game.HomeTeamScore, game.AwayTeamScore, game.Status, game.Notes FROM {self.game_table.name} AS game INNER JOIN {self.season_table.name} AS season ON season.UUID = game.SeasonID INNER JOIN {self.team_table.name} AS home_team ON home_team.UUID = game.HomeTeamID INNER JOIN {self.team_table.name} AS away_team ON away_team.UUID = game.AwayTeamID WHERE game.UUID=?",

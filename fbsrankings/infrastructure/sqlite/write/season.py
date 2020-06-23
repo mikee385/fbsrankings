@@ -2,7 +2,7 @@ import sqlite3
 from typing import Optional, Tuple
 from uuid import UUID
 
-from fbsrankings.common import Event, EventBus
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Season, SeasonID
 from fbsrankings.domain import SeasonRepository as BaseRepository
 from fbsrankings.event import SeasonCreatedEvent
@@ -47,10 +47,7 @@ class SeasonRepository(BaseRepository):
         else:
             return None
 
-    def _handle_season_created(self, event: Event) -> None:
-        if not isinstance(event, SeasonCreatedEvent):
-            raise TypeError("event must be of type SeasonCreatedEvent")
-
+    def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
             f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)",
             [str(event.ID), event.year],

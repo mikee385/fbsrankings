@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, Tuple, Union
 from uuid import UUID
 
-from fbsrankings.common import Event, EventBus
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Game, GameID
 from fbsrankings.domain import GameRepository as BaseRepository
 from fbsrankings.domain import GameStatus, Season, SeasonID, SeasonSection, Team, TeamID
@@ -112,10 +112,7 @@ class GameRepository(BaseRepository):
         else:
             return None
 
-    def _handle_game_created(self, event: Event) -> None:
-        if not isinstance(event, GameCreatedEvent):
-            raise TypeError("event must be of type GameCreatedEvent")
-
+    def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._cursor.execute(
             f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
@@ -133,28 +130,19 @@ class GameRepository(BaseRepository):
             ],
         )
 
-    def _handle_game_rescheduled(self, event: Event) -> None:
-        if not isinstance(event, GameRescheduledEvent):
-            raise TypeError("event must be of type GameRescheduledEvent")
-
+    def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self.table.name} SET Week=?, Date=? WHERE UUID=?",
             [event.week, event.date, str(event.ID)],
         )
 
-    def _handle_game_canceled(self, event: Event) -> None:
-        if not isinstance(event, GameCanceledEvent):
-            raise TypeError("event must be of type GameCanceledEvent")
-
+    def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self.table.name} SET Status=? WHERE UUID=?",
             [GameStatus.CANCELED.name, str(event.ID)],
         )
 
-    def _handle_game_completed(self, event: Event) -> None:
-        if not isinstance(event, GameCompletedEvent):
-            raise TypeError("event must be of type GameCompletedEvent")
-
+    def _handle_game_completed(self, event: GameCompletedEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self.table.name} SET HomeTeamScore=?, AwayTeamScore=?, Status=? WHERE UUID=?",
             [
@@ -165,10 +153,7 @@ class GameRepository(BaseRepository):
             ],
         )
 
-    def _handle_game_notes_updated(self, event: Event) -> None:
-        if not isinstance(event, GameNotesUpdatedEvent):
-            raise TypeError("event must be of type GameNotesUpdatedEvent")
-
+    def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self.table.name} SET Notes=? WHERE UUID=?",
             [event.notes, str(event.ID)],

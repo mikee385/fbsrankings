@@ -1,24 +1,25 @@
-from typing import Callable, Dict, List, Type
+from typing import Any, Callable, Dict, List, Type, TypeVar
 
 
 class Event(object):
     pass
 
 
+E = TypeVar("E", bound=Event)
+
+
 class EventBus(object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Event], List[Callable[[Event], None]]] = {}
+        self._handlers: Dict[Type[Event], List[Callable[[Any], None]]] = {}
 
-    def register_handler(
-        self, type: Type[Event], handler: Callable[[Event], None]
-    ) -> None:
+    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
         existing = self._handlers.get(type)
         if existing is not None:
             existing.append(handler)
         else:
             self._handlers[type] = [handler]
 
-    def publish(self, event: Event) -> None:
+    def publish(self, event: E) -> None:
         handlers = self._handlers.get(type(event))
         if handlers is not None:
             for handler in handlers:
@@ -30,12 +31,10 @@ class EventRecorder(EventBus):
         self._bus = bus
         self.events: List[Event] = []
 
-    def register_handler(
-        self, type: Type[Event], handler: Callable[[Event], None]
-    ) -> None:
+    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
         self._bus.register_handler(type, handler)
 
-    def publish(self, event: Event) -> None:
+    def publish(self, event: E) -> None:
         self.events.append(event)
         self._bus.publish(event)
 
@@ -48,12 +47,10 @@ class EventCounter(EventBus):
         self._bus = bus
         self.counts: Dict[Type[Event], int] = {}
 
-    def register_handler(
-        self, type: Type[Event], handler: Callable[[Event], None]
-    ) -> None:
+    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
         self._bus.register_handler(type, handler)
 
-    def publish(self, event: Event) -> None:
+    def publish(self, event: E) -> None:
         count = self.counts.get(type(event))
         if count is None:
             self.counts[type(event)] = 1

@@ -1,17 +1,19 @@
 from types import TracebackType
-from typing import Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, TypeVar
 
 from typing_extensions import ContextManager, Literal, Protocol
 
 from fbsrankings.common import Query, QueryBus, QueryHandler
 
+Q = TypeVar("Q", bound=Query)
+
 
 class QueryManager(ContextManager["QueryManager"]):
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
-        self._handlers: Dict[Type[Query], QueryHandler] = {}
+        self._handlers: Dict[Type[Query], QueryHandler[Any]] = {}
 
-    def register_hander(self, query: Type[Query], handler: QueryHandler) -> None:
+    def register_hander(self, query: Type[Q], handler: QueryHandler[Q]) -> None:
         self._handlers[query] = handler
         self._bus.register_handler(query, handler)
 

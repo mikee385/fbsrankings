@@ -1,18 +1,15 @@
 from typing import Optional
 
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import SeasonByIDQuery, SeasonByIDResult
 
 
-class SeasonByIDQueryHandler(QueryHandler):
+class SeasonByIDQueryHandler(QueryHandler[SeasonByIDQuery]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: Query) -> Optional[SeasonByIDResult]:
-        if not isinstance(query, SeasonByIDQuery):
-            raise TypeError("query must be of type SeasonByIDQuery")
-
+    def handle(self, query: SeasonByIDQuery) -> Optional[SeasonByIDResult]:
         season = self._storage.season.get(query.ID)
         if season is not None:
             return SeasonByIDResult(season.ID, season.year)

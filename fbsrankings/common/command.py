@@ -1,32 +1,35 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Type
+from typing import Any, Dict, Generic, Type, TypeVar
 
 
 class Command(metaclass=ABCMeta):
     pass
 
 
-class CommandHandler(metaclass=ABCMeta):
+C = TypeVar("C", bound=Command)
+
+
+class CommandHandler(Generic[C], metaclass=ABCMeta):
     @abstractmethod
-    def handle(self, command: Command) -> None:
+    def handle(self, command: C) -> None:
         raise NotImplementedError
 
 
 class CommandBus(object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Command], CommandHandler] = {}
+        self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 
-    def register_handler(self, type: type, handler: CommandHandler) -> None:
+    def register_handler(self, type: Type[C], handler: CommandHandler[C]) -> None:
         existing = self._handlers.get(type)
         if existing is not None:
             raise ValueError(f"A handler has already been registered for {type}")
         else:
             self._handlers[type] = handler
 
-    def unregister_handler(self, type: Type[Command], handler: CommandHandler) -> None:
+    def unregister_handler(self, type: Type[C], handler: CommandHandler[C]) -> None:
         self._handlers.pop(type)
 
-    def send(self, command: Command) -> None:
+    def send(self, command: C) -> None:
         handler = self._handlers.get(type(command))
         if handler is None:
             raise ValueError(f"No handler has been registered for {type(command)}")

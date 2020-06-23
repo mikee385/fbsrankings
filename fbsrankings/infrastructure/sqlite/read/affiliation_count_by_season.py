@@ -1,6 +1,6 @@
 import sqlite3
 
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 from fbsrankings.query import (
     AffiliationCountBySeasonQuery,
@@ -8,16 +8,15 @@ from fbsrankings.query import (
 )
 
 
-class AffiliationCountBySeasonQueryHandler(QueryHandler):
+class AffiliationCountBySeasonQueryHandler(QueryHandler[AffiliationCountBySeasonQuery]):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
         self.table = AffiliationTable()
 
-    def handle(self, query: Query) -> AffiliationCountBySeasonResult:
-        if not isinstance(query, AffiliationCountBySeasonQuery):
-            raise TypeError("query must be of type AffiliationCountBySeasonQuery")
-
+    def handle(
+        self, query: AffiliationCountBySeasonQuery
+    ) -> AffiliationCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
             f'SELECT SUM(CASE WHEN Subdivision = "FBS" THEN 1 ELSE 0 END) AS FBS_Count, SUM(CASE WHEN Subdivision = "FCS" THEN 1 ELSE 0 END) AS FCS_Count FROM {self.table.name} WHERE SeasonID=?',

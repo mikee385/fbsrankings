@@ -1,16 +1,13 @@
-from fbsrankings.common import Query, QueryHandler
+from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import SeasonResult, SeasonsQuery, SeasonsResult
 
 
-class SeasonsQueryHandler(QueryHandler):
+class SeasonsQueryHandler(QueryHandler[SeasonsQuery]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: Query) -> SeasonsResult:
-        if not isinstance(query, SeasonsQuery):
-            raise TypeError("query must be of type SeasonsQuery")
-
+    def handle(self, query: SeasonsQuery) -> SeasonsResult:
         return SeasonsResult(
             [SeasonResult(item.ID, item.year) for item in self._storage.season.all()]
         )
