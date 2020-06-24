@@ -1,16 +1,17 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from typing import Any, Dict, Generic, Type, TypeVar
+
+from typing_extensions import Protocol
 
 
 class Command(metaclass=ABCMeta):
     pass
 
 
-C = TypeVar("C", bound=Command)
+C = TypeVar("C", bound=Command, contravariant=True)
 
 
-class CommandHandler(Generic[C], metaclass=ABCMeta):
-    @abstractmethod
+class CommandHandler(Generic[C], Protocol):
     def handle(self, command: C) -> None:
         raise NotImplementedError
 

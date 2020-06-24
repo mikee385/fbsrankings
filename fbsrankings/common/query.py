@@ -1,5 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from typing import Any, Dict, Generic, Type, TypeVar, cast
+
+from typing_extensions import Protocol
 
 R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
@@ -9,8 +11,7 @@ class Query(Generic[R], metaclass=ABCMeta):
     pass
 
 
-class QueryHandler(Generic[Q, R], metaclass=ABCMeta):
-    @abstractmethod
+class QueryHandler(Generic[Q, R], Protocol):
     def handle(self, query: Q) -> R:
         raise NotImplementedError
 
