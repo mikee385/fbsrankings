@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from types import TracebackType
 from typing import Any, Dict, Optional, Type, TypeVar
 
@@ -9,7 +10,7 @@ R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
 
 
-class QueryManager(ContextManager["QueryManager"]):
+class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
         self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}

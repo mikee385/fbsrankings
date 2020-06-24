@@ -1,11 +1,12 @@
+from abc import ABCMeta
 from typing import Any, Callable, Dict, List, Type, TypeVar
 
 
-class Event(object):
+class Event(metaclass=ABCMeta):
     pass
 
 
-E = TypeVar("E", bound=Event)
+E = TypeVar("E", bound=Event, contravariant=True)
 
 
 class EventBus(object):
