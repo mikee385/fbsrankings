@@ -5,7 +5,7 @@ from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import SeasonByIDQuery, SeasonByIDResult
 
 
-class SeasonByIDQueryHandler(QueryHandler[SeasonByIDQuery]):
+class SeasonByIDQueryHandler(QueryHandler[SeasonByIDQuery, Optional[SeasonByIDResult]]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

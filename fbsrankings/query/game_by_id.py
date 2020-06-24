@@ -5,11 +5,6 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class GameByIDQuery(Query):
-    def __init__(self, ID: UUID) -> None:
-        self.ID = ID
-
-
 class GameByIDResult(object):
     def __init__(
         self,
@@ -42,3 +37,8 @@ class GameByIDResult(object):
         self.away_team_score = away_team_score
         self.status = status
         self.notes = notes
+
+
+class GameByIDQuery(Query[Optional[GameByIDResult]]):
+    def __init__(self, ID: UUID) -> None:
+        self.ID = ID

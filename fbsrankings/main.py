@@ -51,13 +51,13 @@ with Application(config, event_bus) as application:
     if canceled_games:
         print()
         print("Canceled Games:")
-        for game in canceled_games:
+        for canceled_game in canceled_games:
             print()
-            print(f"Year {game.year}, Week {game.week}")
-            print(game.date)
-            print(game.season_section)
-            print(f"{game.home_team_name} vs. {game.away_team_name}")
-            print(game.notes)
+            print(f"Year {canceled_game.year}, Week {canceled_game.week}")
+            print(canceled_game.date)
+            print(canceled_game.season_section)
+            print(f"{canceled_game.home_team_name} vs. {canceled_game.away_team_name}")
+            print(canceled_game.notes)
 
     fbs_team_errors = []
     fcs_team_errors = []
@@ -78,40 +78,45 @@ with Application(config, event_bus) as application:
         print("FBS teams with too few games:")
         print()
         for error in fbs_team_errors:
-            season = application.query(SeasonByIDQuery(error.season_ID))
-            team = application.query(TeamByIDQuery(error.team_ID))
-            print(f"{season.year} {team.name}: {error.game_count}")
+            error_season = application.query(SeasonByIDQuery(error.season_ID))
+            error_team = application.query(TeamByIDQuery(error.team_ID))
+            if error_season is not None and error_team is not None:
+                print(f"{error_season.year} {error_team.name}: {error.game_count}")
 
     if fcs_team_errors:
         print()
         print("FCS teams with too many games:")
         print()
         for error in fcs_team_errors:
-            season = application.query(SeasonByIDQuery(error.season_ID))
-            team = application.query(TeamByIDQuery(error.team_ID))
-            print(f"{season.year} {team.name}: {error.game_count}")
+            error_season = application.query(SeasonByIDQuery(error.season_ID))
+            error_team = application.query(TeamByIDQuery(error.team_ID))
+            if error_season is not None and error_team is not None:
+                print(f"{error_season.year} {error_team.name}: {error.game_count}")
 
     if game_errors:
         print()
         print("Game Errors:")
         for error in game_errors:
-            game = application.query(GameByIDQuery(error.game_ID))
-
-            print()
-            print(f"Year {game.year}, Week {game.week}")
-            print(game.date)
-            print(game.season_section)
-            print(f"{game.home_team_name} vs. {game.away_team_name}")
-            if game.home_team_score is not None and game.away_team_score is not None:
+            error_game = application.query(GameByIDQuery(error.game_ID))
+            if error_game is not None:
+                print()
+                print(f"Year {error_game.year}, Week {error_game.week}")
+                print(error_game.date)
+                print(error_game.season_section)
+                print(f"{error_game.home_team_name} vs. {error_game.away_team_name}")
+                if (
+                    error_game.home_team_score is not None
+                    and error_game.away_team_score is not None
+                ):
+                    print(
+                        f"{error_game.status}, {error_game.home_team_score} to {error_game.away_team_score}"
+                    )
+                else:
+                    print(error_game.status)
+                print(error_game.notes)
                 print(
-                    f"{game.status}, {game.home_team_score} to {game.away_team_score}"
+                    f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}"
                 )
-            else:
-                print(game.status)
-            print(game.notes)
-            print(
-                f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}"
-            )
 
     if other_errors:
         print()

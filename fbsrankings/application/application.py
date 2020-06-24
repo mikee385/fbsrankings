@@ -1,5 +1,5 @@
 from types import TracebackType
-from typing import Any, List, Optional, Type
+from typing import Any, List, Optional, Type, TypeVar
 
 from typing_extensions import ContextManager, Literal, Protocol
 
@@ -10,6 +10,8 @@ from fbsrankings.infrastructure import QueryManagerFactory, TransactionFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
+
+R = TypeVar("R", covariant=True)
 
 
 class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
@@ -70,7 +72,7 @@ class Application(ContextManager["Application"]):
     def send(self, command: Command) -> None:
         self._command_bus.send(command)
 
-    def query(self, query: Query) -> Any:
+    def query(self, query: Query[R]) -> R:
         return self._query_bus.query(query)
 
     def close(self) -> None:

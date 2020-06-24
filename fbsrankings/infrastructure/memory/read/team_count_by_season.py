@@ -3,7 +3,9 @@ from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import TeamCountBySeasonQuery, TeamCountBySeasonResult
 
 
-class TeamCountBySeasonQueryHandler(QueryHandler[TeamCountBySeasonQuery]):
+class TeamCountBySeasonQueryHandler(
+    QueryHandler[TeamCountBySeasonQuery, TeamCountBySeasonResult]
+):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

@@ -30,13 +30,13 @@ class CommandManager(ContextManager["CommandManager"]):
             ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus),
         )
 
-    def register_hander(self, command: Type[C], handler: CommandHandler[C]) -> None:
-        self._handlers[command] = handler
-        self._bus.register_handler(command, handler)
+    def register_hander(self, type: Type[C], handler: CommandHandler[C]) -> None:
+        self._handlers[type] = handler
+        self._bus.register_handler(type, handler)
 
     def close(self) -> None:
-        for command, handler in self._handlers.items():
-            self._bus.unregister_handler(command, handler)
+        for type, handler in self._handlers.items():
+            self._bus.unregister_handler(type, handler)
 
     def __enter__(self) -> "CommandManager":
         return self

@@ -33,17 +33,17 @@ class QueryManager(BaseQueryManager):
     def __init__(self, storage: Storage, query_bus: QueryBus) -> None:
         super().__init__(query_bus)
 
-        self.register_hander(
+        self.register_handler(
             AffiliationCountBySeasonQuery, AffiliationCountBySeasonQueryHandler(storage)
         )
-        self.register_hander(CanceledGamesQuery, CanceledGamesQueryHandler(storage))
-        self.register_hander(GameByIDQuery, GameByIDQueryHandler(storage))
-        self.register_hander(
+        self.register_handler(CanceledGamesQuery, CanceledGamesQueryHandler(storage))
+        self.register_handler(GameByIDQuery, GameByIDQueryHandler(storage))
+        self.register_handler(
             GameCountBySeasonQuery, GameCountBySeasonQueryHandler(storage)
         )
-        self.register_hander(SeasonByIDQuery, SeasonByIDQueryHandler(storage))
-        self.register_hander(SeasonsQuery, SeasonsQueryHandler(storage))
-        self.register_hander(TeamByIDQuery, TeamByIDQueryHandler(storage))
-        self.register_hander(
+        self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(storage))
+        self.register_handler(SeasonsQuery, SeasonsQueryHandler(storage))
+        self.register_handler(TeamByIDQuery, TeamByIDQueryHandler(storage))
+        self.register_handler(
             TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(storage)
         )

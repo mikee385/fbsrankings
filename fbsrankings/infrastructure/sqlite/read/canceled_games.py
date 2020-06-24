@@ -11,7 +11,7 @@ from fbsrankings.query import (
 )
 
 
-class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery]):
+class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery, CanceledGamesResult]):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

@@ -5,7 +5,7 @@ from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import TeamByIDQuery, TeamByIDResult
 
 
-class TeamByIDQueryHandler(QueryHandler[TeamByIDQuery]):
+class TeamByIDQueryHandler(QueryHandler[TeamByIDQuery, Optional[TeamByIDResult]]):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

@@ -5,7 +5,9 @@ from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 from fbsrankings.query import TeamCountBySeasonQuery, TeamCountBySeasonResult
 
 
-class TeamCountBySeasonQueryHandler(QueryHandler[TeamCountBySeasonQuery]):
+class TeamCountBySeasonQueryHandler(
+    QueryHandler[TeamCountBySeasonQuery, TeamCountBySeasonResult]
+):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

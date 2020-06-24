@@ -7,7 +7,7 @@ from fbsrankings.infrastructure.sqlite.storage import GameTable, SeasonTable, Te
 from fbsrankings.query import GameByIDQuery, GameByIDResult
 
 
-class GameByIDQueryHandler(QueryHandler[GameByIDQuery]):
+class GameByIDQueryHandler(QueryHandler[GameByIDQuery, Optional[GameByIDResult]]):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

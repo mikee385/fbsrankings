@@ -3,23 +3,24 @@ from typing import Any, Dict, Optional, Type, TypeVar
 
 from typing_extensions import ContextManager, Literal, Protocol
 
-from fbsrankings.common import Query, QueryBus, QueryHandler
+from fbsrankings.common import QueryBus, QueryHandler
 
-Q = TypeVar("Q", bound=Query)
+R = TypeVar("R", covariant=True)
+Q = TypeVar("Q", contravariant=True)
 
 
 class QueryManager(ContextManager["QueryManager"]):
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
-        self._handlers: Dict[Type[Query], QueryHandler[Any]] = {}
+        self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
 
-    def register_hander(self, query: Type[Q], handler: QueryHandler[Q]) -> None:
-        self._handlers[query] = handler
-        self._bus.register_handler(query, handler)
+    def register_handler(self, type: Type[Q], handler: QueryHandler[Q, R]) -> None:
+        self._handlers[type] = handler
+        self._bus.register_handler(type, handler)
 
     def close(self) -> None:
-        for query, handler in self._handlers.items():
-            self._bus.unregister_handler(query, handler)
+        for type, handler in self._handlers.items():
+            self._bus.unregister_handler(type, handler)
 
     def __enter__(self) -> "QueryManager":
         return self

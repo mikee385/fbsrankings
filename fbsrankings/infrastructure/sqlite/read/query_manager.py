@@ -37,21 +37,21 @@ class QueryManager(BaseQueryManager):
         self._connection = sqlite3.connect(database)
         self._connection.execute("PRAGMA query_only = ON")
 
-        self.register_hander(
+        self.register_handler(
             AffiliationCountBySeasonQuery,
             AffiliationCountBySeasonQueryHandler(self._connection),
         )
-        self.register_hander(
+        self.register_handler(
             CanceledGamesQuery, CanceledGamesQueryHandler(self._connection)
         )
-        self.register_hander(GameByIDQuery, GameByIDQueryHandler(self._connection))
-        self.register_hander(
+        self.register_handler(GameByIDQuery, GameByIDQueryHandler(self._connection))
+        self.register_handler(
             GameCountBySeasonQuery, GameCountBySeasonQueryHandler(self._connection)
         )
-        self.register_hander(SeasonByIDQuery, SeasonByIDQueryHandler(self._connection))
-        self.register_hander(SeasonsQuery, SeasonsQueryHandler(self._connection))
-        self.register_hander(TeamByIDQuery, TeamByIDQueryHandler(self._connection))
-        self.register_hander(
+        self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(self._connection))
+        self.register_handler(SeasonsQuery, SeasonsQueryHandler(self._connection))
+        self.register_handler(TeamByIDQuery, TeamByIDQueryHandler(self._connection))
+        self.register_handler(
             TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(self._connection)
         )
 

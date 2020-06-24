@@ -4,10 +4,6 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class SeasonsQuery(Query):
-    pass
-
-
 class SeasonResult(object):
     def __init__(self, ID: UUID, year: int) -> None:
         self.ID = ID
@@ -17,3 +13,7 @@ class SeasonResult(object):
 class SeasonsResult(object):
     def __init__(self, seasons: List[SeasonResult]) -> None:
         self.seasons = seasons
+
+
+class SeasonsQuery(Query[SeasonsResult]):
+    pass
