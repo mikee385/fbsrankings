@@ -41,7 +41,7 @@ class SeasonRepository(BaseRepository):
         cursor.close()
         return self._to_season(row)
 
-    def _to_season(self, row: Tuple[str, int]) -> Optional[Season]:
+    def _to_season(self, row: Optional[Tuple[str, int]]) -> Optional[Season]:
         if row is not None:
             return Season(self._bus, SeasonID(UUID(row[0])), row[1])
         else:

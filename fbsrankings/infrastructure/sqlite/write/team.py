@@ -41,7 +41,7 @@ class TeamRepository(BaseRepository):
         cursor.close()
         return self._to_team(row)
 
-    def _to_team(self, row: Tuple[str, str]) -> Optional[Team]:
+    def _to_team(self, row: Optional[Tuple[str, str]]) -> Optional[Team]:
         if row is not None:
             return Team(self._bus, TeamID(UUID(row[0])), row[1])
         else:

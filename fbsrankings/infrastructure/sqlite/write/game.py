@@ -90,8 +90,20 @@ class GameRepository(BaseRepository):
 
     def _to_game(
         self,
-        row: Tuple[
-            str, str, int, str, str, str, str, Optional[int], Optional[int], str, str
+        row: Optional[
+            Tuple[
+                str,
+                str,
+                int,
+                str,
+                str,
+                str,
+                str,
+                Optional[int],
+                Optional[int],
+                str,
+                str,
+            ]
         ],
     ) -> Optional[Game]:
         if row is not None:

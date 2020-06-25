@@ -59,7 +59,9 @@ class AffiliationRepository(BaseRepository):
         cursor.close()
         return self._to_affiliation(row)
 
-    def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Optional[Affiliation]:
+    def _to_affiliation(
+        self, row: Optional[Tuple[str, str, str, str]]
+    ) -> Optional[Affiliation]:
         if row is not None:
             return Affiliation(
                 self._bus,
