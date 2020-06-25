@@ -129,7 +129,9 @@ with Application(config, event_bus) as application:
         for error in other_errors:
             print(error)
 
-    notes_events = [e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)]
+    notes_events = [
+        e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)
+    ]
     if notes_events:
         print()
         print("Notes:")
