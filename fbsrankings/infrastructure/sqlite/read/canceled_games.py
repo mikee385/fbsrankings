@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 from uuid import UUID
 
 from fbsrankings.common import QueryHandler
@@ -31,7 +32,7 @@ class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery, CanceledGamesRe
                 UUID(row[1]),
                 row[2],
                 row[3],
-                row[4],
+                datetime.strptime(row[4], "%Y-%m-%d").date(),
                 row[5],
                 UUID(row[6]),
                 row[7],

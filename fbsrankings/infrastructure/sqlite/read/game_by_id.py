@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -30,7 +31,7 @@ class GameByIDQueryHandler(QueryHandler[GameByIDQuery, Optional[GameByIDResult]]
                 UUID(row[1]),
                 row[2],
                 row[3],
-                row[4],
+                datetime.strptime(row[4], "%Y-%m-%d").date(),
                 row[5],
                 UUID(row[6]),
                 row[7],
