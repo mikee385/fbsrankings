@@ -41,7 +41,7 @@ class RepositoryManager(Protocol):
         raise NotImplementedError
 
 
-class SeasonSource(object):
+class _SeasonSource(object):
     def __init__(
         self,
         year: int,
@@ -58,11 +58,23 @@ class SeasonSource(object):
         self.game_source = game_source
 
 
+_TeamCache = Dict[str, Team]
+_AffiliationCache = Dict[Tuple[SeasonID, TeamID], Affiliation]
+_GameCache = Dict[Tuple[SeasonID, int, TeamID, TeamID], Game]
+
+
+class _Cache(object):
+    def __init__(self) -> None:
+        self.team: _TeamCache = {}
+        self.affiliation: _AffiliationCache = {}
+        self.game: _GameCache = {}
+
+
 class SportsReference(object):
     def __init__(
         self, alternate_names: Dict[str, str], validation_service: ValidationService
     ) -> None:
-        self._sources: Dict[int, SeasonSource] = {}
+        self._sources: Dict[int, _SeasonSource] = {}
 
         if alternate_names is not None:
             self._alternate_names = alternate_names
@@ -82,7 +94,7 @@ class SportsReference(object):
         if self._sources.get(year) is not None:
             raise ValueError(f"Source already exists for year {year}")
 
-        self._sources[year] = SeasonSource(
+        self._sources[year] = _SeasonSource(
             year, postseason_start_week, source_type, team_source, game_source
         )
 
@@ -101,10 +113,34 @@ class SportsReference(object):
 
         season = self._import_season(repository.season, source.year)
 
-        teams: Dict[str, Team] = {}
-        affiliations: Dict[Tuple[SeasonID, TeamID], Affiliation] = {}
-        games: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game] = {}
+        cache = _Cache()
+        self._import_team_rows(team_rows, season, repository, cache)
+        self._import_game_rows(
+            game_rows, season, source.postseason_start_week, repository, cache
+        )
 
+        most_recent_completed_week = 0
+        for game in cache.game.values():
+            if game.status == GameStatus.COMPLETED:
+                if game.week > most_recent_completed_week:
+                    most_recent_completed_week = game.week
+        for game in cache.game.values():
+            if game.status == GameStatus.SCHEDULED:
+                if game.week < most_recent_completed_week:
+                    game.cancel()
+
+        if self._validation_service is not None:
+            self._validation_service.validate_season_games(
+                season.ID, cache.affiliation.values(), cache.game.values()
+            )
+
+    def _import_team_rows(
+        self,
+        team_rows: Iterator[List[str]],
+        season: Season,
+        repository: RepositoryManager,
+        cache: _Cache,
+    ) -> None:
         header_row = next(team_rows)
         if header_row[0] == "":
             header_row = next(team_rows)
@@ -117,15 +153,23 @@ class SportsReference(object):
                 name = row[name_index].strip()
                 if name in self._alternate_names:
                     name = self._alternate_names[name]
-                team = self._import_team(repository.team, teams, name)
+                team = self._import_team(repository.team, cache.team, name)
                 self._import_affiliation(
                     repository.affiliation,
-                    affiliations,
+                    cache.affiliation,
                     season.ID,
                     team.ID,
                     Subdivision.FBS,
                 )
 
+    def _import_game_rows(
+        self,
+        game_rows: Iterator[List[str]],
+        season: Season,
+        postseason_start_week: int,
+        repository: RepositoryManager,
+        cache: _Cache,
+    ) -> None:
         header_row = next(game_rows)
         if header_row[0] == "":
             header_row = next(game_rows)
@@ -209,19 +253,23 @@ class SportsReference(object):
                         f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}'
                     )
 
-                home_team = self._import_team(repository.team, teams, home_team_name)
+                home_team = self._import_team(
+                    repository.team, cache.team, home_team_name
+                )
                 self._import_affiliation(
                     repository.affiliation,
-                    affiliations,
+                    cache.affiliation,
                     season.ID,
                     home_team.ID,
                     Subdivision.FCS,
                 )
 
-                away_team = self._import_team(repository.team, teams, away_team_name)
+                away_team = self._import_team(
+                    repository.team, cache.team, away_team_name
+                )
                 self._import_affiliation(
                     repository.affiliation,
-                    affiliations,
+                    cache.affiliation,
                     season.ID,
                     away_team.ID,
                     Subdivision.FCS,
@@ -229,14 +277,14 @@ class SportsReference(object):
 
                 notes = row[notes_index].strip()
 
-                if week >= source.postseason_start_week:
+                if week >= postseason_start_week:
                     season_section = SeasonSection.POSTSEASON
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
 
-                game = self._import_game(
+                self._import_game(
                     repository.game,
-                    games,
+                    cache.game,
                     season.ID,
                     week,
                     date,
@@ -247,21 +295,6 @@ class SportsReference(object):
                     away_team_score,
                     notes,
                 )
-
-        most_recent_completed_week = 0
-        for game in games.values():
-            if game.status == GameStatus.COMPLETED:
-                if game.week > most_recent_completed_week:
-                    most_recent_completed_week = game.week
-        for game in games.values():
-            if game.status == GameStatus.SCHEDULED:
-                if game.week < most_recent_completed_week:
-                    game.cancel()
-
-        if self._validation_service is not None:
-            self._validation_service.validate_season_games(
-                season.ID, affiliations.values(), games.values()
-            )
 
     def _import_season(self, repository: SeasonRepository, year: int) -> Season:
         season = repository.find(year)
@@ -274,7 +307,7 @@ class SportsReference(object):
         return season
 
     def _import_team(
-        self, repository: TeamRepository, cache: Dict[str, Team], name: str
+        self, repository: TeamRepository, cache: _TeamCache, name: str
     ) -> Team:
         key = name
 
@@ -293,7 +326,7 @@ class SportsReference(object):
     def _import_affiliation(
         self,
         repository: AffiliationRepository,
-        cache: Dict[Tuple[SeasonID, TeamID], Affiliation],
+        cache: _AffiliationCache,
         season_ID: SeasonID,
         team_ID: TeamID,
         subdivision: Subdivision,
@@ -317,7 +350,7 @@ class SportsReference(object):
     def _import_game(
         self,
         repository: GameRepository,
-        cache: Dict[Tuple[SeasonID, int, TeamID, TeamID], Game],
+        cache: _GameCache,
         season_ID: SeasonID,
         week: int,
         date: datetime.date,
