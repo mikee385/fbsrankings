@@ -2,12 +2,13 @@ import json
 
 from fbsrankings.application import Application
 from fbsrankings.command import ImportSeasonByYearCommand
-from fbsrankings.common import EventBus, EventCounter
+from fbsrankings.common import EventBus, EventCounter, EventRecorder
 from fbsrankings.domain import (
     FBSGameCountValidationError,
     FCSGameCountValidationError,
     GameDataValidationError,
 )
+from fbsrankings.event import GameNotesUpdatedEvent
 from fbsrankings.query import (
     AffiliationCountBySeasonQuery,
     CanceledGamesQuery,
@@ -22,7 +23,8 @@ from fbsrankings.query import (
 with open("config.json") as config_file:
     config = json.load(config_file)
 
-event_bus = EventCounter(EventBus())
+event_recorder = EventRecorder(EventBus())
+event_bus = EventCounter(event_recorder)
 
 with Application(config, event_bus) as application:
     for year in application.seasons:
@@ -53,6 +55,7 @@ with Application(config, event_bus) as application:
         print("Canceled Games:")
         for canceled_game in canceled_games:
             print()
+            print(f"ID: {canceled_game.ID}")
             print(f"Year {canceled_game.year}, Week {canceled_game.week}")
             print(canceled_game.date)
             print(canceled_game.season_section)
@@ -100,6 +103,7 @@ with Application(config, event_bus) as application:
             error_game = application.query(GameByIDQuery(error.game_ID))
             if error_game is not None:
                 print()
+                print(f"ID: {error_game.ID}")
                 print(f"Year {error_game.year}, Week {error_game.week}")
                 print(error_game.date)
                 print(error_game.season_section)
@@ -125,12 +129,37 @@ with Application(config, event_bus) as application:
         for error in other_errors:
             print(error)
 
+    notes_events = [e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)]
+    if notes_events:
+        print()
+        print("Notes:")
+        for notes_event in notes_events:
+            notes_game = application.query(GameByIDQuery(notes_event.ID))
+            if notes_game is not None:
+                print()
+                print(f"ID: {notes_game.ID}")
+                print(f"Year {notes_game.year}, Week {notes_game.week}")
+                print(notes_game.date)
+                print(notes_game.season_section)
+                print(f"{notes_game.home_team_name} vs. {notes_game.away_team_name}")
+                if (
+                    notes_game.home_team_score is not None
+                    and notes_game.away_team_score is not None
+                ):
+                    print(
+                        f"{notes_game.status}, {notes_game.home_team_score} to {notes_game.away_team_score}"
+                    )
+                else:
+                    print(notes_game.status)
+                print(f"Old Notes: {notes_event.old_notes}")
+                print(f"New Notes: {notes_event.notes}")
+
     print()
     print("Events:")
     print()
     if event_bus.counts:
-        for event, count in event_bus.counts.items():
-            print(f"{event.__name__}: {count}")
+        for event_type, count in event_bus.counts.items():
+            print(f"{event_type.__name__}: {count}")
     else:
         print("None")
 
