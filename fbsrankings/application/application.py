@@ -1,5 +1,4 @@
 from types import TracebackType
-from typing import Any
 from typing import ContextManager
 from typing import List
 from typing import Optional
@@ -10,6 +9,7 @@ from typing_extensions import Literal
 from typing_extensions import Protocol
 
 from fbsrankings.application.command import CommandManager
+from fbsrankings.application.config import Config
 from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
 from fbsrankings.common import EventBus
@@ -32,7 +32,7 @@ class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
 
 
 class Application(ContextManager["Application"]):
-    def __init__(self, config: Any, event_bus: EventBus) -> None:
+    def __init__(self, config: Config, event_bus: EventBus) -> None:
         self._event_bus = event_bus
         self._data_source: DataSource
 
@@ -41,8 +41,8 @@ class Application(ContextManager["Application"]):
             self._data_source = MemoryDataSource()
 
         elif storage_type == "sqlite":
-            db_filename = config["settings"]["sqlite_db_file"]
-            self._data_source = SqliteDataSource(db_filename)
+            database = config["settings"]["database"]
+            self._data_source = SqliteDataSource(database)
 
         else:
             raise ValueError(f"Unknown storage type: {storage_type}")

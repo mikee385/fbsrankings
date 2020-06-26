@@ -1,7 +1,7 @@
 {
     "settings": {
         "storage_type": "sqlite",
-        "sqlite_db_file": "fbsrankings.db"
+        "database": "fbsrankings.db"
     },
     "alternate_names": {
         "Alabama-Birmingham": "UAB",
