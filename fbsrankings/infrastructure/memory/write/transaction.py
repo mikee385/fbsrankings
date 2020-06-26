@@ -1,4 +1,5 @@
-from fbsrankings.common import EventBus, EventRecorder
+from fbsrankings.common import EventBus
+from fbsrankings.common import EventRecorder
 from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write.affiliation import AffiliationRepository

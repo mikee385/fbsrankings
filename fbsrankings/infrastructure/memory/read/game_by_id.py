@@ -2,7 +2,8 @@ from typing import Optional
 
 from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
-from fbsrankings.query import GameByIDQuery, GameByIDResult
+from fbsrankings.query import GameByIDQuery
+from fbsrankings.query import GameByIDResult
 
 
 class GameByIDQueryHandler(QueryHandler[GameByIDQuery, Optional[GameByIDResult]]):

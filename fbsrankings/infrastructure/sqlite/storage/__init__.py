@@ -1,5 +1,4 @@
 """Storage classes for the sqlite3 repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.sqlite.storage.affiliation import (
     AffiliationTable as AffiliationTable,
 )

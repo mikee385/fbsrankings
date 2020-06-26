@@ -4,12 +4,12 @@ from uuid import UUID
 
 from fbsrankings.common import QueryHandler
 from fbsrankings.domain import GameStatus
-from fbsrankings.infrastructure.sqlite.storage import GameTable, SeasonTable, TeamTable
-from fbsrankings.query import (
-    CanceledGameResult,
-    CanceledGamesQuery,
-    CanceledGamesResult,
-)
+from fbsrankings.infrastructure.sqlite.storage import GameTable
+from fbsrankings.infrastructure.sqlite.storage import SeasonTable
+from fbsrankings.infrastructure.sqlite.storage import TeamTable
+from fbsrankings.query import CanceledGameResult
+from fbsrankings.query import CanceledGamesQuery
+from fbsrankings.query import CanceledGamesResult
 
 
 class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery, CanceledGamesResult]):

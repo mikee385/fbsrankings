@@ -2,23 +2,21 @@ import json
 
 from fbsrankings.application import Application
 from fbsrankings.command import ImportSeasonByYearCommand
-from fbsrankings.common import EventBus, EventCounter, EventRecorder
-from fbsrankings.domain import (
-    FBSGameCountValidationError,
-    FCSGameCountValidationError,
-    GameDataValidationError,
-)
+from fbsrankings.common import EventBus
+from fbsrankings.common import EventCounter
+from fbsrankings.common import EventRecorder
+from fbsrankings.domain import FBSGameCountValidationError
+from fbsrankings.domain import FCSGameCountValidationError
+from fbsrankings.domain import GameDataValidationError
 from fbsrankings.event import GameNotesUpdatedEvent
-from fbsrankings.query import (
-    AffiliationCountBySeasonQuery,
-    CanceledGamesQuery,
-    GameByIDQuery,
-    GameCountBySeasonQuery,
-    SeasonByIDQuery,
-    SeasonsQuery,
-    TeamByIDQuery,
-    TeamCountBySeasonQuery,
-)
+from fbsrankings.query import AffiliationCountBySeasonQuery
+from fbsrankings.query import CanceledGamesQuery
+from fbsrankings.query import GameByIDQuery
+from fbsrankings.query import GameCountBySeasonQuery
+from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonsQuery
+from fbsrankings.query import TeamByIDQuery
+from fbsrankings.query import TeamCountBySeasonQuery
 
 with open("config.json") as config_file:
     config = json.load(config_file)

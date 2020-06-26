@@ -1,11 +1,16 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 from uuid import uuid4
 
-from fbsrankings.common import EventBus, Identifier
-from fbsrankings.domain.model.season import Season, SeasonID
-from fbsrankings.domain.model.team import Team, TeamID
+from fbsrankings.common import EventBus
+from fbsrankings.common import Identifier
+from fbsrankings.domain.model.season import Season
+from fbsrankings.domain.model.season import SeasonID
+from fbsrankings.domain.model.team import Team
+from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import AffiliationCreatedEvent
 
 

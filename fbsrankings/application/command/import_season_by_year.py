@@ -1,6 +1,8 @@
 from fbsrankings.command import ImportSeasonByYearCommand
-from fbsrankings.common import CommandHandler, EventBus
-from fbsrankings.infrastructure import TransactionFactory, UnitOfWork
+from fbsrankings.common import CommandHandler
+from fbsrankings.common import EventBus
+from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
 
 

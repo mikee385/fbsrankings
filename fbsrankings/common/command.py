@@ -1,5 +1,9 @@
 from abc import ABCMeta
-from typing import Any, Dict, Generic, Type, TypeVar
+from typing import Any
+from typing import Dict
+from typing import Generic
+from typing import Type
+from typing import TypeVar
 
 from typing_extensions import Protocol
 

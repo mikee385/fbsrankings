@@ -1,5 +1,4 @@
 """Common classes and utilities for the fbsrankings package"""
-
 from fbsrankings.common.command import Command as Command
 from fbsrankings.common.command import CommandBus as CommandBus
 from fbsrankings.common.command import CommandHandler as CommandHandler

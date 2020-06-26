@@ -1,5 +1,4 @@
 """Read-model for the in-memory repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.memory.read.affiliation_count_by_season import (
     AffiliationCountBySeasonQueryHandler as AffiliationCountBySeasonQueryHandler,
 )

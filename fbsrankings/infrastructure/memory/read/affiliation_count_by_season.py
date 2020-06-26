@@ -1,10 +1,8 @@
 from fbsrankings.common import QueryHandler
 from fbsrankings.domain import Subdivision
 from fbsrankings.infrastructure.memory.storage import Storage
-from fbsrankings.query import (
-    AffiliationCountBySeasonQuery,
-    AffiliationCountBySeasonResult,
-)
+from fbsrankings.query import AffiliationCountBySeasonQuery
+from fbsrankings.query import AffiliationCountBySeasonResult
 
 
 class AffiliationCountBySeasonQueryHandler(

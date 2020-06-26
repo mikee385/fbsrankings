@@ -1,16 +1,18 @@
-﻿from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 from types import TracebackType
-from typing import Optional, Type
+from typing import ContextManager
+from typing import Optional
+from typing import Type
 
-from typing_extensions import ContextManager, Literal, Protocol
+from typing_extensions import Literal
+from typing_extensions import Protocol
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import (
-    AffiliationRepository,
-    GameRepository,
-    SeasonRepository,
-    TeamRepository,
-)
+from fbsrankings.domain import AffiliationRepository
+from fbsrankings.domain import GameRepository
+from fbsrankings.domain import SeasonRepository
+from fbsrankings.domain import TeamRepository
 
 
 class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):

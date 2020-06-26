@@ -1,5 +1,10 @@
 from abc import ABCMeta
-from typing import Any, Callable, Dict, List, Type, TypeVar
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Type
+from typing import TypeVar
 
 
 class Event(metaclass=ABCMeta):

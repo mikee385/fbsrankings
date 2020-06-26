@@ -1,9 +1,11 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 from enum import Enum
 from typing import Optional
 from uuid import uuid4
 
-from fbsrankings.common import EventBus, Identifier
+from fbsrankings.common import EventBus
+from fbsrankings.common import Identifier
 from fbsrankings.event import SeasonCreatedEvent
 
 

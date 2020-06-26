@@ -2,10 +2,8 @@ import sqlite3
 
 from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
-from fbsrankings.query import (
-    AffiliationCountBySeasonQuery,
-    AffiliationCountBySeasonResult,
-)
+from fbsrankings.query import AffiliationCountBySeasonQuery
+from fbsrankings.query import AffiliationCountBySeasonResult
 
 
 class AffiliationCountBySeasonQueryHandler(

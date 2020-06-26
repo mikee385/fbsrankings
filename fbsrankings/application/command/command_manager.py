@@ -1,13 +1,21 @@
 from types import TracebackType
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any
+from typing import ContextManager
+from typing import Dict
+from typing import Optional
+from typing import Type
+from typing import TypeVar
 
-from typing_extensions import ContextManager, Literal
+from typing_extensions import Literal
 
 from fbsrankings.application.command.import_season_by_year import (
     ImportSeasonByYearCommandHandler,
 )
 from fbsrankings.command import ImportSeasonByYearCommand
-from fbsrankings.common import Command, CommandBus, CommandHandler, EventBus
+from fbsrankings.common import Command
+from fbsrankings.common import CommandBus
+from fbsrankings.common import CommandHandler
+from fbsrankings.common import EventBus
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.sportsreference import SportsReference
 

@@ -1,5 +1,4 @@
 """Query classes for the fbsrankings package"""
-
 from fbsrankings.query.affiliation_count_by_season import (
     AffiliationCountBySeasonQuery as AffiliationCountBySeasonQuery,
 )

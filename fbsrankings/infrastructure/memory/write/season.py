@@ -1,10 +1,13 @@
 from typing import Optional
 
-from fbsrankings.common import Event, EventBus
-from fbsrankings.domain import Season, SeasonID
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
 from fbsrankings.domain import SeasonRepository as BaseRepository
 from fbsrankings.event import SeasonCreatedEvent
-from fbsrankings.infrastructure.memory.storage import SeasonDto, SeasonStorage
+from fbsrankings.infrastructure.memory.storage import SeasonDto
+from fbsrankings.infrastructure.memory.storage import SeasonStorage
 
 
 class SeasonRepository(BaseRepository):

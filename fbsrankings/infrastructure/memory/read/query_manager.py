@@ -17,16 +17,14 @@ from fbsrankings.infrastructure.memory.read.team_count_by_season import (
     TeamCountBySeasonQueryHandler,
 )
 from fbsrankings.infrastructure.memory.storage import Storage
-from fbsrankings.query import (
-    AffiliationCountBySeasonQuery,
-    CanceledGamesQuery,
-    GameByIDQuery,
-    GameCountBySeasonQuery,
-    SeasonByIDQuery,
-    SeasonsQuery,
-    TeamByIDQuery,
-    TeamCountBySeasonQuery,
-)
+from fbsrankings.query import AffiliationCountBySeasonQuery
+from fbsrankings.query import CanceledGamesQuery
+from fbsrankings.query import GameByIDQuery
+from fbsrankings.query import GameCountBySeasonQuery
+from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonsQuery
+from fbsrankings.query import TeamByIDQuery
+from fbsrankings.query import TeamCountBySeasonQuery
 
 
 class QueryManager(BaseQueryManager):

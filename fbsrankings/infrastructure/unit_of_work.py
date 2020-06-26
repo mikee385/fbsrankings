@@ -1,15 +1,16 @@
 from types import TracebackType
-from typing import Optional, Type
+from typing import ContextManager
+from typing import Optional
+from typing import Type
 
-from typing_extensions import ContextManager, Literal
+from typing_extensions import Literal
 
-from fbsrankings.common import EventBus, EventRecorder
-from fbsrankings.domain import (
-    AffiliationRepository,
-    GameRepository,
-    SeasonRepository,
-    TeamRepository,
-)
+from fbsrankings.common import EventBus
+from fbsrankings.common import EventRecorder
+from fbsrankings.domain import AffiliationRepository
+from fbsrankings.domain import GameRepository
+from fbsrankings.domain import SeasonRepository
+from fbsrankings.domain import TeamRepository
 from fbsrankings.infrastructure.transaction import TransactionFactory
 
 

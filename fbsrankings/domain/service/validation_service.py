@@ -1,19 +1,19 @@
 import datetime
 from enum import Enum
-from typing import Iterable, List, Optional
+from typing import Iterable
+from typing import List
+from typing import Optional
 from uuid import UUID
 
-from fbsrankings.domain import (
-    Affiliation,
-    Game,
-    GameStatus,
-    Season,
-    SeasonID,
-    SeasonSection,
-    Subdivision,
-    Team,
-    TeamID,
-)
+from fbsrankings.domain import Affiliation
+from fbsrankings.domain import Game
+from fbsrankings.domain import GameStatus
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
+from fbsrankings.domain import SeasonSection
+from fbsrankings.domain import Subdivision
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
 
 
 class ValidationError(ValueError):

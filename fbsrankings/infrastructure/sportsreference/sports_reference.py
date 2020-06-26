@@ -1,26 +1,29 @@
 import datetime
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Tuple
 from urllib.request import urlopen
 
-from bs4 import BeautifulSoup, Tag  # type: ignore
+from bs4 import BeautifulSoup  # type: ignore
+from bs4 import Tag
 from typing_extensions import Protocol
 
-from fbsrankings.domain import (
-    Affiliation,
-    AffiliationRepository,
-    Game,
-    GameRepository,
-    GameStatus,
-    Season,
-    SeasonID,
-    SeasonRepository,
-    SeasonSection,
-    Subdivision,
-    Team,
-    TeamID,
-    TeamRepository,
-    ValidationService,
-)
+from fbsrankings.domain import Affiliation
+from fbsrankings.domain import AffiliationRepository
+from fbsrankings.domain import Game
+from fbsrankings.domain import GameRepository
+from fbsrankings.domain import GameStatus
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
+from fbsrankings.domain import SeasonRepository
+from fbsrankings.domain import SeasonSection
+from fbsrankings.domain import Subdivision
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRepository
+from fbsrankings.domain import ValidationService
 
 
 class RepositoryManager(Protocol):

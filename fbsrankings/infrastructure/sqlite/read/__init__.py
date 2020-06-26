@@ -1,5 +1,4 @@
 """Read-model for the sqlite3 repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.sqlite.read.affiliation_count_by_season import (
     AffiliationCountBySeasonQueryHandler as AffiliationCountBySeasonQueryHandler,
 )

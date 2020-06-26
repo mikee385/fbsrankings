@@ -4,7 +4,8 @@ from uuid import UUID
 
 from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable
-from fbsrankings.query import SeasonByIDQuery, SeasonByIDResult
+from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonByIDResult
 
 
 class SeasonByIDQueryHandler(QueryHandler[SeasonByIDQuery, Optional[SeasonByIDResult]]):

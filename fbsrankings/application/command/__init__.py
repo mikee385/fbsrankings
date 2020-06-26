@@ -1,5 +1,4 @@
 """Command handlers for the fbsrankings package"""
-
 from fbsrankings.application.command.command_manager import (
     CommandManager as CommandManager,
 )

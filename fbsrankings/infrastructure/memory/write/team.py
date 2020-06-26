@@ -1,10 +1,13 @@
 from typing import Optional
 
-from fbsrankings.common import Event, EventBus
-from fbsrankings.domain import Team, TeamID
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRepository as BaseRepository
 from fbsrankings.event import TeamCreatedEvent
-from fbsrankings.infrastructure.memory.storage import TeamDto, TeamStorage
+from fbsrankings.infrastructure.memory.storage import TeamDto
+from fbsrankings.infrastructure.memory.storage import TeamStorage
 
 
 class TeamRepository(BaseRepository):

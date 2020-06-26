@@ -1,5 +1,4 @@
 """Write-model for the sqlite3 repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.sqlite.write.affiliation import (
     AffiliationRepository as AffiliationRepository,
 )

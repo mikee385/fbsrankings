@@ -4,7 +4,8 @@ from uuid import UUID
 
 from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import TeamTable
-from fbsrankings.query import TeamByIDQuery, TeamByIDResult
+from fbsrankings.query import TeamByIDQuery
+from fbsrankings.query import TeamByIDResult
 
 
 class TeamByIDQueryHandler(QueryHandler[TeamByIDQuery, Optional[TeamByIDResult]]):

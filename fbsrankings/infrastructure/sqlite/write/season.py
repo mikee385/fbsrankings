@@ -1,9 +1,11 @@
 import sqlite3
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Season, SeasonID
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
 from fbsrankings.domain import SeasonRepository as BaseRepository
 from fbsrankings.event import SeasonCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable

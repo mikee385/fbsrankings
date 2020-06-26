@@ -1,14 +1,11 @@
 import sqlite3
 
-from fbsrankings.infrastructure.sqlite.storage.affiliation import (
-    AffiliationTable,
-    SubdivisionTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.game import GameStatusTable, GameTable
-from fbsrankings.infrastructure.sqlite.storage.season import (
-    SeasonSectionTable,
-    SeasonTable,
-)
+from fbsrankings.infrastructure.sqlite.storage.affiliation import AffiliationTable
+from fbsrankings.infrastructure.sqlite.storage.affiliation import SubdivisionTable
+from fbsrankings.infrastructure.sqlite.storage.game import GameStatusTable
+from fbsrankings.infrastructure.sqlite.storage.game import GameTable
+from fbsrankings.infrastructure.sqlite.storage.season import SeasonSectionTable
+from fbsrankings.infrastructure.sqlite.storage.season import SeasonTable
 from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
 
 

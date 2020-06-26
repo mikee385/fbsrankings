@@ -4,8 +4,11 @@ from typing import Optional
 from uuid import UUID
 
 from fbsrankings.common import QueryHandler
-from fbsrankings.infrastructure.sqlite.storage import GameTable, SeasonTable, TeamTable
-from fbsrankings.query import GameByIDQuery, GameByIDResult
+from fbsrankings.infrastructure.sqlite.storage import GameTable
+from fbsrankings.infrastructure.sqlite.storage import SeasonTable
+from fbsrankings.infrastructure.sqlite.storage import TeamTable
+from fbsrankings.query import GameByIDQuery
+from fbsrankings.query import GameByIDResult
 
 
 class GameByIDQueryHandler(QueryHandler[GameByIDQuery, Optional[GameByIDResult]]):

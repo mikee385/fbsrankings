@@ -1,5 +1,4 @@
 """Domain classes and methods for the fbsrankings package"""
-
 from fbsrankings.domain.model.affiliation import Affiliation as Affiliation
 from fbsrankings.domain.model.affiliation import AffiliationID as AffiliationID
 from fbsrankings.domain.model.affiliation import (

@@ -1,6 +1,7 @@
 from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
-from fbsrankings.query import TeamCountBySeasonQuery, TeamCountBySeasonResult
+from fbsrankings.query import TeamCountBySeasonQuery
+from fbsrankings.query import TeamCountBySeasonResult
 
 
 class TeamCountBySeasonQueryHandler(

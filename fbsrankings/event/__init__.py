@@ -1,5 +1,4 @@
 """Event classes for the fbsrankings package"""
-
 from fbsrankings.event.affiliation import (
     AffiliationCreatedEvent as AffiliationCreatedEvent,
 )

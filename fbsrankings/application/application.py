@@ -1,12 +1,25 @@
 from types import TracebackType
-from typing import Any, List, Optional, Type, TypeVar
+from typing import Any
+from typing import ContextManager
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import TypeVar
 
-from typing_extensions import ContextManager, Literal, Protocol
+from typing_extensions import Literal
+from typing_extensions import Protocol
 
 from fbsrankings.application.command import CommandManager
-from fbsrankings.common import Command, CommandBus, EventBus, Query, QueryBus
-from fbsrankings.domain import RaiseBehavior, ValidationError, ValidationService
-from fbsrankings.infrastructure import QueryManagerFactory, TransactionFactory
+from fbsrankings.common import Command
+from fbsrankings.common import CommandBus
+from fbsrankings.common import EventBus
+from fbsrankings.common import Query
+from fbsrankings.common import QueryBus
+from fbsrankings.domain import RaiseBehavior
+from fbsrankings.domain import ValidationError
+from fbsrankings.domain import ValidationService
+from fbsrankings.infrastructure import QueryManagerFactory
+from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource

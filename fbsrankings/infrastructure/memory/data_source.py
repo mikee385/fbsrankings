@@ -1,5 +1,7 @@
-from fbsrankings.common import EventBus, QueryBus
-from fbsrankings.infrastructure import QueryManagerFactory, TransactionFactory
+from fbsrankings.common import EventBus
+from fbsrankings.common import QueryBus
+from fbsrankings.infrastructure import QueryManagerFactory
+from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.memory.read import QueryManager
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write import Transaction

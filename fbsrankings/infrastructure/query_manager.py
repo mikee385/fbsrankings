@@ -1,10 +1,17 @@
 from abc import ABCMeta
 from types import TracebackType
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any
+from typing import ContextManager
+from typing import Dict
+from typing import Optional
+from typing import Type
+from typing import TypeVar
 
-from typing_extensions import ContextManager, Literal, Protocol
+from typing_extensions import Literal
+from typing_extensions import Protocol
 
-from fbsrankings.common import QueryBus, QueryHandler
+from fbsrankings.common import QueryBus
+from fbsrankings.common import QueryHandler
 
 R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)

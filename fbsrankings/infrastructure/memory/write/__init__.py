@@ -1,5 +1,4 @@
 """Write-model for the in-memory repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.memory.write.affiliation import (
     AffiliationRepository as AffiliationRepository,
 )

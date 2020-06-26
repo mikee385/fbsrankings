@@ -1,11 +1,19 @@
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
-from fbsrankings.common import Event, EventBus
-from fbsrankings.domain import Affiliation, AffiliationID
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
+from fbsrankings.domain import Affiliation
+from fbsrankings.domain import AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
-from fbsrankings.domain import Season, SeasonID, Subdivision, Team, TeamID
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
+from fbsrankings.domain import Subdivision
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
 from fbsrankings.event import AffiliationCreatedEvent
-from fbsrankings.infrastructure.memory.storage import AffiliationDto, AffiliationStorage
+from fbsrankings.infrastructure.memory.storage import AffiliationDto
+from fbsrankings.infrastructure.memory.storage import AffiliationStorage
 
 
 class AffiliationRepository(BaseRepository):

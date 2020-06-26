@@ -1,5 +1,4 @@
 """Storage classes for the in-memory repositories of the fbsrankings package"""
-
 from fbsrankings.infrastructure.memory.storage.affiliation import (
     AffiliationDto as AffiliationDto,
 )

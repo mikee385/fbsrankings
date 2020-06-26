@@ -1,17 +1,24 @@
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
-from fbsrankings.common import Event, EventBus
-from fbsrankings.domain import Game, GameID
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
+from fbsrankings.domain import Game
+from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
-from fbsrankings.domain import GameStatus, Season, SeasonID, SeasonSection, Team, TeamID
-from fbsrankings.event import (
-    GameCanceledEvent,
-    GameCompletedEvent,
-    GameCreatedEvent,
-    GameNotesUpdatedEvent,
-    GameRescheduledEvent,
-)
-from fbsrankings.infrastructure.memory.storage import GameDto, GameStorage
+from fbsrankings.domain import GameStatus
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
+from fbsrankings.domain import SeasonSection
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
+from fbsrankings.event import GameCanceledEvent
+from fbsrankings.event import GameCompletedEvent
+from fbsrankings.event import GameCreatedEvent
+from fbsrankings.event import GameNotesUpdatedEvent
+from fbsrankings.event import GameRescheduledEvent
+from fbsrankings.infrastructure.memory.storage import GameDto
+from fbsrankings.infrastructure.memory.storage import GameStorage
 
 
 class GameRepository(BaseRepository):

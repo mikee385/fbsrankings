@@ -1,19 +1,25 @@
 import sqlite3
 from datetime import datetime
-from typing import Optional, Tuple, Union
+from typing import Optional
+from typing import Tuple
+from typing import Union
 from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.domain import Game, GameID
+from fbsrankings.domain import Game
+from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
-from fbsrankings.domain import GameStatus, Season, SeasonID, SeasonSection, Team, TeamID
-from fbsrankings.event import (
-    GameCanceledEvent,
-    GameCompletedEvent,
-    GameCreatedEvent,
-    GameNotesUpdatedEvent,
-    GameRescheduledEvent,
-)
+from fbsrankings.domain import GameStatus
+from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonID
+from fbsrankings.domain import SeasonSection
+from fbsrankings.domain import Team
+from fbsrankings.domain import TeamID
+from fbsrankings.event import GameCanceledEvent
+from fbsrankings.event import GameCompletedEvent
+from fbsrankings.event import GameCreatedEvent
+from fbsrankings.event import GameNotesUpdatedEvent
+from fbsrankings.event import GameRescheduledEvent
 from fbsrankings.infrastructure.sqlite.storage import GameTable
 
 

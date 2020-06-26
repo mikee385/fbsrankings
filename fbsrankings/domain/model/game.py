@@ -1,19 +1,24 @@
 import datetime
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 from enum import Enum
-from typing import Optional, Union
-from uuid import UUID, uuid4
+from typing import Optional
+from typing import Union
+from uuid import UUID
+from uuid import uuid4
 
-from fbsrankings.common import EventBus, Identifier
-from fbsrankings.domain.model.season import Season, SeasonID, SeasonSection
-from fbsrankings.domain.model.team import Team, TeamID
-from fbsrankings.event import (
-    GameCanceledEvent,
-    GameCompletedEvent,
-    GameCreatedEvent,
-    GameNotesUpdatedEvent,
-    GameRescheduledEvent,
-)
+from fbsrankings.common import EventBus
+from fbsrankings.common import Identifier
+from fbsrankings.domain.model.season import Season
+from fbsrankings.domain.model.season import SeasonID
+from fbsrankings.domain.model.season import SeasonSection
+from fbsrankings.domain.model.team import Team
+from fbsrankings.domain.model.team import TeamID
+from fbsrankings.event import GameCanceledEvent
+from fbsrankings.event import GameCompletedEvent
+from fbsrankings.event import GameCreatedEvent
+from fbsrankings.event import GameNotesUpdatedEvent
+from fbsrankings.event import GameRescheduledEvent
 
 
 class GameStatus(Enum):
