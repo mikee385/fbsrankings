@@ -40,7 +40,7 @@ class Application(ContextManager["Application"]):
 
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
-        self.seasons = []
+        self.seasons: List[int] = []
         self._sports_reference = SportsReference(
             alternate_names, self.validation_service
         )
