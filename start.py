@@ -7,6 +7,9 @@ if "--use-typeguard" in sys.argv:
 
     from typeguard.importhook import install_import_hook  # type: ignore
     with install_import_hook('fbsrankings'):
-        import fbsrankings.main
+        from fbsrankings.__main__ import main
 else:
-    import fbsrankings.main
+    from fbsrankings.__main__ import main
+    
+main()
+
