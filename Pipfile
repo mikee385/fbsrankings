@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+typeguard = "*"
+
+[packages]
+bs4 = "*"
+typing-extensions = "*"
+html5lib = "*"
+
+[requires]
+python_version = "3.6"
