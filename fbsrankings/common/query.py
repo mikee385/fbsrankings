@@ -1,12 +1,11 @@
 from abc import ABCMeta
 from typing import Any
+from typing import Callable
 from typing import cast
 from typing import Dict
 from typing import Generic
 from typing import Type
 from typing import TypeVar
-
-from typing_extensions import Protocol
 
 R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
@@ -16,9 +15,7 @@ class Query(Generic[R], metaclass=ABCMeta):
     pass
 
 
-class QueryHandler(Generic[Q, R], Protocol):
-    def handle(self, query: Q) -> R:
-        raise NotImplementedError
+QueryHandler = Callable[[Q], R]
 
 
 class QueryBus(object):
@@ -40,4 +37,4 @@ class QueryBus(object):
         if handler is None:
             raise ValueError(f"No handler has been registered for {type(query)}")
         else:
-            return handler.handle(query)
+            return handler(query)

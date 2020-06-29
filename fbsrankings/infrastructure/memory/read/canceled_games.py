@@ -1,4 +1,3 @@
-from fbsrankings.common import QueryHandler
 from fbsrankings.domain import GameStatus
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import CanceledGameResult
@@ -6,11 +5,11 @@ from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import CanceledGamesResult
 
 
-class CanceledGamesQueryHandler(QueryHandler[CanceledGamesQuery, CanceledGamesResult]):
+class CanceledGamesQueryHandler(object):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: CanceledGamesQuery) -> CanceledGamesResult:
+    def __call__(self, query: CanceledGamesQuery) -> CanceledGamesResult:
         games = []
         for game in self._storage.game.all():
             if game.status == GameStatus.CANCELED.name:

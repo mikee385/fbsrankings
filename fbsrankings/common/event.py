@@ -14,11 +14,14 @@ class Event(metaclass=ABCMeta):
 E = TypeVar("E", bound=Event, contravariant=True)
 
 
+EventHandler = Callable[[E], None]
+
+
 class EventBus(object):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Event], List[Callable[[Any], None]]] = {}
+        self._handlers: Dict[Type[Event], List[EventHandler[Any]]] = {}
 
-    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
+    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
         existing = self._handlers.get(type)
         if existing is not None:
             existing.append(handler)
@@ -37,7 +40,7 @@ class EventRecorder(EventBus):
         self._bus = bus
         self.events: List[Event] = []
 
-    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
+    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
         self._bus.register_handler(type, handler)
 
     def publish(self, event: E) -> None:
@@ -53,7 +56,7 @@ class EventCounter(EventBus):
         self._bus = bus
         self.counts: Dict[Type[Event], int] = {}
 
-    def register_handler(self, type: Type[E], handler: Callable[[E], None]) -> None:
+    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
         self._bus.register_handler(type, handler)
 
     def publish(self, event: E) -> None:

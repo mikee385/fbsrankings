@@ -1,20 +1,17 @@
 import sqlite3
 
-from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import AffiliationCountBySeasonResult
 
 
-class AffiliationCountBySeasonQueryHandler(
-    QueryHandler[AffiliationCountBySeasonQuery, AffiliationCountBySeasonResult]
-):
+class AffiliationCountBySeasonQueryHandler(object):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
         self.table = AffiliationTable()
 
-    def handle(
+    def __call__(
         self, query: AffiliationCountBySeasonQuery
     ) -> AffiliationCountBySeasonResult:
         cursor = self._connection.cursor()

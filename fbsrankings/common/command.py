@@ -1,11 +1,9 @@
 from abc import ABCMeta
 from typing import Any
+from typing import Callable
 from typing import Dict
-from typing import Generic
 from typing import Type
 from typing import TypeVar
-
-from typing_extensions import Protocol
 
 
 class Command(metaclass=ABCMeta):
@@ -15,9 +13,7 @@ class Command(metaclass=ABCMeta):
 C = TypeVar("C", bound=Command, contravariant=True)
 
 
-class CommandHandler(Generic[C], Protocol):
-    def handle(self, command: C) -> None:
-        raise NotImplementedError
+CommandHandler = Callable[[C], None]
 
 
 class CommandBus(object):
@@ -39,4 +35,4 @@ class CommandBus(object):
         if handler is None:
             raise ValueError(f"No handler has been registered for {type(command)}")
         else:
-            handler.handle(command)
+            handler(command)

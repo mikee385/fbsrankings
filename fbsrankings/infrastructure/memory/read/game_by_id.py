@@ -1,16 +1,15 @@
 from typing import Optional
 
-from fbsrankings.common import QueryHandler
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameByIDResult
 
 
-class GameByIDQueryHandler(QueryHandler[GameByIDQuery, Optional[GameByIDResult]]):
+class GameByIDQueryHandler(object):
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def handle(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
+    def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
         game = self._storage.game.get(query.ID)
         if game is not None:
             season = self._storage.season.get(game.season_ID)
