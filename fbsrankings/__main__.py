@@ -12,7 +12,11 @@ os.chdir(package_dir)
 project_dir = os.path.dirname(package_dir)
 sys.path.insert(0, project_dir)
 
+use_typeguard = False
 if "--use-typeguard" in sys.argv:
+    use_typeguard = True
+
+if use_typeguard:
     print("Performing runtime type checks...")
 
     from typeguard.importhook import install_import_hook  # type: ignore
