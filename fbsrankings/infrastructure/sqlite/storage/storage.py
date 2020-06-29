@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 from fbsrankings.infrastructure.sqlite.storage.affiliation import AffiliationTable
@@ -12,6 +13,10 @@ from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
 class Storage(object):
     def __init__(self, database: str) -> None:
         self.database = database
+
+        directory = os.path.dirname(self.database)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
 
         connection = sqlite3.connect(database)
         try:
