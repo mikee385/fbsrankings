@@ -2,6 +2,8 @@ import json
 import os
 from typing import List
 
+import jsonschema  # type: ignore
+
 from fbsrankings.application import Application
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus
@@ -24,16 +26,22 @@ from fbsrankings.query import TeamCountBySeasonQuery
 
 def main() -> int:
     package_dir = os.path.abspath(os.path.dirname(__file__))
-    
+
     config_path = os.path.join(package_dir, "config.json")
     with open(config_path) as config_file:
         config = json.load(config_file)
+
+    schema_path = os.path.join(package_dir, "application", "schema.json")
+    with open(schema_path) as schema_file:
+        schema = json.load(schema_file)
+    jsonschema.validate(config, schema)
 
     event_recorder = EventRecorder(EventBus())
     event_bus = EventCounter(event_recorder)
 
     with Application(config, event_bus) as application:
         for year in application.seasons:
+            break
             print(f"{year}: Importing Data")
             application.send(ImportSeasonByYearCommand(year))
 
