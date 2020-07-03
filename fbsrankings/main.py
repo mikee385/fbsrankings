@@ -41,7 +41,6 @@ def main() -> int:
 
     with Application(config, event_bus) as application:
         for year in application.seasons:
-            break
             print(f"{year}: Importing Data")
             application.send(ImportSeasonByYearCommand(year))
 
