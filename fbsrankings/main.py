@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List
 
 from fbsrankings.application import Application
@@ -22,7 +23,10 @@ from fbsrankings.query import TeamCountBySeasonQuery
 
 
 def main() -> int:
-    with open("config.json") as config_file:
+    package_dir = os.path.abspath(os.path.dirname(__file__))
+    
+    config_path = os.path.join(package_dir, "config.json")
+    with open(config_path) as config_file:
         config = json.load(config_file)
 
     event_recorder = EventRecorder(EventBus())

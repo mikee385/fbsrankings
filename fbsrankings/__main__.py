@@ -6,10 +6,8 @@ import sys
 if sys.path[0] in ("", os.getcwd()):
     sys.path.pop(0)
 
-package_dir = os.path.dirname(__file__)
-os.chdir(package_dir)
-
-project_dir = os.path.dirname(package_dir)
+package_dir = os.path.abspath(os.path.dirname(__file__))
+project_dir = os.path.abspath(os.path.dirname(package_dir))
 sys.path.insert(0, project_dir)
 
 use_typeguard = False
@@ -28,3 +26,4 @@ else:
 
 if __name__ == "__main__":
     sys.exit(main())
+
