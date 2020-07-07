@@ -1,15 +1,13 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
+from typing import List
 from typing import Optional
-from typing import Union
 from uuid import uuid4
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
-from fbsrankings.domain.model.season import Season
 from fbsrankings.domain.model.season import SeasonID
-from fbsrankings.domain.model.team import Team
 from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import AffiliationCreatedEvent
 
@@ -28,27 +26,14 @@ class Affiliation(object):
         self,
         bus: EventBus,
         ID: AffiliationID,
-        season: Union[Season, SeasonID],
-        team: Union[Team, TeamID],
+        season_ID: SeasonID,
+        team_ID: TeamID,
         subdivision: Subdivision,
     ) -> None:
         self._bus = bus
         self._ID = ID
-
-        if isinstance(season, Season):
-            self._season_ID = season.ID
-        elif isinstance(season, SeasonID):
-            self._season_ID = season
-        else:
-            raise TypeError("season must be of type Season or SeasonID")
-
-        if isinstance(team, Team):
-            self._team_ID = team.ID
-        elif isinstance(team, TeamID):
-            self._team_ID = team
-        else:
-            raise TypeError("team must be of type Team or TeamID")
-
+        self._season_ID = season_ID
+        self._team_ID = team_ID
         self._subdivision = subdivision
 
     @property
@@ -73,10 +58,10 @@ class AffiliationRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(
-        self, season: SeasonID, team: TeamID, subdivision: Subdivision
+        self, season_ID: SeasonID, team_ID: TeamID, subdivision: Subdivision
     ) -> Affiliation:
         ID = AffiliationID(uuid4())
-        affiliation = Affiliation(self._bus, ID, season, team, subdivision)
+        affiliation = Affiliation(self._bus, ID, season_ID, team_ID, subdivision)
         self._bus.publish(
             AffiliationCreatedEvent(
                 affiliation.ID.value,
@@ -93,5 +78,9 @@ class AffiliationRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def find(self, season: SeasonID, team: TeamID) -> Optional[Affiliation]:
+    def find(self, season: SeasonID, team_ID: TeamID) -> Optional[Affiliation]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
         raise NotImplementedError

@@ -1,3 +1,4 @@
+from typing import List
 from typing import Optional
 
 from fbsrankings.common import Event
@@ -16,15 +17,19 @@ class TeamRepository(BaseRepository):
         self._storage = storage
 
     def get(self, ID: TeamID) -> Optional[Team]:
-        return self._to_team(self._storage.get(ID.value))
+        dto = self._storage.get(ID.value)
+        return self._to_team(dto) if dto is not None else None
 
     def find(self, name: str) -> Optional[Team]:
-        return self._to_team(self._storage.find(name))
+        dto = self._storage.find(name)
+        return self._to_team(dto) if dto is not None else None
 
-    def _to_team(self, dto: Optional[TeamDto]) -> Optional[Team]:
-        if dto is not None:
-            return Team(self._bus, TeamID(dto.ID), dto.name)
-        return None
+    def all(self) -> List[Team]:
+        dtos = self._storage.all()
+        return [self._to_team(dto) for dto in dtos if dto is not None]
+
+    def _to_team(self, dto: TeamDto) -> Team:
+        return Team(self._bus, TeamID(dto.ID), dto.name)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamCreatedEvent):

@@ -68,7 +68,7 @@ class GameStorage(object):
         key = self._get_key(season_ID, week, team1_ID, team2_ID)
         return self._by_key.get(key)
 
-    def by_season(self, season_ID: UUID) -> List[GameDto]:
+    def for_season(self, season_ID: UUID) -> List[GameDto]:
         by_season = self._by_season.get(season_ID)
         if by_season is None:
             return []

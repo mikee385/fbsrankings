@@ -1,8 +1,8 @@
 import sqlite3
 from datetime import datetime
+from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import Union
 from uuid import UUID
 
 from fbsrankings.common import EventBus
@@ -10,10 +10,8 @@ from fbsrankings.domain import Game
 from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
 from fbsrankings.domain import GameStatus
-from fbsrankings.domain import Season
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import SeasonSection
-from fbsrankings.domain import Team
 from fbsrankings.domain import TeamID
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
@@ -48,39 +46,15 @@ class GameRepository(BaseRepository):
         )
         row = cursor.fetchone()
         cursor.close()
-        return self._to_game(row)
+
+        return self._to_game(row) if row is not None else None
 
     def find(
-        self,
-        season: Union[Season, SeasonID],
-        week: int,
-        team1: Union[Team, TeamID],
-        team2: Union[Team, TeamID],
+        self, season_ID: SeasonID, week: int, team1_ID: TeamID, team2_ID: TeamID,
     ) -> Optional[Game]:
-        if isinstance(season, Season):
-            season_ID = season.ID
-        elif isinstance(season, SeasonID):
-            season_ID = season
-        else:
-            raise TypeError("season must be of type Season or SeasonID")
-
-        if isinstance(team1, Team):
-            team1_ID = team1.ID
-        elif isinstance(team1, TeamID):
-            team1_ID = team1
-        else:
-            raise TypeError("team1 must be of type Team or TeamID")
-
-        if isinstance(team2, Team):
-            team2_ID = team2.ID
-        elif isinstance(team2, TeamID):
-            team2_ID = team2
-        else:
-            raise TypeError("team2 must be of type Team or TeamID")
-
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name}  WHERE SeasonID=? AND Week=? AND ((HomeTeamID=? AND AwayTeamID=?) OR (AwayTeamID=? AND HomeTeamID=?))",
+            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=? AND Week=? AND ((HomeTeamID=? AND AwayTeamID=?) OR (AwayTeamID=? AND HomeTeamID=?))",
             [
                 str(season_ID.value),
                 week,
@@ -92,43 +66,40 @@ class GameRepository(BaseRepository):
         )
         row = cursor.fetchone()
         cursor.close()
-        return self._to_game(row)
+
+        return self._to_game(row) if row is not None else None
+
+    def for_season(self, season_ID: SeasonID) -> List[Game]:
+        cursor = self._connection.cursor()
+        cursor.execute(
+            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=?",
+            [str(season_ID.value)],
+        )
+        rows = cursor.fetchall()
+        cursor.close()
+
+        return [self._to_game(row) for row in rows if row is not None]
 
     def _to_game(
         self,
-        row: Optional[
-            Tuple[
-                str,
-                str,
-                int,
-                str,
-                str,
-                str,
-                str,
-                Optional[int],
-                Optional[int],
-                str,
-                str,
-            ]
+        row: Tuple[
+            str, str, int, str, str, str, str, Optional[int], Optional[int], str, str,
         ],
-    ) -> Optional[Game]:
-        if row is not None:
-            return Game(
-                self._bus,
-                GameID(UUID(row[0])),
-                SeasonID(UUID(row[1])),
-                row[2],
-                datetime.strptime(row[3], "%Y-%m-%d").date(),
-                SeasonSection[row[4]],
-                TeamID(UUID(row[5])),
-                TeamID(UUID(row[6])),
-                row[7],
-                row[8],
-                GameStatus[row[9]],
-                row[10],
-            )
-        else:
-            return None
+    ) -> Game:
+        return Game(
+            self._bus,
+            GameID(UUID(row[0])),
+            SeasonID(UUID(row[1])),
+            row[2],
+            datetime.strptime(row[3], "%Y-%m-%d").date(),
+            SeasonSection[row[4]],
+            TeamID(UUID(row[5])),
+            TeamID(UUID(row[6])),
+            row[7],
+            row[8],
+            GameStatus[row[9]],
+            row[10],
+        )
 
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._cursor.execute(

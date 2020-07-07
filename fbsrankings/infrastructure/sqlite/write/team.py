@@ -1,4 +1,5 @@
 import sqlite3
+from typing import List
 from typing import Optional
 from typing import Tuple
 from uuid import UUID
@@ -32,22 +33,29 @@ class TeamRepository(BaseRepository):
         )
         row = cursor.fetchone()
         cursor.close()
-        return self._to_team(row)
+
+        return self._to_team(row) if row is not None else None
 
     def find(self, name: str) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name}  WHERE Name=?", [name]
+            f"SELECT {self.table.columns} FROM {self.table.name} WHERE Name=?", [name]
         )
         row = cursor.fetchone()
         cursor.close()
-        return self._to_team(row)
 
-    def _to_team(self, row: Optional[Tuple[str, str]]) -> Optional[Team]:
-        if row is not None:
-            return Team(self._bus, TeamID(UUID(row[0])), row[1])
-        else:
-            return None
+        return self._to_team(row) if row is not None else None
+
+    def all(self) -> List[Team]:
+        cursor = self._connection.cursor()
+        cursor.execute(f"SELECT {self.table.columns} FROM {self.table.name}")
+        rows = cursor.fetchall()
+        cursor.close()
+
+        return [self._to_team(row) for row in rows if row is not None]
+
+    def _to_team(self, row: Tuple[str, str]) -> Team:
+        return Team(self._bus, TeamID(UUID(row[0])), row[1])
 
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(

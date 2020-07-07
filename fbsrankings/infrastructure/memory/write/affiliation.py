@@ -1,15 +1,13 @@
+from typing import List
 from typing import Optional
-from typing import Union
 
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
 from fbsrankings.domain import AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
-from fbsrankings.domain import Season
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import Subdivision
-from fbsrankings.domain import Team
 from fbsrankings.domain import TeamID
 from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.infrastructure.memory.storage import AffiliationDto
@@ -22,37 +20,25 @@ class AffiliationRepository(BaseRepository):
         self._storage = storage
 
     def get(self, ID: AffiliationID) -> Optional[Affiliation]:
-        return self._to_affiliation(self._storage.get(ID.value))
+        dto = self._storage.get(ID.value)
+        return self._to_affiliation(dto) if dto is not None else None
 
-    def find(
-        self, season: Union[Season, SeasonID], team: Union[Team, TeamID]
-    ) -> Optional[Affiliation]:
-        if isinstance(season, Season):
-            season_ID = season.ID
-        elif isinstance(season, SeasonID):
-            season_ID = season
-        else:
-            raise TypeError("season must be of type Season or SeasonID")
+    def find(self, season_ID: SeasonID, team_ID: TeamID) -> Optional[Affiliation]:
+        dto = self._storage.find(season_ID.value, team_ID.value)
+        return self._to_affiliation(dto) if dto is not None else None
 
-        if isinstance(team, Team):
-            team_ID = team.ID
-        elif isinstance(team, TeamID):
-            team_ID = team
-        else:
-            raise TypeError("team must be of type Team or TeamID")
+    def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
+        dtos = self._storage.for_season(season_ID.value)
+        return [self._to_affiliation(dto) for dto in dtos if dto is not None]
 
-        return self._to_affiliation(self._storage.find(season_ID.value, team_ID.value))
-
-    def _to_affiliation(self, dto: Optional[AffiliationDto]) -> Optional[Affiliation]:
-        if dto is not None:
-            return Affiliation(
-                self._bus,
-                AffiliationID(dto.ID),
-                SeasonID(dto.season_ID),
-                TeamID(dto.team_ID),
-                Subdivision[dto.subdivision],
-            )
-        return None
+    def _to_affiliation(self, dto: AffiliationDto) -> Affiliation:
+        return Affiliation(
+            self._bus,
+            AffiliationID(dto.ID),
+            SeasonID(dto.season_ID),
+            TeamID(dto.team_ID),
+            Subdivision[dto.subdivision],
+        )
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, AffiliationCreatedEvent):

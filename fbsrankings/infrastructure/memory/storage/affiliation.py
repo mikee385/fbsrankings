@@ -45,7 +45,7 @@ class AffiliationStorage(object):
         key = (season_ID, team_ID)
         return self._by_key.get(key)
 
-    def by_season(self, season_ID: UUID) -> List[AffiliationDto]:
+    def for_season(self, season_ID: UUID) -> List[AffiliationDto]:
         by_season = self._by_season.get(season_ID)
         if by_season is None:
             return []

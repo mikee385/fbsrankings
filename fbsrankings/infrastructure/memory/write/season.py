@@ -1,3 +1,4 @@
+from typing import List
 from typing import Optional
 
 from fbsrankings.common import Event
@@ -16,15 +17,19 @@ class SeasonRepository(BaseRepository):
         self._storage = storage
 
     def get(self, ID: SeasonID) -> Optional[Season]:
-        return self._to_season(self._storage.get(ID.value))
+        dto = self._storage.get(ID.value)
+        return self._to_season(dto) if dto is not None else None
 
     def find(self, year: int) -> Optional[Season]:
-        return self._to_season(self._storage.find(year))
+        dto = self._storage.find(year)
+        return self._to_season(dto) if dto is not None else None
 
-    def _to_season(self, dto: Optional[SeasonDto]) -> Optional[Season]:
-        if dto is not None:
-            return Season(self._bus, SeasonID(dto.ID), dto.year)
-        return None
+    def all(self) -> List[Season]:
+        dtos = self._storage.all()
+        return [self._to_season(dto) for dto in dtos if dto is not None]
+
+    def _to_season(self, dto: SeasonDto) -> Season:
+        return Season(self._bus, SeasonID(dto.ID), dto.year)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, SeasonCreatedEvent):

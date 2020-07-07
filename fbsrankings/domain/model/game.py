@@ -2,17 +2,15 @@ import datetime
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
+from typing import List
 from typing import Optional
-from typing import Union
 from uuid import UUID
 from uuid import uuid4
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
-from fbsrankings.domain.model.season import Season
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.season import SeasonSection
-from fbsrankings.domain.model.team import Team
 from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
@@ -43,12 +41,12 @@ class Game(object):
         self,
         bus: EventBus,
         ID: GameID,
-        season: Union[Season, SeasonID],
+        season_ID: SeasonID,
         week: int,
         date: datetime.date,
         season_section: SeasonSection,
-        home_team: Union[Team, TeamID],
-        away_team: Union[Team, TeamID],
+        home_team_ID: TeamID,
+        away_team_ID: TeamID,
         home_team_score: Optional[int],
         away_team_score: Optional[int],
         status: GameStatus,
@@ -56,31 +54,12 @@ class Game(object):
     ) -> None:
         self._bus = bus
         self._ID = ID
-
-        if isinstance(season, Season):
-            self._season_ID = season.ID
-        elif isinstance(season, SeasonID):
-            self._season_ID = season
-        else:
-            raise TypeError("season must be of type Season or SeasonID")
-
+        self._season_ID = season_ID
         self._week = week
         self._date = date
         self._season_section = season_section
-
-        if isinstance(home_team, Team):
-            self._home_team_ID = home_team.ID
-        elif isinstance(home_team, TeamID):
-            self._home_team_ID = home_team
-        else:
-            raise TypeError("home_team must be of type Team or TeamID")
-
-        if isinstance(away_team, Team):
-            self._away_team_ID = away_team.ID
-        elif isinstance(away_team, TeamID):
-            self._away_team_ID = away_team
-        else:
-            raise TypeError("away_team must be of type Team or TeamID")
+        self._home_team_ID = home_team_ID
+        self._away_team_ID = away_team_ID
 
         self._home_team_score: Optional[int]
         self._away_team_score: Optional[int]
@@ -260,24 +239,24 @@ class GameRepository(metaclass=ABCMeta):
 
     def create(
         self,
-        season: Union[Season, SeasonID],
+        season_ID: SeasonID,
         week: int,
         date: datetime.date,
         season_section: SeasonSection,
-        home_team: Union[Team, TeamID],
-        away_team: Union[Team, TeamID],
+        home_team_ID: TeamID,
+        away_team_ID: TeamID,
         notes: str,
     ) -> Game:
         ID = GameID(uuid4())
         game = Game(
             self._bus,
             ID,
-            season,
+            season_ID,
             week,
             date,
             season_section,
-            home_team,
-            away_team,
+            home_team_ID,
+            away_team_ID,
             None,
             None,
             GameStatus.SCHEDULED,
@@ -304,10 +283,10 @@ class GameRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self,
-        season: Union[Season, SeasonID],
-        week: int,
-        team1: Union[Team, TeamID],
-        team2: Union[Team, TeamID],
+        self, season_ID: SeasonID, week: int, team1_ID: TeamID, team2_ID: TeamID,
     ) -> Optional[Game]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def for_season(self, season_ID: SeasonID) -> List[Game]:
         raise NotImplementedError
