@@ -8,9 +8,13 @@ from typing import TypeVar
 
 from typing_extensions import Literal
 
+from fbsrankings.application.command.calculate_rankings_for_season import (
+    CalculateRankingsForSeasonCommandHandler,
+)
 from fbsrankings.application.command.import_season_by_year import (
     ImportSeasonByYearCommandHandler,
 )
+from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
@@ -38,9 +42,14 @@ class CommandManager(ContextManager["CommandManager"]):
             ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus),
         )
 
+        self.register_hander(
+            CalculateRankingsForSeasonCommand,
+            CalculateRankingsForSeasonCommandHandler(data_source, event_bus),
+        )
+
     def register_hander(self, type: Type[C], handler: CommandHandler[C]) -> None:
-        self._handlers[type] = handler
         self._bus.register_handler(type, handler)
+        self._handlers[type] = handler
 
     def close(self) -> None:
         for type, handler in self._handlers.items():

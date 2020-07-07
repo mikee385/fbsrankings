@@ -5,6 +5,7 @@ from typing import List
 import jsonschema  # type: ignore
 
 from fbsrankings.application import Application
+from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus
 from fbsrankings.common import EventCounter
@@ -43,6 +44,9 @@ def main() -> int:
         for year in application.seasons:
             print(f"{year}: Importing Data")
             application.send(ImportSeasonByYearCommand(year))
+
+            print(f"{year}: Calculating Rankings")
+            application.send(CalculateRankingsForSeasonCommand(year))
 
         print()
 
