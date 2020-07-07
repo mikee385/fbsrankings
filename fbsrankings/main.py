@@ -3,6 +3,7 @@ import os
 from typing import List
 
 import jsonschema  # type: ignore
+from prettytable import PrettyTable  # type: ignore
 
 from fbsrankings.application import Application
 from fbsrankings.command import CalculateRankingsForSeasonCommand
@@ -48,25 +49,31 @@ def main() -> int:
             print(f"{year}: Calculating Rankings")
             application.send(CalculateRankingsForSeasonCommand(year))
 
-        print()
+        season_summary_table = PrettyTable()
+        season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
 
         seasons = application.query(SeasonsQuery()).seasons
-        print(f"Total Seasons: {len(seasons)}")
         for season in seasons:
-            print()
-            print(f"{season.year} Season:")
-
             team_count = application.query(TeamCountBySeasonQuery(season.ID))
-            print(f"Total Teams: {team_count.count}")
-
             affiliation_count = application.query(
                 AffiliationCountBySeasonQuery(season.ID)
             )
-            print(f"FBS Teams: {affiliation_count.fbs_count}")
-            print(f"FCS Teams: {affiliation_count.fcs_count}")
-
             game_count = application.query(GameCountBySeasonQuery(season.ID))
-            print(f"Total Games: {game_count.count}")
+
+            season_summary_table.add_row(
+                [
+                    season.year,
+                    team_count.count,
+                    affiliation_count.fbs_count,
+                    affiliation_count.fcs_count,
+                    game_count.count,
+                ]
+            )
+
+        print()
+        print(f"Total Seasons: {len(seasons)}")
+        print()
+        print(season_summary_table)
 
         canceled_games = application.query(CanceledGamesQuery()).games
         if canceled_games:

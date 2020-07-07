@@ -11,6 +11,7 @@ bs4 = "*"
 typing-extensions = "*"
 html5lib = "*"
 jsonschema = "*"
+prettytable = "*"
 
 [requires]
 python_version = "3.6"
