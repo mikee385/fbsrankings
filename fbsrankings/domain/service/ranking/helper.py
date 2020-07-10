@@ -21,12 +21,12 @@ class ValueHelper(Generic[T], metaclass=ABCMeta):
         self._season_data = season_data
 
     @abstractmethod
-    def _to_sort_key(self, ID: T, value: float) -> Any:
+    def _sort_key(self, ID: T, value: float) -> Any:
         raise NotImplementedError
 
     def to_values(self, value_map: Dict[T, float]) -> List[RankingValue[T]]:
         sorted_values = sorted(
-            value_map.items(), key=lambda t: self._to_sort_key(t[0], t[1])
+            value_map.items(), key=lambda t: self._sort_key(t[0], t[1])
         )
 
         ranking_values = []
@@ -49,8 +49,8 @@ class TeamValueHelper(ValueHelper[TeamID]):
     def __init__(self, season_data: SeasonData) -> None:
         super().__init__(season_data)
 
-    def _to_sort_key(self, team_ID: TeamID, value: float) -> Tuple[float, str, str]:
+    def _sort_key(self, team_ID: TeamID, value: float) -> Tuple[float, str, str]:
         team = self._season_data.team_map.get(team_ID)
         if team is None:
             raise ValueError(f"Team not found for {team_ID}")
-        return (value, team.name.upper(), str(team_ID.value))
+        return (-value, team.name.upper(), str(team_ID.value))
