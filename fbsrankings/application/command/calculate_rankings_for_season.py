@@ -2,9 +2,10 @@ from uuid import UUID
 
 from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.common import EventBus
+from fbsrankings.domain import ColleyMatrixRankingService
 from fbsrankings.domain import SeasonData
 from fbsrankings.domain import SeasonID
-from fbsrankings.domain import SRSRankingService
+from fbsrankings.domain import SimultaneousWinsRankingService
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure import UnitOfWork
 
@@ -32,7 +33,10 @@ class CalculateRankingsForSeasonCommandHandler(object):
             games = unit_of_work.game.for_season(season.ID)
 
             season_data = SeasonData(season, teams, affiliations, games)
-            SRSRankingService(self._event_bus).calculate_for_season(
+            ColleyMatrixRankingService(self._event_bus).calculate_for_season(
+                season.ID, season_data
+            )
+            SimultaneousWinsRankingService(self._event_bus).calculate_for_season(
                 season.ID, season_data
             )
 

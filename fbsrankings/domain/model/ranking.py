@@ -36,7 +36,7 @@ class SeasonData(object):
         self.affiliation_map = {
             affiliation.team_ID: affiliation for affiliation in affiliations
         }
-        self.games = [games]
+        self.games = [game for game in games]
 
 
 class RankingID(Identifier):
