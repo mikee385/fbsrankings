@@ -6,14 +6,14 @@ from fbsrankings.common import Event
 
 
 class RankingValue(object):
-    def __init__(self, ID: UUID, rank: int, order: int, value: float) -> None:
+    def __init__(self, ID: UUID, order: int, rank: int, value: float) -> None:
         self.ID = ID
-        self.rank = rank
         self.order = order
+        self.rank = rank
         self.value = value
 
 
-class RankingCreatedEvent(Event):
+class RankingCalculatedEvent(Event):
     def __init__(
         self,
         ID: UUID,
@@ -28,8 +28,3 @@ class RankingCreatedEvent(Event):
         self.week = week
         self.values = values
 
-
-class RankingValuesUpdatedEvent(Event):
-    def __init__(self, ID: UUID, values: List[RankingValue]) -> None:
-        self.ID = ID
-        self.values = values

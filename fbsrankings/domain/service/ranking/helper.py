@@ -33,14 +33,14 @@ class ValueHelper(Generic[T], metaclass=ABCMeta):
         previous_value = 0.0
         previous_rank = 0
         for order, item in enumerate(sorted_values):
-            if previous_value == item[1]:
+            if item[1] == previous_value:
                 rank = previous_rank
             else:
-                rank = order + 1
+                rank = order
 
             previous_value = item[1]
             previous_rank = rank
-            ranking_values.append(RankingValue(item[0], rank, order + 1, item[1]))
+            ranking_values.append(RankingValue(item[0], order + 1, rank + 1, item[1]))
 
         return ranking_values
 
@@ -54,3 +54,4 @@ class TeamValueHelper(ValueHelper[TeamID]):
         if team is None:
             raise ValueError(f"Team not found for {team_ID}")
         return (-value, team.name.upper(), str(team_ID.value))
+

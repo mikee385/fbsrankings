@@ -15,9 +15,8 @@ from fbsrankings.domain.model.game import Game
 from fbsrankings.domain.model.season import Season
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import Team
-from fbsrankings.event import RankingCreatedEvent
+from fbsrankings.event import RankingCalculatedEvent
 from fbsrankings.event import RankingValue as EventValue
-from fbsrankings.event import RankingValuesUpdatedEvent
 
 
 T = TypeVar("T", bound=Identifier)
@@ -44,10 +43,10 @@ class RankingID(Identifier):
 
 
 class RankingValue(Generic[T]):
-    def __init__(self, ID: T, rank: int, order: int, value: float) -> None:
+    def __init__(self, ID: T, order: int, rank: int, value: float) -> None:
         self._ID = ID
-        self._rank = rank
         self._order = order
+        self._rank = rank
         self._value = value
 
     @property
@@ -55,12 +54,12 @@ class RankingValue(Generic[T]):
         return self._ID
 
     @property
-    def rank(self) -> int:
-        return self._rank
-
-    @property
     def order(self) -> int:
         return self._order
+
+    @property
+    def rank(self) -> int:
+        return self._rank
 
     @property
     def value(self) -> float:
@@ -104,13 +103,6 @@ class Ranking(Generic[T]):
     def values(self) -> Sequence[RankingValue[T]]:
         return self._values
 
-    @values.setter
-    def values(self, values: Iterable[RankingValue[T]]) -> None:
-        if not values:
-            raise ValueError("values must not be empty")
-        self._values = sorted(values, key=lambda v: v.order)
-        self._bus.publish(RankingValuesUpdatedEvent(self.ID.value, self._event_values))
-
     @property
     def _event_values(self) -> List[EventValue]:
         return list(
@@ -143,7 +135,7 @@ class RankingRepository(metaclass=ABCMeta):
         ID = RankingID(uuid4())
         ranking = Ranking(self._bus, ID, name, season_ID, week, values)
         self._bus.publish(
-            RankingCreatedEvent(
+            RankingCalculatedEvent(
                 ranking.ID.value,
                 ranking.name,
                 ranking.season_ID.value,
