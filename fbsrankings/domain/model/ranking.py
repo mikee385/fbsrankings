@@ -30,14 +30,14 @@ class SeasonData(object):
         teams: Iterable[Team],
         affiliations: Iterable[Affiliation],
         games: Iterable[Game],
-    ):
+    ) -> None:
         self.season = season
         self.team_map = {team.ID: team for team in teams}
         self.affiliation_map = {
             affiliation.team_ID: affiliation for affiliation in affiliations
         }
         self.games = [game for game in games]
-        
+
 
 class RankingType(Enum):
     TEAM = 0

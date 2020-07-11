@@ -54,4 +54,3 @@ class TeamValueHelper(ValueHelper[TeamID]):
         if team is None:
             raise ValueError(f"Team not found for {team_ID}")
         return (-value, team.name.upper(), str(team_ID.value))
-

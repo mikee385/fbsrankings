@@ -35,7 +35,7 @@ class RankingTable(object):
     def __init__(self) -> None:
         self.name = "ranking"
         self.columns = "UUID, Name, Type, SeasonID, Week"
-        
+
         self.team_value_table = TeamRankingValueTable()
         self.game_value_table = GameRankingValueTable()
 
@@ -49,7 +49,7 @@ class RankingTable(object):
              Week INT,
              UNIQUE(Name, SeasonID, Week));"""
         )
-        
+
         self.team_value_table.create(cursor)
         self.game_value_table.create(cursor)
 
@@ -60,10 +60,10 @@ class RankingTable(object):
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
-        
+
         self.team_value_table.dump(connection)
         self.game_value_table.dump(connection)
-        
+
 
 class TeamRankingValueTable(object):
     def __init__(self) -> None:
@@ -113,4 +113,3 @@ class GameRankingValueTable(object):
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
-

@@ -47,7 +47,15 @@ class RankingRepository(BaseRepository):
             RankingType[dto.type],
             SeasonID(dto.season_ID),
             dto.week,
-            [RankingValue(self._value_id(value.ID), value.order, value.rank, value.value) for value in dto.values]
+            [
+                RankingValue(
+                    self._value_ID(dto.type, value.ID),
+                    value.order,
+                    value.rank,
+                    value.value,
+                )
+                for value in dto.values
+            ],
         )
 
     def handle(self, event: Event) -> bool:
@@ -65,10 +73,13 @@ class RankingRepository(BaseRepository):
                 event.type,
                 event.season_ID,
                 event.week,
-                [RankingValueDto(value.ID, value.order, value.rank, value.value) for value in event.values],
+                [
+                    RankingValueDto(value.ID, value.order, value.rank, value.value)
+                    for value in event.values
+                ],
             )
         )
-        
+
     def _value_ID(self, type: str, ID: UUID) -> Identifier:
         if type == RankingType.TEAM.name:
             return TeamID(ID)
@@ -76,4 +87,3 @@ class RankingRepository(BaseRepository):
             return GameID(ID)
         else:
             raise ValueError(f"Unknown ranking type: {type}")
-

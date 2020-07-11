@@ -29,4 +29,3 @@ class RankingCalculatedEvent(Event):
         self.season_ID = season_ID
         self.week = week
         self.values = values
-

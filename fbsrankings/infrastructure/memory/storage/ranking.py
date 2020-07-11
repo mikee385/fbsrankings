@@ -30,17 +30,17 @@ class RankingDto(object):
         self.season_ID = season_ID
         self.week = week
         self.values = values
-        
+
 
 class RankingStorage(object):
     def __init__(self) -> None:
         self._by_ID: Dict[UUID, RankingDto] = {}
         self._by_key: Dict[Tuple[str, UUID, Optional[int]], RankingDto] = {}
         self._by_season: Dict[UUID, List[RankingDto]] = {}
-        
+
     def add(self, ranking: RankingDto) -> None:
         key = (ranking.name, ranking.season_ID, ranking.week)
-        
+
         existing = self._by_key.pop(key, None)
         if existing is not None:
             self._by_ID.pop(existing.ID)

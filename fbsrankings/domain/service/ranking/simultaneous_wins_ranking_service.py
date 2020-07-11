@@ -1,8 +1,10 @@
-import numpy
 from typing import Dict
 from typing import List
 
+import numpy  # type: ignore
+
 from fbsrankings.domain.model.affiliation import Subdivision
+from fbsrankings.domain.model.game import Game
 from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import RankingRepository
@@ -20,23 +22,23 @@ class TeamData(object):
         self.index = index
         self.game_total = 0
         self.win_total = 0
-        
-    def add_win(self):
+
+    def add_win(self) -> None:
         self.game_total += 1
         self.win_total += 1
-        
-    def add_loss(self):
+
+    def add_loss(self) -> None:
         self.game_total += 1
-        
+
     @property
-    def win_percentage(self):
+    def win_percentage(self) -> float:
         return float(self.win_total) / self.game_total if self.game_total > 0 else 0.0
 
 
 class SimultaneousWinsRankingService(RankingService[TeamID]):
     name: str = "Simultaneous Wins"
-    
-    def __init__(self, repository: RankingRepository):
+
+    def __init__(self, repository: RankingRepository) -> None:
         self._repository = repository
 
     def calculate_for_season(
@@ -44,49 +46,66 @@ class SimultaneousWinsRankingService(RankingService[TeamID]):
     ) -> List[Ranking[TeamID]]:
         team_data: Dict[TeamID, TeamData] = {}
         fbs_games: List[Game] = []
-        
+
         for game in season_data.games:
             home_affiliation = season_data.affiliation_map[game.home_team_ID]
             away_affiliation = season_data.affiliation_map[game.away_team_ID]
-            
-            if game.season_section == SeasonSection.REGULAR_SEASON and game.status == GameStatus.COMPLETED and home_affiliation.subdivision == Subdivision.FBS and away_affiliation.subdivision == Subdivision.FBS:
-                winning_data = team_data.get(game.winning_team_ID)
-                if winning_data is None:
-                    winning_data = TeamData(len(team_data))
-                    team_data[game.winning_team_ID] = winning_data
-                winning_data.add_win()
-            
-                losing_data = team_data.get(game.losing_team_ID)
-                if losing_data is None:
-                    losing_data = TeamData(len(team_data))
-                    team_data[game.losing_team_ID] = losing_data
-                losing_data.add_loss()
-                
+
+            if (
+                game.season_section == SeasonSection.REGULAR_SEASON
+                and game.status == GameStatus.COMPLETED
+                and home_affiliation.subdivision == Subdivision.FBS
+                and away_affiliation.subdivision == Subdivision.FBS
+            ):
+                if game.winning_team_ID is not None:
+                    winning_data = team_data.get(game.winning_team_ID)
+                    if winning_data is None:
+                        winning_data = TeamData(len(team_data))
+                        team_data[game.winning_team_ID] = winning_data
+                    winning_data.add_win()
+
+                if game.losing_team_ID is not None:
+                    losing_data = team_data.get(game.losing_team_ID)
+                    if losing_data is None:
+                        losing_data = TeamData(len(team_data))
+                        team_data[game.losing_team_ID] = losing_data
+                    losing_data.add_loss()
+
                 fbs_games.append(game)
-                
+
         n = len(team_data)
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
-        
+
         for ID, data in team_data.items():
             index = data.index
             a[index, index] = 1.0
             b[index] = data.win_percentage
-            
+
         for game in fbs_games:
-            winning_data = team_data[game.winning_team_ID]
-            losing_data = team_data[game.losing_team_ID]
-            
-            a[winning_data.index, losing_data.index] -= (1.0 / winning_data.game_total)
-            
+            if game.winning_team_ID is not None and game.losing_team_ID is not None:
+                winning_data = team_data[game.winning_team_ID]
+                losing_data = team_data[game.losing_team_ID]
+
+                a[winning_data.index, losing_data.index] -= (
+                    1.0 / winning_data.game_total
+                )
+
         x = numpy.linalg.solve(a, b)
-        
+
         result: Dict[TeamID, float] = {}
         for ID, data in team_data.items():
             result[ID] = x[data.index]
 
         helper = TeamValueHelper(season_data)
         ranking_values = helper.to_values(result)
-        
-        return [self._repository.create(SimultaneousWinsRankingService.name, RankingType.TEAM, season_ID, None, ranking_values)]
 
+        return [
+            self._repository.create(
+                SimultaneousWinsRankingService.name,
+                RankingType.TEAM,
+                season_ID,
+                None,
+                ranking_values,
+            )
+        ]

@@ -16,10 +16,10 @@ from fbsrankings.domain import RankingID
 from fbsrankings.domain import RankingRepository as BaseRepository
 from fbsrankings.domain import RankingType
 from fbsrankings.domain import RankingValue
-from fbsrankings.event import RankingCalculatedEvent
-from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
+from fbsrankings.event import RankingCalculatedEvent
+from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.infrastructure.sqlite.storage import GameRankingValueTable
 from fbsrankings.infrastructure.sqlite.storage import RankingTable
 from fbsrankings.infrastructure.sqlite.storage import TeamRankingValueTable
@@ -59,11 +59,7 @@ class RankingRepository(BaseRepository):
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT {self.table.columns} FROM {self.table.name} WHERE Name=? AND SeasonID=? AND Week=?",
-            [
-                name,
-                str(season_ID.value),
-                week,
-            ],
+            [name, str(season_ID.value), week],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -80,17 +76,14 @@ class RankingRepository(BaseRepository):
         cursor.close()
 
         return [self._to_ranking(row) for row in rows if row is not None]
-        
+
     def _to_ranking(
-        self,
-        row: Tuple[
-            str, str, str, str, Optional[int],
-        ],
+        self, row: Tuple[str, str, str, str, Optional[int]],
     ) -> Ranking[Any]:
         ID = RankingID(UUID(row[0]))
         type = row[2]
         values = self._get_values(type, ID.value)
-        
+
         return Ranking[Any](
             self._bus,
             ID,
@@ -103,28 +96,18 @@ class RankingRepository(BaseRepository):
 
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._delete_values(event.type, event.ID)
-            
+
         self._cursor.execute(
             f"DELETE FROM {self.table.name} WHERE Name=? AND SeasonID=? AND Week=?",
-            [
-                event.name,
-                str(event.season_ID),
-                event.week,
-            ],
+            [event.name, str(event.season_ID), event.week],
         )
         self._cursor.execute(
             f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?)",
-            [
-                str(event.ID),
-                event.name,
-                event.type,
-                str(event.season_ID),
-                event.week,
-            ],
+            [str(event.ID), event.name, event.type, str(event.season_ID), event.week],
         )
-        
+
         self._create_values(event.type, event.ID, event.values)
-        
+
     def _get_values(self, type: str, ID: UUID) -> List[RankingValue[Any]]:
         value_table = self._value_table(type)
         cursor = self._connection.cursor()
@@ -136,38 +119,28 @@ class RankingRepository(BaseRepository):
         cursor.close()
 
         return [self._to_value(type, row) for row in rows if row is not None]
-        
+
     def _create_values(self, type: str, ID: UUID, values: Iterable[EventValue]) -> None:
         value_table = self._value_table(type)
         for value in values:
             self._cursor.execute(
                 f"INSERT INTO {value_table.name} ({value_table.columns}) VALUES (?, ?, ?, ?, ?)",
-                [
-                    str(ID),
-                    str(value.ID),
-                    value.order,
-                    value.rank,
-                    value.value,
-                ],
+                [str(ID), str(value.ID), value.order, value.rank, value.value],
             )
-        
+
     def _delete_values(self, type: str, ID: UUID) -> None:
         value_table = self._value_table(type)
         self._cursor.execute(
-            f"DELETE FROM {value_table.name} WHERE UUID=?",
-            [
-                str(ID),
-            ],
+            f"DELETE FROM {value_table.name} WHERE UUID=?", [str(ID)],
         )
-        
-    def _to_value(self, type: str, row: Tuple[str, int, int, float]) -> RankingValue[Any]:
+
+    def _to_value(
+        self, type: str, row: Tuple[str, str, int, int, float]
+    ) -> RankingValue[Any]:
         return RankingValue[Any](
-            self._value_ID(type, UUID(row[1])),
-            row[2],
-            row[3],
-            row[4],
+            self._value_ID(type, UUID(row[1])), row[2], row[3], row[4],
         )
-        
+
     def _value_table(self, type: str) -> ValueTable:
         if type == RankingType.TEAM.name:
             return TeamRankingValueTable()
@@ -175,7 +148,7 @@ class RankingRepository(BaseRepository):
             return GameRankingValueTable()
         else:
             raise ValueError(f"Unknown ranking type: {type}")
-    
+
     def _value_ID(self, type: str, ID: UUID) -> Identifier:
         if type == RankingType.TEAM.name:
             return TeamID(ID)
@@ -183,4 +156,3 @@ class RankingRepository(BaseRepository):
             return GameID(ID)
         else:
             raise ValueError(f"Unknown ranking type: {type}")
-

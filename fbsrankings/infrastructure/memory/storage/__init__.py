@@ -11,7 +11,9 @@ from fbsrankings.infrastructure.memory.storage.ranking import RankingDto as Rank
 from fbsrankings.infrastructure.memory.storage.ranking import (
     RankingStorage as RankingStorage,
 )
-from fbsrankings.infrastructure.memory.storage.ranking import RankingValueDto as RankingValueDto
+from fbsrankings.infrastructure.memory.storage.ranking import (
+    RankingValueDto as RankingValueDto,
+)
 from fbsrankings.infrastructure.memory.storage.season import SeasonDto as SeasonDto
 from fbsrankings.infrastructure.memory.storage.season import (
     SeasonStorage as SeasonStorage,
