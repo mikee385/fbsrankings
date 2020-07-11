@@ -5,6 +5,9 @@ from fbsrankings.infrastructure.sqlite.write.affiliation import (
 from fbsrankings.infrastructure.sqlite.write.game import (
     GameRepository as GameRepository,
 )
+from fbsrankings.infrastructure.sqlite.write.ranking import (
+    RankingRepository as RankingRepository,
+)
 from fbsrankings.infrastructure.sqlite.write.season import (
     SeasonRepository as SeasonRepository,
 )

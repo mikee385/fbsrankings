@@ -1,13 +1,13 @@
 import numpy
 from typing import Dict
 from typing import List
-from uuid import uuid4
 
 from fbsrankings.domain.model.affiliation import Subdivision
 from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
-from fbsrankings.domain.model.ranking import RankingID
+from fbsrankings.domain.model.ranking import RankingRepository
 from fbsrankings.domain.model.ranking import RankingService
+from fbsrankings.domain.model.ranking import RankingType
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.season import SeasonSection
@@ -33,6 +33,9 @@ class TeamData(object):
 
 class ColleyMatrixRankingService(RankingService[TeamID]):
     name: str = "Colley Matrix"
+    
+    def __init__(self, repository: RankingRepository):
+        self._repository = repository
 
     def calculate_for_season(
         self, season_ID: SeasonID, season_data: SeasonData
@@ -87,10 +90,5 @@ class ColleyMatrixRankingService(RankingService[TeamID]):
         helper = TeamValueHelper(season_data)
         ranking_values = helper.to_values(result)
 
-        ID = RankingID(uuid4())
-        return [
-            Ranking(
-                self._bus, ID, ColleyMatrixRankingService.name, season_ID, None, ranking_values
-            )
-        ]
+        return [self._repository.create(ColleyMatrixRankingService.name, RankingType.TEAM, season_ID, None, ranking_values)]
 

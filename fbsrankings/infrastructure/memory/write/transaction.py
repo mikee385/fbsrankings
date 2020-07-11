@@ -4,6 +4,7 @@ from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write.affiliation import AffiliationRepository
 from fbsrankings.infrastructure.memory.write.game import GameRepository
+from fbsrankings.infrastructure.memory.write.ranking import RankingRepository
 from fbsrankings.infrastructure.memory.write.season import SeasonRepository
 from fbsrankings.infrastructure.memory.write.team import TeamRepository
 
@@ -16,6 +17,7 @@ class Transaction(BaseTransaction):
         self._team = TeamRepository(storage.team, self._bus)
         self._affiliation = AffiliationRepository(storage.affiliation, self._bus)
         self._game = GameRepository(storage.game, self._bus)
+        self._ranking = RankingRepository(storage.ranking, self._bus)
 
     @property
     def season(self) -> SeasonRepository:
@@ -33,6 +35,10 @@ class Transaction(BaseTransaction):
     def game(self) -> GameRepository:
         return self._game
 
+    @property
+    def ranking(self) -> RankingRepository:
+        return self._ranking
+
     def commit(self) -> None:
         for event in self._bus.events:
             handled = False
@@ -41,6 +47,7 @@ class Transaction(BaseTransaction):
             handled = self._team.handle(event) or handled
             handled = self._affiliation.handle(event) or handled
             handled = self._game.handle(event) or handled
+            handled = self._ranking.handle(event) or handled
 
             if not handled:
                 raise ValueError(f"Unknown event type: {type(event)}")

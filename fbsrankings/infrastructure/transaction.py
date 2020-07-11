@@ -11,6 +11,7 @@ from typing_extensions import Protocol
 from fbsrankings.common import EventBus
 from fbsrankings.domain import AffiliationRepository
 from fbsrankings.domain import GameRepository
+from fbsrankings.domain import RankingRepository
 from fbsrankings.domain import SeasonRepository
 from fbsrankings.domain import TeamRepository
 
@@ -34,6 +35,11 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
     @property
     @abstractmethod
     def game(self) -> GameRepository:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def ranking(self) -> RankingRepository:
         raise NotImplementedError
 
     @abstractmethod

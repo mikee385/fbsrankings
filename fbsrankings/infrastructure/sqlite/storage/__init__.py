@@ -9,6 +9,10 @@ from fbsrankings.infrastructure.sqlite.storage.game import (
     GameStatusTable as GameStatusTable,
 )
 from fbsrankings.infrastructure.sqlite.storage.game import GameTable as GameTable
+from fbsrankings.infrastructure.sqlite.storage.ranking import GameRankingValueTable as GameRankingValueTable
+from fbsrankings.infrastructure.sqlite.storage.ranking import RankingTypeTable as RankingTypeTable
+from fbsrankings.infrastructure.sqlite.storage.ranking import RankingTable as RankingTable
+from fbsrankings.infrastructure.sqlite.storage.ranking import TeamRankingValueTable as TeamRankingValueTable
 from fbsrankings.infrastructure.sqlite.storage.season import (
     SeasonSectionTable as SeasonSectionTable,
 )
