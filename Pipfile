@@ -12,6 +12,7 @@ typing-extensions = "*"
 html5lib = "*"
 jsonschema = "*"
 prettytable = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.6"
