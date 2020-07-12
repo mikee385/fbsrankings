@@ -1,7 +1,7 @@
 from typing import Dict
 from typing import List
 
-import numpy  # type: ignore
+import numpy
 
 from fbsrankings.domain.model.affiliation import Subdivision
 from fbsrankings.domain.model.game import Game
