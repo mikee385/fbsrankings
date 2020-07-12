@@ -77,7 +77,7 @@ class SimultaneousWinsRankingService(RankingService[TeamID]):
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
 
-        for ID, data in team_data.items():
+        for _, data in team_data.items():
             index = data.index
             a[index, index] = 1.0
             b[index] = data.win_percentage

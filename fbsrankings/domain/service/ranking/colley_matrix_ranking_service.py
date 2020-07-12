@@ -75,7 +75,7 @@ class ColleyMatrixRankingService(RankingService[TeamID]):
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
 
-        for ID, data in team_data.items():
+        for _, data in team_data.items():
             index = data.index
             a[index, index] = 2.0 + data.game_total
             b[index] = 1 + (data.win_total - data.loss_total) / 2.0
