@@ -19,14 +19,12 @@ class RankingDto(object):
         self,
         ID: UUID,
         name: str,
-        type: str,
         season_ID: UUID,
         week: Optional[int],
         values: List[RankingValueDto],
     ) -> None:
         self.ID = ID
         self.name = name
-        self.type = type
         self.season_ID = season_ID
         self.week = week
         self.values = values

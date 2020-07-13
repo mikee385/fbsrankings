@@ -1,76 +1,74 @@
-from typing import Any
+from abc import ABCMeta
+from abc import abstractmethod
+from typing import Generic
 from typing import List
 from typing import Optional
-from uuid import UUID
+from typing import TypeVar
 
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
 from fbsrankings.domain import GameID
+from fbsrankings.domain import GameRankingRepository as BaseGameRankingRepository
 from fbsrankings.domain import Ranking
 from fbsrankings.domain import RankingID
-from fbsrankings.domain import RankingRepository as BaseRepository
-from fbsrankings.domain import RankingType
 from fbsrankings.domain import RankingValue
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRankingRepository as BaseTeamRankingRepository
+from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingCalculatedEvent
+from fbsrankings.event import TeamRankingCalculatedEvent
 from fbsrankings.infrastructure.memory.storage import RankingDto
 from fbsrankings.infrastructure.memory.storage import RankingStorage
 from fbsrankings.infrastructure.memory.storage import RankingValueDto
 
 
-class RankingRepository(BaseRepository):
+T = TypeVar("T", bound=Identifier)
+
+
+class RankingRepository(Generic[T], metaclass=ABCMeta):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        super().__init__(bus)
+        self._bus = bus
         self._storage = storage
 
-    def get(self, ID: RankingID) -> Optional[Ranking[Any]]:
+    def get(self, ID: RankingID) -> Optional[Ranking[T]]:
         dto = self._storage.get(ID.value)
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
         self, name: str, season_ID: SeasonID, week: Optional[int],
-    ) -> Optional[Ranking[Any]]:
+    ) -> Optional[Ranking[T]]:
         dto = self._storage.find(name, season_ID.value, week)
         return self._to_ranking(dto) if dto is not None else None
 
-    def for_season(self, season_ID: SeasonID) -> List[Ranking[Any]]:
+    def for_season(self, season_ID: SeasonID) -> List[Ranking[T]]:
         dtos = self._storage.for_season(season_ID.value)
         return [self._to_ranking(dto) for dto in dtos if dto is not None]
 
-    def _to_ranking(self, dto: RankingDto) -> Ranking[Any]:
-        return Ranking[Any](
+    def _to_ranking(self, dto: RankingDto) -> Ranking[T]:
+        return Ranking[T](
             self._bus,
             RankingID(dto.ID),
             dto.name,
-            RankingType[dto.type],
             SeasonID(dto.season_ID),
             dto.week,
-            [
-                RankingValue(
-                    self._value_ID(dto.type, value.ID),
-                    value.order,
-                    value.rank,
-                    value.value,
-                )
-                for value in dto.values
-            ],
+            [self._to_value(value) for value in dto.values],
         )
 
+    @abstractmethod
+    def _to_value(self, dto: RankingValueDto) -> RankingValue[T]:
+        raise NotImplementedError
+
+    @abstractmethod
     def handle(self, event: Event) -> bool:
-        if isinstance(event, RankingCalculatedEvent):
-            self._handle_ranking_calculated(event)
-            return True
-        else:
-            return False
+        raise NotImplementedError
 
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
                 event.ID,
                 event.name,
-                event.type,
                 event.season_ID,
                 event.week,
                 [
@@ -80,10 +78,34 @@ class RankingRepository(BaseRepository):
             )
         )
 
-    def _value_ID(self, type: str, ID: UUID) -> Identifier:
-        if type == RankingType.TEAM.name:
-            return TeamID(ID)
-        elif type == RankingType.GAME.name:
-            return GameID(ID)
+
+class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository):
+    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+        RankingRepository.__init__(self, storage, bus)
+        BaseTeamRankingRepository.__init__(self, bus)
+
+    def _to_value(self, dto: RankingValueDto) -> RankingValue[TeamID]:
+        return RankingValue[TeamID](TeamID(dto.ID), dto.order, dto.rank, dto.value,)
+
+    def handle(self, event: Event) -> bool:
+        if isinstance(event, TeamRankingCalculatedEvent):
+            self._handle_ranking_calculated(event)
+            return True
         else:
-            raise ValueError(f"Unknown ranking type: {type}")
+            return False
+
+
+class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository):
+    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+        RankingRepository.__init__(self, storage, bus)
+        BaseGameRankingRepository.__init__(self, bus)
+
+    def _to_value(self, dto: RankingValueDto) -> RankingValue[GameID]:
+        return RankingValue[GameID](GameID(dto.ID), dto.order, dto.rank, dto.value,)
+
+    def handle(self, event: Event) -> bool:
+        if isinstance(event, GameRankingCalculatedEvent):
+            self._handle_ranking_calculated(event)
+            return True
+        else:
+            return False

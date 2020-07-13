@@ -1,6 +1,5 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from enum import Enum
 from typing import Generic
 from typing import Iterable
 from typing import List
@@ -13,11 +12,14 @@ from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
 from fbsrankings.domain.model.affiliation import Affiliation
 from fbsrankings.domain.model.game import Game
+from fbsrankings.domain.model.game import GameID
 from fbsrankings.domain.model.season import Season
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import Team
-from fbsrankings.event import RankingCalculatedEvent
+from fbsrankings.domain.model.team import TeamID
+from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingValue as EventValue
+from fbsrankings.event import TeamRankingCalculatedEvent
 
 
 T = TypeVar("T", bound=Identifier)
@@ -37,11 +39,6 @@ class SeasonData(object):
             affiliation.team_ID: affiliation for affiliation in affiliations
         }
         self.games = [game for game in games]
-
-
-class RankingType(Enum):
-    TEAM = 0
-    GAME = 1
 
 
 class RankingID(Identifier):
@@ -78,7 +75,6 @@ class Ranking(Generic[T]):
         bus: EventBus,
         ID: RankingID,
         name: str,
-        type: RankingType,
         season_ID: SeasonID,
         week: Optional[int],
         values: Iterable[RankingValue[T]],
@@ -86,7 +82,6 @@ class Ranking(Generic[T]):
         self._bus = bus
         self._ID = ID
         self._name = name
-        self._type = type
         self._season_ID = season_ID
         self._week = week
         self._values = sorted(values, key=lambda v: v.order)
@@ -98,10 +93,6 @@ class Ranking(Generic[T]):
     @property
     def name(self) -> str:
         return self._name
-
-    @property
-    def type(self) -> RankingType:
-        return self._type
 
     @property
     def season_ID(self) -> SeasonID:
@@ -118,37 +109,35 @@ class Ranking(Generic[T]):
     @property
     def _event_values(self) -> List[EventValue]:
         return list(
-            map(lambda v: EventValue(v.ID.value, v.rank, v.order, v.value), self.values)
+            map(lambda v: EventValue(v.ID.value, v.order, v.rank, v.value), self.values)
         )
 
 
-class RankingService(Generic[T], metaclass=ABCMeta):
+class TeamRankingService(metaclass=ABCMeta):
     @abstractmethod
     def calculate_for_season(
         self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[Ranking[T]]:
+    ) -> List[Ranking[TeamID]]:
         raise NotImplementedError
 
 
-class RankingRepository(metaclass=ABCMeta):
+class TeamRankingRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
     def create(
         self,
         name: str,
-        type: RankingType,
         season_ID: SeasonID,
         week: Optional[int],
-        values: Iterable[RankingValue[T]],
-    ) -> Ranking[T]:
+        values: Iterable[RankingValue[TeamID]],
+    ) -> Ranking[TeamID]:
         ID = RankingID(uuid4())
-        ranking = Ranking(self._bus, ID, name, type, season_ID, week, values)
+        ranking = Ranking(self._bus, ID, name, season_ID, week, values)
         self._bus.publish(
-            RankingCalculatedEvent(
+            TeamRankingCalculatedEvent(
                 ranking.ID.value,
                 ranking.name,
-                ranking.type.name,
                 ranking.season_ID.value,
                 ranking.week,
                 ranking._event_values,
@@ -158,11 +147,55 @@ class RankingRepository(metaclass=ABCMeta):
         return ranking
 
     @abstractmethod
-    def get(self, ID: RankingID) -> Optional[Ranking[T]]:
+    def get(self, ID: RankingID) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
     @abstractmethod
     def find(
         self, name: str, season_ID: SeasonID, week: Optional[int]
-    ) -> Optional[Ranking[T]]:
+    ) -> Optional[Ranking[TeamID]]:
+        raise NotImplementedError
+
+
+class GameRankingService(metaclass=ABCMeta):
+    @abstractmethod
+    def calculate_for_season(
+        self, season_ID: SeasonID, season_data: SeasonData
+    ) -> List[Ranking[GameID]]:
+        raise NotImplementedError
+
+
+class GameRankingRepository(metaclass=ABCMeta):
+    def __init__(self, bus: EventBus) -> None:
+        self._bus = bus
+
+    def create(
+        self,
+        name: str,
+        season_ID: SeasonID,
+        week: Optional[int],
+        values: Iterable[RankingValue[GameID]],
+    ) -> Ranking[GameID]:
+        ID = RankingID(uuid4())
+        ranking = Ranking(self._bus, ID, name, season_ID, week, values)
+        self._bus.publish(
+            GameRankingCalculatedEvent(
+                ranking.ID.value,
+                ranking.name,
+                ranking.season_ID.value,
+                ranking.week,
+                ranking._event_values,
+            )
+        )
+
+        return ranking
+
+    @abstractmethod
+    def get(self, ID: RankingID) -> Optional[Ranking[GameID]]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find(
+        self, name: str, season_ID: SeasonID, week: Optional[int]
+    ) -> Optional[Ranking[GameID]]:
         raise NotImplementedError

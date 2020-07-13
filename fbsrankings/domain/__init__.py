@@ -10,13 +10,18 @@ from fbsrankings.domain.model.game import GameID as GameID
 from fbsrankings.domain.model.game import GameRepository as GameRepository
 from fbsrankings.domain.model.game import GameStatus as GameStatus
 from fbsrankings.domain.model.game import GameStatusError as GameStatusError
+from fbsrankings.domain.model.ranking import (
+    GameRankingRepository as GameRankingRepository,
+)
+from fbsrankings.domain.model.ranking import GameRankingService as GameRankingService
 from fbsrankings.domain.model.ranking import Ranking as Ranking
 from fbsrankings.domain.model.ranking import RankingID as RankingID
-from fbsrankings.domain.model.ranking import RankingRepository as RankingRepository
-from fbsrankings.domain.model.ranking import RankingService as RankingService
-from fbsrankings.domain.model.ranking import RankingType as RankingType
 from fbsrankings.domain.model.ranking import RankingValue as RankingValue
 from fbsrankings.domain.model.ranking import SeasonData as SeasonData
+from fbsrankings.domain.model.ranking import (
+    TeamRankingRepository as TeamRankingRepository,
+)
+from fbsrankings.domain.model.ranking import TeamRankingService as TeamRankingService
 from fbsrankings.domain.model.season import Season as Season
 from fbsrankings.domain.model.season import SeasonID as SeasonID
 from fbsrankings.domain.model.season import SeasonRepository as SeasonRepository

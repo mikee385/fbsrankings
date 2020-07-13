@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from typing import List
 from typing import Optional
 from uuid import UUID
@@ -13,19 +14,25 @@ class RankingValue(object):
         self.value = value
 
 
-class RankingCalculatedEvent(Event):
+class RankingCalculatedEvent(Event, metaclass=ABCMeta):
     def __init__(
         self,
         ID: UUID,
         name: str,
-        type: str,
         season_ID: UUID,
         week: Optional[int],
         values: List[RankingValue],
     ) -> None:
         self.ID = ID
         self.name = name
-        self.type = type
         self.season_ID = season_ID
         self.week = week
         self.values = values
+
+
+class TeamRankingCalculatedEvent(RankingCalculatedEvent):
+    pass
+
+
+class GameRankingCalculatedEvent(RankingCalculatedEvent):
+    pass

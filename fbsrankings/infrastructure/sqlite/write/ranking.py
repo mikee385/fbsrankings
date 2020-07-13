@@ -1,9 +1,11 @@
 import sqlite3
-from typing import Any
-from typing import Iterable
+from abc import ABCMeta
+from abc import abstractmethod
+from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 from uuid import UUID
 
 from typing_extensions import Protocol
@@ -11,42 +13,55 @@ from typing_extensions import Protocol
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
 from fbsrankings.domain import GameID
+from fbsrankings.domain import GameRankingRepository as BaseGameRankingRepository
 from fbsrankings.domain import Ranking
 from fbsrankings.domain import RankingID
-from fbsrankings.domain import RankingRepository as BaseRepository
-from fbsrankings.domain import RankingType
 from fbsrankings.domain import RankingValue
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRankingRepository as BaseTeamRankingRepository
+from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingCalculatedEvent
-from fbsrankings.event import RankingValue as EventValue
+from fbsrankings.event import TeamRankingCalculatedEvent
 from fbsrankings.infrastructure.sqlite.storage import GameRankingValueTable
 from fbsrankings.infrastructure.sqlite.storage import RankingTable
+from fbsrankings.infrastructure.sqlite.storage import RankingType
 from fbsrankings.infrastructure.sqlite.storage import TeamRankingValueTable
 
 
-class ValueTable(Protocol):
+T = TypeVar("T", bound=Identifier)
+
+
+class RankingValueTable(Protocol):
     name: str
     columns: str
 
 
-class RankingRepository(BaseRepository):
+class RankingRepository(Generic[T], metaclass=ABCMeta):
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
     ) -> None:
-        super().__init__(bus)
-
+        self._bus = bus
         self._connection = connection
         self._cursor = cursor
 
-        self.table = RankingTable()
-        bus.register_handler(RankingCalculatedEvent, self._handle_ranking_calculated)
+        self.ranking_table = RankingTable()
 
-    def get(self, ID: RankingID) -> Optional[Ranking[Any]]:
+    @property
+    @abstractmethod
+    def type(self) -> RankingType:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value_table(self) -> RankingValueTable:
+        raise NotImplementedError
+
+    def get(self, ID: RankingID) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?",
-            [str(ID.value)],
+            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE UUID=? AND Type=?",
+            [str(ID.value), self.type.name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -55,104 +70,128 @@ class RankingRepository(BaseRepository):
 
     def find(
         self, name: str, season_ID: SeasonID, week: Optional[int]
-    ) -> Optional[Ranking[Any]]:
+    ) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE Name=? AND SeasonID=? AND Week=?",
-            [name, str(season_ID.value), week],
+            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE Name=? AND Type=? AND SeasonID=? AND Week=?",
+            [name, self.type.name, str(season_ID.value), week],
         )
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_ranking(row) if row is not None else None
 
-    def for_season(self, name: str, season_ID: SeasonID) -> List[Ranking[Any]]:
+    def for_season(self, name: str, season_ID: SeasonID) -> List[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE Name=? AND SeasonID=?",
-            [name, str(season_ID.value)],
+            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE Name=? AND Type=? AND SeasonID=?",
+            [name, self.type.name, str(season_ID.value)],
         )
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_ranking(row) for row in rows if row is not None]
 
-    def _to_ranking(
-        self, row: Tuple[str, str, str, str, Optional[int]],
-    ) -> Ranking[Any]:
-        ID = RankingID(UUID(row[0]))
-        type = row[2]
-        values = self._get_values(type, ID.value)
+    def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]],) -> Ranking[T]:
+        cursor = self._connection.cursor()
+        cursor.execute(
+            f"SELECT {self.value_table.columns} FROM {self.value_table.name} WHERE RankingID=?",
+            [row[0]],
+        )
+        rows = cursor.fetchall()
+        cursor.close()
 
-        return Ranking[Any](
+        values = [self._to_value(row) for row in rows if row is not None]
+
+        return Ranking[T](
             self._bus,
-            ID,
+            RankingID(UUID(row[0])),
             row[1],
-            RankingType[type],
             SeasonID(UUID(row[3])),
             row[4],
             values,
         )
 
-    def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
-        self._delete_values(event.type, event.ID)
+    @abstractmethod
+    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[T]:
+        raise NotImplementedError
 
+    def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._cursor.execute(
-            f"DELETE FROM {self.table.name} WHERE Name=? AND SeasonID=? AND Week=?",
+            f"SELECT UUID FROM {self.ranking_table.name} WHERE Name=? AND SeasonID=? AND Week=?",
             [event.name, str(event.season_ID), event.week],
         )
-        self._cursor.execute(
-            f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?)",
-            [str(event.ID), event.name, event.type, str(event.season_ID), event.week],
-        )
-
-        self._create_values(event.type, event.ID, event.values)
-
-    def _get_values(self, type: str, ID: UUID) -> List[RankingValue[Any]]:
-        value_table = self._value_table(type)
-        cursor = self._connection.cursor()
-        cursor.execute(
-            f"SELECT {value_table.columns} FROM {value_table.name} WHERE UUID=?",
-            [str(ID)],
-        )
-        rows = cursor.fetchall()
-        cursor.close()
-
-        return [self._to_value(type, row) for row in rows if row is not None]
-
-    def _create_values(self, type: str, ID: UUID, values: Iterable[EventValue]) -> None:
-        value_table = self._value_table(type)
-        for value in values:
+        row = self._cursor.fetchone()
+        if row is not None:
             self._cursor.execute(
-                f"INSERT INTO {value_table.name} ({value_table.columns}) VALUES (?, ?, ?, ?, ?)",
-                [str(ID), str(value.ID), value.order, value.rank, value.value],
+                f"DELETE FROM {self.value_table.name} WHERE RankingID=?", [row[0]],
+            )
+            self._cursor.execute(
+                f"DELETE FROM {self.ranking_table.name} WHERE UUID=?", [row[0]],
             )
 
-    def _delete_values(self, type: str, ID: UUID) -> None:
-        value_table = self._value_table(type)
         self._cursor.execute(
-            f"DELETE FROM {value_table.name} WHERE UUID=?", [str(ID)],
+            f"INSERT INTO {self.ranking_table.name} ({self.ranking_table.columns}) VALUES (?, ?, ?, ?, ?)",
+            [
+                str(event.ID),
+                event.name,
+                self.type.name,
+                str(event.season_ID),
+                event.week,
+            ],
+        )
+        for value in event.values:
+            self._cursor.execute(
+                f"INSERT INTO {self.value_table.name} ({self.value_table.columns}) VALUES (?, ?, ?, ?, ?)",
+                [str(event.ID), str(value.ID), value.order, value.rank, value.value],
+            )
+
+
+class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository):
+    def __init__(
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+    ) -> None:
+        RankingRepository.__init__(self, connection, cursor, bus)
+        BaseTeamRankingRepository.__init__(self, bus)
+
+        self._value_table = TeamRankingValueTable()
+
+        bus.register_handler(
+            TeamRankingCalculatedEvent, self._handle_ranking_calculated
         )
 
-    def _to_value(
-        self, type: str, row: Tuple[str, str, int, int, float]
-    ) -> RankingValue[Any]:
-        return RankingValue[Any](
-            self._value_ID(type, UUID(row[1])), row[2], row[3], row[4],
+    @property
+    def type(self) -> RankingType:
+        return RankingType.TEAM
+
+    @property
+    def value_table(self) -> RankingValueTable:
+        return self._value_table
+
+    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
+        return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4],)
+
+
+class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository):
+    def __init__(
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+    ) -> None:
+        RankingRepository.__init__(self, connection, cursor, bus)
+        BaseGameRankingRepository.__init__(self, bus)
+
+        self._value_table = GameRankingValueTable()
+
+        bus.register_handler(
+            GameRankingCalculatedEvent, self._handle_ranking_calculated
         )
 
-    def _value_table(self, type: str) -> ValueTable:
-        if type == RankingType.TEAM.name:
-            return TeamRankingValueTable()
-        elif type == RankingType.GAME.name:
-            return GameRankingValueTable()
-        else:
-            raise ValueError(f"Unknown ranking type: {type}")
+    @property
+    def type(self) -> RankingType:
+        return RankingType.GAME
 
-    def _value_ID(self, type: str, ID: UUID) -> Identifier:
-        if type == RankingType.TEAM.name:
-            return TeamID(ID)
-        elif type == RankingType.GAME.name:
-            return GameID(ID)
-        else:
-            raise ValueError(f"Unknown ranking type: {type}")
+    @property
+    def value_table(self) -> RankingValueTable:
+        return self._value_table
+
+    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
+        return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4],)

@@ -11,4 +11,5 @@ class Storage(object):
         self.team = TeamStorage()
         self.affiliation = AffiliationStorage()
         self.game = GameStorage()
-        self.ranking = RankingStorage()
+        self.team_ranking = RankingStorage()
+        self.game_ranking = RankingStorage()

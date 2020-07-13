@@ -4,7 +4,8 @@ from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write.affiliation import AffiliationRepository
 from fbsrankings.infrastructure.memory.write.game import GameRepository
-from fbsrankings.infrastructure.memory.write.ranking import RankingRepository
+from fbsrankings.infrastructure.memory.write.ranking import GameRankingRepository
+from fbsrankings.infrastructure.memory.write.ranking import TeamRankingRepository
 from fbsrankings.infrastructure.memory.write.season import SeasonRepository
 from fbsrankings.infrastructure.memory.write.team import TeamRepository
 
@@ -17,7 +18,8 @@ class Transaction(BaseTransaction):
         self._team = TeamRepository(storage.team, self._bus)
         self._affiliation = AffiliationRepository(storage.affiliation, self._bus)
         self._game = GameRepository(storage.game, self._bus)
-        self._ranking = RankingRepository(storage.ranking, self._bus)
+        self._team_ranking = TeamRankingRepository(storage.team_ranking, self._bus)
+        self._game_ranking = GameRankingRepository(storage.game_ranking, self._bus)
 
     @property
     def season(self) -> SeasonRepository:
@@ -36,8 +38,12 @@ class Transaction(BaseTransaction):
         return self._game
 
     @property
-    def ranking(self) -> RankingRepository:
-        return self._ranking
+    def team_ranking(self) -> TeamRankingRepository:
+        return self._team_ranking
+
+    @property
+    def game_ranking(self) -> GameRankingRepository:
+        return self._game_ranking
 
     def commit(self) -> None:
         for event in self._bus.events:
@@ -47,7 +53,8 @@ class Transaction(BaseTransaction):
             handled = self._team.handle(event) or handled
             handled = self._affiliation.handle(event) or handled
             handled = self._game.handle(event) or handled
-            handled = self._ranking.handle(event) or handled
+            handled = self._team_ranking.handle(event) or handled
+            handled = self._game_ranking.handle(event) or handled
 
             if not handled:
                 raise ValueError(f"Unknown event type: {type(event)}")

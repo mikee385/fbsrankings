@@ -7,10 +7,9 @@ from fbsrankings.domain.model.affiliation import Subdivision
 from fbsrankings.domain.model.game import Game
 from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
-from fbsrankings.domain.model.ranking import RankingRepository
-from fbsrankings.domain.model.ranking import RankingService
-from fbsrankings.domain.model.ranking import RankingType
 from fbsrankings.domain.model.ranking import SeasonData
+from fbsrankings.domain.model.ranking import TeamRankingRepository
+from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
@@ -33,10 +32,10 @@ class TeamData(object):
         self.loss_total += 1
 
 
-class ColleyMatrixRankingService(RankingService[TeamID]):
+class ColleyMatrixRankingService(TeamRankingService):
     name: str = "Colley Matrix"
 
-    def __init__(self, repository: RankingRepository) -> None:
+    def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
 
     def calculate_for_season(
@@ -99,10 +98,6 @@ class ColleyMatrixRankingService(RankingService[TeamID]):
 
         return [
             self._repository.create(
-                ColleyMatrixRankingService.name,
-                RankingType.TEAM,
-                season_ID,
-                None,
-                ranking_values,
+                ColleyMatrixRankingService.name, season_ID, None, ranking_values,
             )
         ]

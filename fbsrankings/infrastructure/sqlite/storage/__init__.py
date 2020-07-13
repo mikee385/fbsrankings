@@ -15,6 +15,7 @@ from fbsrankings.infrastructure.sqlite.storage.ranking import (
 from fbsrankings.infrastructure.sqlite.storage.ranking import (
     RankingTable as RankingTable,
 )
+from fbsrankings.infrastructure.sqlite.storage.ranking import RankingType as RankingType
 from fbsrankings.infrastructure.sqlite.storage.ranking import (
     RankingTypeTable as RankingTypeTable,
 )

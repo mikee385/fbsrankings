@@ -33,11 +33,11 @@ class CalculateRankingsForSeasonCommandHandler(object):
             games = unit_of_work.game.for_season(season.ID)
 
             season_data = SeasonData(season, teams, affiliations, games)
-            ColleyMatrixRankingService(unit_of_work.ranking).calculate_for_season(
+            ColleyMatrixRankingService(unit_of_work.team_ranking).calculate_for_season(
                 season.ID, season_data
             )
-            SimultaneousWinsRankingService(unit_of_work.ranking).calculate_for_season(
-                season.ID, season_data
-            )
+            SimultaneousWinsRankingService(
+                unit_of_work.team_ranking
+            ).calculate_for_season(season.ID, season_data)
 
             unit_of_work.commit()

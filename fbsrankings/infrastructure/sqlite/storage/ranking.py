@@ -1,6 +1,10 @@
 import sqlite3
+from enum import Enum
 
-from fbsrankings.domain import RankingType
+
+class RankingType(Enum):
+    TEAM = 0
+    GAME = 1
 
 
 class RankingTypeTable(object):
@@ -68,17 +72,18 @@ class RankingTable(object):
 class TeamRankingValueTable(object):
     def __init__(self) -> None:
         self.name = "teamrankingvalue"
-        self.columns = "UUID, TeamID, Ord, Rank, Value"
+        self.columns = "RankingID, TeamID, Ord, Rank, Value"
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             f"""CREATE TABLE IF NOT EXISTS {self.name}
-            (UUID TEXT NOT NULL REFERENCES ranking(UUID),
+            (RankingID TEXT NOT NULL REFERENCES ranking(UUID),
              TeamID TEXT NOT NULL REFERENCES team(UUID),
              Ord INT NOT NULL,
              Rank INT NOT NULL,
              Value REAL NOT NULL,
-             UNIQUE(UUID, TeamID, Ord));"""
+             UNIQUE(RankingID, TeamID),
+             UNIQUE(RankingID, Ord));"""
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -93,17 +98,18 @@ class TeamRankingValueTable(object):
 class GameRankingValueTable(object):
     def __init__(self) -> None:
         self.name = "gamerankingvalue"
-        self.columns = "UUID, GameID, Ord, Rank, Value"
+        self.columns = "RankingID, GameID, Ord, Rank, Value"
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             f"""CREATE TABLE IF NOT EXISTS {self.name}
-            (UUID TEXT NOT NULL REFERENCES ranking(UUID),
+            (RankingID TEXT NOT NULL REFERENCES ranking(UUID),
              GameID TEXT NOT NULL REFERENCES game(UUID),
              Ord INT NOT NULL,
              Rank INT NOT NULL,
              Value REAL NOT NULL,
-             UNIQUE(UUID, GameID, Ord));"""
+             UNIQUE(RankingID, GameID),
+             UNIQUE(RankingID, Ord));"""
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

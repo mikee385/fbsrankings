@@ -4,7 +4,8 @@ from fbsrankings.common import EventBus
 from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.sqlite.write.affiliation import AffiliationRepository
 from fbsrankings.infrastructure.sqlite.write.game import GameRepository
-from fbsrankings.infrastructure.sqlite.write.ranking import RankingRepository
+from fbsrankings.infrastructure.sqlite.write.ranking import GameRankingRepository
+from fbsrankings.infrastructure.sqlite.write.ranking import TeamRankingRepository
 from fbsrankings.infrastructure.sqlite.write.season import SeasonRepository
 from fbsrankings.infrastructure.sqlite.write.team import TeamRepository
 
@@ -26,7 +27,13 @@ class Transaction(BaseTransaction):
             self._connection, self._cursor, self._bus
         )
         self._game = GameRepository(self._connection, self._cursor, self._bus)
-        self._ranking = RankingRepository(self._connection, self._cursor, self._bus)
+
+        self._game_ranking = GameRankingRepository(
+            self._connection, self._cursor, self._bus
+        )
+        self._team_ranking = TeamRankingRepository(
+            self._connection, self._cursor, self._bus
+        )
 
     @property
     def season(self) -> SeasonRepository:
@@ -45,8 +52,12 @@ class Transaction(BaseTransaction):
         return self._game
 
     @property
-    def ranking(self) -> RankingRepository:
-        return self._ranking
+    def team_ranking(self) -> TeamRankingRepository:
+        return self._team_ranking
+
+    @property
+    def game_ranking(self) -> GameRankingRepository:
+        return self._game_ranking
 
     def commit(self) -> None:
         self._cursor.execute("commit")
