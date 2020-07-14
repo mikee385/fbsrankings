@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 typeguard = "*"
 prettytable = "*"
+tqdm = "*"
 
 [packages]
 bs4 = "*"

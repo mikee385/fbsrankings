@@ -4,6 +4,7 @@ from typing import List
 
 import jsonschema  # type: ignore
 from prettytable import PrettyTable  # type: ignore
+from tqdm import tqdm  # type: ignore
 
 from fbsrankings.application import Application
 from fbsrankings.command import CalculateRankingsForSeasonCommand
@@ -43,12 +44,14 @@ def main() -> int:
     event_bus = EventCounter(event_recorder)
 
     with Application(config, event_bus) as application:
-        for year in application.seasons:
-            print(f"{year}: Importing Data")
-            application.send(ImportSeasonByYearCommand(year))
+        with tqdm(application.seasons) as progress:
+            for year in progress:
+                progress.set_description(f"{year}")
 
-            print(f"{year}: Calculating Rankings")
-            application.send(CalculateRankingsForSeasonCommand(year))
+                application.send(ImportSeasonByYearCommand(year))
+                application.send(CalculateRankingsForSeasonCommand(year))
+
+                progress.set_description()
 
         season_summary_table = PrettyTable()
         season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
