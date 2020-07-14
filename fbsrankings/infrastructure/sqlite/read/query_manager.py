@@ -18,7 +18,9 @@ from fbsrankings.infrastructure.sqlite.read.team_by_id import TeamByIDQueryHandl
 from fbsrankings.infrastructure.sqlite.read.team_count_by_season import (
     TeamCountBySeasonQueryHandler,
 )
-from fbsrankings.infrastructure.sqlite.read.team_ranking_by_season_week import TeamRankingBySeasonWeekQueryHandler
+from fbsrankings.infrastructure.sqlite.read.team_ranking_by_season_week import (
+    TeamRankingBySeasonWeekQueryHandler,
+)
 from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
@@ -55,7 +57,8 @@ class QueryManager(BaseQueryManager):
             TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(self._connection)
         )
         self.register_handler(
-            TeamRankingBySeasonWeekQuery, TeamRankingBySeasonWeekQueryHandler(self._connection)
+            TeamRankingBySeasonWeekQuery,
+            TeamRankingBySeasonWeekQueryHandler(self._connection),
         )
 
     def close(self) -> None:

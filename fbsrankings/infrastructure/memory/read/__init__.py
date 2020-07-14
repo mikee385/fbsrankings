@@ -29,4 +29,3 @@ from fbsrankings.infrastructure.memory.read.team_count_by_season import (
 from fbsrankings.infrastructure.memory.read.team_ranking_by_season_week import (
     TeamRankingBySeasonWeekQueryHandler as TeamRankingBySeasonWeekQueryHandler,
 )
-

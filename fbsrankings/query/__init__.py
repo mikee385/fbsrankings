@@ -38,4 +38,3 @@ from fbsrankings.query.team_ranking_by_season_week import (
 from fbsrankings.query.team_ranking_by_season_week import (
     TeamRankingValueBySeasonWeekResult as TeamRankingValueBySeasonWeekResult,
 )
-

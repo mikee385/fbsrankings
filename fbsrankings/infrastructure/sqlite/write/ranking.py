@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import TypeVar
+from typing import Union
 from uuid import UUID
 
 from typing_extensions import Protocol
@@ -30,6 +31,9 @@ from fbsrankings.infrastructure.sqlite.storage import TeamRankingValueTable
 
 
 T = TypeVar("T", bound=Identifier)
+
+
+SqliteParam = Union[None, int, float, str, bytes]
 
 
 class RankingValueTable(Protocol):
@@ -72,14 +76,14 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         self, name: str, season_ID: SeasonID, week: Optional[int]
     ) -> Optional[Ranking[T]]:
         where = "Name=? AND Type=? AND SeasonID=?"
-        params = [name, self.type.name, str(season_ID.value)]
-        
+        params: List[SqliteParam] = [name, self.type.name, str(season_ID.value)]
+
         if week is not None:
             where += " AND Week=?"
             params.append(week)
         else:
             where += " AND Week is NULL"
-        
+
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE {where}",
@@ -127,17 +131,16 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
 
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         where = "Name=? AND SeasonID=?"
-        params = [event.name, str(event.season_ID)]
-        
+        params: List[SqliteParam] = [event.name, str(event.season_ID)]
+
         if event.week is not None:
             where += " AND Week=?"
             params.append(event.week)
         else:
             where += " AND Week is NULL"
-        
+
         self._cursor.execute(
-            f"SELECT UUID FROM {self.ranking_table.name} WHERE {where}",
-            params,
+            f"SELECT UUID FROM {self.ranking_table.name} WHERE {where}", params,
         )
         row = self._cursor.fetchone()
         if row is not None:
