@@ -117,7 +117,7 @@ def main() -> int:
 
         for year, table in ranking_tables.items():
             print()
-            print(f"{year} Rankings:")
+            print(f"{year} Top 10 Rankings:")
             print(table)
 
         canceled_games = application.query(CanceledGamesQuery()).games
@@ -160,10 +160,12 @@ def main() -> int:
 
         print()
         print("Events:")
-        print()
         if event_bus.counts:
+            event_table = PrettyTable()
+            event_table.field_names = ["Type", "Count"]
             for event_type, count in event_bus.counts.items():
-                print(f"{event_type.__name__}: {count}")
+                event_table.add_row([event_type.__name__, count])
+            print(event_table)
         else:
             print("None")
 
