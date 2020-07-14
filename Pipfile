@@ -5,13 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 typeguard = "*"
+prettytable = "*"
 
 [packages]
 bs4 = "*"
 typing-extensions = "*"
 html5lib = "*"
 jsonschema = "*"
-prettytable = "*"
 numpy = "*"
 
 [requires]
