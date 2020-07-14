@@ -7,12 +7,12 @@ verify_ssl = true
 typeguard = "*"
 prettytable = "*"
 tqdm = "*"
+jsonschema = "*"
 
 [packages]
 bs4 = "*"
 typing-extensions = "*"
 html5lib = "*"
-jsonschema = "*"
 numpy = "*"
 
 [requires]
