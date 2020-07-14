@@ -71,10 +71,19 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
     def find(
         self, name: str, season_ID: SeasonID, week: Optional[int]
     ) -> Optional[Ranking[T]]:
+        where = "Name=? AND Type=? AND SeasonID=?"
+        params = [name, self.type.name, str(season_ID.value)]
+        
+        if week is not None:
+            where += " AND Week=?"
+            params.append(week)
+        else:
+            where += " AND Week is NULL"
+        
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE Name=? AND Type=? AND SeasonID=? AND Week=?",
-            [name, self.type.name, str(season_ID.value), week],
+            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE {where}",
+            params,
         )
         row = cursor.fetchone()
         cursor.close()
@@ -117,9 +126,18 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         raise NotImplementedError
 
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
+        where = "Name=? AND SeasonID=?"
+        params = [event.name, str(event.season_ID)]
+        
+        if event.week is not None:
+            where += " AND Week=?"
+            params.append(event.week)
+        else:
+            where += " AND Week is NULL"
+        
         self._cursor.execute(
-            f"SELECT UUID FROM {self.ranking_table.name} WHERE Name=? AND SeasonID=? AND Week=?",
-            [event.name, str(event.season_ID), event.week],
+            f"SELECT UUID FROM {self.ranking_table.name} WHERE {where}",
+            params,
         )
         row = self._cursor.fetchone()
         if row is not None:

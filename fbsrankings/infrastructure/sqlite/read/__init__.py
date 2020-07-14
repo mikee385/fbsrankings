@@ -26,3 +26,6 @@ from fbsrankings.infrastructure.sqlite.read.team_by_id import (
 from fbsrankings.infrastructure.sqlite.read.team_count_by_season import (
     TeamCountBySeasonQueryHandler as TeamCountBySeasonQueryHandler,
 )
+from fbsrankings.infrastructure.sqlite.read.team_ranking_by_season_week import (
+    TeamRankingBySeasonWeekQueryHandler as TeamRankingBySeasonWeekQueryHandler,
+)

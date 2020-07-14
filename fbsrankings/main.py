@@ -1,5 +1,6 @@
 import json
 import os
+import sqlite3
 from typing import List
 
 import jsonschema  # type: ignore
@@ -24,6 +25,9 @@ from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
+from fbsrankings.query import TeamRankingBySeasonWeekQuery
+
+from fbsrankings.infrastructure.sqlite.storage import RankingTable
 
 
 def main() -> int:
@@ -51,6 +55,8 @@ def main() -> int:
 
         season_summary_table = PrettyTable()
         season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
+        
+        ranking_tables = {}
 
         seasons = application.query(SeasonsQuery()).seasons
         for season in seasons:
@@ -69,11 +75,32 @@ def main() -> int:
                     game_count.count,
                 ]
             )
+            
+            cm_ranking = application.query(TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None))
+            
+            sw_ranking = application.query(TeamRankingBySeasonWeekQuery("Simultaneous Wins", season.ID, None))
+            sw_map = {v.ID: v for v in sw_ranking.values}
+            
+            ranking_table = PrettyTable()
+            ranking_table.field_names = ["Team", "CM_Rk", "CM_Val", "SW_Rk", "SW_Val"]
+            ranking_table.float_format = ".3"
+            
+            for cm_value in cm_ranking.values[:10]:
+                sw_value = sw_map[cm_value.ID]
+                ranking_table.add_row([cm_value.name, cm_value.rank, cm_value.value, sw_value.rank, sw_value.value])
+            
+            ranking_tables[season.year] = ranking_table
+                
 
         print()
         print(f"Total Seasons: {len(seasons)}")
         print()
         print(season_summary_table)
+        
+        for year, table in ranking_tables.items():
+            print()
+            print(f"{year} Rankings:")
+            print(table)
 
         canceled_games = application.query(CanceledGamesQuery()).games
         if canceled_games:
