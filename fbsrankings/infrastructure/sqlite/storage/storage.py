@@ -1,5 +1,5 @@
-import os
 import sqlite3
+from pathlib import Path
 
 from fbsrankings.infrastructure.sqlite.storage.affiliation import AffiliationTable
 from fbsrankings.infrastructure.sqlite.storage.affiliation import SubdivisionTable
@@ -16,10 +16,7 @@ class Storage(object):
     def __init__(self, database: str) -> None:
         self.database = database
 
-        directory = os.path.dirname(self.database)
-        if directory and not os.path.exists(directory):
-            os.makedirs(directory)
-
+        Path(self.database).resolve().parent.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(database)
         try:
             connection.isolation_level = None

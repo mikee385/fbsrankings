@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 from typing import List
 
 import jsonschema  # type: ignore
@@ -29,13 +29,13 @@ from fbsrankings.query import TeamRankingBySeasonWeekQuery
 
 
 def main() -> int:
-    package_dir = os.path.abspath(os.path.dirname(__file__))
+    package_dir = Path(__file__).resolve().parent
 
-    config_path = os.path.join(package_dir, "config.json")
+    config_path = package_dir / "config.json"
     with open(config_path) as config_file:
         config = json.load(config_file)
 
-    schema_path = os.path.join(package_dir, "application", "schema.json")
+    schema_path = package_dir / "application" / "schema.json"
     with open(schema_path) as schema_file:
         schema = json.load(schema_file)
     jsonschema.validate(config, schema)

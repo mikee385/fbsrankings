@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import QueryBus
@@ -13,13 +13,13 @@ class DataSource(QueryManagerFactory, TransactionFactory):
     def __init__(self, database: str) -> None:
         if database == ":memory:":
             self._database = database
-        elif os.path.isabs(database):
+        elif Path(database).is_absolute():
             self._database = database
         else:
-            sqlite_dir = os.path.dirname(__file__)
-            infrastructure_dir = os.path.dirname(sqlite_dir)
-            package_dir = os.path.dirname(infrastructure_dir)
-            self._database = os.path.join(os.path.abspath(package_dir), database)
+            sqlite_dir = Path(__file__).resolve().parent
+            infrastructure_dir = sqlite_dir.parent
+            package_dir = infrastructure_dir.parent
+            self._database = str(package_dir / database)
 
         self._storage = Storage(self._database)
 
