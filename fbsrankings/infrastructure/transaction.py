@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from types import TracebackType
-from typing import ContextManager
 from typing import Optional
 from typing import Type
 
@@ -17,7 +16,7 @@ from fbsrankings.domain import TeamRankingRepository
 from fbsrankings.domain import TeamRepository
 
 
-class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
+class Transaction(metaclass=ABCMeta):
     @property
     @abstractmethod
     def season(self) -> SeasonRepository:

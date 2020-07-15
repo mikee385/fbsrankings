@@ -1,5 +1,4 @@
 from types import TracebackType
-from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Type
@@ -28,10 +27,22 @@ R = TypeVar("R", covariant=True)
 
 
 class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
-    pass
+    def close(self) -> None:
+        pass
+
+    def __enter__(self) -> "DataSource":
+        pass
+
+    def __exit__(
+        self,
+        type: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        pass
 
 
-class Application(ContextManager["Application"]):
+class Application(object):
     def __init__(self, config: Config, event_bus: EventBus) -> None:
         self._event_bus = event_bus
         self._data_source: DataSource
@@ -91,8 +102,12 @@ class Application(ContextManager["Application"]):
     def close(self) -> None:
         self._query_manager.close()
         self._command_manager.close()
+        self._data_source.close()
 
     def __enter__(self) -> "Application":
+        self._query_manager.__enter__()
+        self._command_manager.__enter__()
+        self._data_source.__enter__()
         return self
 
     def __exit__(
@@ -101,5 +116,7 @@ class Application(ContextManager["Application"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self.close()
+        self._query_manager.__exit__(type, value, traceback)
+        self._command_manager.__exit__(type, value, traceback)
+        self._data_source.__exit__(type, value, traceback)
         return False

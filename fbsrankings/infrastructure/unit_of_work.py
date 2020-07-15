@@ -1,5 +1,4 @@
 from types import TracebackType
-from typing import ContextManager
 from typing import Optional
 from typing import Type
 
@@ -16,7 +15,7 @@ from fbsrankings.domain import TeamRepository
 from fbsrankings.infrastructure.transaction import TransactionFactory
 
 
-class UnitOfWork(ContextManager["UnitOfWork"]):
+class UnitOfWork:
     def __init__(self, data_source: TransactionFactory, bus: EventBus) -> None:
         self._outer_bus = bus
         self._inner_bus = EventRecorder(EventBus())
@@ -63,6 +62,7 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
         self._inner_bus.clear()
 
     def __enter__(self) -> "UnitOfWork":
+        self._transaction.__enter__()
         return self
 
     def __exit__(
@@ -71,5 +71,6 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self.close()
+        self._transaction.__exit__(type, value, traceback)
+        self._inner_bus.clear()
         return False
