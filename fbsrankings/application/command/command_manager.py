@@ -1,5 +1,6 @@
 from types import TracebackType
 from typing import Any
+from typing import ContextManager
 from typing import Dict
 from typing import Optional
 from typing import Type
@@ -25,7 +26,7 @@ from fbsrankings.infrastructure.sportsreference import SportsReference
 C = TypeVar("C", bound=Command)
 
 
-class CommandManager(object):
+class CommandManager(ContextManager["CommandManager"]):
     def __init__(
         self,
         sports_reference: SportsReference,

@@ -1,4 +1,5 @@
 from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Type
@@ -42,7 +43,7 @@ class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
         pass
 
 
-class Application(object):
+class Application(ContextManager["Application"]):
     def __init__(self, config: Config, event_bus: EventBus) -> None:
         self._event_bus = event_bus
         self._data_source: DataSource
