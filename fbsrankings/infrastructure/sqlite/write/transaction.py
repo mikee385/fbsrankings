@@ -11,12 +11,9 @@ from fbsrankings.infrastructure.sqlite.write.team import TeamRepository
 
 
 class Transaction(BaseTransaction):
-    def __init__(self, database: str, bus: EventBus) -> None:
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         self._bus = bus
-
-        self._connection = sqlite3.connect(database)
-        self._connection.isolation_level = None
-        self._connection.execute("PRAGMA foreign_keys = ON")
+        self._connection = connection
 
         self._cursor = self._connection.cursor()
         self._cursor.execute("begin")
@@ -62,16 +59,13 @@ class Transaction(BaseTransaction):
     def commit(self) -> None:
         self._cursor.execute("commit")
         self._cursor.close()
-        self._connection.close()
 
     def rollback(self) -> None:
         self._cursor.execute("rollback")
         self._cursor.close()
-        self._connection.close()
 
     def close(self) -> None:
         try:
             self._cursor.close()
-            self._connection.close()
         except sqlite3.ProgrammingError:
             pass

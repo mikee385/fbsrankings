@@ -1,3 +1,4 @@
+import sqlite3
 from pathlib import Path
 from types import TracebackType
 from typing import Optional
@@ -17,25 +18,32 @@ from fbsrankings.infrastructure.sqlite.write import Transaction
 class DataSource(QueryManagerFactory, TransactionFactory):
     def __init__(self, database: str) -> None:
         if database == ":memory:":
-            self._database = database
-        elif Path(database).is_absolute():
-            self._database = database
+            database_location = database
         else:
-            sqlite_dir = Path(__file__).resolve().parent
-            infrastructure_dir = sqlite_dir.parent
-            package_dir = infrastructure_dir.parent
-            self._database = str(package_dir / database)
+            database_path = Path(database)
+            if not database_path.is_absolute():
+                sqlite_dir = Path(__file__).resolve().parent
+                infrastructure_dir = sqlite_dir.parent
+                package_dir = infrastructure_dir.parent
+                database_path = package_dir / database
 
-        self._storage = Storage(self._database)
+            database_path.parent.mkdir(parents=True, exist_ok=True)
+            database_location = str(database_path)
+
+        self._connection = sqlite3.connect(database_location)
+        self._connection.isolation_level = None
+        self._connection.execute("PRAGMA foreign_keys = ON")
+
+        self._storage = Storage(self._connection)
 
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
-        return QueryManager(self._database, query_bus)
+        return QueryManager(self._connection, query_bus)
 
     def transaction(self, event_bus: EventBus) -> Transaction:
-        return Transaction(self._database, event_bus)
+        return Transaction(self._connection, event_bus)
 
     def close(self) -> None:
-        pass
+        self._connection.close()
 
     def __enter__(self) -> "DataSource":
         return self

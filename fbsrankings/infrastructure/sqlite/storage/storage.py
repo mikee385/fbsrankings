@@ -1,5 +1,4 @@
 import sqlite3
-from pathlib import Path
 
 from fbsrankings.infrastructure.sqlite.storage.affiliation import AffiliationTable
 from fbsrankings.infrastructure.sqlite.storage.affiliation import SubdivisionTable
@@ -13,34 +12,24 @@ from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
 
 
 class Storage(object):
-    def __init__(self, database: str) -> None:
-        self.database = database
-
-        Path(self.database).resolve().parent.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(database)
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        cursor = connection.cursor()
+        cursor.execute("begin")
         try:
-            connection.isolation_level = None
-            connection.execute("PRAGMA foreign_keys = ON")
+            SeasonSectionTable().create(cursor)
+            SubdivisionTable().create(cursor)
+            GameStatusTable().create(cursor)
+            RankingTypeTable().create(cursor)
 
-            cursor = connection.cursor()
-            cursor.execute("begin")
-            try:
-                SeasonSectionTable().create(cursor)
-                SubdivisionTable().create(cursor)
-                GameStatusTable().create(cursor)
-                RankingTypeTable().create(cursor)
+            SeasonTable().create(cursor)
+            TeamTable().create(cursor)
+            AffiliationTable().create(cursor)
+            GameTable().create(cursor)
+            RankingTable().create(cursor)
 
-                SeasonTable().create(cursor)
-                TeamTable().create(cursor)
-                AffiliationTable().create(cursor)
-                GameTable().create(cursor)
-                RankingTable().create(cursor)
-
-                cursor.execute("commit")
-            except:  # noqa: E722
-                cursor.execute("rollback")
-                raise
-            finally:
-                cursor.close()
+            cursor.execute("commit")
+        except:  # noqa: E722
+            cursor.execute("rollback")
+            raise
         finally:
-            connection.close()
+            cursor.close()

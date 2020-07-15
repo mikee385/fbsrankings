@@ -33,11 +33,10 @@ from fbsrankings.query import TeamRankingBySeasonWeekQuery
 
 
 class QueryManager(BaseQueryManager):
-    def __init__(self, database: str, query_bus: QueryBus) -> None:
+    def __init__(self, connection: sqlite3.Connection, query_bus: QueryBus) -> None:
         super().__init__(query_bus)
 
-        self._connection = sqlite3.connect(database)
-        self._connection.execute("PRAGMA query_only = ON")
+        self._connection = connection
 
         self.register_handler(
             AffiliationCountBySeasonQuery,
@@ -60,7 +59,3 @@ class QueryManager(BaseQueryManager):
             TeamRankingBySeasonWeekQuery,
             TeamRankingBySeasonWeekQueryHandler(self._connection),
         )
-
-    def close(self) -> None:
-        super().close()
-        self._connection.close()
