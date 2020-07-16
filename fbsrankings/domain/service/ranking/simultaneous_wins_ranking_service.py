@@ -91,10 +91,7 @@ class SimultaneousWinsRankingService(TeamRankingService):
                 )
 
         x = numpy.linalg.solve(a, b)
-
-        result: Dict[TeamID, float] = {}
-        for ID, data in team_data.items():
-            result[ID] = x[data.index]
+        result = {ID: x[data.index] for ID, data in team_data.items()}
 
         helper = TeamValueHelper(season_data)
         ranking_values = helper.to_values(result)

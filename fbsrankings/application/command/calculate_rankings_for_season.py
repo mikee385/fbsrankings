@@ -6,6 +6,7 @@ from fbsrankings.domain import ColleyMatrixRankingService
 from fbsrankings.domain import SeasonData
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import SimultaneousWinsRankingService
+from fbsrankings.domain import StrengthOfScheduleRankingService
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure import UnitOfWork
 
@@ -33,11 +34,21 @@ class CalculateRankingsForSeasonCommandHandler(object):
             games = unit_of_work.game.for_season(season.ID)
 
             season_data = SeasonData(season, teams, affiliations, games)
-            ColleyMatrixRankingService(unit_of_work.team_ranking).calculate_for_season(
-                season.ID, season_data
-            )
-            SimultaneousWinsRankingService(
+
+            cm_rankings = ColleyMatrixRankingService(
                 unit_of_work.team_ranking
             ).calculate_for_season(season.ID, season_data)
+            for ranking in cm_rankings:
+                StrengthOfScheduleRankingService(
+                    unit_of_work.team_ranking, ranking
+                ).calculate_for_season(season.ID, season_data)
+
+            sw_rankings = SimultaneousWinsRankingService(
+                unit_of_work.team_ranking
+            ).calculate_for_season(season.ID, season_data)
+            for ranking in sw_rankings:
+                StrengthOfScheduleRankingService(
+                    unit_of_work.team_ranking, ranking
+                ).calculate_for_season(season.ID, season_data)
 
             unit_of_work.commit()

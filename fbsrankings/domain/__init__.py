@@ -35,6 +35,9 @@ from fbsrankings.domain.service.ranking.colley_matrix_ranking_service import (
 from fbsrankings.domain.service.ranking.simultaneous_wins_ranking_service import (
     SimultaneousWinsRankingService as SimultaneousWinsRankingService,
 )
+from fbsrankings.domain.service.ranking.strength_of_schedule_ranking_service import (
+    StrengthOfScheduleRankingService as StrengthOfScheduleRankingService,
+)
 from fbsrankings.domain.service.validation_service import (
     AffiliationDataValidationError as AffiliationDataValidationError,
 )
