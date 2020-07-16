@@ -15,7 +15,11 @@ from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
+from fbsrankings.domain import SeasonSection
 from fbsrankings.domain import ValidationError
+from fbsrankings.event import GameCreatedEvent
+from fbsrankings.event import GameCanceledEvent
+from fbsrankings.event import GameCompletedEvent
 from fbsrankings.event import GameNotesUpdatedEvent
 from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
@@ -44,14 +48,31 @@ def main() -> int:
     event_bus = EventCounter(event_recorder)
 
     with Application(config, event_bus) as application:
+        updated_weeks = {}
+        
+        def game_updated(event):
+            nonlocal updated_weeks
+            if event.season_section == SeasonSection.REGULAR_SEASON.name:
+                season = updated_weeks.get(event.season_ID)
+                if season is None:
+                    updated_weeks[event.season_ID] = [event.week]
+                elif event.week not in season:
+                    season.append(event.week)
+        application._event_bus.register_handler(GameCreatedEvent, game_updated)
+        application._event_bus.register_handler(GameCompletedEvent, game_updated)
+        application._event_bus.register_handler(GameCanceledEvent, game_updated)
+        
+        print("Importing Season Data:")
         with tqdm(application.seasons) as progress:
             for year in progress:
-                progress.set_description(f"{year}")
-
                 application.send(ImportSeasonByYearCommand(year))
-                application.send(CalculateRankingsForSeasonCommand(year))
-
-                progress.set_description()
+        
+        if updated_weeks:
+            print()
+            print("Calculating Rankings:")
+            with tqdm(updated_weeks) as progress:
+                for season in progress:
+                    application.send(CalculateRankingsForSeasonCommand(season))
 
         season_summary_table = PrettyTable()
         season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
@@ -111,8 +132,6 @@ def main() -> int:
                 ranking_tables[season.year] = ranking_table
 
         print()
-        print(f"Total Seasons: {len(seasons)}")
-        print()
         print(season_summary_table)
 
         for year, table in ranking_tables.items():
@@ -163,6 +182,9 @@ def main() -> int:
         if event_bus.counts:
             event_table = PrettyTable()
             event_table.field_names = ["Type", "Count"]
+            event_table.align["Type"] = "l"
+            event_table.align["Count"] = "r"
+            
             for event_type, count in event_bus.counts.items():
                 event_table.add_row([event_type.__name__, count])
             print(event_table)
