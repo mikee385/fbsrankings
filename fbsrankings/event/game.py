@@ -62,7 +62,7 @@ class GameCanceledEvent(Event):
         season_section: str,
         home_team_ID: UUID,
         away_team_ID: UUID,
-        notes: str
+        notes: str,
     ) -> None:
         self.ID = ID
         self.season_ID = season_ID
@@ -86,7 +86,7 @@ class GameCompletedEvent(Event):
         away_team_ID: UUID,
         home_team_score: int,
         away_team_score: int,
-        notes: str
+        notes: str,
     ) -> None:
         self.ID = ID
         self.season_ID = season_ID
@@ -111,7 +111,7 @@ class GameNotesUpdatedEvent(Event):
         home_team_ID: UUID,
         away_team_ID: UUID,
         old_notes: str,
-        notes: str
+        notes: str,
     ) -> None:
         self.ID = ID
         self.season_ID = season_ID
@@ -122,4 +122,3 @@ class GameNotesUpdatedEvent(Event):
         self.away_team_ID = away_team_ID
         self.old_notes = old_notes
         self.notes = notes
-

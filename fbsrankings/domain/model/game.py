@@ -169,7 +169,18 @@ class Game(object):
         self._date = date
 
         self._bus.publish(
-            GameRescheduledEvent(self.ID.value, self.season_ID.value, old_week, old_date, week, date, self.season_section.name, self.home_team_ID.value, self.away_team_ID.value, self.notes)
+            GameRescheduledEvent(
+                self.ID.value,
+                self.season_ID.value,
+                old_week,
+                old_date,
+                week,
+                date,
+                self.season_section.name,
+                self.home_team_ID.value,
+                self.away_team_ID.value,
+                self.notes,
+            )
         )
 
     def cancel(self) -> None:
@@ -182,7 +193,18 @@ class Game(object):
 
         self._status = GameStatus.CANCELED
 
-        self._bus.publish(GameCanceledEvent(self.ID.value, self.season_ID.value, self.week, self.date, self.season_section.name, self.home_team_ID.value, self.away_team_ID.value, self.notes))
+        self._bus.publish(
+            GameCanceledEvent(
+                self.ID.value,
+                self.season_ID.value,
+                self.week,
+                self.date,
+                self.season_section.name,
+                self.home_team_ID.value,
+                self.away_team_ID.value,
+                self.notes,
+            )
+        )
 
     def complete(self, home_team_score: int, away_team_score: int) -> None:
         if self.status != GameStatus.SCHEDULED:
@@ -203,7 +225,18 @@ class Game(object):
         self._status = GameStatus.COMPLETED
 
         self._bus.publish(
-            GameCompletedEvent(self.ID.value, self.season_ID.value, self.week, self.date, self.season_section.name, self.home_team_ID.value, self.away_team_ID.value, home_team_score, away_team_score, self.notes)
+            GameCompletedEvent(
+                self.ID.value,
+                self.season_ID.value,
+                self.week,
+                self.date,
+                self.season_section.name,
+                self.home_team_ID.value,
+                self.away_team_ID.value,
+                home_team_score,
+                away_team_score,
+                self.notes,
+            )
         )
 
     def _set_score(self, home_team_score: int, away_team_score: int) -> None:
@@ -230,7 +263,19 @@ class Game(object):
         old_notes = self._notes
         self._notes = notes
 
-        self._bus.publish(GameNotesUpdatedEvent(self.ID.value, self.season_ID.value, self.week, self.date, self.season_section.name, self.home_team_ID.value, self.away_team_ID.value, old_notes, notes))
+        self._bus.publish(
+            GameNotesUpdatedEvent(
+                self.ID.value,
+                self.season_ID.value,
+                self.week,
+                self.date,
+                self.season_section.name,
+                self.home_team_ID.value,
+                self.away_team_ID.value,
+                old_notes,
+                notes,
+            )
+        )
 
 
 class GameRepository(metaclass=ABCMeta):

@@ -1,6 +1,9 @@
 import json
 from pathlib import Path
+from typing import Dict
 from typing import List
+from typing import Union
+from uuid import UUID
 
 import jsonschema  # type: ignore
 from prettytable import PrettyTable  # type: ignore
@@ -17,9 +20,9 @@ from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
 from fbsrankings.domain import SeasonSection
 from fbsrankings.domain import ValidationError
-from fbsrankings.event import GameCreatedEvent
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
+from fbsrankings.event import GameCreatedEvent
 from fbsrankings.event import GameNotesUpdatedEvent
 from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
@@ -30,6 +33,25 @@ from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamRankingBySeasonWeekQuery
+
+
+class UpdateTracker(object):
+    def __init__(self, event_bus: EventBus) -> None:
+        self.updates: Dict[UUID, List[int]] = {}
+
+        event_bus.register_handler(GameCreatedEvent, self)
+        event_bus.register_handler(GameCompletedEvent, self)
+        event_bus.register_handler(GameCanceledEvent, self)
+
+    def __call__(
+        self, event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent]
+    ) -> None:
+        if event.season_section == SeasonSection.REGULAR_SEASON.name:
+            season = self.updates.get(event.season_ID)
+            if season is None:
+                self.updates[event.season_ID] = [event.week]
+            elif event.week not in season:
+                season.append(event.week)
 
 
 def main() -> int:
@@ -48,29 +70,17 @@ def main() -> int:
     event_bus = EventCounter(event_recorder)
 
     with Application(config, event_bus) as application:
-        updated_weeks = {}
-        
-        def game_updated(event):
-            nonlocal updated_weeks
-            if event.season_section == SeasonSection.REGULAR_SEASON.name:
-                season = updated_weeks.get(event.season_ID)
-                if season is None:
-                    updated_weeks[event.season_ID] = [event.week]
-                elif event.week not in season:
-                    season.append(event.week)
-        application._event_bus.register_handler(GameCreatedEvent, game_updated)
-        application._event_bus.register_handler(GameCompletedEvent, game_updated)
-        application._event_bus.register_handler(GameCanceledEvent, game_updated)
-        
+        update_tracker = UpdateTracker(event_bus)
+
         print("Importing Season Data:")
         with tqdm(application.seasons) as progress:
             for year in progress:
                 application.send(ImportSeasonByYearCommand(year))
-        
-        if updated_weeks:
+
+        if update_tracker.updates:
             print()
             print("Calculating Rankings:")
-            with tqdm(updated_weeks) as progress:
+            with tqdm(update_tracker.updates) as progress:
                 for season in progress:
                     application.send(CalculateRankingsForSeasonCommand(season))
 
@@ -177,19 +187,7 @@ def main() -> int:
         ]
         _print_note_events(application, notes_events)
 
-        print()
-        print("Events:")
-        if event_bus.counts:
-            event_table = PrettyTable()
-            event_table.field_names = ["Type", "Count"]
-            event_table.align["Type"] = "l"
-            event_table.align["Count"] = "r"
-            
-            for event_type, count in event_bus.counts.items():
-                event_table.add_row([event_type.__name__, count])
-            print(event_table)
-        else:
-            print("None")
+        _print_event_counts(event_bus)
 
         print()
 
@@ -293,3 +291,19 @@ def _print_note_events(
                     print(notes_game.status)
                 print(f"Old Notes: {notes_event.old_notes}")
                 print(f"New Notes: {notes_event.notes}")
+
+
+def _print_event_counts(event_bus: EventCounter) -> None:
+    print()
+    print("Events:")
+    if event_bus.counts:
+        event_table = PrettyTable()
+        event_table.field_names = ["Type", "Count"]
+        event_table.align["Type"] = "l"
+        event_table.align["Count"] = "r"
+
+        for event_type, count in event_bus.counts.items():
+            event_table.add_row([event_type.__name__, count])
+        print(event_table)
+    else:
+        print("None")
