@@ -29,13 +29,13 @@ from fbsrankings.domain.model.season import SeasonSection as SeasonSection
 from fbsrankings.domain.model.team import Team as Team
 from fbsrankings.domain.model.team import TeamID as TeamID
 from fbsrankings.domain.model.team import TeamRepository as TeamRepository
-from fbsrankings.domain.service.ranking.colley_matrix_ranking_service import (
+from fbsrankings.domain.service.colley_matrix_ranking_service import (
     ColleyMatrixRankingService as ColleyMatrixRankingService,
 )
-from fbsrankings.domain.service.ranking.simultaneous_wins_ranking_service import (
+from fbsrankings.domain.service.simultaneous_wins_ranking_service import (
     SimultaneousWinsRankingService as SimultaneousWinsRankingService,
 )
-from fbsrankings.domain.service.ranking.strength_of_schedule_ranking_service import (
+from fbsrankings.domain.service.strength_of_schedule_ranking_service import (
     StrengthOfScheduleRankingService as StrengthOfScheduleRankingService,
 )
 from fbsrankings.domain.service.validation_service import (
