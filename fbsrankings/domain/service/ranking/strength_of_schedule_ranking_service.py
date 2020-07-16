@@ -8,7 +8,6 @@ from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
-from fbsrankings.domain.service.ranking.helper import TeamValueHelper
 
 
 class TeamData(object):
@@ -39,7 +38,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
 
         performance_map = {r.ID: r for r in self._performance_ranking.values}
 
-        for game in season_data.games:
+        for game in season_data.game_map.values():
             home_performance = performance_map.get(game.home_team_ID)
             away_performance = performance_map.get(game.away_team_ID)
 
@@ -61,9 +60,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
                 away_data.add_opponent(home_performance.value)
 
         result = {ID: data.strength_of_schedule for ID, data in team_data.items()}
-
-        helper = TeamValueHelper(season_data)
-        ranking_values = helper.to_values(result)
+        ranking_values = TeamRankingService._to_values(season_data, result)
 
         return [
             self._repository.create(

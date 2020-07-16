@@ -1,10 +1,15 @@
+import datetime
 from abc import ABCMeta
 from abc import abstractmethod
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import Generic
 from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 from typing import TypeVar
 from uuid import uuid4
 
@@ -38,7 +43,7 @@ class SeasonData(object):
         self.affiliation_map = {
             affiliation.team_ID: affiliation for affiliation in affiliations
         }
-        self.games = [game for game in games]
+        self.game_map = {game.ID: game for game in games}
 
 
 class RankingID(Identifier):
@@ -67,6 +72,31 @@ class RankingValue(Generic[T]):
     @property
     def value(self) -> float:
         return self._value
+
+    @staticmethod
+    def to_values(
+        season_data: SeasonData,
+        value_map: Dict[T, float],
+        sort_key: Callable[[SeasonData, T, float], Any],
+    ) -> List["RankingValue[T]"]:
+        sorted_values = sorted(
+            value_map.items(), key=lambda t: sort_key(season_data, t[0], t[1])
+        )
+
+        ranking_values = []
+        previous_value = 0.0
+        previous_rank = 0
+        for order, item in enumerate(sorted_values):
+            if item[1] == previous_value:
+                rank = previous_rank
+            else:
+                rank = order
+
+            previous_value = item[1]
+            previous_rank = rank
+            ranking_values.append(RankingValue(item[0], order + 1, rank + 1, item[1]))
+
+        return ranking_values
 
 
 class Ranking(Generic[T]):
@@ -120,6 +150,21 @@ class TeamRankingService(metaclass=ABCMeta):
     ) -> List[Ranking[TeamID]]:
         raise NotImplementedError
 
+    @staticmethod
+    def _to_values(
+        season_data: SeasonData, value_map: Dict[TeamID, float]
+    ) -> List[RankingValue[TeamID]]:
+        return RankingValue.to_values(
+            season_data, value_map, TeamRankingService._sort_key
+        )
+
+    @staticmethod
+    def _sort_key(
+        season_data: SeasonData, team_ID: TeamID, value: float
+    ) -> Tuple[float, str, str]:
+        team = season_data.team_map[team_ID]
+        return (-value, team.name.upper(), str(team_ID.value))
+
 
 class TeamRankingRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
@@ -163,6 +208,30 @@ class GameRankingService(metaclass=ABCMeta):
         self, season_ID: SeasonID, season_data: SeasonData
     ) -> List[Ranking[GameID]]:
         raise NotImplementedError
+
+    @staticmethod
+    def _to_values(
+        season_data: SeasonData, value_map: Dict[GameID, float]
+    ) -> List[RankingValue[GameID]]:
+        return RankingValue.to_values(
+            season_data, value_map, GameRankingService._sort_key
+        )
+
+    @staticmethod
+    def _sort_key(
+        season_data: SeasonData, game_ID: GameID, value: float
+    ) -> Tuple[float, datetime.date, str, str, str]:
+        game = season_data.game_map[game_ID]
+        home_team = season_data.team_map[game.home_team_ID]
+        away_team = season_data.team_map[game.away_team_ID]
+
+        return (
+            -value,
+            game.date,
+            home_team.name.upper(),
+            away_team.name.upper(),
+            str(game_ID.value),
+        )
 
 
 class GameRankingRepository(metaclass=ABCMeta):

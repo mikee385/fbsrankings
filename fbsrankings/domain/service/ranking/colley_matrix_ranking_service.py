@@ -13,7 +13,6 @@ from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
-from fbsrankings.domain.service.ranking.helper import TeamValueHelper
 
 
 class TeamData(object):
@@ -44,7 +43,7 @@ class ColleyMatrixRankingService(TeamRankingService):
         team_data: Dict[TeamID, TeamData] = {}
         fbs_games: List[Game] = []
 
-        for game in season_data.games:
+        for game in season_data.game_map.values():
             home_affiliation = season_data.affiliation_map[game.home_team_ID]
             away_affiliation = season_data.affiliation_map[game.away_team_ID]
 
@@ -74,7 +73,7 @@ class ColleyMatrixRankingService(TeamRankingService):
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
 
-        for _, data in team_data.items():
+        for data in team_data.values():
             index = data.index
             a[index, index] = 2.0 + data.game_total
             b[index] = 1 + (data.win_total - data.loss_total) / 2.0
@@ -89,9 +88,7 @@ class ColleyMatrixRankingService(TeamRankingService):
 
         x = numpy.linalg.solve(a, b)
         result = {ID: x[data.index] for ID, data in team_data.items()}
-
-        helper = TeamValueHelper(season_data)
-        ranking_values = helper.to_values(result)
+        ranking_values = TeamRankingService._to_values(season_data, result)
 
         return [
             self._repository.create(
