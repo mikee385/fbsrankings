@@ -116,43 +116,21 @@ def main() -> int:
                 )
             )
 
-            sw_ranking = application.query(
-                TeamRankingBySeasonWeekQuery("Simultaneous Wins", season.ID, None)
-            )
-            sw_sos = application.query(
-                TeamRankingBySeasonWeekQuery(
-                    "Simultaneous Wins - Strength of Schedule - Total", season.ID, None
-                )
-            )
-
-            if (
-                cm_ranking is not None
-                and cm_sos is not None
-                and sw_ranking is not None
-                and sw_sos is not None
-            ):
+            if cm_ranking is not None and cm_sos is not None:
                 cm_sos_map = {v.ID: v for v in cm_sos.values}
-                sw_ranking_map = {v.ID: v for v in sw_ranking.values}
-                sw_sos_map = {v.ID: v for v in sw_sos.values}
 
                 ranking_table = PrettyTable()
                 ranking_table.field_names = [
                     "Team",
-                    "CM_Rk",
-                    "CM_Val",
-                    "CM_SOS_Rk",
-                    "CM_SOS_Val",
-                    "SW_Rk",
-                    "SW_Val",
-                    "SW_SOS_Rk",
-                    "SW_SOS_Val",
+                    "Rk",
+                    "Val",
+                    "SOS_Rk",
+                    "SOS_Val",
                 ]
                 ranking_table.float_format = ".3"
 
                 for cm_ranking_value in cm_ranking.values[:10]:
                     cm_sos_value = cm_sos_map[cm_ranking_value.ID]
-                    sw_ranking_value = sw_ranking_map[cm_ranking_value.ID]
-                    sw_sos_value = sw_sos_map[cm_ranking_value.ID]
 
                     ranking_table.add_row(
                         [
@@ -161,10 +139,6 @@ def main() -> int:
                             cm_ranking_value.value,
                             cm_sos_value.rank,
                             cm_sos_value.value,
-                            sw_ranking_value.rank,
-                            sw_ranking_value.value,
-                            sw_sos_value.rank,
-                            sw_sos_value.value,
                         ]
                     )
 
