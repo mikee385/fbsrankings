@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from typing import Generic
-from typing import List
 from typing import Optional
 from typing import TypeVar
 
@@ -41,10 +40,6 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
     ) -> Optional[Ranking[T]]:
         dto = self._storage.find(name, season_ID.value, week)
         return self._to_ranking(dto) if dto is not None else None
-
-    def for_season(self, season_ID: SeasonID) -> List[Ranking[T]]:
-        dtos = self._storage.for_season(season_ID.value)
-        return [self._to_ranking(dto) for dto in dtos if dto is not None]
 
     def _to_ranking(self, dto: RankingDto) -> Ranking[T]:
         return Ranking[T](

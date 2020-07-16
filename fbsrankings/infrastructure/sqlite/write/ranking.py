@@ -94,17 +94,6 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
 
         return self._to_ranking(row) if row is not None else None
 
-    def for_season(self, name: str, season_ID: SeasonID) -> List[Ranking[T]]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE Name=? AND Type=? AND SeasonID=?",
-            [name, self.type.name, str(season_ID.value)],
-        )
-        rows = cursor.fetchall()
-        cursor.close()
-
-        return [self._to_ranking(row) for row in rows if row is not None]
-
     def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]],) -> Ranking[T]:
         cursor = self._connection.cursor()
         cursor.execute(
