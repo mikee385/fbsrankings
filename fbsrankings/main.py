@@ -93,8 +93,8 @@ def main() -> int:
         for season in seasons:
             _print_ranking_table(application, season)
 
-        _print_canceled_games(application)
-        _print_note_events(application, event_recorder)
+        # _print_canceled_games(application)
+        # _print_note_events(application, event_recorder)
 
         _print_event_counts(event_bus)
         _print_errors(application)
