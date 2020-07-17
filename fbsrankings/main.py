@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Union
 from uuid import UUID
@@ -29,6 +30,7 @@ from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
 from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonResult
 from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
@@ -85,128 +87,178 @@ def main() -> int:
                 for season in progress:
                     application.send(CalculateRankingsForSeasonCommand(season))
 
-        season_summary_table = PrettyTable()
-        season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
-
-        ranking_tables = {}
-
         seasons = application.query(SeasonsQuery()).seasons
+        _print_season_summary_table(application, seasons)
+
         for season in seasons:
-            team_count = application.query(TeamCountBySeasonQuery(season.ID))
-            affiliation_count = application.query(
-                AffiliationCountBySeasonQuery(season.ID)
-            )
-            game_count = application.query(GameCountBySeasonQuery(season.ID))
+            _print_ranking_table(application, season)
 
-            season_summary_table.add_row(
-                [
-                    season.year,
-                    team_count.count,
-                    affiliation_count.fbs_count,
-                    affiliation_count.fcs_count,
-                    game_count.count,
-                ]
-            )
-
-            record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
-            cm_ranking = application.query(
-                TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
-            )
-            cm_sos = application.query(
-                TeamRankingBySeasonWeekQuery(
-                    "Colley Matrix - Strength of Schedule - Total", season.ID, None
-                )
-            )
-
-            if record is not None and cm_ranking is not None and cm_sos is not None:
-                record_map = {v.ID: v for v in record.values}
-                cm_sos_map = {v.ID: v for v in cm_sos.values}
-
-                ranking_table = PrettyTable()
-                ranking_table.field_names = [
-                    "Rk",
-                    "Team",
-                    "W-L",
-                    "Val",
-                    "SOS_Rk",
-                    "SOS_Val",
-                ]
-                ranking_table.align["Rk"] = "r"
-                ranking_table.align["Team"] = "l"
-                ranking_table.align["W-L"] = "r"
-                ranking_table.align["Val"] = "c"
-                ranking_table.align["SOS_Rk"] = "r"
-                ranking_table.align["SOS_Val"] = "c"
-                ranking_table.float_format = ".3"
-
-                for cm_ranking_value in cm_ranking.values[:10]:
-                    record_value = record_map[cm_ranking_value.ID]
-                    cm_sos_value = cm_sos_map[cm_ranking_value.ID]
-
-                    ranking_table.add_row(
-                        [
-                            cm_ranking_value.rank,
-                            cm_ranking_value.name,
-                            f"{record_value.wins}-{record_value.losses}",
-                            cm_ranking_value.value,
-                            cm_sos_value.rank,
-                            cm_sos_value.value,
-                        ]
-                    )
-
-                ranking_tables[season.year] = ranking_table
-
-        print()
-        print(season_summary_table)
-
-        for year, table in ranking_tables.items():
-            print()
-            print(f"{year} Top 10 Rankings:")
-            print(table)
-
-        canceled_games = application.query(CanceledGamesQuery()).games
-        if canceled_games:
-            print()
-            print("Canceled Games:")
-            for canceled_game in canceled_games:
-                print()
-                print(f"ID: {canceled_game.ID}")
-                print(f"Year {canceled_game.year}, Week {canceled_game.week}")
-                print(canceled_game.date)
-                print(canceled_game.season_section)
-                print(
-                    f"{canceled_game.home_team_name} vs. {canceled_game.away_team_name}"
-                )
-                print(canceled_game.notes)
-
-        fbs_team_errors = []
-        fcs_team_errors = []
-        game_errors = []
-        other_errors = []
-        for error in application.errors:
-            if isinstance(error, FBSGameCountValidationError):
-                fbs_team_errors.append(error)
-            elif isinstance(error, FCSGameCountValidationError):
-                fcs_team_errors.append(error)
-            elif isinstance(error, GameDataValidationError):
-                game_errors.append(error)
-            else:
-                other_errors.append(error)
-
-        _print_team_errors(application, fbs_team_errors, fcs_team_errors)
-        _print_game_errors(application, game_errors)
-        _print_other_errors(application, other_errors)
-
-        notes_events = [
-            e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)
-        ]
-        _print_note_events(application, notes_events)
+        _print_canceled_games(application)
+        _print_note_events(application, event_recorder)
 
         _print_event_counts(event_bus)
+        _print_errors(application)
 
         print()
 
         return 0
+
+
+def _print_season_summary_table(
+    application: Application, seasons: Iterable[SeasonResult]
+) -> None:
+    season_summary_table = PrettyTable()
+    season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
+
+    for season in seasons:
+        team_count = application.query(TeamCountBySeasonQuery(season.ID))
+        affiliation_count = application.query(AffiliationCountBySeasonQuery(season.ID))
+        game_count = application.query(GameCountBySeasonQuery(season.ID))
+
+        season_summary_table.add_row(
+            [
+                season.year,
+                team_count.count,
+                affiliation_count.fbs_count,
+                affiliation_count.fcs_count,
+                game_count.count,
+            ]
+        )
+
+    print()
+    print(season_summary_table)
+
+
+def _print_ranking_table(application: Application, season: SeasonResult) -> None:
+    record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
+    cm_ranking = application.query(
+        TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
+    )
+    cm_sos = application.query(
+        TeamRankingBySeasonWeekQuery(
+            "Colley Matrix - Strength of Schedule - Total", season.ID, None
+        )
+    )
+
+    if record is not None and cm_ranking is not None and cm_sos is not None:
+        record_map = {v.ID: v for v in record.values}
+        cm_sos_map = {v.ID: v for v in cm_sos.values}
+
+        ranking_table = PrettyTable()
+        ranking_table.field_names = [
+            "Rk",
+            "Team",
+            "W-L",
+            "Val",
+            "SOS_Rk",
+            "SOS_Val",
+        ]
+        ranking_table.align["Rk"] = "r"
+        ranking_table.align["Team"] = "l"
+        ranking_table.align["W-L"] = "r"
+        ranking_table.align["Val"] = "c"
+        ranking_table.align["SOS_Rk"] = "r"
+        ranking_table.align["SOS_Val"] = "c"
+        ranking_table.float_format = ".3"
+
+        for cm_ranking_value in cm_ranking.values[:10]:
+            record_value = record_map[cm_ranking_value.ID]
+            cm_sos_value = cm_sos_map[cm_ranking_value.ID]
+
+            ranking_table.add_row(
+                [
+                    cm_ranking_value.rank,
+                    cm_ranking_value.name,
+                    f"{record_value.wins}-{record_value.losses}",
+                    cm_ranking_value.value,
+                    cm_sos_value.rank,
+                    cm_sos_value.value,
+                ]
+            )
+
+        print()
+        print(f"{season.year} Top 10 Rankings:")
+        print(ranking_table)
+
+
+def _print_canceled_games(application: Application) -> None:
+    canceled_games = application.query(CanceledGamesQuery()).games
+    if canceled_games:
+        print()
+        print("Canceled Games:")
+        for canceled_game in canceled_games:
+            print()
+            print(f"ID: {canceled_game.ID}")
+            print(f"Year {canceled_game.year}, Week {canceled_game.week}")
+            print(canceled_game.date)
+            print(canceled_game.season_section)
+            print(f"{canceled_game.home_team_name} vs. {canceled_game.away_team_name}")
+            print(canceled_game.notes)
+
+
+def _print_note_events(application: Application, event_recorder: EventRecorder) -> None:
+    notes_events = [
+        e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)
+    ]
+    if notes_events:
+        print()
+        print("Notes:")
+        for notes_event in notes_events:
+            notes_game = application.query(GameByIDQuery(notes_event.ID))
+            if notes_game is not None:
+                print()
+                print(f"ID: {notes_game.ID}")
+                print(f"Year {notes_game.year}, Week {notes_game.week}")
+                print(notes_game.date)
+                print(notes_game.season_section)
+                print(f"{notes_game.home_team_name} vs. {notes_game.away_team_name}")
+                if (
+                    notes_game.home_team_score is not None
+                    and notes_game.away_team_score is not None
+                ):
+                    print(
+                        f"{notes_game.status}, {notes_game.home_team_score} to {notes_game.away_team_score}"
+                    )
+                else:
+                    print(notes_game.status)
+                print(f"Old Notes: {notes_event.old_notes}")
+                print(f"New Notes: {notes_event.notes}")
+
+
+def _print_event_counts(event_bus: EventCounter) -> None:
+    print()
+    print("Events:")
+    if event_bus.counts:
+        event_table = PrettyTable()
+        event_table.field_names = ["Type", "Count"]
+        event_table.align["Type"] = "l"
+        event_table.align["Count"] = "r"
+
+        for event_type, count in event_bus.counts.items():
+            event_table.add_row([event_type.__name__, count])
+        print(event_table)
+    else:
+        print("None")
+
+
+def _print_errors(application: Application) -> None:
+    fbs_team_errors = []
+    fcs_team_errors = []
+    game_errors = []
+    other_errors = []
+    for error in application.errors:
+        if isinstance(error, FBSGameCountValidationError):
+            fbs_team_errors.append(error)
+        elif isinstance(error, FCSGameCountValidationError):
+            fcs_team_errors.append(error)
+        elif isinstance(error, GameDataValidationError):
+            game_errors.append(error)
+        else:
+            other_errors.append(error)
+
+    _print_team_errors(application, fbs_team_errors, fcs_team_errors)
+    _print_game_errors(application, game_errors)
+    _print_other_errors(application, other_errors)
 
 
 def _print_team_errors(
@@ -278,47 +330,3 @@ def _print_other_errors(
         print()
         for error in other_errors:
             print(error)
-
-
-def _print_note_events(
-    application: Application, notes_events: List[GameNotesUpdatedEvent]
-) -> None:
-    if notes_events:
-        print()
-        print("Notes:")
-        for notes_event in notes_events:
-            notes_game = application.query(GameByIDQuery(notes_event.ID))
-            if notes_game is not None:
-                print()
-                print(f"ID: {notes_game.ID}")
-                print(f"Year {notes_game.year}, Week {notes_game.week}")
-                print(notes_game.date)
-                print(notes_game.season_section)
-                print(f"{notes_game.home_team_name} vs. {notes_game.away_team_name}")
-                if (
-                    notes_game.home_team_score is not None
-                    and notes_game.away_team_score is not None
-                ):
-                    print(
-                        f"{notes_game.status}, {notes_game.home_team_score} to {notes_game.away_team_score}"
-                    )
-                else:
-                    print(notes_game.status)
-                print(f"Old Notes: {notes_event.old_notes}")
-                print(f"New Notes: {notes_event.notes}")
-
-
-def _print_event_counts(event_bus: EventCounter) -> None:
-    print()
-    print("Events:")
-    if event_bus.counts:
-        event_table = PrettyTable()
-        event_table.field_names = ["Type", "Count"]
-        event_table.align["Type"] = "l"
-        event_table.align["Count"] = "r"
-
-        for event_type, count in event_bus.counts.items():
-            event_table.add_row([event_type.__name__, count])
-        print(event_table)
-    else:
-        print("None")
