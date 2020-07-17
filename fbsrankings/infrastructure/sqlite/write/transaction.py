@@ -6,6 +6,7 @@ from fbsrankings.infrastructure.sqlite.write.affiliation import AffiliationRepos
 from fbsrankings.infrastructure.sqlite.write.game import GameRepository
 from fbsrankings.infrastructure.sqlite.write.ranking import GameRankingRepository
 from fbsrankings.infrastructure.sqlite.write.ranking import TeamRankingRepository
+from fbsrankings.infrastructure.sqlite.write.record import TeamRecordRepository
 from fbsrankings.infrastructure.sqlite.write.season import SeasonRepository
 from fbsrankings.infrastructure.sqlite.write.team import TeamRepository
 
@@ -25,10 +26,13 @@ class Transaction(BaseTransaction):
         )
         self._game = GameRepository(self._connection, self._cursor, self._bus)
 
-        self._game_ranking = GameRankingRepository(
+        self._team_record = TeamRecordRepository(
             self._connection, self._cursor, self._bus
         )
         self._team_ranking = TeamRankingRepository(
+            self._connection, self._cursor, self._bus
+        )
+        self._game_ranking = GameRankingRepository(
             self._connection, self._cursor, self._bus
         )
 
@@ -47,6 +51,10 @@ class Transaction(BaseTransaction):
     @property
     def game(self) -> GameRepository:
         return self._game
+
+    @property
+    def team_record(self) -> TeamRecordRepository:
+        return self._team_record
 
     @property
     def team_ranking(self) -> TeamRankingRepository:

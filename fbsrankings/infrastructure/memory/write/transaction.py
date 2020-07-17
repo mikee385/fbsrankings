@@ -6,6 +6,7 @@ from fbsrankings.infrastructure.memory.write.affiliation import AffiliationRepos
 from fbsrankings.infrastructure.memory.write.game import GameRepository
 from fbsrankings.infrastructure.memory.write.ranking import GameRankingRepository
 from fbsrankings.infrastructure.memory.write.ranking import TeamRankingRepository
+from fbsrankings.infrastructure.memory.write.record import TeamRecordRepository
 from fbsrankings.infrastructure.memory.write.season import SeasonRepository
 from fbsrankings.infrastructure.memory.write.team import TeamRepository
 
@@ -18,6 +19,8 @@ class Transaction(BaseTransaction):
         self._team = TeamRepository(storage.team, self._bus)
         self._affiliation = AffiliationRepository(storage.affiliation, self._bus)
         self._game = GameRepository(storage.game, self._bus)
+
+        self._team_record = TeamRecordRepository(storage.team_record, self._bus)
         self._team_ranking = TeamRankingRepository(storage.team_ranking, self._bus)
         self._game_ranking = GameRankingRepository(storage.game_ranking, self._bus)
 
@@ -38,6 +41,10 @@ class Transaction(BaseTransaction):
         return self._game
 
     @property
+    def team_record(self) -> TeamRecordRepository:
+        return self._team_record
+
+    @property
     def team_ranking(self) -> TeamRankingRepository:
         return self._team_ranking
 
@@ -53,6 +60,7 @@ class Transaction(BaseTransaction):
             handled = self._team.handle(event) or handled
             handled = self._affiliation.handle(event) or handled
             handled = self._game.handle(event) or handled
+            handled = self._team_record.handle(event) or handled
             handled = self._team_ranking.handle(event) or handled
             handled = self._game_ranking.handle(event) or handled
 

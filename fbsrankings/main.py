@@ -33,6 +33,7 @@ from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.query import TeamRecordBySeasonWeekQuery
 
 
 class UpdateTracker(object):
@@ -107,6 +108,7 @@ def main() -> int:
                 ]
             )
 
+            record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
             cm_ranking = application.query(
                 TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
             )
@@ -116,26 +118,36 @@ def main() -> int:
                 )
             )
 
-            if cm_ranking is not None and cm_sos is not None:
+            if record is not None and cm_ranking is not None and cm_sos is not None:
+                record_map = {v.ID: v for v in record.values}
                 cm_sos_map = {v.ID: v for v in cm_sos.values}
 
                 ranking_table = PrettyTable()
                 ranking_table.field_names = [
-                    "Team",
                     "Rk",
+                    "Team",
+                    "W-L",
                     "Val",
                     "SOS_Rk",
                     "SOS_Val",
                 ]
+                ranking_table.align["Rk"] = "r"
+                ranking_table.align["Team"] = "l"
+                ranking_table.align["W-L"] = "r"
+                ranking_table.align["Val"] = "c"
+                ranking_table.align["SOS_Rk"] = "r"
+                ranking_table.align["SOS_Val"] = "c"
                 ranking_table.float_format = ".3"
 
                 for cm_ranking_value in cm_ranking.values[:10]:
+                    record_value = record_map[cm_ranking_value.ID]
                     cm_sos_value = cm_sos_map[cm_ranking_value.ID]
 
                     ranking_table.add_row(
                         [
-                            cm_ranking_value.name,
                             cm_ranking_value.rank,
+                            cm_ranking_value.name,
+                            f"{record_value.wins}-{record_value.losses}",
                             cm_ranking_value.value,
                             cm_sos_value.rank,
                             cm_sos_value.value,

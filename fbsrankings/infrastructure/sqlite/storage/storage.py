@@ -6,6 +6,7 @@ from fbsrankings.infrastructure.sqlite.storage.game import GameStatusTable
 from fbsrankings.infrastructure.sqlite.storage.game import GameTable
 from fbsrankings.infrastructure.sqlite.storage.ranking import RankingTable
 from fbsrankings.infrastructure.sqlite.storage.ranking import RankingTypeTable
+from fbsrankings.infrastructure.sqlite.storage.record import TeamRecordTable
 from fbsrankings.infrastructure.sqlite.storage.season import SeasonSectionTable
 from fbsrankings.infrastructure.sqlite.storage.season import SeasonTable
 from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
@@ -25,6 +26,8 @@ class Storage(object):
             TeamTable().create(cursor)
             AffiliationTable().create(cursor)
             GameTable().create(cursor)
+
+            TeamRecordTable().create(cursor)
             RankingTable().create(cursor)
 
             cursor.execute("commit")

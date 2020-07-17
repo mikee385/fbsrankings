@@ -5,6 +5,15 @@ from fbsrankings.infrastructure.memory.write.affiliation import (
 from fbsrankings.infrastructure.memory.write.game import (
     GameRepository as GameRepository,
 )
+from fbsrankings.infrastructure.memory.write.ranking import (
+    GameRankingRepository as GameRankingRepository,
+)
+from fbsrankings.infrastructure.memory.write.ranking import (
+    TeamRankingRepository as TeamRankingRepository,
+)
+from fbsrankings.infrastructure.memory.write.record import (
+    TeamRecordRepository as TeamRecordRepository,
+)
 from fbsrankings.infrastructure.memory.write.season import (
     SeasonRepository as SeasonRepository,
 )

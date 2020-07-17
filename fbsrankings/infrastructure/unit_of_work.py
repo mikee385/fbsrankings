@@ -12,6 +12,7 @@ from fbsrankings.domain import GameRankingRepository
 from fbsrankings.domain import GameRepository
 from fbsrankings.domain import SeasonRepository
 from fbsrankings.domain import TeamRankingRepository
+from fbsrankings.domain import TeamRecordRepository
 from fbsrankings.domain import TeamRepository
 from fbsrankings.infrastructure.transaction import TransactionFactory
 
@@ -38,6 +39,10 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
     @property
     def game(self) -> GameRepository:
         return self._transaction.game
+
+    @property
+    def team_record(self) -> TeamRecordRepository:
+        return self._transaction.team_record
 
     @property
     def team_ranking(self) -> TeamRankingRepository:

@@ -22,6 +22,10 @@ from fbsrankings.domain.model.ranking import (
     TeamRankingRepository as TeamRankingRepository,
 )
 from fbsrankings.domain.model.ranking import TeamRankingService as TeamRankingService
+from fbsrankings.domain.model.record import TeamRecord as TeamRecord
+from fbsrankings.domain.model.record import TeamRecordID as TeamRecordID
+from fbsrankings.domain.model.record import TeamRecordRepository as TeamRecordRepository
+from fbsrankings.domain.model.record import TeamRecordValue as TeamRecordValue
 from fbsrankings.domain.model.season import Season as Season
 from fbsrankings.domain.model.season import SeasonID as SeasonID
 from fbsrankings.domain.model.season import SeasonRepository as SeasonRepository
@@ -31,6 +35,9 @@ from fbsrankings.domain.model.team import TeamID as TeamID
 from fbsrankings.domain.model.team import TeamRepository as TeamRepository
 from fbsrankings.domain.service.colley_matrix_ranking_service import (
     ColleyMatrixRankingService as ColleyMatrixRankingService,
+)
+from fbsrankings.domain.service.record_service import (
+    TeamRecordService as TeamRecordService,
 )
 from fbsrankings.domain.service.simultaneous_wins_ranking_service import (
     SimultaneousWinsRankingService as SimultaneousWinsRankingService,

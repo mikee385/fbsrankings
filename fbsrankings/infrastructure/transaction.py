@@ -14,6 +14,7 @@ from fbsrankings.domain import GameRankingRepository
 from fbsrankings.domain import GameRepository
 from fbsrankings.domain import SeasonRepository
 from fbsrankings.domain import TeamRankingRepository
+from fbsrankings.domain import TeamRecordRepository
 from fbsrankings.domain import TeamRepository
 
 
@@ -36,6 +37,11 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
     @property
     @abstractmethod
     def game(self) -> GameRepository:
+        raise NotImplementedError
+
+    @property
+    # @abstractmethod
+    def team_record(self) -> TeamRecordRepository:
         raise NotImplementedError
 
     @property

@@ -22,6 +22,12 @@ from fbsrankings.infrastructure.sqlite.storage.ranking import (
 from fbsrankings.infrastructure.sqlite.storage.ranking import (
     TeamRankingValueTable as TeamRankingValueTable,
 )
+from fbsrankings.infrastructure.sqlite.storage.record import (
+    TeamRecordTable as TeamRecordTable,
+)
+from fbsrankings.infrastructure.sqlite.storage.record import (
+    TeamRecordValueTable as TeamRecordValueTable,
+)
 from fbsrankings.infrastructure.sqlite.storage.season import (
     SeasonSectionTable as SeasonSectionTable,
 )

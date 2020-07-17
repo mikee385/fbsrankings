@@ -15,5 +15,9 @@ from fbsrankings.event.ranking import RankingValue as RankingValue
 from fbsrankings.event.ranking import (
     TeamRankingCalculatedEvent as TeamRankingCalculatedEvent,
 )
+from fbsrankings.event.record import (
+    TeamRecordCalculatedEvent as TeamRecordCalculatedEvent,
+)
+from fbsrankings.event.record import TeamRecordValue as TeamRecordValue
 from fbsrankings.event.season import SeasonCreatedEvent as SeasonCreatedEvent
 from fbsrankings.event.team import TeamCreatedEvent as TeamCreatedEvent

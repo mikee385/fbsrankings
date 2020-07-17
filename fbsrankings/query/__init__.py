@@ -38,3 +38,12 @@ from fbsrankings.query.team_ranking_by_season_week import (
 from fbsrankings.query.team_ranking_by_season_week import (
     TeamRankingValueBySeasonWeekResult as TeamRankingValueBySeasonWeekResult,
 )
+from fbsrankings.query.team_record_by_season_week import (
+    TeamRecordBySeasonWeekQuery as TeamRecordBySeasonWeekQuery,
+)
+from fbsrankings.query.team_record_by_season_week import (
+    TeamRecordBySeasonWeekResult as TeamRecordBySeasonWeekResult,
+)
+from fbsrankings.query.team_record_by_season_week import (
+    TeamRecordValueBySeasonWeekResult as TeamRecordValueBySeasonWeekResult,
+)

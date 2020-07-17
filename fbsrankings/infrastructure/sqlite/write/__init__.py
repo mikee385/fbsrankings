@@ -6,7 +6,13 @@ from fbsrankings.infrastructure.sqlite.write.game import (
     GameRepository as GameRepository,
 )
 from fbsrankings.infrastructure.sqlite.write.ranking import (
-    RankingRepository as RankingRepository,
+    GameRankingRepository as GameRankingRepository,
+)
+from fbsrankings.infrastructure.sqlite.write.ranking import (
+    TeamRankingRepository as TeamRankingRepository,
+)
+from fbsrankings.infrastructure.sqlite.write.record import (
+    TeamRecordRepository as TeamRecordRepository,
 )
 from fbsrankings.infrastructure.sqlite.write.season import (
     SeasonRepository as SeasonRepository,
