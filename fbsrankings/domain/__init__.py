@@ -42,6 +42,9 @@ from fbsrankings.domain.service.record_service import (
 from fbsrankings.domain.service.simultaneous_wins_ranking_service import (
     SimultaneousWinsRankingService as SimultaneousWinsRankingService,
 )
+from fbsrankings.domain.service.srs_ranking_service import (
+    SRSRankingService as SRSRankingService,
+)
 from fbsrankings.domain.service.strength_of_schedule_ranking_service import (
     StrengthOfScheduleRankingService as StrengthOfScheduleRankingService,
 )

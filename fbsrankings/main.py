@@ -19,7 +19,11 @@ from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
+from fbsrankings.domain import Ranking
+from fbsrankings.domain import Season
 from fbsrankings.domain import SeasonSection
+from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRecord
 from fbsrankings.domain import ValidationError
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
@@ -88,10 +92,10 @@ def main() -> int:
                     application.send(CalculateRankingsForSeasonCommand(season))
 
         seasons = application.query(SeasonsQuery()).seasons
-        _print_season_summary_table(application, seasons)
+        _print_season_summaries(application, seasons)
 
         for season in seasons:
-            _print_ranking_table(application, season)
+            _print_rankings(application, season)
 
         # _print_canceled_games(application)
         # _print_note_events(application, event_recorder)
@@ -99,12 +103,10 @@ def main() -> int:
         _print_event_counts(event_bus)
         _print_errors(application)
 
-        print()
-
         return 0
 
 
-def _print_season_summary_table(
+def _print_season_summaries(
     application: Application, seasons: Iterable[SeasonResult]
 ) -> None:
     season_summary_table = PrettyTable()
@@ -129,8 +131,20 @@ def _print_season_summary_table(
     print(season_summary_table)
 
 
-def _print_ranking_table(application: Application, season: SeasonResult) -> None:
+def _print_rankings(application: Application, season: SeasonResult) -> None:
     record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
+    
+    sw_ranking = application.query(
+        TeamRankingBySeasonWeekQuery("Simultaneous Wins", season.ID, None)
+    )
+    sw_sos = application.query(
+        TeamRankingBySeasonWeekQuery(
+            "Simultaneous Wins - Strength of Schedule - Total", season.ID, None
+        )
+    )
+    if record is not None and sw_ranking is not None and sw_sos is not None:
+        _print_ranking_table(season, record, sw_ranking, sw_sos)
+    
     cm_ranking = application.query(
         TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
     )
@@ -139,10 +153,24 @@ def _print_ranking_table(application: Application, season: SeasonResult) -> None
             "Colley Matrix - Strength of Schedule - Total", season.ID, None
         )
     )
-
     if record is not None and cm_ranking is not None and cm_sos is not None:
+        _print_ranking_table(season, record, cm_ranking, cm_sos)
+    
+    srs_ranking = application.query(
+        TeamRankingBySeasonWeekQuery("SRS", season.ID, None)
+    )
+    srs_sos = application.query(
+        TeamRankingBySeasonWeekQuery(
+            "SRS - Strength of Schedule - Total", season.ID, None
+        )
+    )
+    if record is not None and srs_ranking is not None and srs_sos is not None:
+        _print_ranking_table(season, record, srs_ranking, srs_sos)
+        
+
+def _print_ranking_table(season: Season, record: TeamRecord, ranking: Ranking[TeamID], sos: Ranking[TeamID]) -> None:
         record_map = {v.ID: v for v in record.values}
-        cm_sos_map = {v.ID: v for v in cm_sos.values}
+        sos_map = {v.ID: v for v in sos.values}
 
         ranking_table = PrettyTable()
         ranking_table.field_names = [
@@ -161,23 +189,23 @@ def _print_ranking_table(application: Application, season: SeasonResult) -> None
         ranking_table.align["SOS_Val"] = "c"
         ranking_table.float_format = ".3"
 
-        for cm_ranking_value in cm_ranking.values[:10]:
-            record_value = record_map[cm_ranking_value.ID]
-            cm_sos_value = cm_sos_map[cm_ranking_value.ID]
+        for ranking_value in ranking.values[:10]:
+            record_value = record_map[ranking_value.ID]
+            sos_value = sos_map[ranking_value.ID]
 
             ranking_table.add_row(
                 [
-                    cm_ranking_value.rank,
-                    cm_ranking_value.name,
+                    ranking_value.rank,
+                    ranking_value.name,
                     f"{record_value.wins}-{record_value.losses}",
-                    cm_ranking_value.value,
-                    cm_sos_value.rank,
-                    cm_sos_value.value,
+                    ranking_value.value,
+                    sos_value.rank,
+                    sos_value.value,
                 ]
             )
 
         print()
-        print(f"{season.year} Top 10 Rankings:")
+        print(f"{season.year} Top 10 {ranking.name}:")
         print(ranking_table)
 
 
