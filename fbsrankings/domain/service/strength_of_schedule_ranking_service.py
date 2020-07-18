@@ -66,7 +66,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
             self._repository.create(
                 self._performance_ranking.name + " - Strength of Schedule - Total",
                 season_ID,
-                None,
+                self._performance_ranking.week,
                 ranking_values,
             )
         ]

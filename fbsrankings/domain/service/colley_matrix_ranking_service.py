@@ -41,57 +41,69 @@ class ColleyMatrixRankingService(TeamRankingService):
         self, season_ID: SeasonID, season_data: SeasonData
     ) -> List[Ranking[TeamID]]:
         team_data: Dict[TeamID, TeamData] = {}
-        fbs_games: List[Game] = []
-
+        for affiliation in season_data.affiliation_map.values():
+            if affiliation.subdivision == Subdivision.FBS:
+                team_data[affiliation.team_ID] = TeamData(len(team_data))
+                
+        season_is_complete = True
+        games_by_week: Dict[int, List[Game]] = {}
         for game in season_data.game_map.values():
-            home_affiliation = season_data.affiliation_map[game.home_team_ID]
-            away_affiliation = season_data.affiliation_map[game.away_team_ID]
+            winning_data = None
+            if game.winning_team_ID is not None:
+                winning_data = team_data.get(game.winning_team_ID)
+            
+            losing_data = None
+            if game.losing_team_ID is not None:
+                losing_data = team_data.get(game.losing_team_ID)
 
             if (
                 game.season_section == SeasonSection.REGULAR_SEASON
-                and game.status == GameStatus.COMPLETED
-                and home_affiliation.subdivision == Subdivision.FBS
-                and away_affiliation.subdivision == Subdivision.FBS
+                and winning_data is not None
+                and losing_data is not None
             ):
-                if game.winning_team_ID is not None:
-                    winning_data = team_data.get(game.winning_team_ID)
-                    if winning_data is None:
-                        winning_data = TeamData(len(team_data))
-                        team_data[game.winning_team_ID] = winning_data
-                    winning_data.add_win()
-
-                if game.losing_team_ID is not None:
-                    losing_data = team_data.get(game.losing_team_ID)
-                    if losing_data is None:
-                        losing_data = TeamData(len(team_data))
-                        team_data[game.losing_team_ID] = losing_data
-                    losing_data.add_loss()
-
-                fbs_games.append(game)
-
+                week_games = games_by_week.setdefault(game.week, [])
+                week_games.append(game)
+                
+            elif game.status == GameStatus.SCHEDULED:
+                season_is_complete = False
+                
         n = len(team_data)
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
+        
+        rankings = []
+        for week in sorted(games_by_week.keys()):
+            for game in games_by_week[week]:
+                if game.winning_team_ID is not None and game.losing_team_ID is not None:
+                    winning_data = team_data[game.winning_team_ID]
+                    losing_data = team_data[game.losing_team_ID]
+                    
+                    winning_data.add_win()
+                    losing_data.add_loss()
 
-        for data in team_data.values():
-            index = data.index
-            a[index, index] = 2.0 + data.game_total
-            b[index] = 1 + (data.win_total - data.loss_total) / 2.0
+                    a[winning_data.index, losing_data.index] -= 1.0
+                    a[losing_data.index, winning_data.index] -= 1.0
+            
+            for data in team_data.values():
+                a[data.index, data.index] = 2.0 + data.game_total
+                b[data.index] = 1 + (data.win_total - data.loss_total) / 2.0
+                
+            x = numpy.linalg.solve(a, b)
+            result = {ID: x[data.index] for ID, data in team_data.items()}
+            ranking_values = TeamRankingService._to_values(season_data, result)
 
-        for game in fbs_games:
-            if game.winning_team_ID is not None and game.losing_team_ID is not None:
-                winning_data = team_data[game.winning_team_ID]
-                losing_data = team_data[game.losing_team_ID]
-
-                a[winning_data.index, losing_data.index] -= 1.0
-                a[losing_data.index, winning_data.index] -= 1.0
-
-        x = numpy.linalg.solve(a, b)
-        result = {ID: x[data.index] for ID, data in team_data.items()}
-        ranking_values = TeamRankingService._to_values(season_data, result)
-
-        return [
-            self._repository.create(
-                ColleyMatrixRankingService.name, season_ID, None, ranking_values,
+            rankings.append(
+                self._repository.create(
+                    ColleyMatrixRankingService.name, season_ID, week, ranking_values,
+                )
             )
-        ]
+        
+        if season_is_complete:
+            rankings.append(
+                self._repository.create(
+                    ColleyMatrixRankingService.name, season_ID, None, ranking_values,
+                )
+            )
+            
+        return rankings
+
