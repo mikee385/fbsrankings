@@ -8,7 +8,6 @@ from fbsrankings.domain.model.record import TeamRecord
 from fbsrankings.domain.model.record import TeamRecordRepository
 from fbsrankings.domain.model.record import TeamRecordValue
 from fbsrankings.domain.model.season import SeasonID
-from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -26,34 +25,57 @@ class TeamRecordService(object):
         self, season_ID: SeasonID, season_data: SeasonData
     ) -> List[TeamRecord]:
         team_data: Dict[TeamID, TeamData] = {}
-
+        for affiliation in season_data.affiliation_map.values():
+            if affiliation.subdivision == Subdivision.FBS:
+                team_data[affiliation.team_ID] = TeamData()
+                
+        season_is_complete = True
+        games_by_week: Dict[int, List[Game]] = {}
         for game in season_data.game_map.values():
-            home_affiliation = season_data.affiliation_map[game.home_team_ID]
-            away_affiliation = season_data.affiliation_map[game.away_team_ID]
+            winning_data = None
+            if game.winning_team_ID is not None:
+                winning_data = team_data.get(game.winning_team_ID)
+            
+            losing_data = None
+            if game.losing_team_ID is not None:
+                losing_data = team_data.get(game.losing_team_ID)
 
             if (
-                game.season_section == SeasonSection.REGULAR_SEASON
-                and game.status == GameStatus.COMPLETED
-                and home_affiliation.subdivision == Subdivision.FBS
-                and away_affiliation.subdivision == Subdivision.FBS
+                winning_data is not None
+                and losing_data is not None
             ):
-                if game.winning_team_ID is not None:
-                    winning_data = team_data.get(game.winning_team_ID)
-                    if winning_data is None:
-                        winning_data = TeamData()
-                        team_data[game.winning_team_ID] = winning_data
+                week_games = games_by_week.setdefault(game.week, [])
+                week_games.append(game)
+                
+            elif game.status == GameStatus.SCHEDULED:
+                season_is_complete = False
+        
+        records = []
+        for week in sorted(games_by_week.keys()):
+            for game in games_by_week[week]:
+                if game.winning_team_ID is not None and game.losing_team_ID is not None:
+                    winning_data = team_data[game.winning_team_ID]
+                    losing_data = team_data[game.losing_team_ID]
+                    
                     winning_data.wins += 1
-
-                if game.losing_team_ID is not None:
-                    losing_data = team_data.get(game.losing_team_ID)
-                    if losing_data is None:
-                        losing_data = TeamData()
-                        team_data[game.losing_team_ID] = losing_data
                     losing_data.losses += 1
+                    
+            record_values = [
+                TeamRecordValue(ID, data.wins, data.losses)
+                for ID, data in team_data.items()
+            ]
+            
+            records.append(
+                self._repository.create(
+                    season_ID, week, record_values,
+                )
+            )
 
-        record_values = [
-            TeamRecordValue(ID, data.wins, data.losses)
-            for ID, data in team_data.items()
-        ]
-
-        return [self._repository.create(season_ID, None, record_values)]
+        if season_is_complete:
+            records.append(
+                self._repository.create(
+                    season_ID, None, record_values,
+                )
+            )
+            
+        return records
