@@ -11,7 +11,6 @@ from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.season import SeasonID
-from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
 
 
