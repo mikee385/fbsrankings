@@ -6,7 +6,6 @@ from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.season import SeasonID
-from fbsrankings.domain.model.season import SeasonSection
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -43,8 +42,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
             away_performance = performance_map.get(game.away_team_ID)
 
             if (
-                game.season_section == SeasonSection.REGULAR_SEASON
-                and home_performance is not None
+                home_performance is not None
                 and away_performance is not None
             ):
                 home_data = team_data.get(game.home_team_ID)
