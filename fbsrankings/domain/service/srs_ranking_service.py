@@ -52,8 +52,7 @@ class SRSRankingService(TeamRankingService):
                 losing_data = team_data.get(game.losing_team_ID)
 
             if (
-                game.season_section == SeasonSection.REGULAR_SEASON
-                and winning_data is not None
+                winning_data is not None
                 and losing_data is not None
             ):
                 week_games = games_by_week.setdefault(game.week, [])

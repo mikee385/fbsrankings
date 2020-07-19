@@ -57,8 +57,7 @@ class ColleyMatrixRankingService(TeamRankingService):
                 losing_data = team_data.get(game.losing_team_ID)
 
             if (
-                game.season_section == SeasonSection.REGULAR_SEASON
-                and winning_data is not None
+                winning_data is not None
                 and losing_data is not None
             ):
                 week_games = games_by_week.setdefault(game.week, [])
@@ -89,6 +88,7 @@ class ColleyMatrixRankingService(TeamRankingService):
                 b[data.index] = 1 + (data.win_total - data.loss_total) / 2.0
                 
             x = numpy.linalg.solve(a, b)
+            
             result = {ID: x[data.index] for ID, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
