@@ -136,12 +136,6 @@ class Ranking(Generic[T]):
     def values(self) -> Sequence[RankingValue[T]]:
         return self._values
 
-    @property
-    def _event_values(self) -> List[EventValue]:
-        return list(
-            map(lambda v: EventValue(v.ID.value, v.order, v.rank, v.value), self.values)
-        )
-
 
 class TeamRankingService(metaclass=ABCMeta):
     @abstractmethod
@@ -185,7 +179,10 @@ class TeamRankingRepository(metaclass=ABCMeta):
                 ranking.name,
                 ranking.season_ID.value,
                 ranking.week,
-                ranking._event_values,
+                [
+                    EventValue(value.ID.value, value.order, value.rank, value.value)
+                    for value in ranking.values
+                ],
             )
         )
 
@@ -253,7 +250,10 @@ class GameRankingRepository(metaclass=ABCMeta):
                 ranking.name,
                 ranking.season_ID.value,
                 ranking.week,
-                ranking._event_values,
+                [
+                    EventValue(value.ID.value, value.order, value.rank, value.value)
+                    for value in ranking.values
+                ],
             )
         )
 

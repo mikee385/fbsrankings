@@ -75,17 +75,6 @@ class TeamRecord(object):
     def values(self) -> Sequence[TeamRecordValue]:
         return self._values
 
-    @property
-    def _event_values(self) -> List[EventValue]:
-        return list(
-            map(
-                lambda v: EventValue(
-                    v.team_ID.value, v.wins, v.losses, v.games, v.win_percentage
-                ),
-                self.values,
-            )
-        )
-
 
 class TeamRecordRepository(metaclass=ABCMeta):
     def __init__(self, bus: EventBus) -> None:
@@ -101,7 +90,16 @@ class TeamRecordRepository(metaclass=ABCMeta):
                 record.ID.value,
                 record.season_ID.value,
                 record.week,
-                record._event_values,
+                [
+                    EventValue(
+                        value.team_ID.value,
+                        value.wins,
+                        value.losses,
+                        value.games,
+                        value.win_percentage,
+                    )
+                    for value in record.values
+                ],
             )
         )
 
