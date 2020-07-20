@@ -41,10 +41,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
             home_performance = performance_map.get(game.home_team_ID)
             away_performance = performance_map.get(game.away_team_ID)
 
-            if (
-                home_performance is not None
-                and away_performance is not None
-            ):
+            if home_performance is not None and away_performance is not None:
                 home_data = team_data.get(game.home_team_ID)
                 if home_data is None:
                     home_data = TeamData()

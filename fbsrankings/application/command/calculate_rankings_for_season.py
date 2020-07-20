@@ -40,7 +40,7 @@ class CalculateRankingsForSeasonCommandHandler(object):
             TeamRecordService(unit_of_work.team_record).calculate_for_season(
                 season.ID, season_data
             )
-            
+
             srs_rankings = SRSRankingService(
                 unit_of_work.team_ranking
             ).calculate_for_season(season.ID, season_data)

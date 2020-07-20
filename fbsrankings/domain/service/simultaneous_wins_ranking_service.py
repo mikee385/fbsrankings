@@ -45,65 +45,67 @@ class SimultaneousWinsRankingService(TeamRankingService):
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS:
                 team_data[affiliation.team_ID] = TeamData(len(team_data))
-                
+
         season_is_complete = True
         games_by_week: Dict[int, List[Game]] = {}
         for game in season_data.game_map.values():
             winning_data = None
             if game.winning_team_ID is not None:
                 winning_data = team_data.get(game.winning_team_ID)
-            
+
             losing_data = None
             if game.losing_team_ID is not None:
                 losing_data = team_data.get(game.losing_team_ID)
 
-            if (
-                winning_data is not None
-                and losing_data is not None
-            ):
+            if winning_data is not None and losing_data is not None:
                 week_games = games_by_week.setdefault(game.week, [])
                 week_games.append(game)
-                
+
             elif game.status == GameStatus.SCHEDULED:
                 season_is_complete = False
-                
+
         n = len(team_data)
         a = numpy.zeros((n, n))
         b = numpy.zeros(n)
-        
+
         rankings = []
         for week in sorted(games_by_week.keys()):
             for game in games_by_week[week]:
                 if game.winning_team_ID is not None and game.losing_team_ID is not None:
                     winning_data = team_data[game.winning_team_ID]
                     losing_data = team_data[game.losing_team_ID]
-                    
+
                     winning_data.add_win()
                     losing_data.add_loss()
 
                     a[winning_data.index, losing_data.index] -= 1.0
-            
+
             for data in team_data.values():
                 a[data.index, data.index] = max(data.game_total, 1.0)
                 b[data.index] = data.win_total
-                
+
             x = numpy.linalg.solve(a, b)
-            
+
             result = {ID: x[data.index] for ID, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
-                    SimultaneousWinsRankingService.name, season_ID, week, ranking_values,
+                    SimultaneousWinsRankingService.name,
+                    season_ID,
+                    week,
+                    ranking_values,
                 )
             )
-        
+
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SimultaneousWinsRankingService.name, season_ID, None, ranking_values,
+                    SimultaneousWinsRankingService.name,
+                    season_ID,
+                    None,
+                    ranking_values,
                 )
             )
-            
-        return rankings
 
+        return rankings

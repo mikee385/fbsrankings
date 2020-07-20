@@ -19,11 +19,6 @@ from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
-from fbsrankings.domain import Ranking
-from fbsrankings.domain import Season
-from fbsrankings.domain import SeasonSection
-from fbsrankings.domain import TeamID
-from fbsrankings.domain import TeamRecord
 from fbsrankings.domain import ValidationError
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
@@ -39,7 +34,9 @@ from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
+from fbsrankings.query import TeamRecordBySeasonWeekResult
 
 
 class UpdateTracker(object):
@@ -53,12 +50,11 @@ class UpdateTracker(object):
     def __call__(
         self, event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent]
     ) -> None:
-        if event.season_section == SeasonSection.REGULAR_SEASON.name:
-            season = self.updates.get(event.season_ID)
-            if season is None:
-                self.updates[event.season_ID] = [event.week]
-            elif event.week not in season:
-                season.append(event.week)
+        season = self.updates.get(event.season_ID)
+        if season is None:
+            self.updates[event.season_ID] = [event.week]
+        elif event.week not in season:
+            season.append(event.week)
 
 
 def main() -> int:
@@ -133,7 +129,7 @@ def _print_season_summaries(
 
 def _print_rankings(application: Application, season: SeasonResult) -> None:
     record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
-    
+
     sw_ranking = application.query(
         TeamRankingBySeasonWeekQuery("Simultaneous Wins", season.ID, None)
     )
@@ -144,7 +140,7 @@ def _print_rankings(application: Application, season: SeasonResult) -> None:
     )
     if record is not None and sw_ranking is not None and sw_sos is not None:
         _print_ranking_table(season, record, sw_ranking, sw_sos)
-    
+
     cm_ranking = application.query(
         TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
     )
@@ -155,7 +151,7 @@ def _print_rankings(application: Application, season: SeasonResult) -> None:
     )
     if record is not None and cm_ranking is not None and cm_sos is not None:
         _print_ranking_table(season, record, cm_ranking, cm_sos)
-    
+
     srs_ranking = application.query(
         TeamRankingBySeasonWeekQuery("SRS", season.ID, None)
     )
@@ -166,47 +162,52 @@ def _print_rankings(application: Application, season: SeasonResult) -> None:
     )
     if record is not None and srs_ranking is not None and srs_sos is not None:
         _print_ranking_table(season, record, srs_ranking, srs_sos)
-        
 
-def _print_ranking_table(season: Season, record: TeamRecord, ranking: Ranking[TeamID], sos: Ranking[TeamID]) -> None:
-        record_map = {v.ID: v for v in record.values}
-        sos_map = {v.ID: v for v in sos.values}
 
-        ranking_table = PrettyTable()
-        ranking_table.field_names = [
-            "Rk",
-            "Team",
-            "W-L",
-            "Val",
-            "SOS_Rk",
-            "SOS_Val",
-        ]
-        ranking_table.align["Rk"] = "r"
-        ranking_table.align["Team"] = "l"
-        ranking_table.align["W-L"] = "r"
-        ranking_table.align["Val"] = "c"
-        ranking_table.align["SOS_Rk"] = "r"
-        ranking_table.align["SOS_Val"] = "c"
-        ranking_table.float_format = ".3"
+def _print_ranking_table(
+    season: SeasonResult,
+    record: TeamRecordBySeasonWeekResult,
+    ranking: TeamRankingBySeasonWeekResult,
+    sos: TeamRankingBySeasonWeekResult,
+) -> None:
+    record_map = {v.ID: v for v in record.values}
+    sos_map = {v.ID: v for v in sos.values}
 
-        for ranking_value in ranking.values[:10]:
-            record_value = record_map[ranking_value.ID]
-            sos_value = sos_map[ranking_value.ID]
+    ranking_table = PrettyTable()
+    ranking_table.field_names = [
+        "Rk",
+        "Team",
+        "W-L",
+        "Val",
+        "SOS_Rk",
+        "SOS_Val",
+    ]
+    ranking_table.align["Rk"] = "r"
+    ranking_table.align["Team"] = "l"
+    ranking_table.align["W-L"] = "r"
+    ranking_table.align["Val"] = "c"
+    ranking_table.align["SOS_Rk"] = "r"
+    ranking_table.align["SOS_Val"] = "c"
+    ranking_table.float_format = ".3"
 
-            ranking_table.add_row(
-                [
-                    ranking_value.rank,
-                    ranking_value.name,
-                    f"{record_value.wins}-{record_value.losses}",
-                    ranking_value.value,
-                    sos_value.rank,
-                    sos_value.value,
-                ]
-            )
+    for ranking_value in ranking.values[:10]:
+        record_value = record_map[ranking_value.ID]
+        sos_value = sos_map[ranking_value.ID]
 
-        print()
-        print(f"{season.year} Top 10 {ranking.name}:")
-        print(ranking_table)
+        ranking_table.add_row(
+            [
+                ranking_value.rank,
+                ranking_value.name,
+                f"{record_value.wins}-{record_value.losses}",
+                ranking_value.value,
+                sos_value.rank,
+                sos_value.value,
+            ]
+        )
+
+    print()
+    print(f"{season.year} Top 10 {ranking.name}:")
+    print(ranking_table)
 
 
 def _print_canceled_games(application: Application) -> None:
