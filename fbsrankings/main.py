@@ -28,6 +28,7 @@ from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
+from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonResult
 from fbsrankings.query import SeasonsQuery
@@ -90,8 +91,14 @@ def main() -> int:
         seasons = application.query(SeasonsQuery()).seasons
         _print_season_summaries(application, seasons)
 
-        for season in seasons:
-            _print_rankings(application, season)
+        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
+        if most_recent_completed_week is not None:
+            _print_rankings(
+                application,
+                most_recent_completed_week.season_ID,
+                most_recent_completed_week.year,
+                most_recent_completed_week.week,
+            )
 
         # _print_canceled_games(application)
         # _print_note_events(application, event_recorder)
@@ -127,45 +134,48 @@ def _print_season_summaries(
     print(season_summary_table)
 
 
-def _print_rankings(application: Application, season: SeasonResult) -> None:
-    record = application.query(TeamRecordBySeasonWeekQuery(season.ID, None))
+def _print_rankings(
+    application: Application, season_ID: UUID, year: int, week: int
+) -> None:
+    record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
 
     sw_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("Simultaneous Wins", season.ID, None)
+        TeamRankingBySeasonWeekQuery("Simultaneous Wins", season_ID, week)
     )
     sw_sos = application.query(
         TeamRankingBySeasonWeekQuery(
-            "Simultaneous Wins - Strength of Schedule - Total", season.ID, None
+            "Simultaneous Wins - Strength of Schedule - Total", season_ID, week
         )
     )
     if record is not None and sw_ranking is not None and sw_sos is not None:
-        _print_ranking_table(season, record, sw_ranking, sw_sos)
+        _print_ranking_table(year, week, record, sw_ranking, sw_sos)
 
     cm_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("Colley Matrix", season.ID, None)
+        TeamRankingBySeasonWeekQuery("Colley Matrix", season_ID, week)
     )
     cm_sos = application.query(
         TeamRankingBySeasonWeekQuery(
-            "Colley Matrix - Strength of Schedule - Total", season.ID, None
+            "Colley Matrix - Strength of Schedule - Total", season_ID, week
         )
     )
     if record is not None and cm_ranking is not None and cm_sos is not None:
-        _print_ranking_table(season, record, cm_ranking, cm_sos)
+        _print_ranking_table(year, week, record, cm_ranking, cm_sos)
 
     srs_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("SRS", season.ID, None)
+        TeamRankingBySeasonWeekQuery("SRS", season_ID, week)
     )
     srs_sos = application.query(
         TeamRankingBySeasonWeekQuery(
-            "SRS - Strength of Schedule - Total", season.ID, None
+            "SRS - Strength of Schedule - Total", season_ID, week
         )
     )
     if record is not None and srs_ranking is not None and srs_sos is not None:
-        _print_ranking_table(season, record, srs_ranking, srs_sos)
+        _print_ranking_table(year, week, record, srs_ranking, srs_sos)
 
 
 def _print_ranking_table(
-    season: SeasonResult,
+    year: int,
+    week: int,
     record: TeamRecordBySeasonWeekResult,
     ranking: TeamRankingBySeasonWeekResult,
     sos: TeamRankingBySeasonWeekResult,
@@ -206,7 +216,7 @@ def _print_ranking_table(
         )
 
     print()
-    print(f"{season.year} Top 10 {ranking.name}:")
+    print(f"{year}, Week {week} Top 10 {ranking.name}:")
     print(ranking_table)
 
 

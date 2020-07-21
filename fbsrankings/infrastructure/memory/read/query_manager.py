@@ -10,6 +10,9 @@ from fbsrankings.infrastructure.memory.read.game_by_id import GameByIDQueryHandl
 from fbsrankings.infrastructure.memory.read.game_count_by_season import (
     GameCountBySeasonQueryHandler,
 )
+from fbsrankings.infrastructure.memory.read.most_recent_completed_week import (
+    MostRecentCompletedWeekQueryHandler,
+)
 from fbsrankings.infrastructure.memory.read.season_by_id import SeasonByIDQueryHandler
 from fbsrankings.infrastructure.memory.read.seasons import SeasonsQueryHandler
 from fbsrankings.infrastructure.memory.read.team_by_id import TeamByIDQueryHandler
@@ -27,6 +30,7 @@ from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
+from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
@@ -46,6 +50,9 @@ class QueryManager(BaseQueryManager):
         self.register_handler(GameByIDQuery, GameByIDQueryHandler(storage))
         self.register_handler(
             GameCountBySeasonQuery, GameCountBySeasonQueryHandler(storage)
+        )
+        self.register_handler(
+            MostRecentCompletedWeekQuery, MostRecentCompletedWeekQueryHandler(storage)
         )
         self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(storage))
         self.register_handler(SeasonsQuery, SeasonsQueryHandler(storage))
