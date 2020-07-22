@@ -36,6 +36,9 @@ from fbsrankings.domain.model.team import TeamRepository as TeamRepository
 from fbsrankings.domain.service.colley_matrix_ranking_service import (
     ColleyMatrixRankingService as ColleyMatrixRankingService,
 )
+from fbsrankings.domain.service.game_strength_ranking_service import (
+    GameStrengthRankingService as GameStrengthRankingService,
+)
 from fbsrankings.domain.service.record_service import (
     TeamRecordService as TeamRecordService,
 )
