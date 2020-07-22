@@ -8,7 +8,6 @@ from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.record import TeamRecord
 from fbsrankings.domain.model.record import TeamRecordRepository
 from fbsrankings.domain.model.record import TeamRecordValue
-from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -22,9 +21,7 @@ class TeamRecordService(object):
     def __init__(self, repository: TeamRecordRepository) -> None:
         self._repository = repository
 
-    def calculate_for_season(
-        self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[TeamRecord]:
+    def calculate_for_season(self, season_data: SeasonData) -> List[TeamRecord]:
         team_data: Dict[TeamID, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS:
@@ -63,9 +60,13 @@ class TeamRecordService(object):
                 for ID, data in team_data.items()
             ]
 
-            records.append(self._repository.create(season_ID, week, record_values,))
+            records.append(
+                self._repository.create(season_data.season.ID, week, record_values,)
+            )
 
         if season_is_complete:
-            records.append(self._repository.create(season_ID, None, record_values,))
+            records.append(
+                self._repository.create(season_data.season.ID, None, record_values,)
+            )
 
         return records

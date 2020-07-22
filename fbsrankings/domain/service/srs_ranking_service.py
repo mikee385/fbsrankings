@@ -10,7 +10,6 @@ from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
-from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -31,9 +30,7 @@ class SRSRankingService(TeamRankingService):
     def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
 
-    def calculate_for_season(
-        self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[Ranking[TeamID]]:
+    def calculate_for_season(self, season_data: SeasonData) -> List[Ranking[TeamID]]:
         team_data: Dict[TeamID, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS:
@@ -99,14 +96,14 @@ class SRSRankingService(TeamRankingService):
 
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_ID, week, ranking_values,
+                    SRSRankingService.name, season_data.season.ID, week, ranking_values,
                 )
             )
 
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_ID, None, ranking_values,
+                    SRSRankingService.name, season_data.season.ID, None, ranking_values,
                 )
             )
 

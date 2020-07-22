@@ -38,31 +38,31 @@ class CalculateRankingsForSeasonCommandHandler(object):
             season_data = SeasonData(season, teams, affiliations, games)
 
             TeamRecordService(unit_of_work.team_record).calculate_for_season(
-                season.ID, season_data
+                season_data
             )
 
             srs_rankings = SRSRankingService(
                 unit_of_work.team_ranking
-            ).calculate_for_season(season.ID, season_data)
+            ).calculate_for_season(season_data)
             for ranking in srs_rankings:
                 StrengthOfScheduleRankingService(
-                    unit_of_work.team_ranking, ranking
-                ).calculate_for_season(season.ID, season_data)
+                    unit_of_work.team_ranking
+                ).calculate_for_ranking(season_data, ranking)
 
             cm_rankings = ColleyMatrixRankingService(
                 unit_of_work.team_ranking
-            ).calculate_for_season(season.ID, season_data)
+            ).calculate_for_season(season_data)
             for ranking in cm_rankings:
                 StrengthOfScheduleRankingService(
-                    unit_of_work.team_ranking, ranking
-                ).calculate_for_season(season.ID, season_data)
+                    unit_of_work.team_ranking
+                ).calculate_for_ranking(season_data, ranking)
 
             sw_rankings = SimultaneousWinsRankingService(
                 unit_of_work.team_ranking
-            ).calculate_for_season(season.ID, season_data)
+            ).calculate_for_season(season_data)
             for ranking in sw_rankings:
                 StrengthOfScheduleRankingService(
-                    unit_of_work.team_ranking, ranking
-                ).calculate_for_season(season.ID, season_data)
+                    unit_of_work.team_ranking
+                ).calculate_for_ranking(season_data, ranking)
 
             unit_of_work.commit()

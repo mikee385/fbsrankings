@@ -138,12 +138,6 @@ class Ranking(Generic[T]):
 
 
 class TeamRankingService(metaclass=ABCMeta):
-    @abstractmethod
-    def calculate_for_season(
-        self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[Ranking[TeamID]]:
-        raise NotImplementedError
-
     @staticmethod
     def _to_values(
         season_data: SeasonData, value_map: Dict[TeamID, float]
@@ -200,12 +194,6 @@ class TeamRankingRepository(metaclass=ABCMeta):
 
 
 class GameRankingService(metaclass=ABCMeta):
-    @abstractmethod
-    def calculate_for_season(
-        self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[Ranking[GameID]]:
-        raise NotImplementedError
-
     @staticmethod
     def _to_values(
         season_data: SeasonData, value_map: Dict[GameID, float]

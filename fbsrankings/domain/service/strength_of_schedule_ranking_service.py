@@ -1,11 +1,9 @@
 from typing import Dict
-from typing import List
 
 from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
-from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -24,18 +22,15 @@ class TeamData(object):
 
 
 class StrengthOfScheduleRankingService(TeamRankingService):
-    def __init__(
-        self, repository: TeamRankingRepository, performance_ranking: Ranking[TeamID]
-    ) -> None:
+    def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
-        self._performance_ranking = performance_ranking
 
-    def calculate_for_season(
-        self, season_ID: SeasonID, season_data: SeasonData
-    ) -> List[Ranking[TeamID]]:
+    def calculate_for_ranking(
+        self, season_data: SeasonData, performance_ranking: Ranking[TeamID]
+    ) -> Ranking[TeamID]:
         team_data: Dict[TeamID, TeamData] = {}
 
-        performance_map = {r.ID: r for r in self._performance_ranking.values}
+        performance_map = {r.ID: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
             home_performance = performance_map.get(game.home_team_ID)
@@ -57,11 +52,9 @@ class StrengthOfScheduleRankingService(TeamRankingService):
         result = {ID: data.strength_of_schedule for ID, data in team_data.items()}
         ranking_values = TeamRankingService._to_values(season_data, result)
 
-        return [
-            self._repository.create(
-                self._performance_ranking.name + " - Strength of Schedule - Total",
-                season_ID,
-                self._performance_ranking.week,
-                ranking_values,
-            )
-        ]
+        return self._repository.create(
+            performance_ranking.name + " - Strength of Schedule - Total",
+            season_data.season.ID,
+            performance_ranking.week,
+            ranking_values,
+        )
