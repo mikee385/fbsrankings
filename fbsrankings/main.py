@@ -28,6 +28,8 @@ from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
+from fbsrankings.query import GameRankingBySeasonWeekQuery
+from fbsrankings.query import GameRankingBySeasonWeekResult
 from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonResult
@@ -139,41 +141,43 @@ def _print_rankings(
 ) -> None:
     record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
 
-    sw_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("Simultaneous Wins", season_ID, week)
+    if record is not None:
+        _print_ranking_summary(
+            application, season_ID, year, week, record, "Simultaneous Wins"
+        )
+        _print_ranking_summary(
+            application, season_ID, year, week, record, "Colley Matrix"
+        )
+        _print_ranking_summary(application, season_ID, year, week, record, "SRS")
+
+
+def _print_ranking_summary(
+    application: Application,
+    season_ID: UUID,
+    year: int,
+    week: int,
+    record: TeamRecordBySeasonWeekResult,
+    ranking_name: str,
+) -> None:
+    ranking = application.query(
+        TeamRankingBySeasonWeekQuery(ranking_name, season_ID, week)
     )
-    sw_sos = application.query(
+    sos = application.query(
         TeamRankingBySeasonWeekQuery(
-            "Simultaneous Wins - Strength of Schedule - Total", season_ID, week
+            f"{ranking_name} - Strength of Schedule - Total", season_ID, week
         )
     )
-    if record is not None and sw_ranking is not None and sw_sos is not None:
-        _print_ranking_table(year, week, record, sw_ranking, sw_sos)
+    if record is not None and ranking is not None and sos is not None:
+        _print_team_ranking_table(year, week, record, ranking, sos)
 
-    cm_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("Colley Matrix", season_ID, week)
+    games = application.query(
+        GameRankingBySeasonWeekQuery(f"{ranking_name} - Game Strength", season_ID, week)
     )
-    cm_sos = application.query(
-        TeamRankingBySeasonWeekQuery(
-            "Colley Matrix - Strength of Schedule - Total", season_ID, week
-        )
-    )
-    if record is not None and cm_ranking is not None and cm_sos is not None:
-        _print_ranking_table(year, week, record, cm_ranking, cm_sos)
-
-    srs_ranking = application.query(
-        TeamRankingBySeasonWeekQuery("SRS", season_ID, week)
-    )
-    srs_sos = application.query(
-        TeamRankingBySeasonWeekQuery(
-            "SRS - Strength of Schedule - Total", season_ID, week
-        )
-    )
-    if record is not None and srs_ranking is not None and srs_sos is not None:
-        _print_ranking_table(year, week, record, srs_ranking, srs_sos)
+    if ranking is not None and games is not None:
+        _print_game_ranking_table(year, week, games, ranking)
 
 
-def _print_ranking_table(
+def _print_team_ranking_table(
     year: int,
     week: int,
     record: TeamRecordBySeasonWeekResult,
@@ -183,28 +187,28 @@ def _print_ranking_table(
     record_map = {v.ID: v for v in record.values}
     sos_map = {v.ID: v for v in sos.values}
 
-    ranking_table = PrettyTable()
-    ranking_table.field_names = [
-        "Rk",
+    table = PrettyTable()
+    table.field_names = [
+        "#",
         "Team",
         "W-L",
         "Val",
-        "SOS_Rk",
+        "SOS_#",
         "SOS_Val",
     ]
-    ranking_table.align["Rk"] = "r"
-    ranking_table.align["Team"] = "l"
-    ranking_table.align["W-L"] = "r"
-    ranking_table.align["Val"] = "c"
-    ranking_table.align["SOS_Rk"] = "r"
-    ranking_table.align["SOS_Val"] = "c"
-    ranking_table.float_format = ".3"
+    table.align["#"] = "r"
+    table.align["Team"] = "l"
+    table.align["W-L"] = "r"
+    table.align["Val"] = "c"
+    table.align["SOS_#"] = "r"
+    table.align["SOS_Val"] = "c"
+    table.float_format = ".3"
 
     for ranking_value in ranking.values[:10]:
         record_value = record_map[ranking_value.ID]
         sos_value = sos_map[ranking_value.ID]
 
-        ranking_table.add_row(
+        table.add_row(
             [
                 ranking_value.rank,
                 ranking_value.name,
@@ -216,8 +220,58 @@ def _print_ranking_table(
         )
 
     print()
-    print(f"{year}, Week {week} Top 10 {ranking.name}:")
-    print(ranking_table)
+    print(f"{year}, Week {week} Top 10 Teams, {ranking.name}:")
+    print(table)
+
+
+def _print_game_ranking_table(
+    year: int,
+    week: int,
+    game_ranking: GameRankingBySeasonWeekResult,
+    team_ranking: TeamRankingBySeasonWeekResult,
+) -> None:
+    team_map = {v.ID: v for v in team_ranking.values}
+
+    table = PrettyTable()
+    table.field_names = [
+        "Date",
+        "H#",
+        "Home",
+        "A#",
+        "Away",
+        "Score",
+        "Val",
+    ]
+    table.align["Date"] = "c"
+    table.align["H#"] = "r"
+    table.align["Home"] = "l"
+    table.align["A#"] = "r"
+    table.align["Away"] = "l"
+    table.align["Score"] = "r"
+    table.align["Val"] = "c"
+    table.float_format = ".3"
+
+    for game in game_ranking.values[:10]:
+        home_team = team_map[game.home_team_ID]
+        away_team = team_map[game.away_team_ID]
+
+        table.add_row(
+            [
+                game.date,
+                home_team.rank,
+                game.home_team_name,
+                away_team.rank,
+                game.away_team_name,
+                f"{game.home_team_score}-{game.away_team_score}"
+                if game.home_team_score is not None and game.away_team_score is not None
+                else "",
+                game.value,
+            ]
+        )
+
+    print()
+    print(f"{year}, Week {week} Top 10 Games of Season, {team_ranking.name}:")
+    print(table)
 
 
 def _print_canceled_games(application: Application) -> None:
@@ -225,14 +279,14 @@ def _print_canceled_games(application: Application) -> None:
     if canceled_games:
         print()
         print("Canceled Games:")
-        for canceled_game in canceled_games:
+        for game in canceled_games:
             print()
-            print(f"ID: {canceled_game.ID}")
-            print(f"Year {canceled_game.year}, Week {canceled_game.week}")
-            print(canceled_game.date)
-            print(canceled_game.season_section)
-            print(f"{canceled_game.home_team_name} vs. {canceled_game.away_team_name}")
-            print(canceled_game.notes)
+            print(f"ID: {game.ID}")
+            print(f"Year {game.year}, Week {game.week}")
+            print(game.date)
+            print(game.season_section)
+            print(f"{game.home_team_name} vs. {game.away_team_name}")
+            print(game.notes)
 
 
 def _print_note_events(application: Application, event_recorder: EventRecorder) -> None:
@@ -242,40 +296,40 @@ def _print_note_events(application: Application, event_recorder: EventRecorder) 
     if notes_events:
         print()
         print("Notes:")
-        for notes_event in notes_events:
-            notes_game = application.query(GameByIDQuery(notes_event.ID))
-            if notes_game is not None:
+        for event in notes_events:
+            game = application.query(GameByIDQuery(event.ID))
+            if game is not None:
                 print()
-                print(f"ID: {notes_game.ID}")
-                print(f"Year {notes_game.year}, Week {notes_game.week}")
-                print(notes_game.date)
-                print(notes_game.season_section)
-                print(f"{notes_game.home_team_name} vs. {notes_game.away_team_name}")
+                print(f"ID: {game.ID}")
+                print(f"Year {game.year}, Week {game.week}")
+                print(game.date)
+                print(game.season_section)
+                print(f"{game.home_team_name} vs. {game.away_team_name}")
                 if (
-                    notes_game.home_team_score is not None
-                    and notes_game.away_team_score is not None
+                    game.home_team_score is not None
+                    and game.away_team_score is not None
                 ):
                     print(
-                        f"{notes_game.status}, {notes_game.home_team_score} to {notes_game.away_team_score}"
+                        f"{game.status}, {game.home_team_score} to {game.away_team_score}"
                     )
                 else:
-                    print(notes_game.status)
-                print(f"Old Notes: {notes_event.old_notes}")
-                print(f"New Notes: {notes_event.notes}")
+                    print(game.status)
+                print(f"Old Notes: {event.old_notes}")
+                print(f"New Notes: {event.notes}")
 
 
 def _print_event_counts(event_bus: EventCounter) -> None:
     print()
     print("Events:")
     if event_bus.counts:
-        event_table = PrettyTable()
-        event_table.field_names = ["Type", "Count"]
-        event_table.align["Type"] = "l"
-        event_table.align["Count"] = "r"
+        table = PrettyTable()
+        table.field_names = ["Type", "Count"]
+        table.align["Type"] = "l"
+        table.align["Count"] = "r"
 
         for event_type, count in event_bus.counts.items():
-            event_table.add_row([event_type.__name__, count])
-        print(event_table)
+            table.add_row([event_type.__name__, count])
+        print(table)
     else:
         print("None")
 
@@ -337,24 +391,24 @@ def _print_game_errors(
         print()
         print("Game Errors:")
         for error in game_errors:
-            error_game = application.query(GameByIDQuery(error.game_ID))
-            if error_game is not None:
+            game = application.query(GameByIDQuery(error.game_ID))
+            if game is not None:
                 print()
-                print(f"ID: {error_game.ID}")
-                print(f"Year {error_game.year}, Week {error_game.week}")
-                print(error_game.date)
-                print(error_game.season_section)
-                print(f"{error_game.home_team_name} vs. {error_game.away_team_name}")
+                print(f"ID: {game.ID}")
+                print(f"Year {game.year}, Week {game.week}")
+                print(game.date)
+                print(game.season_section)
+                print(f"{game.home_team_name} vs. {game.away_team_name}")
                 if (
-                    error_game.home_team_score is not None
-                    and error_game.away_team_score is not None
+                    game.home_team_score is not None
+                    and game.away_team_score is not None
                 ):
                     print(
-                        f"{error_game.status}, {error_game.home_team_score} to {error_game.away_team_score}"
+                        f"{game.status}, {game.home_team_score} to {game.away_team_score}"
                     )
                 else:
-                    print(error_game.status)
-                print(error_game.notes)
+                    print(game.status)
+                print(game.notes)
                 print(
                     f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}"
                 )

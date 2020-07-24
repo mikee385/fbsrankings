@@ -16,6 +16,15 @@ from fbsrankings.query.game_count_by_season import (
 from fbsrankings.query.game_count_by_season import (
     GameCountBySeasonResult as GameCountBySeasonResult,
 )
+from fbsrankings.query.game_ranking_by_season_week import (
+    GameRankingBySeasonWeekQuery as GameRankingBySeasonWeekQuery,
+)
+from fbsrankings.query.game_ranking_by_season_week import (
+    GameRankingBySeasonWeekResult as GameRankingBySeasonWeekResult,
+)
+from fbsrankings.query.game_ranking_by_season_week import (
+    GameRankingValueBySeasonWeekResult as GameRankingValueBySeasonWeekResult,
+)
 from fbsrankings.query.most_recent_completed_week import (
     MostRecentCompletedWeekQuery as MostRecentCompletedWeekQuery,
 )
