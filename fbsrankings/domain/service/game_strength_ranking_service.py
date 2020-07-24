@@ -2,6 +2,7 @@ import sys
 from typing import Dict
 
 from fbsrankings.domain.model.game import GameID
+from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import GameRankingRepository
 from fbsrankings.domain.model.ranking import GameRankingService
 from fbsrankings.domain.model.ranking import Ranking
@@ -33,14 +34,15 @@ class GameStrengthRankingService(GameRankingService):
         performance_map = {r.ID: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
-            home_performance = performance_map.get(game.home_team_ID)
-            away_performance = performance_map.get(game.away_team_ID)
+            if game.status != GameStatus.CANCELED:
+                home_performance = performance_map.get(game.home_team_ID)
+                away_performance = performance_map.get(game.away_team_ID)
 
-            if home_performance is not None and away_performance is not None:
-                data = GameData()
-                data.add_team(home_performance.value)
-                data.add_team(away_performance.value)
-                game_data[game.ID] = data
+                if home_performance is not None and away_performance is not None:
+                    data = GameData()
+                    data.add_team(home_performance.value)
+                    data.add_team(away_performance.value)
+                    game_data[game.ID] = data
 
         result = {ID: data.game_value for ID, data in game_data.items()}
         ranking_values = GameRankingService._to_values(season_data, result)

@@ -1,5 +1,6 @@
 from typing import Dict
 
+from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
@@ -33,21 +34,22 @@ class StrengthOfScheduleRankingService(TeamRankingService):
         performance_map = {r.ID: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
-            home_performance = performance_map.get(game.home_team_ID)
-            away_performance = performance_map.get(game.away_team_ID)
+            if game.status != GameStatus.CANCELED:
+                home_performance = performance_map.get(game.home_team_ID)
+                away_performance = performance_map.get(game.away_team_ID)
 
-            if home_performance is not None and away_performance is not None:
-                home_data = team_data.get(game.home_team_ID)
-                if home_data is None:
-                    home_data = TeamData()
-                    team_data[game.home_team_ID] = home_data
-                home_data.add_opponent(away_performance.value)
+                if home_performance is not None and away_performance is not None:
+                    home_data = team_data.get(game.home_team_ID)
+                    if home_data is None:
+                        home_data = TeamData()
+                        team_data[game.home_team_ID] = home_data
+                    home_data.add_opponent(away_performance.value)
 
-                away_data = team_data.get(game.away_team_ID)
-                if away_data is None:
-                    away_data = TeamData()
-                    team_data[game.away_team_ID] = away_data
-                away_data.add_opponent(home_performance.value)
+                    away_data = team_data.get(game.away_team_ID)
+                    if away_data is None:
+                        away_data = TeamData()
+                        team_data[game.away_team_ID] = away_data
+                    away_data.add_opponent(home_performance.value)
 
         result = {ID: data.strength_of_schedule for ID, data in team_data.items()}
         ranking_values = TeamRankingService._to_values(season_data, result)
