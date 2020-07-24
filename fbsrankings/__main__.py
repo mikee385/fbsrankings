@@ -18,9 +18,9 @@ if use_typeguard:
     from typeguard.importhook import install_import_hook
 
     with install_import_hook("fbsrankings"):
-        from fbsrankings.main import main
+        from fbsrankings.cli import main
 else:
-    from fbsrankings.main import main
+    from fbsrankings.cli import main
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main(prog_name="fbsrankings")
