@@ -1,3 +1,4 @@
+import sys
 from typing import Dict
 
 from fbsrankings.domain.model.game import GameID
@@ -10,16 +11,14 @@ from fbsrankings.domain.model.team import TeamID
 
 class GameData(object):
     def __init__(self) -> None:
-        self.team_count = 0
-        self.team_value_sum = 0.0
+        self.min_team_value = sys.float_info.max
 
     def add_team(self, team_value: float) -> None:
-        self.team_count += 1
-        self.team_value_sum += team_value
+        self.min_team_value = min(self.min_team_value, team_value)
 
     @property
     def game_value(self) -> float:
-        return self.team_value_sum / self.team_count if self.team_count > 0 else 0.0
+        return self.min_team_value
 
 
 class GameStrengthRankingService(GameRankingService):
