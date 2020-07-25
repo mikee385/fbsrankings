@@ -27,9 +27,9 @@ class GameStrengthRankingService(GameRankingService):
 
                 if home_performance is not None and away_performance is not None:
                     if home_performance.value > away_performance.value:
-                        game_value = away_performance.value
+                        game_value = (99 * away_performance.value + home_performance.value) / 100.0
                     else:
-                        game_value = home_performance.value
+                        game_value = (99 * home_performance.value + away_performance.value) / 100.0
                     game_data[game.ID] = game_value
 
         ranking_values = GameRankingService._to_values(season_data, game_data)
