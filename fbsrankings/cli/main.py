@@ -118,6 +118,8 @@ def import_seasons(seasons: Tuple[str], drop: bool) -> None:
                 start_year = int(year_strings[0])
                 end_year = int(year_strings[1])
                 years.extend(range(start_year, end_year + 1))
+            elif value.casefold() == "latest".casefold():
+                years.append(max(application.seasons))
             elif value.casefold() == "all".casefold():
                 years = application.seasons
                 break
@@ -202,7 +204,10 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
                 week = most_recent_completed_week.week
 
         all_seasons = application.query(SeasonsQuery()).seasons
-        season_ID = next(iter(item.ID for item in all_seasons if item.year == year))
+        seasons_IDs = [item.ID for item in all_seasons if item.year == year]
+        if not seasons_IDs:
+            raise ValueError(f"Season not found for {year}")
+        season_ID = seasons_IDs[0]
 
         rating_name: str
         if rating.casefold() == "SRS".casefold():
