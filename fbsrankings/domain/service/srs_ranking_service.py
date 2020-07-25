@@ -89,7 +89,7 @@ class SRSRankingService(TeamRankingService):
 
             a[n, :] = numpy.ones(n)
             b[n] = 0.0
-            x = numpy.linalg.lstsq(a, b, rcond=None)[0]
+            x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
 
             result = {ID: x[data.index] for ID, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
