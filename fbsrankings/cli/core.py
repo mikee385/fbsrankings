@@ -5,7 +5,6 @@ from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 from uuid import UUID
 
@@ -78,7 +77,7 @@ def _create_application(event_bus: EventBus) -> Application:
     return Application(config, event_bus)
 
 
-def import_seasons(seasons: Tuple[str], drop: bool) -> None:
+def import_seasons(seasons: Iterable[str], drop: bool) -> None:
     event_recorder = EventRecorder(EventBus())
     event_counter = EventCounter(event_recorder)
 
@@ -97,6 +96,8 @@ def import_seasons(seasons: Tuple[str], drop: bool) -> None:
             elif value.casefold() == "all".casefold():
                 years = application.seasons
                 break
+            else:
+                raise ValueError(f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'")
 
         update_tracker = _UpdateTracker(event_counter)
 
@@ -149,6 +150,8 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
             if most_recent_completed_week is not None:
                 year = most_recent_completed_week.year
                 week = most_recent_completed_week.week
+        else:
+            raise ValueError(f"'{season}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'")
 
         all_seasons = application.query(SeasonsQuery()).seasons
         seasons_IDs = [item.ID for item in all_seasons if item.year == year]
@@ -163,12 +166,16 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
             rating_name = "Colley Matrix"
         elif rating.casefold() == "simultaneous-wins".casefold():
             rating_name = "Simultaneous Wins"
+        else:
+            raise ValueError(f"Unknown rating type: {rating}")
 
         limit: Optional[int]
         if top.isdecimal():
             limit = int(top)
         elif top.casefold() == "all".casefold():
             limit = None
+        else:
+            raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
         if display == "summary":
             record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
@@ -201,6 +208,9 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
             )
             if ranking is not None and games is not None:
                 _print_game_ranking_table(year, week, games, ranking, limit)
+                
+        else:
+            raise ValueError(f"Unknown display type: {display}")
 
 
 def _print_season_summaries(
