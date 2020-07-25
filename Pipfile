@@ -5,15 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 typeguard = "*"
-prettytable = "*"
-tqdm = "*"
-jsonschema = "*"
 
 [packages]
 bs4 = "*"
 typing-extensions = "*"
 html5lib = "*"
 numpy = "*"
+jsonschema = "*"
+prettytable = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3.6"
