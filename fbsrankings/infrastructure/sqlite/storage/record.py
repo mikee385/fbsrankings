@@ -30,10 +30,9 @@ class TeamRecordTable(object):
         self.value_table.dump(connection)
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
-
         self.value_table.drop(cursor)
+
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
 
 
 class TeamRecordValueTable(object):
@@ -61,4 +60,3 @@ class TeamRecordValueTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)

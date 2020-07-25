@@ -36,7 +36,6 @@ class RankingTypeTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
 
 
 class RankingTable(object):
@@ -73,11 +72,10 @@ class RankingTable(object):
         self.game_value_table.dump(connection)
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
-
-        self.team_value_table.drop(cursor)
         self.game_value_table.drop(cursor)
+        self.team_value_table.drop(cursor)
+
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
 
 
 class TeamRankingValueTable(object):
@@ -107,7 +105,6 @@ class TeamRankingValueTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
 
 
 class GameRankingValueTable(object):
@@ -137,4 +134,3 @@ class GameRankingValueTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)

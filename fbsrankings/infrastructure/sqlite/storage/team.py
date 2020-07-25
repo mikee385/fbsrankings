@@ -23,4 +23,3 @@ class TeamTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)

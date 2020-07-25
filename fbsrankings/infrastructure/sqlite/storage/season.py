@@ -32,7 +32,6 @@ class SeasonSectionTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
 
 
 class SeasonTable(object):
@@ -57,4 +56,3 @@ class SeasonTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)

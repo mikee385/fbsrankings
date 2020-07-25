@@ -32,7 +32,6 @@ class GameStatusTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)
 
 
 class GameTable(object):
@@ -66,4 +65,3 @@ class GameTable(object):
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
-        self.create(cursor)

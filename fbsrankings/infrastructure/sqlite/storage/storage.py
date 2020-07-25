@@ -41,18 +41,31 @@ class Storage(object):
         cursor = connection.cursor()
         cursor.execute("begin")
         try:
-            SeasonSectionTable().drop(cursor)
-            SubdivisionTable().drop(cursor)
-            GameStatusTable().drop(cursor)
-            RankingTypeTable().drop(cursor)
-
-            SeasonTable().drop(cursor)
-            TeamTable().drop(cursor)
-            AffiliationTable().drop(cursor)
-            GameTable().drop(cursor)
-
-            TeamRecordTable().drop(cursor)
             RankingTable().drop(cursor)
+            TeamRecordTable().drop(cursor)
+
+            GameTable().drop(cursor)
+            AffiliationTable().drop(cursor)
+            TeamTable().drop(cursor)
+            SeasonTable().drop(cursor)
+
+            RankingTypeTable().drop(cursor)
+            GameStatusTable().drop(cursor)
+            SubdivisionTable().drop(cursor)
+            SeasonSectionTable().drop(cursor)
+
+            SeasonSectionTable().create(cursor)
+            SubdivisionTable().create(cursor)
+            GameStatusTable().create(cursor)
+            RankingTypeTable().create(cursor)
+
+            SeasonTable().create(cursor)
+            TeamTable().create(cursor)
+            AffiliationTable().create(cursor)
+            GameTable().create(cursor)
+
+            TeamRecordTable().create(cursor)
+            RankingTable().create(cursor)
 
             cursor.execute("commit")
         except:  # noqa: E722
