@@ -2,9 +2,9 @@ import argparse
 
 from fbsrankings import __version__
 from fbsrankings.cli import core
-from fbsrankings.cli.types2 import NumberOrAllType
-from fbsrankings.cli.types2 import SeasonRangeType
-from fbsrankings.cli.types2 import SeasonWeekType
+from fbsrankings.cli.types import NumberOrAllType
+from fbsrankings.cli.types import SeasonRangeType
+from fbsrankings.cli.types import SeasonWeekType
     
 
 def import_seasons(args: argparse.Namespace) -> None:
