@@ -18,7 +18,7 @@ from fbsrankings.infrastructure.sqlite.write import Transaction
 class DataSource(QueryManagerFactory, TransactionFactory):
     def __init__(self, database: str) -> None:
         if database == ":memory:":
-            database_location = database
+            self._database = database
         else:
             database_path = Path(database)
             if not database_path.is_absolute():
@@ -28,9 +28,9 @@ class DataSource(QueryManagerFactory, TransactionFactory):
                 database_path = package_dir / database
 
             database_path.parent.mkdir(parents=True, exist_ok=True)
-            database_location = str(database_path)
+            self._database = str(database_path)
 
-        self._connection = sqlite3.connect(database_location)
+        self._connection = sqlite3.connect(self._database)
         self._connection.isolation_level = None
         self._connection.execute("PRAGMA foreign_keys = ON")
 
@@ -41,6 +41,9 @@ class DataSource(QueryManagerFactory, TransactionFactory):
 
     def transaction(self, event_bus: EventBus) -> Transaction:
         return Transaction(self._connection, event_bus)
+
+    def drop(self) -> None:
+        self._storage.drop(self._connection)
 
     def close(self) -> None:
         self._connection.close()

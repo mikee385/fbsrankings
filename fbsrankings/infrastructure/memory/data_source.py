@@ -23,6 +23,9 @@ class DataSource(QueryManagerFactory, TransactionFactory):
     def transaction(self, event_bus: EventBus) -> Transaction:
         return Transaction(self._storage, event_bus)
 
+    def drop(self) -> None:
+        self._storage.drop()
+
     def close(self) -> None:
         pass
 

@@ -53,3 +53,8 @@ class AffiliationStorage(object):
 
     def all(self) -> Iterable[AffiliationDto]:
         return self._by_key.values()
+
+    def drop(self) -> None:
+        self._by_ID = {}
+        self._by_key = {}
+        self._by_season = {}

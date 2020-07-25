@@ -30,6 +30,10 @@ class SubdivisionTable(object):
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)
+
 
 class AffiliationTable(object):
     def __init__(self) -> None:
@@ -52,3 +56,7 @@ class AffiliationTable(object):
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
+
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)

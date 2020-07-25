@@ -30,3 +30,7 @@ class SeasonStorage(object):
 
     def all(self) -> Iterable[SeasonDto]:
         return self._by_key.values()
+
+    def drop(self) -> None:
+        self._by_ID = {}
+        self._by_key = {}

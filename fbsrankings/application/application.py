@@ -28,6 +28,9 @@ R = TypeVar("R", covariant=True)
 
 
 class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
+    def drop(self) -> None:
+        pass
+
     def close(self) -> None:
         pass
 
@@ -99,6 +102,9 @@ class Application(ContextManager["Application"]):
 
     def query(self, query: Query[R]) -> R:
         return self._query_bus.query(query)
+
+    def drop(self) -> None:
+        self._data_source.drop()
 
     def close(self) -> None:
         self._query_manager.close()

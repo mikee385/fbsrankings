@@ -92,7 +92,13 @@ def main() -> None:
 
 @main.command("import")
 @click.argument("seasons", type=SeasonRangeType(), nargs=-1, required=True)
-def import_seasons(seasons: Tuple[str]) -> None:
+@click.option(
+    "--drop",
+    is_flag=True,
+    default=False,
+    help="Drop the existing data source before importing the data",
+)
+def import_seasons(seasons: Tuple[str], drop: bool) -> None:
     """Import team and game data for SEASON for sportsreference.com.
 
     SEASON can be a single season (e.g. 2018), a range (e.g. 2015-2018), or 'all' to import all available seasons.
@@ -117,6 +123,9 @@ def import_seasons(seasons: Tuple[str]) -> None:
                 break
 
         update_tracker = _UpdateTracker(event_counter)
+
+        if drop:
+            application.drop()
 
         click.echo("Importing Season Data:")
         for year in tqdm(years):

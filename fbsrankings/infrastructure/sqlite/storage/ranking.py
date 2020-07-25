@@ -34,6 +34,10 @@ class RankingTypeTable(object):
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)
+
 
 class RankingTable(object):
     def __init__(self) -> None:
@@ -68,6 +72,13 @@ class RankingTable(object):
         self.team_value_table.dump(connection)
         self.game_value_table.dump(connection)
 
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)
+
+        self.team_value_table.drop(cursor)
+        self.game_value_table.drop(cursor)
+
 
 class TeamRankingValueTable(object):
     def __init__(self) -> None:
@@ -94,6 +105,10 @@ class TeamRankingValueTable(object):
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)
+
 
 class GameRankingValueTable(object):
     def __init__(self) -> None:
@@ -119,3 +134,7 @@ class GameRankingValueTable(object):
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
+
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        self.create(cursor)

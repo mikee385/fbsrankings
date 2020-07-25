@@ -41,6 +41,14 @@ class GameStorage(object):
         self._by_key: Dict[Tuple[UUID, int, UUID, UUID], GameDto] = {}
         self._by_season: Dict[UUID, List[GameDto]] = {}
 
+    def _get_key(
+        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID
+    ) -> Tuple[UUID, int, UUID, UUID]:
+        if team1_ID < team2_ID:
+            return (season_ID, week, team1_ID, team2_ID)
+        else:
+            return (season_ID, week, team2_ID, team1_ID)
+
     def add(self, game: GameDto) -> None:
         key = self._get_key(
             game.season_ID, game.week, game.home_team_ID, game.away_team_ID
@@ -77,10 +85,7 @@ class GameStorage(object):
     def all(self) -> Iterable[GameDto]:
         return self._by_key.values()
 
-    def _get_key(
-        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID
-    ) -> Tuple[UUID, int, UUID, UUID]:
-        if team1_ID < team2_ID:
-            return (season_ID, week, team1_ID, team2_ID)
-        else:
-            return (season_ID, week, team2_ID, team1_ID)
+    def drop(self) -> None:
+        self._by_ID = {}
+        self._by_key = {}
+        self._by_season = {}

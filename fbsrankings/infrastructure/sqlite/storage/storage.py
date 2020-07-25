@@ -36,3 +36,27 @@ class Storage(object):
             raise
         finally:
             cursor.close()
+
+    def drop(self, connection: sqlite3.Connection) -> None:
+        cursor = connection.cursor()
+        cursor.execute("begin")
+        try:
+            SeasonSectionTable().drop(cursor)
+            SubdivisionTable().drop(cursor)
+            GameStatusTable().drop(cursor)
+            RankingTypeTable().drop(cursor)
+
+            SeasonTable().drop(cursor)
+            TeamTable().drop(cursor)
+            AffiliationTable().drop(cursor)
+            GameTable().drop(cursor)
+
+            TeamRecordTable().drop(cursor)
+            RankingTable().drop(cursor)
+
+            cursor.execute("commit")
+        except:  # noqa: E722
+            cursor.execute("rollback")
+            raise
+        finally:
+            cursor.close()

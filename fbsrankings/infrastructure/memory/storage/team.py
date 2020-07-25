@@ -30,3 +30,7 @@ class TeamStorage(object):
 
     def all(self) -> Iterable[TeamDto]:
         return self._by_key.values()
+
+    def drop(self) -> None:
+        self._by_ID = {}
+        self._by_key = {}

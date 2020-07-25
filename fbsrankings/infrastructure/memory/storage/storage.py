@@ -16,3 +16,13 @@ class Storage(object):
         self.team_record = TeamRecordStorage()
         self.team_ranking = RankingStorage()
         self.game_ranking = RankingStorage()
+
+    def drop(self) -> None:
+        self.season.drop()
+        self.team.drop()
+        self.affiliation.drop()
+        self.game.drop()
+
+        self.team_record.drop()
+        self.team_ranking.drop()
+        self.game_ranking.drop()

@@ -70,3 +70,8 @@ class RankingStorage(object):
 
     def all(self) -> Iterable[RankingDto]:
         return self._by_key.values()
+
+    def drop(self) -> None:
+        self._by_ID = {}
+        self._by_key = {}
+        self._by_season = {}
