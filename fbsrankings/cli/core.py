@@ -13,6 +13,7 @@ from prettytable import PrettyTable  # type: ignore
 from tqdm import tqdm  # type: ignore
 
 from fbsrankings.application import Application
+from fbsrankings.cli.tspinner import tspinner
 from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus
@@ -106,7 +107,10 @@ def import_seasons(seasons: Iterable[str], drop: bool) -> None:
         update_tracker = _UpdateTracker(event_counter)
 
         if drop:
-            application.drop()
+            print("Dropping existing data...")
+            with tspinner():
+                application.drop()
+            print()
 
         print("Importing Season Data:")
         for year in tqdm(years):
