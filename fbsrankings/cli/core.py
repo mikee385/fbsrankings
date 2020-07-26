@@ -17,18 +17,25 @@ from fbsrankings.application import Application
 from fbsrankings.cli.tspinner import tspinner
 from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
+from fbsrankings.common import Event
 from fbsrankings.common import EventBus
-from fbsrankings.common import EventCounter
 from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
 from fbsrankings.domain import GameStatus
 from fbsrankings.domain import ValidationError
+from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
 from fbsrankings.event import GameCreatedEvent
 from fbsrankings.event import GameNotesUpdatedEvent
+from fbsrankings.event import GameRankingCalculatedEvent
+from fbsrankings.event import GameRescheduledEvent
+from fbsrankings.event import SeasonCreatedEvent
+from fbsrankings.event import TeamCreatedEvent
+from fbsrankings.event import TeamRankingCalculatedEvent
+from fbsrankings.event import TeamRecordCalculatedEvent
 from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
@@ -86,10 +93,8 @@ def _create_application(event_bus: EventBus) -> Application:
 
 
 def import_seasons(seasons: Iterable[str], drop: bool) -> None:
-    event_recorder = EventRecorder(EventBus())
-    event_counter = EventCounter(event_recorder)
-
-    with _create_application(event_counter) as application:
+    event_bus = EventRecorder(EventBus())
+    with _create_application(event_bus) as application:
         years: List[int] = []
         for value in seasons:
             if value.isdecimal():
@@ -109,7 +114,7 @@ def import_seasons(seasons: Iterable[str], drop: bool) -> None:
                     f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'"
                 )
 
-        update_tracker = _UpdateTracker(event_counter)
+        update_tracker = _UpdateTracker(event_bus)
 
         if drop:
             print_err("Dropping existing data...")
@@ -127,21 +132,9 @@ def import_seasons(seasons: Iterable[str], drop: bool) -> None:
             for season in tqdm(update_tracker.updates):
                 application.send(CalculateRankingsForSeasonCommand(season))
 
-        all_seasons = application.query(SeasonsQuery()).seasons
-        _print_season_summary_table(application, all_seasons)
-
-        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-        if most_recent_completed_week is not None:
-            _print_all_rankings(
-                application,
-                most_recent_completed_week.season_ID,
-                most_recent_completed_week.year,
-                most_recent_completed_week.week,
-            )
-
-        # _print_note_events(application, event_recorder)
-
-        _print_event_counts(event_counter)
+        _print_events(application, event_bus)
+        # _print_canceled_games(application)
+        # _print_notes(application, event_bus)
         _print_errors(application)
 
 
@@ -448,6 +441,75 @@ def _print_game_ranking_table(
     print(table)
 
 
+def _print_events(application: Application, event_recorder: EventRecorder) -> None:
+    known_events: Type[Event] = [
+        SeasonCreatedEvent,
+        TeamCreatedEvent,
+        AffiliationCreatedEvent,
+        GameCreatedEvent,
+        GameRescheduledEvent,
+        GameCompletedEvent,
+        GameCanceledEvent,
+        GameNotesUpdatedEvent,
+        TeamRecordCalculatedEvent,
+        TeamRankingCalculatedEvent,
+        GameRankingCalculatedEvent,
+    ]
+    
+    print()
+    print("Events:")
+    if event_recorder.events:
+        seasons = application.query(SeasonsQuery()).seasons
+        season_map = {s.ID: s for s in seasons}
+        event_counts: Dict[int, Dict[Event, int]] = {}
+        other_counts: Dict[Event, int] = {}
+    
+        for event in event_recorder.events:
+            event_type = type(event)
+            if event_type not in known_events:
+                other_counts.setdefault(event_type, 0)
+                other_counts[event_type] += 1
+            elif hasattr(event, "season_ID"):
+                year = season_map[event.season_ID].year
+                year_counts = event_counts.setdefault(year, {})
+                year_counts.setdefault(event_type, 0)
+                year_counts[event_type] += 1
+        
+        event_table = PrettyTable()
+        event_table.field_names = ["Year", "Tm", "GmS", "GmC", "GmR", "GmX", "GmN", "TRd", "TRk", "GRk"]
+        for year, counts in event_counts.items():
+            event_table.add_row(
+                [
+                    year,
+                    counts.get(AffiliationCreatedEvent, 0),
+                    counts.get(GameCreatedEvent, 0),
+                    counts.get(GameCompletedEvent, 0),
+                    counts.get(GameRescheduledEvent, 0),
+                    counts.get(GameCanceledEvent, 0),
+                    counts.get(GameNotesUpdatedEvent, 0),
+                    counts.get(TeamRecordCalculatedEvent, 0),
+                    counts.get(TeamRankingCalculatedEvent, 0),
+                    counts.get(GameRankingCalculatedEvent, 0),
+                ]
+            )
+        print(event_table)
+        
+        if other_counts:
+            other_table = PrettyTable()
+            other_table.field_names = ["Type", "Count"]
+            other_table.align["Type"] = "l"
+            other_table.align["Count"] = "r"
+    
+            for other_type, count in other_counts.items():
+                other_table.add_row([other_type.__name__, count])
+            
+            print()
+            print("Additional Events:")
+            print(other_table)
+    else:
+        print("None")
+
+
 def _print_canceled_games(application: Application) -> None:
     canceled_games = application.query(CanceledGamesQuery()).games
     if canceled_games:
@@ -463,7 +525,7 @@ def _print_canceled_games(application: Application) -> None:
             print(game.notes)
 
 
-def _print_note_events(application: Application, event_recorder: EventRecorder) -> None:
+def _print_notes(application: Application, event_recorder: EventRecorder) -> None:
     notes_events = [
         e for e in event_recorder.events if isinstance(e, GameNotesUpdatedEvent)
     ]
@@ -490,22 +552,6 @@ def _print_note_events(application: Application, event_recorder: EventRecorder) 
                     print(game.status)
                 print(f"Old Notes: {event.old_notes}")
                 print(f"New Notes: {event.notes}")
-
-
-def _print_event_counts(event_bus: EventCounter) -> None:
-    print()
-    print("Events:")
-    if event_bus.counts:
-        table = PrettyTable()
-        table.field_names = ["Type", "Count"]
-        table.align["Type"] = "l"
-        table.align["Count"] = "r"
-
-        for event_type, count in event_bus.counts.items():
-            table.add_row([event_type.__name__, count])
-        print(table)
-    else:
-        print("None")
 
 
 def _print_errors(application: Application) -> None:
