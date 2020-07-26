@@ -1,5 +1,6 @@
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Dict
 from typing import Iterable
@@ -63,6 +64,10 @@ class _UpdateTracker(object):
             self.updates[event.season_ID] = [event.week]
         elif event.week not in season:
             season.append(event.week)
+            
+
+def print_err(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def _create_application(event_bus: EventBus) -> Application:
@@ -107,18 +112,18 @@ def import_seasons(seasons: Iterable[str], drop: bool) -> None:
         update_tracker = _UpdateTracker(event_counter)
 
         if drop:
-            print("Dropping existing data...")
+            print_err("Dropping existing data...")
             with tspinner():
                 application.drop()
-            print()
+            print_err()
 
-        print("Importing Season Data:")
+        print_err("Importing Season Data:")
         for year in tqdm(years):
             application.send(ImportSeasonByYearCommand(year))
 
         if update_tracker.updates:
-            print()
-            print("Calculating Rankings:")
+            print_err()
+            print_err("Calculating Rankings:")
             for season in tqdm(update_tracker.updates):
                 application.send(CalculateRankingsForSeasonCommand(season))
 
