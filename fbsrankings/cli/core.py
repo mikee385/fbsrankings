@@ -21,6 +21,7 @@ from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
+from fbsrankings.domain import GameStatus
 from fbsrankings.domain import ValidationError
 from fbsrankings.event import GameCanceledEvent
 from fbsrankings.event import GameCompletedEvent
@@ -32,6 +33,7 @@ from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
 from fbsrankings.query import GameRankingBySeasonWeekQuery
 from fbsrankings.query import GameRankingBySeasonWeekResult
+from fbsrankings.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonResult
@@ -117,7 +119,7 @@ def import_seasons(seasons: Iterable[str], drop: bool) -> None:
                 application.send(CalculateRankingsForSeasonCommand(season))
 
         all_seasons = application.query(SeasonsQuery()).seasons
-        _print_season_summaries(application, all_seasons)
+        _print_season_summary_table(application, all_seasons)
 
         most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
         if most_recent_completed_week is not None:
@@ -211,13 +213,13 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
                 )
             )
             if ranking is not None and games is not None:
-                _print_game_ranking_table(year, week, games, ranking, limit)
+                _print_game_rankings(year, week, games, ranking, limit)
 
         else:
             raise ValueError(f"Unknown display type: {display}")
+            
 
-
-def _print_season_summaries(
+def _print_season_summary_table(
     application: Application, seasons: Iterable[SeasonResult]
 ) -> None:
     season_summary_table = PrettyTable()
@@ -281,7 +283,7 @@ def _print_ranking_summary(
         GameRankingBySeasonWeekQuery(f"{ranking_name} - Game Strength", season_ID, week)
     )
     if ranking is not None and games is not None:
-        _print_game_ranking_table(year, week, games, ranking, limit)
+        _print_game_rankings(year, week, games, ranking, limit)
 
 
 def _print_team_ranking_table(
@@ -334,22 +336,59 @@ def _print_team_ranking_table(
 
     print()
     if week is not None:
-        if limit is not None:
-            print(f"{year}, Week {week} Top {limit} Teams, {ranking.name}:")
-        else:
-            print(f"{year}, Week {week} Teams, {ranking.name}:")
+        print(f"{year}, Week {week} Teams, {ranking.name}:")
     else:
-        if limit is not None:
-            print(f"{year} Top {limit} Teams, {ranking.name}:")
-        else:
-            print(f"{year} Teams, {ranking.name}:")
+        print(f"{year} Teams, {ranking.name}:")
     print(table)
+    
+    
+def _print_game_rankings(
+    year: int,
+    week: Optional[int],
+    game_ranking: GameRankingBySeasonWeekResult,
+    team_ranking: TeamRankingBySeasonWeekResult,
+    limit: Optional[int],
+) -> None:
+    completed_games = []
+    scheduled_games = []
+    next_week_games = []
+    for game in game_ranking.values:
+        if game.status == GameStatus.COMPLETED.name:
+            completed_games.append(game)
+        elif game.status == GameStatus.SCHEDULED.name:
+            scheduled_games.append(game)
+            if week is not None and game.week == week + 1:
+                next_week_games.append(game)
+                
+    if len(next_week_games) > 0:
+        print()
+        if week is not None:
+            print(f"{year}, Week {week} Next Week Games, {team_ranking.name}:")
+        else:
+            print(f"{year} Next Week Games, {team_ranking.name}:")
+        _print_game_ranking_table(year, week, next_week_games, team_ranking, limit)
+        
+    if len(scheduled_games) > 0:
+        print()
+        if week is not None:
+            print(f"{year}, Week {week} Remaining Games, {team_ranking.name}:")
+        else:
+            print(f"{year} Remaining Games, {team_ranking.name}:")
+        _print_game_ranking_table(year, week, scheduled_games, team_ranking, limit)
+    
+    if len(completed_games) > 0:
+        print()
+        if week is not None:
+            print(f"{year}, Week {week} Completed Games, {team_ranking.name}:")
+        else:
+            print(f"{year} Completed Games, {team_ranking.name}:")
+        _print_game_ranking_table(year, week, completed_games, team_ranking, limit)
 
 
 def _print_game_ranking_table(
     year: int,
     week: Optional[int],
-    game_ranking: GameRankingBySeasonWeekResult,
+    game_values: List[GameRankingValueBySeasonWeekResult],
     team_ranking: TeamRankingBySeasonWeekResult,
     limit: Optional[int],
 ) -> None:
@@ -375,9 +414,9 @@ def _print_game_ranking_table(
     table.float_format = ".3"
 
     if limit is None:
-        values = game_ranking.values
+        values = game_values
     else:
-        values = game_ranking.values[:limit]
+        values = game_values[:limit]
 
     for game in values:
         home_team = team_map[game.home_team_ID]
@@ -397,17 +436,6 @@ def _print_game_ranking_table(
             ]
         )
 
-    print()
-    if week is not None:
-        if limit is not None:
-            print(f"{year}, Week {week} Top {limit} Games, {team_ranking.name}:")
-        else:
-            print(f"{year}, Week {week} Games, {team_ranking.name}:")
-    else:
-        if limit is not None:
-            print(f"{year} Top {limit} Games, {team_ranking.name}:")
-        else:
-            print(f"{year} Games, {team_ranking.name}:")
     print(table)
 
 
@@ -560,3 +588,4 @@ def _print_other_errors(
         print()
         for error in other_errors:
             print(error)
+
