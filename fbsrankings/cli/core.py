@@ -102,16 +102,7 @@ def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
                 application.send(CalculateRankingsForSeasonCommand(season))
 
         if debug:
-            print_seasons("all")
-
-            print_teams("latest", "simultaneous-wins", "10")
-            print_games("latest", "simultaneous-wins", "10")
-
-            print_teams("latest", "colley-matrix", "10")
-            print_games("latest", "colley-matrix", "10")
-
-            print_teams("latest", "SRS", "10")
-            print_games("latest", "SRS", "10")
+            _print_debug(application)
 
         _print_events(application, event_bus)
         # _print_canceled_games(application)
@@ -218,6 +209,43 @@ def print_games(season: str, rating: str, top: str) -> None:
         game_ranking = _get_game_ranking(
             application, f"{rating_name} - Game Strength", season_ID, year, week
         )
+
+        _print_table_title(year, week, "Games of Season", team_ranking.name)
+        _print_games_table(year, week, game_ranking.values, team_ranking, limit)
+
+
+def _print_debug(application: Application) -> None:
+    limit = 10
+
+    seasons = application.query(SeasonsQuery()).seasons
+    _print_seasons_table(application, seasons)
+
+    most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
+    if most_recent_completed_week is None:
+        raise ValueError("No completed weeks were found")
+
+    season_ID = most_recent_completed_week.season_ID
+    year = most_recent_completed_week.year
+    week = most_recent_completed_week.week
+
+    for rating_name in ["Simultaneous Wins", "Colley Matrix", "SRS"]:
+        team_record = _get_team_record(application, season_ID, year, week)
+        team_ranking = _get_team_ranking(
+            application, rating_name, season_ID, year, week
+        )
+        team_sos = _get_team_ranking(
+            application,
+            f"{rating_name} - Strength of Schedule - Total",
+            season_ID,
+            year,
+            week,
+        )
+        game_ranking = _get_game_ranking(
+            application, f"{rating_name} - Game Strength", season_ID, year, week
+        )
+
+        _print_table_title(year, week, "Teams", team_ranking.name)
+        _print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
 
         _print_table_title(year, week, "Games of Season", team_ranking.name)
         _print_games_table(year, week, game_ranking.values, team_ranking, limit)
