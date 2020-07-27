@@ -83,13 +83,13 @@ def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
     with _create_application(event_bus) as application:
         years = _parse_seasons(application, seasons)
 
-        update_tracker = _UpdateTracker(event_bus)
-
         if drop:
             _print_err("Dropping existing data...")
             with tspinner():
                 application.drop()
             _print_err()
+
+        update_tracker = _UpdateTracker(event_bus)
 
         _print_err("Importing Season Data:")
         for year in tqdm(years):
@@ -125,51 +125,53 @@ def print_latest(rating: str, top: str) -> None:
 
     with _create_application(EventBus()) as application:
         most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-        if most_recent_completed_week is not None:
-            season_ID = most_recent_completed_week.season_ID
-            year = most_recent_completed_week.year
-            week = most_recent_completed_week.week
+        if most_recent_completed_week is None:
+            raise ValueError("No completed weeks were found")
 
-            team_record = _get_team_record(application, season_ID, year, week)
-            team_ranking = _get_team_ranking(
-                application, rating_name, season_ID, year, week
-            )
-            team_sos = _get_team_ranking(
-                application,
-                f"{rating_name} - Strength of Schedule - Total",
-                season_ID,
-                year,
-                week,
-            )
-            game_ranking = _get_game_ranking(
-                application, f"{rating_name} - Game Strength", season_ID, year, week
-            )
+        season_ID = most_recent_completed_week.season_ID
+        year = most_recent_completed_week.year
+        week = most_recent_completed_week.week
 
-            _print_table_title(year, week, "Teams", team_ranking.name)
-            _print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
+        team_record = _get_team_record(application, season_ID, year, week)
+        team_ranking = _get_team_ranking(
+            application, rating_name, season_ID, year, week
+        )
+        team_sos = _get_team_ranking(
+            application,
+            f"{rating_name} - Strength of Schedule - Total",
+            season_ID,
+            year,
+            week,
+        )
+        game_ranking = _get_game_ranking(
+            application, f"{rating_name} - Game Strength", season_ID, year, week
+        )
 
-            completed_games = []
-            scheduled_games = []
-            next_week_games = []
-            for game in game_ranking.values:
-                if game.status == GameStatus.COMPLETED.name:
-                    completed_games.append(game)
-                elif game.status == GameStatus.SCHEDULED.name:
-                    scheduled_games.append(game)
-                    if week is not None and game.week == week + 1:
-                        next_week_games.append(game)
+        _print_table_title(year, week, "Teams", team_ranking.name)
+        _print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
 
-            if len(next_week_games) > 0:
-                _print_table_title(year, week, "Next Week Games", team_ranking.name)
-                _print_games_table(year, week, next_week_games, team_ranking, limit)
+        completed_games = []
+        scheduled_games = []
+        next_week_games = []
+        for game in game_ranking.values:
+            if game.status == GameStatus.COMPLETED.name:
+                completed_games.append(game)
+            elif game.status == GameStatus.SCHEDULED.name:
+                scheduled_games.append(game)
+                if week is not None and game.week == week + 1:
+                    next_week_games.append(game)
 
-            if len(scheduled_games) > 0:
-                _print_table_title(year, week, "Remaining Games", team_ranking.name)
-                _print_games_table(year, week, scheduled_games, team_ranking, limit)
+        if len(next_week_games) > 0:
+            _print_table_title(year, week, "Next Week Games", team_ranking.name)
+            _print_games_table(year, week, next_week_games, team_ranking, limit)
 
-            if len(completed_games) > 0:
-                _print_table_title(year, week, "Completed Games", team_ranking.name)
-                _print_games_table(year, week, completed_games, team_ranking, limit)
+        if len(scheduled_games) > 0:
+            _print_table_title(year, week, "Remaining Games", team_ranking.name)
+            _print_games_table(year, week, scheduled_games, team_ranking, limit)
+
+        if len(completed_games) > 0:
+            _print_table_title(year, week, "Completed Games", team_ranking.name)
+            _print_games_table(year, week, completed_games, team_ranking, limit)
 
 
 def print_seasons(top: str) -> None:
@@ -280,9 +282,10 @@ def _parse_season_week(
         week = int(year_week[1])
     elif season_week.casefold() == "latest".casefold():
         most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-        if most_recent_completed_week is not None:
-            year = most_recent_completed_week.year
-            week = most_recent_completed_week.week
+        if most_recent_completed_week is None:
+            raise ValueError("No completed weeks were found")
+        year = most_recent_completed_week.year
+        week = most_recent_completed_week.week
     else:
         raise ValueError(
             f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'"
