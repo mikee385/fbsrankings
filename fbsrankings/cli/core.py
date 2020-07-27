@@ -53,6 +53,7 @@ from fbsrankings.query import TeamRankingBySeasonWeekQuery
 from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.query import TeamRecordBySeasonWeekResult
+from fbsrankings.query import WeekCountBySeasonQuery
 
 
 class _UpdateTracker(object):
@@ -225,9 +226,10 @@ def _print_season_summary_table(
     application: Application, seasons: Iterable[SeasonResult]
 ) -> None:
     season_summary_table = PrettyTable()
-    season_summary_table.field_names = ["Season", "Teams", "FBS", "FCS", "Games"]
+    season_summary_table.field_names = ["Season", "Weeks", "Teams", "FBS", "FCS", "Games"]
 
     for season in seasons:
+        week_count = application.query(WeekCountBySeasonQuery(season.ID))
         team_count = application.query(TeamCountBySeasonQuery(season.ID))
         affiliation_count = application.query(AffiliationCountBySeasonQuery(season.ID))
         game_count = application.query(GameCountBySeasonQuery(season.ID))
@@ -235,6 +237,7 @@ def _print_season_summary_table(
         season_summary_table.add_row(
             [
                 season.year,
+                week_count.count,
                 team_count.count,
                 affiliation_count.fbs_count,
                 affiliation_count.fcs_count,

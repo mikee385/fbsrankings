@@ -62,3 +62,9 @@ from fbsrankings.query.team_record_by_season_week import (
 from fbsrankings.query.team_record_by_season_week import (
     TeamRecordValueBySeasonWeekResult as TeamRecordValueBySeasonWeekResult,
 )
+from fbsrankings.query.week_count_by_season import (
+    WeekCountBySeasonQuery as WeekCountBySeasonQuery,
+)
+from fbsrankings.query.week_count_by_season import (
+    WeekCountBySeasonResult as WeekCountBySeasonResult,
+)
