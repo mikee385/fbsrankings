@@ -9,5 +9,6 @@ class WeekCountBySeasonQueryHandler(object):
 
     def __call__(self, query: WeekCountBySeasonQuery) -> WeekCountBySeasonResult:
         return WeekCountBySeasonResult(
-            query.season_ID, max(g.week for g in self._storage.game.for_season(query.season_ID))
+            query.season_ID,
+            max(g.week for g in self._storage.game.for_season(query.season_ID)),
         )

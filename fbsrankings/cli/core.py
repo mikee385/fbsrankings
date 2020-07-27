@@ -2,16 +2,20 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
+from typing import cast
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 from uuid import UUID
 
 import jsonschema  # type: ignore
 from prettytable import PrettyTable  # type: ignore
 from tqdm import tqdm  # type: ignore
+from typing_extensions import Protocol
 
 from fbsrankings.application import Application
 from fbsrankings.cli.tspinner import tspinner
@@ -72,9 +76,9 @@ class _UpdateTracker(object):
             self.updates[event.season_ID] = [event.week]
         elif event.week not in season:
             season.append(event.week)
-            
 
-def print_err(*args, **kwargs):
+
+def print_err(*args: Any, **kwargs: Any) -> None:
     print(*args, file=sys.stderr, **kwargs)
 
 
@@ -220,13 +224,20 @@ def print_rankings(season: str, display: str, rating: str, top: str) -> None:
 
         else:
             raise ValueError(f"Unknown display type: {display}")
-            
+
 
 def _print_season_summary_table(
     application: Application, seasons: Iterable[SeasonResult]
 ) -> None:
     season_summary_table = PrettyTable()
-    season_summary_table.field_names = ["Season", "Weeks", "Teams", "FBS", "FCS", "Games"]
+    season_summary_table.field_names = [
+        "Season",
+        "Weeks",
+        "Teams",
+        "FBS",
+        "FCS",
+        "Games",
+    ]
 
     for season in seasons:
         week_count = application.query(WeekCountBySeasonQuery(season.ID))
@@ -345,8 +356,8 @@ def _print_team_ranking_table(
     else:
         print(f"{year} Teams, {ranking.name}:")
     print(table)
-    
-    
+
+
 def _print_game_rankings(
     year: int,
     week: Optional[int],
@@ -364,7 +375,7 @@ def _print_game_rankings(
             scheduled_games.append(game)
             if week is not None and game.week == week + 1:
                 next_week_games.append(game)
-                
+
     if len(next_week_games) > 0:
         print()
         if week is not None:
@@ -372,7 +383,7 @@ def _print_game_rankings(
         else:
             print(f"{year} Next Week Games, {team_ranking.name}:")
         _print_game_ranking_table(year, week, next_week_games, team_ranking, limit)
-        
+
     if len(scheduled_games) > 0:
         print()
         if week is not None:
@@ -380,7 +391,7 @@ def _print_game_rankings(
         else:
             print(f"{year} Remaining Games, {team_ranking.name}:")
         _print_game_ranking_table(year, week, scheduled_games, team_ranking, limit)
-    
+
     if len(completed_games) > 0:
         print()
         if week is not None:
@@ -444,8 +455,12 @@ def _print_game_ranking_table(
     print(table)
 
 
+class SeasonEvent(Protocol):
+    season_ID: UUID
+
+
 def _print_events(application: Application, event_recorder: EventRecorder) -> None:
-    known_events: Type[Event] = [
+    known_events: List[Type[Event]] = [
         SeasonCreatedEvent,
         TeamCreatedEvent,
         AffiliationCreatedEvent,
@@ -458,28 +473,39 @@ def _print_events(application: Application, event_recorder: EventRecorder) -> No
         TeamRankingCalculatedEvent,
         GameRankingCalculatedEvent,
     ]
-    
+
     print()
     print("Events:")
     if event_recorder.events:
         seasons = application.query(SeasonsQuery()).seasons
         season_map = {s.ID: s for s in seasons}
-        event_counts: Dict[int, Dict[Event, int]] = {}
-        other_counts: Dict[Event, int] = {}
-    
+        event_counts: Dict[int, Dict[Type[Event], int]] = {}
+        other_counts: Dict[Type[Event], int] = {}
+
         for event in event_recorder.events:
             event_type = type(event)
             if event_type not in known_events:
                 other_counts.setdefault(event_type, 0)
                 other_counts[event_type] += 1
             elif hasattr(event, "season_ID"):
-                year = season_map[event.season_ID].year
+                year = season_map[cast(SeasonEvent, event).season_ID].year
                 year_counts = event_counts.setdefault(year, {})
                 year_counts.setdefault(event_type, 0)
                 year_counts[event_type] += 1
-        
+
         event_table = PrettyTable()
-        event_table.field_names = ["Year", "Tm", "GmS", "GmC", "GmR", "GmX", "GmN", "TRd", "TRk", "GRk"]
+        event_table.field_names = [
+            "Year",
+            "Tm",
+            "GmS",
+            "GmC",
+            "GmR",
+            "GmX",
+            "GmN",
+            "TRd",
+            "TRk",
+            "GRk",
+        ]
         for year, counts in event_counts.items():
             event_table.add_row(
                 [
@@ -496,16 +522,16 @@ def _print_events(application: Application, event_recorder: EventRecorder) -> No
                 ]
             )
         print(event_table)
-        
+
         if other_counts:
             other_table = PrettyTable()
             other_table.field_names = ["Type", "Count"]
             other_table.align["Type"] = "l"
             other_table.align["Count"] = "r"
-    
+
             for other_type, count in other_counts.items():
                 other_table.add_row([other_type.__name__, count])
-            
+
             print()
             print("Additional Events:")
             print(other_table)
@@ -646,4 +672,3 @@ def _print_other_errors(
         print()
         for error in other_errors:
             print(error)
-
