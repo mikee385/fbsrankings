@@ -48,7 +48,7 @@ from fbsrankings.query import GameCountBySeasonQuery
 from fbsrankings.query import GameRankingBySeasonWeekQuery
 from fbsrankings.query import GameRankingBySeasonWeekResult
 from fbsrankings.query import GameRankingValueBySeasonWeekResult
-from fbsrankings.query import MostRecentCompletedWeekQuery
+from fbsrankings.query import LatestSeasonWeekQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonByYearQuery
 from fbsrankings.query import SeasonByYearResult
@@ -115,13 +115,13 @@ def print_latest(rating: str, top: str) -> None:
     limit = _parse_top(top)
 
     with _create_application(EventBus()) as application:
-        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-        if most_recent_completed_week is None:
+        latest_season_week = application.query(LatestSeasonWeekQuery())
+        if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
-        season_ID = most_recent_completed_week.season_ID
-        year = most_recent_completed_week.year
-        week = most_recent_completed_week.week
+        season_ID = latest_season_week.season_ID
+        year = latest_season_week.year
+        week = latest_season_week.week
 
         team_record = _get_team_record(application, season_ID, year, week)
         team_ranking = _get_team_ranking(
@@ -210,7 +210,7 @@ def print_games(season: str, rating: str, top: str) -> None:
             application, f"{rating_name} - Game Strength", season_ID, year, week
         )
 
-        _print_table_title(year, week, "Games of Season", team_ranking.name)
+        _print_table_title(year, week, "Season Games", team_ranking.name)
         _print_games_table(year, week, game_ranking.values, team_ranking, limit)
 
 
@@ -220,13 +220,13 @@ def _print_debug(application: Application) -> None:
     seasons = application.query(SeasonsQuery()).seasons
     _print_seasons_table(application, seasons)
 
-    most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-    if most_recent_completed_week is None:
+    latest_season_week = application.query(LatestSeasonWeekQuery())
+    if latest_season_week is None:
         raise ValueError("No completed weeks were found")
 
-    season_ID = most_recent_completed_week.season_ID
-    year = most_recent_completed_week.year
-    week = most_recent_completed_week.week
+    season_ID = latest_season_week.season_ID
+    year = latest_season_week.year
+    week = latest_season_week.week
 
     for rating_name in ["Simultaneous Wins", "Colley Matrix", "SRS"]:
         team_record = _get_team_record(application, season_ID, year, week)
@@ -247,7 +247,7 @@ def _print_debug(application: Application) -> None:
         _print_table_title(year, week, "Teams", team_ranking.name)
         _print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
 
-        _print_table_title(year, week, "Games of Season", team_ranking.name)
+        _print_table_title(year, week, "Season Games", team_ranking.name)
         _print_games_table(year, week, game_ranking.values, team_ranking, limit)
 
 
@@ -309,11 +309,11 @@ def _parse_season_week(
         year = int(year_week[0])
         week = int(year_week[1])
     elif season_week.casefold() == "latest".casefold():
-        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
-        if most_recent_completed_week is None:
+        latest_season_week = application.query(LatestSeasonWeekQuery())
+        if latest_season_week is None:
             raise ValueError("No completed weeks were found")
-        year = most_recent_completed_week.year
-        week = most_recent_completed_week.week
+        year = latest_season_week.year
+        week = latest_season_week.week
     else:
         raise ValueError(
             f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'"

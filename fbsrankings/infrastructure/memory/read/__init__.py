@@ -14,8 +14,8 @@ from fbsrankings.infrastructure.memory.read.game_count_by_season import (
 from fbsrankings.infrastructure.memory.read.game_ranking_by_season_week import (
     GameRankingBySeasonWeekQueryHandler as GameRankingBySeasonWeekQueryHandler,
 )
-from fbsrankings.infrastructure.memory.read.most_recent_completed_week import (
-    MostRecentCompletedWeekQueryHandler as MostRecentCompletedWeekQueryHandler,
+from fbsrankings.infrastructure.memory.read.latest_season_week import (
+    LatestSeasonWeekQueryHandler as LatestSeasonWeekQueryHandler,
 )
 from fbsrankings.infrastructure.memory.read.query_manager import (
     QueryManager as QueryManager,

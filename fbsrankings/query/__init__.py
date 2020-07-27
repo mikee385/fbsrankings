@@ -25,11 +25,11 @@ from fbsrankings.query.game_ranking_by_season_week import (
 from fbsrankings.query.game_ranking_by_season_week import (
     GameRankingValueBySeasonWeekResult as GameRankingValueBySeasonWeekResult,
 )
-from fbsrankings.query.most_recent_completed_week import (
-    MostRecentCompletedWeekQuery as MostRecentCompletedWeekQuery,
+from fbsrankings.query.latest_season_week import (
+    LatestSeasonWeekQuery as LatestSeasonWeekQuery,
 )
-from fbsrankings.query.most_recent_completed_week import (
-    MostRecentCompletedWeekResult as MostRecentCompletedWeekResult,
+from fbsrankings.query.latest_season_week import (
+    LatestSeasonWeekResult as LatestSeasonWeekResult,
 )
 from fbsrankings.query.season_by_id import SeasonByIDQuery as SeasonByIDQuery
 from fbsrankings.query.season_by_id import SeasonByIDResult as SeasonByIDResult
