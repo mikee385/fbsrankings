@@ -84,20 +84,20 @@ def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
         years = _parse_seasons(application, seasons)
 
         if drop:
-            _print_err("Dropping existing data...")
+            _print_err("Dropping existing data:")
             with tspinner():
                 application.drop()
             _print_err()
 
         update_tracker = _UpdateTracker(event_bus)
 
-        _print_err("Importing Season Data:")
+        _print_err("Importing season data:")
         for year in tqdm(years):
             application.send(ImportSeasonByYearCommand(year))
 
         if update_tracker.updates:
             _print_err()
-            _print_err("Calculating Rankings:")
+            _print_err("Calculating rankings:")
             for season in tqdm(update_tracker.updates):
                 application.send(CalculateRankingsForSeasonCommand(season))
 
