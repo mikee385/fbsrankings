@@ -52,9 +52,13 @@ class tspinner(object):
         self.busy = False
         time.sleep(self.delay)
 
-        if self.total < 100:
+        if self.total == 0:
+            self.bar.update(99)
+            self.bar.refresh()
+        elif self.total < 100:
             self.bar.update(100 - self.total)
             self.bar.refresh()
+
         self.bar.close()
 
         return False
