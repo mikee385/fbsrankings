@@ -23,6 +23,9 @@ from fbsrankings.infrastructure.memory.read.query_manager import (
 from fbsrankings.infrastructure.memory.read.season_by_id import (
     SeasonByIDQueryHandler as SeasonByIDQueryHandler,
 )
+from fbsrankings.infrastructure.memory.read.season_by_year import (
+    SeasonByYearQueryHandler as SeasonByYearQueryHandler,
+)
 from fbsrankings.infrastructure.memory.read.seasons import (
     SeasonsQueryHandler as SeasonsQueryHandler,
 )

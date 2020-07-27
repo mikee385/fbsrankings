@@ -19,6 +19,9 @@ from fbsrankings.infrastructure.sqlite.read.most_recent_completed_week import (
     MostRecentCompletedWeekQueryHandler,
 )
 from fbsrankings.infrastructure.sqlite.read.season_by_id import SeasonByIDQueryHandler
+from fbsrankings.infrastructure.sqlite.read.season_by_year import (
+    SeasonByYearQueryHandler,
+)
 from fbsrankings.infrastructure.sqlite.read.seasons import SeasonsQueryHandler
 from fbsrankings.infrastructure.sqlite.read.team_by_id import TeamByIDQueryHandler
 from fbsrankings.infrastructure.sqlite.read.team_count_by_season import (
@@ -40,6 +43,7 @@ from fbsrankings.query import GameCountBySeasonQuery
 from fbsrankings.query import GameRankingBySeasonWeekQuery
 from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonByYearQuery
 from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
@@ -74,6 +78,9 @@ class QueryManager(BaseQueryManager):
             MostRecentCompletedWeekQueryHandler(self._connection),
         )
         self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(self._connection))
+        self.register_handler(
+            SeasonByYearQuery, SeasonByYearQueryHandler(self._connection)
+        )
         self.register_handler(SeasonsQuery, SeasonsQueryHandler(self._connection))
         self.register_handler(TeamByIDQuery, TeamByIDQueryHandler(self._connection))
         self.register_handler(

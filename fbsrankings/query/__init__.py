@@ -33,6 +33,8 @@ from fbsrankings.query.most_recent_completed_week import (
 )
 from fbsrankings.query.season_by_id import SeasonByIDQuery as SeasonByIDQuery
 from fbsrankings.query.season_by_id import SeasonByIDResult as SeasonByIDResult
+from fbsrankings.query.season_by_year import SeasonByYearQuery as SeasonByYearQuery
+from fbsrankings.query.season_by_year import SeasonByYearResult as SeasonByYearResult
 from fbsrankings.query.seasons import SeasonResult as SeasonResult
 from fbsrankings.query.seasons import SeasonsQuery as SeasonsQuery
 from fbsrankings.query.seasons import SeasonsResult as SeasonsResult

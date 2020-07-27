@@ -8,6 +8,7 @@ from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 from uuid import UUID
@@ -49,6 +50,8 @@ from fbsrankings.query import GameRankingBySeasonWeekResult
 from fbsrankings.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.query import MostRecentCompletedWeekQuery
 from fbsrankings.query import SeasonByIDQuery
+from fbsrankings.query import SeasonByYearQuery
+from fbsrankings.query import SeasonByYearResult
 from fbsrankings.query import SeasonResult
 from fbsrankings.query import SeasonsQuery
 from fbsrankings.query import TeamByIDQuery
@@ -58,6 +61,164 @@ from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.query import TeamRecordBySeasonWeekResult
 from fbsrankings.query import WeekCountBySeasonQuery
+
+
+def _create_application(event_bus: EventBus) -> Application:
+    package_dir = Path(__file__).resolve().parent.parent
+
+    config_path = package_dir / "config.json"
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+
+    schema_path = package_dir / "application" / "schema.json"
+    with open(schema_path) as schema_file:
+        schema = json.load(schema_file)
+    jsonschema.validate(config, schema)
+
+    return Application(config, event_bus)
+
+
+def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
+    event_bus = EventRecorder(EventBus())
+    with _create_application(event_bus) as application:
+        years = _parse_seasons(application, seasons)
+
+        update_tracker = _UpdateTracker(event_bus)
+
+        if drop:
+            _print_err("Dropping existing data...")
+            with tspinner():
+                application.drop()
+            _print_err()
+
+        _print_err("Importing Season Data:")
+        for year in tqdm(years):
+            application.send(ImportSeasonByYearCommand(year))
+
+        if update_tracker.updates:
+            _print_err()
+            _print_err("Calculating Rankings:")
+            for season in tqdm(update_tracker.updates):
+                application.send(CalculateRankingsForSeasonCommand(season))
+
+        if debug:
+            print_seasons("all")
+
+            print_teams("latest", "simultaneous-wins", "10")
+            print_games("latest", "simultaneous-wins", "10")
+
+            print_teams("latest", "colley-matrix", "10")
+            print_games("latest", "colley-matrix", "10")
+
+            print_teams("latest", "SRS", "10")
+            print_games("latest", "SRS", "10")
+
+        _print_events(application, event_bus)
+        # _print_canceled_games(application)
+        # _print_notes(application, event_bus)
+        _print_errors(application)
+
+
+def print_latest(rating: str, top: str) -> None:
+    rating_name = _parse_rating(rating)
+    limit = _parse_top(top)
+
+    with _create_application(EventBus()) as application:
+        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
+        if most_recent_completed_week is not None:
+            season_ID = most_recent_completed_week.season_ID
+            year = most_recent_completed_week.year
+            week = most_recent_completed_week.week
+
+            team_record = _get_team_record(application, season_ID, year, week)
+            team_ranking = _get_team_ranking(
+                application, rating_name, season_ID, year, week
+            )
+            team_sos = _get_team_ranking(
+                application,
+                f"{rating_name} - Strength of Schedule - Total",
+                season_ID,
+                year,
+                week,
+            )
+            game_ranking = _get_game_ranking(
+                application, f"{rating_name} - Game Strength", season_ID, year, week
+            )
+
+            _print_table_title(year, week, "Teams", team_ranking.name)
+            _print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
+
+            completed_games = []
+            scheduled_games = []
+            next_week_games = []
+            for game in game_ranking.values:
+                if game.status == GameStatus.COMPLETED.name:
+                    completed_games.append(game)
+                elif game.status == GameStatus.SCHEDULED.name:
+                    scheduled_games.append(game)
+                    if week is not None and game.week == week + 1:
+                        next_week_games.append(game)
+
+            if len(next_week_games) > 0:
+                _print_table_title(year, week, "Next Week Games", team_ranking.name)
+                _print_games_table(year, week, next_week_games, team_ranking, limit)
+
+            if len(scheduled_games) > 0:
+                _print_table_title(year, week, "Remaining Games", team_ranking.name)
+                _print_games_table(year, week, scheduled_games, team_ranking, limit)
+
+            if len(completed_games) > 0:
+                _print_table_title(year, week, "Completed Games", team_ranking.name)
+                _print_games_table(year, week, completed_games, team_ranking, limit)
+
+
+def print_seasons(top: str) -> None:
+    limit = _parse_top(top)
+
+    with _create_application(EventBus()) as application:
+        seasons = application.query(SeasonsQuery()).seasons
+        _print_seasons_table(application, seasons[:limit])
+
+
+def print_teams(season: str, rating: str, top: str) -> None:
+    rating_name = _parse_rating(rating)
+    limit = _parse_top(top)
+
+    with _create_application(EventBus()) as application:
+        year, week = _parse_season_week(application, season)
+
+        season_ID = _get_season(application, year).ID
+        record = _get_team_record(application, season_ID, year, week)
+        ranking = _get_team_ranking(application, rating_name, season_ID, year, week)
+        sos = _get_team_ranking(
+            application,
+            f"{rating_name} - Strength of Schedule - Total",
+            season_ID,
+            year,
+            week,
+        )
+
+        _print_table_title(year, week, "Teams", ranking.name)
+        _print_teams_table(year, week, record, ranking, sos, limit)
+
+
+def print_games(season: str, rating: str, top: str) -> None:
+    rating_name = _parse_rating(rating)
+    limit = _parse_top(top)
+
+    with _create_application(EventBus()) as application:
+        year, week = _parse_season_week(application, season)
+
+        season_ID = _get_season(application, year).ID
+        team_ranking = _get_team_ranking(
+            application, rating_name, season_ID, year, week
+        )
+        game_ranking = _get_game_ranking(
+            application, f"{rating_name} - Game Strength", season_ID, year, week
+        )
+
+        _print_table_title(year, week, "Games of Season", team_ranking.name)
+        _print_games_table(year, week, game_ranking.values, team_ranking, limit)
 
 
 class _UpdateTracker(object):
@@ -78,155 +239,138 @@ class _UpdateTracker(object):
             season.append(event.week)
 
 
-def print_err(*args: Any, **kwargs: Any) -> None:
+def _print_err(*args: Any, **kwargs: Any) -> None:
     print(*args, file=sys.stderr, **kwargs)
 
 
-def _create_application(event_bus: EventBus) -> Application:
-    package_dir = Path(__file__).resolve().parent.parent
-
-    config_path = package_dir / "config.json"
-    with open(config_path) as config_file:
-        config = json.load(config_file)
-
-    schema_path = package_dir / "application" / "schema.json"
-    with open(schema_path) as schema_file:
-        schema = json.load(schema_file)
-    jsonschema.validate(config, schema)
-
-    return Application(config, event_bus)
-
-
-def import_seasons(seasons: Iterable[str], drop: bool) -> None:
-    event_bus = EventRecorder(EventBus())
-    with _create_application(event_bus) as application:
-        years: List[int] = []
-        for value in seasons:
-            if value.isdecimal():
-                years.append(int(value))
-            elif re.match(r"[0-9]+-[0-9]+", value):
-                year_strings = value.split("-")
-                start_year = int(year_strings[0])
-                end_year = int(year_strings[1])
-                years.extend(range(start_year, end_year + 1))
-            elif value.casefold() == "latest".casefold():
-                years.append(max(application.seasons))
-            elif value.casefold() == "all".casefold():
-                years = application.seasons
-                break
-            else:
-                raise ValueError(
-                    f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'"
-                )
-
-        update_tracker = _UpdateTracker(event_bus)
-
-        if drop:
-            print_err("Dropping existing data...")
-            with tspinner():
-                application.drop()
-            print_err()
-
-        print_err("Importing Season Data:")
-        for year in tqdm(years):
-            application.send(ImportSeasonByYearCommand(year))
-
-        if update_tracker.updates:
-            print_err()
-            print_err("Calculating Rankings:")
-            for season in tqdm(update_tracker.updates):
-                application.send(CalculateRankingsForSeasonCommand(season))
-
-        _print_events(application, event_bus)
-        # _print_canceled_games(application)
-        # _print_notes(application, event_bus)
-        _print_errors(application)
-
-
-def print_rankings(season: str, display: str, rating: str, top: str) -> None:
-    with _create_application(EventBus()) as application:
-        year: int
-        week: Optional[int]
-        if season.isdecimal():
-            year = int(season)
-            week = None
-        elif re.match(r"[0-9]+w[0-9]+", season):
-            year_week = season.split("-")
-            year = int(year_week[0])
-            week = int(year_week[1])
-        elif season.casefold() == "latest".casefold():
-            most_recent_completed_week = application.query(
-                MostRecentCompletedWeekQuery()
-            )
-            if most_recent_completed_week is not None:
-                year = most_recent_completed_week.year
-                week = most_recent_completed_week.week
+def _parse_seasons(application: Application, seasons: Iterable[str]) -> List[int]:
+    years: List[int] = []
+    for value in seasons:
+        if value.isdecimal():
+            years.append(int(value))
+        elif re.match(r"[0-9]+-[0-9]+", value):
+            year_strings = value.split("-")
+            start_year = int(year_strings[0])
+            end_year = int(year_strings[1])
+            years.extend(range(start_year, end_year + 1))
+        elif value.casefold() == "latest".casefold():
+            years.append(max(application.seasons))
+        elif value.casefold() == "all".casefold():
+            years = application.seasons
+            break
         else:
             raise ValueError(
-                f"'{season}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'"
+                f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'"
             )
 
-        all_seasons = application.query(SeasonsQuery()).seasons
-        seasons_IDs = [item.ID for item in all_seasons if item.year == year]
-        if not seasons_IDs:
-            raise ValueError(f"Season not found for {year}")
-        season_ID = seasons_IDs[0]
+    return years
 
-        rating_name: str
-        if rating.casefold() == "SRS".casefold():
-            rating_name = "SRS"
-        elif rating.casefold() == "colley-matrix".casefold():
-            rating_name = "Colley Matrix"
-        elif rating.casefold() == "simultaneous-wins".casefold():
-            rating_name = "Simultaneous Wins"
+
+def _parse_season_week(
+    application: Application, season_week: str
+) -> Tuple[int, Optional[int]]:
+    year: int
+    week: Optional[int]
+    if season_week.isdecimal():
+        year = int(season_week)
+        week = None
+    elif re.match(r"[0-9]+w[0-9]+", season_week):
+        year_week = season_week.split("-")
+        year = int(year_week[0])
+        week = int(year_week[1])
+    elif season_week.casefold() == "latest".casefold():
+        most_recent_completed_week = application.query(MostRecentCompletedWeekQuery())
+        if most_recent_completed_week is not None:
+            year = most_recent_completed_week.year
+            week = most_recent_completed_week.week
+    else:
+        raise ValueError(
+            f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'"
+        )
+
+    return (year, week)
+
+
+def _parse_rating(rating: str) -> str:
+    if rating.casefold() == "SRS".casefold():
+        return "SRS"
+    elif rating.casefold() == "colley-matrix".casefold():
+        return "Colley Matrix"
+    elif rating.casefold() == "simultaneous-wins".casefold():
+        return "Simultaneous Wins"
+    else:
+        raise ValueError(f"Unknown rating type: {rating}")
+
+
+def _parse_top(top: str) -> Optional[int]:
+    if top.isdecimal():
+        return int(top)
+    elif top.casefold() == "all".casefold():
+        return None
+    else:
+        raise ValueError(f"'{top}' must be a positive integer or 'all'")
+
+
+def _get_season(application: Application, year: int) -> SeasonByYearResult:
+    season = application.query(SeasonByYearQuery(year))
+    if season is None:
+        raise ValueError(f"Season not found for {year}")
+    return season
+
+
+def _get_team_record(
+    application: Application, season_ID: UUID, year: int, week: Optional[int]
+) -> TeamRecordBySeasonWeekResult:
+    team_record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
+    if team_record is None:
+        if week is not None:
+            raise ValueError(f"Team records not found for {year}, Week {week}")
         else:
-            raise ValueError(f"Unknown rating type: {rating}")
+            raise ValueError(f"Team records not found for {year}")
+    return team_record
 
-        limit: Optional[int]
-        if top.isdecimal():
-            limit = int(top)
-        elif top.casefold() == "all".casefold():
-            limit = None
+
+def _get_team_ranking(
+    application: Application,
+    rating_name: str,
+    season_ID: UUID,
+    year: int,
+    week: Optional[int],
+) -> TeamRankingBySeasonWeekResult:
+    team_ranking = application.query(
+        TeamRankingBySeasonWeekQuery(rating_name, season_ID, week)
+    )
+    if team_ranking is None:
+        if week is not None:
+            raise ValueError(
+                f"Team rankings not found for {rating_name}, {year}, Week {week}"
+            )
         else:
-            raise ValueError(f"'{top}' must be a positive integer or 'all'")
+            raise ValueError(f"Team rankings not found for {rating_name}, {year}")
+    return team_ranking
 
-        if display == "summary":
-            record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
-            if record is not None:
-                _print_ranking_summary(
-                    application, rating_name, season_ID, year, week, record, limit
-                )
 
-        elif display == "teams":
-            record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
-            ranking = application.query(
-                TeamRankingBySeasonWeekQuery(rating_name, season_ID, week)
+def _get_game_ranking(
+    application: Application,
+    rating_name: str,
+    season_ID: UUID,
+    year: int,
+    week: Optional[int],
+) -> GameRankingBySeasonWeekResult:
+    game_ranking = application.query(
+        GameRankingBySeasonWeekQuery(rating_name, season_ID, week)
+    )
+    if game_ranking is None:
+        if week is not None:
+            raise ValueError(
+                f"Game rankings not found for {rating_name}, {year}, Week {week}"
             )
-            sos = application.query(
-                TeamRankingBySeasonWeekQuery(
-                    f"{rating_name} - Strength of Schedule - Total", season_ID, week
-                )
-            )
-            if record is not None and ranking is not None and sos is not None:
-                _print_team_ranking_table(year, week, record, ranking, sos, limit)
-
-        elif display == "games":
-            ranking = application.query(
-                TeamRankingBySeasonWeekQuery(rating_name, season_ID, week)
-            )
-            games = application.query(
-                GameRankingBySeasonWeekQuery(
-                    f"{rating_name} - Game Strength", season_ID, week
-                )
-            )
-            if ranking is not None and games is not None:
-                _print_game_rankings(year, week, games, ranking, limit)
-
         else:
-            raise ValueError(f"Unknown display type: {display}")
+            raise ValueError(f"Game rankings not found for {rating_name}, {year}")
+    return game_ranking
 
 
-def _print_season_summary_table(
+def _print_seasons_table(
     application: Application, seasons: Iterable[SeasonResult]
 ) -> None:
     season_summary_table = PrettyTable()
@@ -260,49 +404,17 @@ def _print_season_summary_table(
     print(season_summary_table)
 
 
-def _print_all_rankings(
-    application: Application, season_ID: UUID, year: int, week: int
+def _print_table_title(
+    year: int, week: Optional[int], header: str, rating_name: str
 ) -> None:
-    record = application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
-
-    if record is not None:
-        _print_ranking_summary(
-            application, "Simultaneous Wins", season_ID, year, week, record, 10
-        )
-        _print_ranking_summary(
-            application, "Colley Matrix", season_ID, year, week, record, 10
-        )
-        _print_ranking_summary(application, "SRS", season_ID, year, week, record, 10)
+    print()
+    if week is not None:
+        print(f"{year}, Week {week} {header}, {rating_name}:")
+    else:
+        print(f"{year} {header}, {rating_name}:")
 
 
-def _print_ranking_summary(
-    application: Application,
-    ranking_name: str,
-    season_ID: UUID,
-    year: int,
-    week: Optional[int],
-    record: TeamRecordBySeasonWeekResult,
-    limit: Optional[int],
-) -> None:
-    ranking = application.query(
-        TeamRankingBySeasonWeekQuery(ranking_name, season_ID, week)
-    )
-    sos = application.query(
-        TeamRankingBySeasonWeekQuery(
-            f"{ranking_name} - Strength of Schedule - Total", season_ID, week
-        )
-    )
-    if record is not None and ranking is not None and sos is not None:
-        _print_team_ranking_table(year, week, record, ranking, sos, limit)
-
-    games = application.query(
-        GameRankingBySeasonWeekQuery(f"{ranking_name} - Game Strength", season_ID, week)
-    )
-    if ranking is not None and games is not None:
-        _print_game_rankings(year, week, games, ranking, limit)
-
-
-def _print_team_ranking_table(
+def _print_teams_table(
     year: int,
     week: Optional[int],
     record: TeamRecordBySeasonWeekResult,
@@ -350,58 +462,10 @@ def _print_team_ranking_table(
             ]
         )
 
-    print()
-    if week is not None:
-        print(f"{year}, Week {week} Teams, {ranking.name}:")
-    else:
-        print(f"{year} Teams, {ranking.name}:")
     print(table)
 
 
-def _print_game_rankings(
-    year: int,
-    week: Optional[int],
-    game_ranking: GameRankingBySeasonWeekResult,
-    team_ranking: TeamRankingBySeasonWeekResult,
-    limit: Optional[int],
-) -> None:
-    completed_games = []
-    scheduled_games = []
-    next_week_games = []
-    for game in game_ranking.values:
-        if game.status == GameStatus.COMPLETED.name:
-            completed_games.append(game)
-        elif game.status == GameStatus.SCHEDULED.name:
-            scheduled_games.append(game)
-            if week is not None and game.week == week + 1:
-                next_week_games.append(game)
-
-    if len(next_week_games) > 0:
-        print()
-        if week is not None:
-            print(f"{year}, Week {week} Next Week Games, {team_ranking.name}:")
-        else:
-            print(f"{year} Next Week Games, {team_ranking.name}:")
-        _print_game_ranking_table(year, week, next_week_games, team_ranking, limit)
-
-    if len(scheduled_games) > 0:
-        print()
-        if week is not None:
-            print(f"{year}, Week {week} Remaining Games, {team_ranking.name}:")
-        else:
-            print(f"{year} Remaining Games, {team_ranking.name}:")
-        _print_game_ranking_table(year, week, scheduled_games, team_ranking, limit)
-
-    if len(completed_games) > 0:
-        print()
-        if week is not None:
-            print(f"{year}, Week {week} Completed Games, {team_ranking.name}:")
-        else:
-            print(f"{year} Completed Games, {team_ranking.name}:")
-        _print_game_ranking_table(year, week, completed_games, team_ranking, limit)
-
-
-def _print_game_ranking_table(
+def _print_games_table(
     year: int,
     week: Optional[int],
     game_values: List[GameRankingValueBySeasonWeekResult],
