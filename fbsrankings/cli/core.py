@@ -78,7 +78,7 @@ def _create_application(event_bus: EventBus) -> Application:
     return Application(config, event_bus)
 
 
-def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
+def import_seasons(seasons: Iterable[str], drop: bool, check: bool) -> None:
     event_bus = EventRecorder(EventBus())
     with _create_application(event_bus) as application:
         years = _parse_seasons(application, seasons)
@@ -101,8 +101,8 @@ def import_seasons(seasons: Iterable[str], drop: bool, debug: bool) -> None:
             for season in tqdm(update_tracker.updates):
                 application.send(CalculateRankingsForSeasonCommand(season))
 
-        if debug:
-            _print_debug(application)
+        if check:
+            _print_check(application)
 
         _print_events(application, event_bus)
         # _print_canceled_games(application)
@@ -214,7 +214,7 @@ def print_games(season: str, rating: str, top: str) -> None:
         _print_games_table(year, week, game_ranking.values, team_ranking, limit)
 
 
-def _print_debug(application: Application) -> None:
+def _print_check(application: Application) -> None:
     limit = 10
 
     seasons = application.query(SeasonsQuery()).seasons

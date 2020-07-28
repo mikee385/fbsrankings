@@ -36,15 +36,15 @@ import_parser.add_argument(
     help="drop the existing data source before importing the data",
 )
 import_parser.add_argument(
-    "-p",
-    "--print",
+    "-c",
+    "--check",
     action="store_true",
-    help="print summary information to ensure imported data was saved successfully",
+    help="print summary information to check that imported data was saved successfully",
 )
 
 
 def import_seasons(args: argparse.Namespace) -> None:
-    core.import_seasons(args.seasons, args.drop, args.print)
+    core.import_seasons(args.seasons, args.drop, args.check)
 
 
 import_parser.set_defaults(func=import_seasons)
