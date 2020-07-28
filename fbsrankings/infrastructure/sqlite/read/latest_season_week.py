@@ -37,15 +37,15 @@ class LatestSeasonWeekQueryHandler(object):
         )
         row = cursor.fetchone()
         cursor.close()
-        
+
         if row is None:
             return None
-            
+
         season_ID, year, games_completed, games_scheduled = row
-            
+
         if games_scheduled == 0:
             return LatestSeasonWeekResult(UUID(season_ID), year, None)
-        
+
         cursor = self._connection.cursor()
         cursor.execute(
             "SELECT Week "
@@ -64,7 +64,7 @@ class LatestSeasonWeekQueryHandler(object):
         )
         row = cursor.fetchone()
         cursor.close()
-        
+
         if row:
             return LatestSeasonWeekResult(UUID(season_ID), year, row[0])
 
