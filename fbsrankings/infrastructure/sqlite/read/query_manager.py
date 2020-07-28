@@ -74,8 +74,7 @@ class QueryManager(BaseQueryManager):
             GameRankingBySeasonWeekQueryHandler(self._connection),
         )
         self.register_handler(
-            LatestSeasonWeekQuery,
-            LatestSeasonWeekQueryHandler(self._connection),
+            LatestSeasonWeekQuery, LatestSeasonWeekQueryHandler(self._connection),
         )
         self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(self._connection))
         self.register_handler(

@@ -34,11 +34,9 @@ class LatestSeasonWeekQueryHandler(object):
                 elif game.status == GameStatus.SCHEDULED.name:
                     season_data.has_scheduled = True
                     week_data.has_scheduled = True
-                    
+
             if season_data.has_scheduled is False and season_data.has_completed is True:
-                return LatestSeasonWeekResult(
-                    season.ID, season.year, None
-                )
+                return LatestSeasonWeekResult(season.ID, season.year, None)
 
             completed_weeks: List[int] = []
             for week, data in weeks.items():
@@ -46,8 +44,6 @@ class LatestSeasonWeekQueryHandler(object):
                     completed_weeks.append(week)
             if len(completed_weeks) > 0:
                 sorted_weeks = sorted(completed_weeks, reverse=True)
-                return LatestSeasonWeekResult(
-                    season.ID, season.year, sorted_weeks[0]
-                )
+                return LatestSeasonWeekResult(season.ID, season.year, sorted_weeks[0])
 
         return None
