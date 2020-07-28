@@ -55,8 +55,8 @@ class SRSRankingService(TeamRankingService):
                 season_is_complete = False
 
         n = len(team_data)
-        a = numpy.zeros((n + 1, n))
-        b = numpy.zeros(n + 1)
+        a = numpy.zeros((n, n))
+        b = numpy.zeros(n)
 
         rankings = []
         for week in sorted(games_by_week.keys()):
@@ -87,9 +87,15 @@ class SRSRankingService(TeamRankingService):
                 a[data.index, data.index] = max(data.game_total, 1.0)
                 b[data.index] = data.point_margin
 
-            a[n, :] = numpy.ones(n)
-            b[n] = 0.0
-            x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
+            try:
+                x = numpy.linalg.solve(a, b)
+            except numpy.linalg.LinAlgError as ex:
+                if str(ex) == "Singular matrix":
+                    continue
+                else:
+                    raise
+            shift = numpy.sum(x) / n
+            x -= shift
 
             result = {ID: x[data.index] for ID, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
