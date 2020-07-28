@@ -68,15 +68,9 @@ class SRSRankingService(TeamRankingService):
                     home_data = team_data[game.home_team_ID]
                     away_data = team_data[game.away_team_ID]
 
-                    home_margin = game.home_team_score - game.away_team_score
-                    if home_margin > 24:
-                        home_margin = 24
-                    elif home_margin < -24:
-                        home_margin = -24
-                    elif home_margin > 0 and home_margin < 7:
-                        home_margin = 7
-                    elif home_margin < 0 and home_margin > -7:
-                        home_margin = -7
+                    home_margin = self._adjust_margin(
+                        game.home_team_score - game.away_team_score
+                    )
                     home_data.add_game(home_margin)
                     away_data.add_game(-home_margin)
 
@@ -114,3 +108,15 @@ class SRSRankingService(TeamRankingService):
             )
 
         return rankings
+
+    def _adjust_margin(self, margin: int) -> int:
+        if margin > 24:
+            return 24
+        elif margin < -24:
+            return -24
+        elif margin > 0 and margin < 7:
+            return 7
+        elif margin < 0 and margin > -7:
+            return -7
+        else:
+            return margin
