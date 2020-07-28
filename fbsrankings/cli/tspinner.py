@@ -33,7 +33,8 @@ class tspinner(object):
                 self.increment = -1
 
     def __enter__(self) -> "tspinner":
-        self.bar = tqdm(total=100, bar_format="|{bar}| {elapsed}")
+        self.bar = tqdm(total=100, bar_format="{desc}|{bar}| {elapsed}")
+        self.bar.set_description_str("    ")
 
         self.busy = True
         self.total = 0
@@ -52,6 +53,7 @@ class tspinner(object):
         self.busy = False
         time.sleep(self.delay)
 
+        self.bar.set_description_str("Done")
         if self.total == 0:
             self.bar.update(99)
             self.bar.refresh()
