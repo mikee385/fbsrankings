@@ -1,8 +1,6 @@
 import json
 import re
-import sys
 from pathlib import Path
-from typing import Any
 from typing import cast
 from typing import Dict
 from typing import Iterable
@@ -19,6 +17,7 @@ from tqdm import tqdm  # type: ignore
 from typing_extensions import Protocol
 
 from fbsrankings.application import Application
+from fbsrankings.cli.error import print_err
 from fbsrankings.cli.tspinner import tspinner
 from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
@@ -84,20 +83,20 @@ def import_seasons(seasons: Iterable[str], drop: bool, check: bool) -> None:
         years = _parse_seasons(application, seasons)
 
         if drop:
-            _print_err("Dropping existing data:")
+            print_err("Dropping existing data:")
             with tspinner():
                 application.drop()
-            _print_err()
+            print_err()
 
         update_tracker = _UpdateTracker(event_bus)
 
-        _print_err("Importing season data:")
+        print_err("Importing season data:")
         for year in tqdm(years):
             application.send(ImportSeasonByYearCommand(year))
 
         if update_tracker.updates:
-            _print_err()
-            _print_err("Calculating rankings:")
+            print_err()
+            print_err("Calculating rankings:")
             for season in tqdm(update_tracker.updates):
                 application.send(CalculateRankingsForSeasonCommand(season))
 
@@ -267,10 +266,6 @@ class _UpdateTracker(object):
             self.updates[event.season_ID] = [event.week]
         elif event.week not in season:
             season.append(event.week)
-
-
-def _print_err(*args: Any, **kwargs: Any) -> None:
-    print(*args, file=sys.stderr, **kwargs)
 
 
 def _parse_seasons(application: Application, seasons: Iterable[str]) -> List[int]:

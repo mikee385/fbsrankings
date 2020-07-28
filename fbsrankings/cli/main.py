@@ -2,6 +2,7 @@ import argparse
 
 from fbsrankings import __version__
 from fbsrankings.cli import core
+from fbsrankings.cli.error import print_err
 from fbsrankings.cli.types import NumberOrAllType
 from fbsrankings.cli.types import SeasonRangeType
 from fbsrankings.cli.types import SeasonWeekType
@@ -41,10 +42,21 @@ import_parser.add_argument(
     action="store_true",
     help="print summary information to check that imported data was saved successfully",
 )
+import_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
 
 
 def import_seasons(args: argparse.Namespace) -> None:
-    core.import_seasons(args.seasons, args.drop, args.check)
+    try:
+        core.import_seasons(args.seasons, args.drop, args.check)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 import_parser.set_defaults(func=import_seasons)
@@ -90,10 +102,21 @@ print_latest_parser.add_argument(
     action="store",
     help="number of teams and games to display, or 'all' to display all teams and games",
 )
+print_latest_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
 
 
 def print_latest(args: argparse.Namespace) -> None:
-    core.print_latest(args.rating, args.top)
+    try:
+        core.print_latest(args.rating, args.top)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 print_latest_parser.set_defaults(print_func=print_latest)
@@ -112,10 +135,21 @@ print_seasons_parser.add_argument(
     action="store",
     help="number of seasons to display, or 'all' to display all seasons",
 )
+print_seasons_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
 
 
 def print_seasons(args: argparse.Namespace) -> None:
-    core.print_seasons(args.top)
+    try:
+        core.print_seasons(args.top)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 print_seasons_parser.set_defaults(print_func=print_seasons)
@@ -150,10 +184,21 @@ print_teams_parser.add_argument(
     action="store",
     help="number of teams to display, or 'all' to display all teams",
 )
+print_teams_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
 
 
 def print_teams(args: argparse.Namespace) -> None:
-    core.print_teams(args.season, args.rating, args.top)
+    try:
+        core.print_teams(args.season, args.rating, args.top)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 print_teams_parser.set_defaults(print_func=print_teams)
@@ -188,10 +233,21 @@ print_games_parser.add_argument(
     action="store",
     help="number of games to display, or 'all' to display all games",
 )
+print_games_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
 
 
 def print_games(args: argparse.Namespace) -> None:
-    core.print_games(args.season, args.rating, args.top)
+    try:
+        core.print_games(args.season, args.rating, args.top)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 print_games_parser.set_defaults(print_func=print_games)
