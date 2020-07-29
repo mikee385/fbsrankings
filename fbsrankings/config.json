@@ -163,6 +163,13 @@
             "source_type": "URL",
             "teams": "https://www.sports-reference.com/cfb/years/2018-standings.html",
             "games": "https://www.sports-reference.com/cfb/years/2018-schedule.html"
+        },
+        {
+            "year": 2019,
+            "postseason_start_week": 18,
+            "source_type": "URL",
+            "teams": "https://www.sports-reference.com/cfb/years/2019-standings.html",
+            "games": "https://www.sports-reference.com/cfb/years/2019-schedule.html"
         }
     ]
 }
