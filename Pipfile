@@ -4,16 +4,25 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+black = "==19.10b0"
+flake8 = "*"
+flake8-bugbear = "*"
+mypy = "*"
+numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
+pre-commit = "*"
+setuptools = "*"
+twine = "*"
 typeguard = "*"
+wheel = "*"
 
 [packages]
 bs4 = "*"
-typing-extensions = "*"
 html5lib = "*"
-numpy = "*"
 jsonschema = "*"
+numpy = "*"
 prettytable = "*"
 tqdm = "*"
+typing-extensions = "*"
 
 [requires]
 python_version = "3.6"
