@@ -1,19 +1,25 @@
 import sys
+from warnings import filterwarnings
 
-use_typeguard = False
-if "--use-typeguard" in sys.argv:
-    sys.argv.remove("--use-typeguard")
-    use_typeguard = True
+from typeguard import TypeChecker, TypeWarning
 
-if use_typeguard:
-    print("Performing runtime type checks...")
+from fbsrankings import cli
 
-    from typeguard.importhook import install_import_hook
 
-    with install_import_hook("fbsrankings"):
-        from fbsrankings.cli import main
-else:
-    from fbsrankings.cli import main
+def main():
+    use_typeguard = False
+    if "--use-typeguard" in sys.argv:
+        sys.argv.remove("--use-typeguard")
+        use_typeguard = True
+
+    if use_typeguard:
+        print("Performing runtime type checks...")
+
+        filterwarnings("always", category=TypeWarning)
+        with TypeChecker(["fbsrankings"]):
+            cli.main()
+    else:
+        cli.main()
 
 if __name__ == "__main__":
     main()
