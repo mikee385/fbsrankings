@@ -1,15 +1,8 @@
-import os
 import sys
-
-if sys.path[0] in ("", os.getcwd()):
-    sys.path.pop(0)
-
-package_dir = os.path.abspath(os.path.dirname(__file__))
-project_dir = os.path.abspath(os.path.dirname(package_dir))
-sys.path.insert(0, project_dir)
 
 use_typeguard = False
 if "--use-typeguard" in sys.argv:
+    sys.argv.remove("--use-typeguard")
     use_typeguard = True
 
 if use_typeguard:
