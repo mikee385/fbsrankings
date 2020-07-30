@@ -1,72 +1,56 @@
 """Query classes for the fbsrankings package"""
-from fbsrankings.query.affiliation_count_by_season import (
+from .affiliation_count_by_season import (
     AffiliationCountBySeasonQuery as AffiliationCountBySeasonQuery,
 )
-from fbsrankings.query.affiliation_count_by_season import (
+from .affiliation_count_by_season import (
     AffiliationCountBySeasonResult as AffiliationCountBySeasonResult,
 )
-from fbsrankings.query.canceled_games import CanceledGameResult as CanceledGameResult
-from fbsrankings.query.canceled_games import CanceledGamesQuery as CanceledGamesQuery
-from fbsrankings.query.canceled_games import CanceledGamesResult as CanceledGamesResult
-from fbsrankings.query.game_by_id import GameByIDQuery as GameByIDQuery
-from fbsrankings.query.game_by_id import GameByIDResult as GameByIDResult
-from fbsrankings.query.game_count_by_season import (
-    GameCountBySeasonQuery as GameCountBySeasonQuery,
-)
-from fbsrankings.query.game_count_by_season import (
-    GameCountBySeasonResult as GameCountBySeasonResult,
-)
-from fbsrankings.query.game_ranking_by_season_week import (
+from .canceled_games import CanceledGameResult as CanceledGameResult
+from .canceled_games import CanceledGamesQuery as CanceledGamesQuery
+from .canceled_games import CanceledGamesResult as CanceledGamesResult
+from .game_by_id import GameByIDQuery as GameByIDQuery
+from .game_by_id import GameByIDResult as GameByIDResult
+from .game_count_by_season import GameCountBySeasonQuery as GameCountBySeasonQuery
+from .game_count_by_season import GameCountBySeasonResult as GameCountBySeasonResult
+from .game_ranking_by_season_week import (
     GameRankingBySeasonWeekQuery as GameRankingBySeasonWeekQuery,
 )
-from fbsrankings.query.game_ranking_by_season_week import (
+from .game_ranking_by_season_week import (
     GameRankingBySeasonWeekResult as GameRankingBySeasonWeekResult,
 )
-from fbsrankings.query.game_ranking_by_season_week import (
+from .game_ranking_by_season_week import (
     GameRankingValueBySeasonWeekResult as GameRankingValueBySeasonWeekResult,
 )
-from fbsrankings.query.latest_season_week import (
-    LatestSeasonWeekQuery as LatestSeasonWeekQuery,
-)
-from fbsrankings.query.latest_season_week import (
-    LatestSeasonWeekResult as LatestSeasonWeekResult,
-)
-from fbsrankings.query.season_by_id import SeasonByIDQuery as SeasonByIDQuery
-from fbsrankings.query.season_by_id import SeasonByIDResult as SeasonByIDResult
-from fbsrankings.query.season_by_year import SeasonByYearQuery as SeasonByYearQuery
-from fbsrankings.query.season_by_year import SeasonByYearResult as SeasonByYearResult
-from fbsrankings.query.seasons import SeasonResult as SeasonResult
-from fbsrankings.query.seasons import SeasonsQuery as SeasonsQuery
-from fbsrankings.query.seasons import SeasonsResult as SeasonsResult
-from fbsrankings.query.team_by_id import TeamByIDQuery as TeamByIDQuery
-from fbsrankings.query.team_by_id import TeamByIDResult as TeamByIDResult
-from fbsrankings.query.team_count_by_season import (
-    TeamCountBySeasonQuery as TeamCountBySeasonQuery,
-)
-from fbsrankings.query.team_count_by_season import (
-    TeamCountBySeasonResult as TeamCountBySeasonResult,
-)
-from fbsrankings.query.team_ranking_by_season_week import (
+from .latest_season_week import LatestSeasonWeekQuery as LatestSeasonWeekQuery
+from .latest_season_week import LatestSeasonWeekResult as LatestSeasonWeekResult
+from .season_by_id import SeasonByIDQuery as SeasonByIDQuery
+from .season_by_id import SeasonByIDResult as SeasonByIDResult
+from .season_by_year import SeasonByYearQuery as SeasonByYearQuery
+from .season_by_year import SeasonByYearResult as SeasonByYearResult
+from .seasons import SeasonResult as SeasonResult
+from .seasons import SeasonsQuery as SeasonsQuery
+from .seasons import SeasonsResult as SeasonsResult
+from .team_by_id import TeamByIDQuery as TeamByIDQuery
+from .team_by_id import TeamByIDResult as TeamByIDResult
+from .team_count_by_season import TeamCountBySeasonQuery as TeamCountBySeasonQuery
+from .team_count_by_season import TeamCountBySeasonResult as TeamCountBySeasonResult
+from .team_ranking_by_season_week import (
     TeamRankingBySeasonWeekQuery as TeamRankingBySeasonWeekQuery,
 )
-from fbsrankings.query.team_ranking_by_season_week import (
+from .team_ranking_by_season_week import (
     TeamRankingBySeasonWeekResult as TeamRankingBySeasonWeekResult,
 )
-from fbsrankings.query.team_ranking_by_season_week import (
+from .team_ranking_by_season_week import (
     TeamRankingValueBySeasonWeekResult as TeamRankingValueBySeasonWeekResult,
 )
-from fbsrankings.query.team_record_by_season_week import (
+from .team_record_by_season_week import (
     TeamRecordBySeasonWeekQuery as TeamRecordBySeasonWeekQuery,
 )
-from fbsrankings.query.team_record_by_season_week import (
+from .team_record_by_season_week import (
     TeamRecordBySeasonWeekResult as TeamRecordBySeasonWeekResult,
 )
-from fbsrankings.query.team_record_by_season_week import (
+from .team_record_by_season_week import (
     TeamRecordValueBySeasonWeekResult as TeamRecordValueBySeasonWeekResult,
 )
-from fbsrankings.query.week_count_by_season import (
-    WeekCountBySeasonQuery as WeekCountBySeasonQuery,
-)
-from fbsrankings.query.week_count_by_season import (
-    WeekCountBySeasonResult as WeekCountBySeasonResult,
-)
+from .week_count_by_season import WeekCountBySeasonQuery as WeekCountBySeasonQuery
+from .week_count_by_season import WeekCountBySeasonResult as WeekCountBySeasonResult

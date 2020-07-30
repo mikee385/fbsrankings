@@ -1,36 +1,16 @@
 """Storage classes for the sqlite3 repositories of the fbsrankings package"""
-from fbsrankings.infrastructure.sqlite.storage.affiliation import (
-    AffiliationTable as AffiliationTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.affiliation import (
-    SubdivisionTable as SubdivisionTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.game import (
-    GameStatusTable as GameStatusTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.game import GameTable as GameTable
-from fbsrankings.infrastructure.sqlite.storage.ranking import (
-    GameRankingValueTable as GameRankingValueTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.ranking import (
-    RankingTable as RankingTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.ranking import RankingType as RankingType
-from fbsrankings.infrastructure.sqlite.storage.ranking import (
-    RankingTypeTable as RankingTypeTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.ranking import (
-    TeamRankingValueTable as TeamRankingValueTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.record import (
-    TeamRecordTable as TeamRecordTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.record import (
-    TeamRecordValueTable as TeamRecordValueTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.season import (
-    SeasonSectionTable as SeasonSectionTable,
-)
-from fbsrankings.infrastructure.sqlite.storage.season import SeasonTable as SeasonTable
-from fbsrankings.infrastructure.sqlite.storage.storage import Storage as Storage
-from fbsrankings.infrastructure.sqlite.storage.team import TeamTable as TeamTable
+from .affiliation import AffiliationTable as AffiliationTable
+from .affiliation import SubdivisionTable as SubdivisionTable
+from .game import GameStatusTable as GameStatusTable
+from .game import GameTable as GameTable
+from .ranking import GameRankingValueTable as GameRankingValueTable
+from .ranking import RankingTable as RankingTable
+from .ranking import RankingType as RankingType
+from .ranking import RankingTypeTable as RankingTypeTable
+from .ranking import TeamRankingValueTable as TeamRankingValueTable
+from .record import TeamRecordTable as TeamRecordTable
+from .record import TeamRecordValueTable as TeamRecordValueTable
+from .season import SeasonSectionTable as SeasonSectionTable
+from .season import SeasonTable as SeasonTable
+from .storage import Storage as Storage
+from .team import TeamTable as TeamTable
