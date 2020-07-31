@@ -300,7 +300,7 @@ def _parse_season_week(
         year = int(season_week)
         week = None
     elif re.match(r"[0-9]+w[0-9]+", season_week):
-        year_week = season_week.split("-")
+        year_week = season_week.split("w")
         year = int(year_week[0])
         week = int(year_week[1])
     elif season_week.casefold() == "latest".casefold():
