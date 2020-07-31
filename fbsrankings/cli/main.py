@@ -8,19 +8,40 @@ from fbsrankings.cli.types import SeasonRangeType
 from fbsrankings.cli.types import SeasonWeekType
 
 
-parser = argparse.ArgumentParser(
-    prog="fbsrankings",
-    description="Team and game rankings for FBS college football based on data from sportsreference.com.",
+# COMMON-------------------------------------
+
+common_parser = argparse.ArgumentParser(
+    description="Common parameters used by all commands.",
+    add_help=False,
     allow_abbrev=False,
 )
-parser.add_argument("-v", "--version", action="version", version=__version__)
-subparsers = parser.add_subparsers()
+common_parser.add_argument(
+    "--version",
+    action="version",
+    version=__version__
+)
+common_parser.add_argument(
+    "--trace",
+    action="store_true",
+    help="show the full stack trace when an error occurs",
+)
+
+# MAIN---------------------------------------
+
+main_parser = argparse.ArgumentParser(
+    prog="fbsrankings",
+    description="Team and game rankings for FBS college football based on data from sportsreference.com.",
+    parents=[common_parser],
+    allow_abbrev=False,
+)
+subparsers = main_parser.add_subparsers()
 
 # IMPORT-------------------------------------
 
 import_parser = subparsers.add_parser(
     "import",
     description="Import team and game data for SEASON from sportsreference.com.",
+    parents=[common_parser],
 )
 import_parser.add_argument(
     "seasons",
@@ -42,11 +63,6 @@ import_parser.add_argument(
     action="store_true",
     help="print summary information to check that imported data was saved successfully",
 )
-import_parser.add_argument(
-    "--trace",
-    action="store_true",
-    help="show the full stack trace when an error occurs",
-)
 
 
 def import_seasons(args: argparse.Namespace) -> None:
@@ -64,7 +80,9 @@ import_parser.set_defaults(func=import_seasons)
 # PRINT--------------------------------------
 
 print_parser = subparsers.add_parser(
-    "print", description="Print seasons, team rankings, or game rankings."
+    "print",
+    description="Print seasons, team rankings, or game rankings.",
+    parents=[common_parser],
 )
 
 
@@ -83,6 +101,7 @@ print_subparsers = print_parser.add_subparsers()
 print_latest_parser = print_subparsers.add_parser(
     "latest",
     description="Print team and game rankings for the most recent completed week.",
+    parents=[common_parser],
 )
 print_latest_parser.add_argument(
     "-r",
@@ -102,11 +121,6 @@ print_latest_parser.add_argument(
     action="store",
     help="number of teams and games to display, or 'all' to display all teams and games",
 )
-print_latest_parser.add_argument(
-    "--trace",
-    action="store_true",
-    help="show the full stack trace when an error occurs",
-)
 
 
 def print_latest(args: argparse.Namespace) -> None:
@@ -124,7 +138,9 @@ print_latest_parser.set_defaults(print_func=print_latest)
 # PRINT SEASONS------------------------------
 
 print_seasons_parser = print_subparsers.add_parser(
-    "seasons", description="Print a summary of all seasons."
+    "seasons",
+    description="Print a summary of all seasons.",
+    parents=[common_parser],
 )
 print_seasons_parser.add_argument(
     "-t",
@@ -134,11 +150,6 @@ print_seasons_parser.add_argument(
     default="all",
     action="store",
     help="number of seasons to display, or 'all' to display all seasons",
-)
-print_seasons_parser.add_argument(
-    "--trace",
-    action="store_true",
-    help="show the full stack trace when an error occurs",
 )
 
 
@@ -157,7 +168,9 @@ print_seasons_parser.set_defaults(print_func=print_seasons)
 # PRINT TEAMS--------------------------------
 
 print_teams_parser = print_subparsers.add_parser(
-    "teams", description="Print team rankings for SEASON."
+    "teams",
+    description="Print team rankings for SEASON.",
+    parents=[common_parser],
 )
 print_teams_parser.add_argument(
     "season",
@@ -184,11 +197,6 @@ print_teams_parser.add_argument(
     action="store",
     help="number of teams to display, or 'all' to display all teams",
 )
-print_teams_parser.add_argument(
-    "--trace",
-    action="store_true",
-    help="show the full stack trace when an error occurs",
-)
 
 
 def print_teams(args: argparse.Namespace) -> None:
@@ -206,7 +214,9 @@ print_teams_parser.set_defaults(print_func=print_teams)
 # PRINT GAMES--------------------------------
 
 print_games_parser = print_subparsers.add_parser(
-    "games", description="Print game rankings for SEASON."
+    "games",
+    description="Print game rankings for SEASON.",
+    parents=[common_parser],
 )
 print_games_parser.add_argument(
     "season",
@@ -233,11 +243,6 @@ print_games_parser.add_argument(
     action="store",
     help="number of games to display, or 'all' to display all games",
 )
-print_games_parser.add_argument(
-    "--trace",
-    action="store_true",
-    help="show the full stack trace when an error occurs",
-)
 
 
 def print_games(args: argparse.Namespace) -> None:
@@ -252,15 +257,15 @@ def print_games(args: argparse.Namespace) -> None:
 
 print_games_parser.set_defaults(print_func=print_games)
 
-# MAIN---------------------------------------
+# ENTRY POINT--------------------------------
 
 
 def main() -> None:
-    args = parser.parse_args()
+    args = main_parser.parse_args()
     if hasattr(args, "func"):
         args.func(args)
     else:
-        parser.print_help()
+        main_parser.print_help()
 
 
 if __name__ == "__main__":
