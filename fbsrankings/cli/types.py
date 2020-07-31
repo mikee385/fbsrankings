@@ -1,5 +1,16 @@
 import argparse
+import os
 import re
+
+
+class FileType(object):
+    def __call__(self, value: str) -> str:
+        if os.path.isfile(value):
+            return value
+        else:
+            raise argparse.ArgumentTypeError(
+                f"'{value}' must be a valid file path"
+            )
 
 
 class SeasonRangeType(object):

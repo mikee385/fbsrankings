@@ -1,8 +1,10 @@
 import argparse
+import sys
 
 from fbsrankings import __version__
-from fbsrankings.cli import core
+from fbsrankings.cli.core import Core
 from fbsrankings.cli.error import print_err
+from fbsrankings.cli.types import FileType
 from fbsrankings.cli.types import NumberOrAllType
 from fbsrankings.cli.types import SeasonRangeType
 from fbsrankings.cli.types import SeasonWeekType
@@ -19,6 +21,13 @@ common_parser.add_argument(
     "--version",
     action="version",
     version=__version__
+)
+common_parser.add_argument(
+    "--config",
+    metavar="FILE",
+    type=FileType(),
+    action="store",
+    help="location of config file",
 )
 common_parser.add_argument(
     "--trace",
@@ -67,13 +76,8 @@ import_parser.add_argument(
 
 
 def import_seasons(args: argparse.Namespace) -> None:
-    try:
+    with Core(args.config) as core:
         core.import_seasons(args.seasons, args.drop, args.check)
-    except Exception as ex:
-        if args.trace:
-            raise
-        else:
-            print_err(str(ex))
 
 
 import_parser.set_defaults(func=import_seasons)
@@ -106,13 +110,8 @@ latest_parser.add_argument(
 
 
 def print_latest(args: argparse.Namespace) -> None:
-    try:
+    with Core(args.config) as core:
         core.print_latest(args.rating, args.top)
-    except Exception as ex:
-        if args.trace:
-            raise
-        else:
-            print_err(str(ex))
 
 
 latest_parser.set_defaults(func=print_latest)
@@ -136,13 +135,8 @@ seasons_parser.add_argument(
 
 
 def print_seasons(args: argparse.Namespace) -> None:
-    try:
+    with Core(args.config) as core:
         core.print_seasons(args.top)
-    except Exception as ex:
-        if args.trace:
-            raise
-        else:
-            print_err(str(ex))
 
 
 seasons_parser.set_defaults(func=print_seasons)
@@ -184,13 +178,8 @@ teams_parser.add_argument(
 
 
 def print_teams(args: argparse.Namespace) -> None:
-    try:
+    with Core(args.config) as core:
         core.print_teams(args.season, args.rating, args.top)
-    except Exception as ex:
-        if args.trace:
-            raise
-        else:
-            print_err(str(ex))
 
 
 teams_parser.set_defaults(func=print_teams)
@@ -232,13 +221,8 @@ games_parser.add_argument(
 
 
 def print_games(args: argparse.Namespace) -> None:
-    try:
+    with Core(args.config) as core:
         core.print_games(args.season, args.rating, args.top)
-    except Exception as ex:
-        if args.trace:
-            raise
-        else:
-            print_err(str(ex))
 
 
 games_parser.set_defaults(func=print_games)
@@ -248,10 +232,17 @@ games_parser.set_defaults(func=print_games)
 
 def main() -> None:
     args = main_parser.parse_args()
-    if hasattr(args, "func"):
-        args.func(args)
-    else:
+    if not hasattr(args, "func"):
         main_parser.print_help()
+        sys.exit(1)
+
+    try:
+        args.func(args)
+    except Exception as ex:
+        if args.trace:
+            raise
+        else:
+            print_err(str(ex))
 
 
 if __name__ == "__main__":
