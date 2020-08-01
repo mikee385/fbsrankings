@@ -8,12 +8,6 @@ from typing import TypeVar
 
 from typing_extensions import Literal
 
-from fbsrankings.application.command.calculate_rankings_for_season import (
-    CalculateRankingsForSeasonCommandHandler,
-)
-from fbsrankings.application.command.import_season_by_year import (
-    ImportSeasonByYearCommandHandler,
-)
 from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import Command
@@ -22,6 +16,12 @@ from fbsrankings.common import CommandHandler
 from fbsrankings.common import EventBus
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.sportsreference import SportsReference
+from fbsrankings.service.command.calculate_rankings_for_season import (
+    CalculateRankingsForSeasonCommandHandler,
+)
+from fbsrankings.service.command.import_season_by_year import (
+    ImportSeasonByYearCommandHandler,
+)
 
 C = TypeVar("C", bound=Command)
 
