@@ -112,9 +112,9 @@ class Service(ContextManager["Service"]):
         self._data_source.close()
 
     def __enter__(self) -> "Service":
-        self._query_manager.__enter__()
-        self._command_manager.__enter__()
         self._data_source.__enter__()
+        self._command_manager.__enter__()
+        self._query_manager.__enter__()
         return self
 
     def __exit__(
