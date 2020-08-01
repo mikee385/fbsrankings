@@ -8,9 +8,7 @@ class FileType(object):
         if os.path.isfile(value):
             return value
         else:
-            raise argparse.ArgumentTypeError(
-                f"'{value}' must be a valid file path"
-            )
+            raise argparse.ArgumentTypeError(f"'{value}' must be a valid file path")
 
 
 class SeasonRangeType(object):
