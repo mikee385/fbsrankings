@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from fbsrankings import __version__
-from fbsrankings.cli.core import Core
+from fbsrankings.cli.application import Application
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.types import FileType
 from fbsrankings.cli.types import NumberOrAllType
@@ -76,8 +76,8 @@ import_parser.add_argument(
 
 
 def import_seasons(args: argparse.Namespace) -> None:
-    with Core(args.config) as core:
-        core.import_seasons(args.seasons, args.drop, args.check)
+    with Application(args.config) as application:
+        application.import_seasons(args.seasons, args.drop, args.check)
 
 
 import_parser.set_defaults(func=import_seasons)
@@ -110,8 +110,8 @@ latest_parser.add_argument(
 
 
 def print_latest(args: argparse.Namespace) -> None:
-    with Core(args.config) as core:
-        core.print_latest(args.rating, args.top)
+    with Application(args.config) as application:
+        application.print_latest(args.rating, args.top)
 
 
 latest_parser.set_defaults(func=print_latest)
@@ -135,8 +135,8 @@ seasons_parser.add_argument(
 
 
 def print_seasons(args: argparse.Namespace) -> None:
-    with Core(args.config) as core:
-        core.print_seasons(args.top)
+    with Application(args.config) as application:
+        application.print_seasons(args.top)
 
 
 seasons_parser.set_defaults(func=print_seasons)
@@ -178,8 +178,8 @@ teams_parser.add_argument(
 
 
 def print_teams(args: argparse.Namespace) -> None:
-    with Core(args.config) as core:
-        core.print_teams(args.season, args.rating, args.top)
+    with Application(args.config) as application:
+        application.print_teams(args.season, args.rating, args.top)
 
 
 teams_parser.set_defaults(func=print_teams)
@@ -221,8 +221,8 @@ games_parser.add_argument(
 
 
 def print_games(args: argparse.Namespace) -> None:
-    with Core(args.config) as core:
-        core.print_games(args.season, args.rating, args.top)
+    with Application(args.config) as application:
+        application.print_games(args.season, args.rating, args.top)
 
 
 games_parser.set_defaults(func=print_games)

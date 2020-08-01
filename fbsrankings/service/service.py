@@ -8,8 +8,6 @@ from typing import TypeVar
 from typing_extensions import Literal
 from typing_extensions import Protocol
 
-from fbsrankings.application.command import CommandManager
-from fbsrankings.application.config import Config
 from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
 from fbsrankings.common import EventBus
@@ -23,6 +21,8 @@ from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
+from fbsrankings.service.command import CommandManager
+from fbsrankings.service.config import Config
 
 R = TypeVar("R", covariant=True)
 
@@ -46,7 +46,7 @@ class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
         pass
 
 
-class Application(ContextManager["Application"]):
+class Service(ContextManager["Service"]):
     def __init__(self, config: Config, event_bus: EventBus) -> None:
         self._event_bus = event_bus
         self._data_source: DataSource
@@ -111,7 +111,7 @@ class Application(ContextManager["Application"]):
         self._command_manager.close()
         self._data_source.close()
 
-    def __enter__(self) -> "Application":
+    def __enter__(self) -> "Service":
         self._query_manager.__enter__()
         self._command_manager.__enter__()
         self._data_source.__enter__()

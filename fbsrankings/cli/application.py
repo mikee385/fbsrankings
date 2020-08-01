@@ -18,7 +18,6 @@ from tqdm import tqdm  # type: ignore
 from typing_extensions import Literal
 from typing_extensions import Protocol
 
-from fbsrankings.application import Application
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.tspinner import tspinner
 from fbsrankings.command import CalculateRankingsForSeasonCommand
@@ -62,9 +61,10 @@ from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.query import TeamRecordBySeasonWeekResult
 from fbsrankings.query import WeekCountBySeasonQuery
+from fbsrankings.service import Service
 
 
-class Core(object):
+class Application(object):
     def __init__(self, config: str):
         if config is not None:
             config_path = Path(config).resolve()
@@ -81,13 +81,13 @@ class Core(object):
         with open(config_path) as config_file:
             config = json.load(config_file)
 
-        schema_path = package_dir / "application" / "schema.json"
+        schema_path = package_dir / "service" / "schema.json"
         with open(schema_path) as schema_file:
             schema = json.load(schema_file)
         jsonschema.validate(config, schema)
 
         self._event_bus = EventRecorder(EventBus())
-        self._application = Application(config, self._event_bus)
+        self._service = Service(config, self._event_bus)
 
     def import_seasons(self, seasons: Iterable[str], drop: bool, check: bool) -> None:
         years = self._parse_seasons(seasons)
@@ -95,20 +95,20 @@ class Core(object):
         if drop:
             print_err("Dropping existing data:")
             with tspinner():
-                self._application.drop()
+                self._service.drop()
             print_err()
 
         update_tracker = self._UpdateTracker(self._event_bus)
 
         print_err("Importing season data:")
         for year in tqdm(years):
-            self._application.send(ImportSeasonByYearCommand(year))
+            self._service.send(ImportSeasonByYearCommand(year))
 
         if update_tracker.updates:
             print_err()
             print_err("Calculating rankings:")
             for season in tqdm(update_tracker.updates):
-                self._application.send(CalculateRankingsForSeasonCommand(season))
+                self._service.send(CalculateRankingsForSeasonCommand(season))
 
         if check:
             self._print_check()
@@ -122,7 +122,7 @@ class Core(object):
         rating_name = self._parse_rating(rating)
         limit = self._parse_top(top)
 
-        latest_season_week = self._application.query(LatestSeasonWeekQuery())
+        latest_season_week = self._service.query(LatestSeasonWeekQuery())
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -173,7 +173,7 @@ class Core(object):
     def print_seasons(self, top: str) -> None:
         limit = self._parse_top(top)
 
-        seasons = self._application.query(SeasonsQuery()).seasons
+        seasons = self._service.query(SeasonsQuery()).seasons
         self._print_seasons_table(seasons[:limit])
 
     def print_teams(self, season: str, rating: str, top: str) -> None:
@@ -213,10 +213,10 @@ class Core(object):
         self._print_games_table(year, week, game_ranking.values, team_ranking, limit)
 
     def close(self) -> None:
-        self._application.close()
+        self._service.close()
 
-    def __enter__(self) -> "Core":
-        self._application.__enter__()
+    def __enter__(self) -> "Application":
+        self._service.__enter__()
         return self
 
     def __exit__(
@@ -225,16 +225,16 @@ class Core(object):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._application.__exit__(type, value, traceback)
+        self._service.__exit__(type, value, traceback)
         return False
 
     def _print_check(self) -> None:
         limit = 10
 
-        seasons = self._application.query(SeasonsQuery()).seasons
+        seasons = self._service.query(SeasonsQuery()).seasons
         self._print_seasons_table(seasons)
 
-        latest_season_week = self._application.query(LatestSeasonWeekQuery())
+        latest_season_week = self._service.query(LatestSeasonWeekQuery())
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -291,9 +291,9 @@ class Core(object):
                 end_year = int(year_strings[1])
                 years.extend(range(start_year, end_year + 1))
             elif value.casefold() == "latest".casefold():
-                years.append(max(self._application.seasons))
+                years.append(max(self._service.seasons))
             elif value.casefold() == "all".casefold():
-                years = self._application.seasons
+                years = self._service.seasons
                 break
             else:
                 raise ValueError(
@@ -315,7 +315,7 @@ class Core(object):
             year = int(year_week[0])
             week = int(year_week[1])
         elif season_week.casefold() == "latest".casefold():
-            latest_season_week = self._application.query(LatestSeasonWeekQuery())
+            latest_season_week = self._service.query(LatestSeasonWeekQuery())
             if latest_season_week is None:
                 raise ValueError("No completed weeks were found")
             year = latest_season_week.year
@@ -346,7 +346,7 @@ class Core(object):
             raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
     def _get_season(self, year: int) -> SeasonByYearResult:
-        season = self._application.query(SeasonByYearQuery(year))
+        season = self._service.query(SeasonByYearQuery(year))
         if season is None:
             raise ValueError(f"Season not found for {year}")
         return season
@@ -354,7 +354,7 @@ class Core(object):
     def _get_team_record(
         self, season_ID: UUID, year: int, week: Optional[int]
     ) -> TeamRecordBySeasonWeekResult:
-        team_record = self._application.query(TeamRecordBySeasonWeekQuery(season_ID, week))
+        team_record = self._service.query(TeamRecordBySeasonWeekQuery(season_ID, week))
         if team_record is None:
             if week is not None:
                 raise ValueError(f"Team records not found for {year}, Week {week}")
@@ -369,7 +369,7 @@ class Core(object):
         year: int,
         week: Optional[int],
     ) -> TeamRankingBySeasonWeekResult:
-        team_ranking = self._application.query(
+        team_ranking = self._service.query(
             TeamRankingBySeasonWeekQuery(rating_name, season_ID, week)
         )
         if team_ranking is None:
@@ -388,7 +388,7 @@ class Core(object):
         year: int,
         week: Optional[int],
     ) -> GameRankingBySeasonWeekResult:
-        game_ranking = self._application.query(
+        game_ranking = self._service.query(
             GameRankingBySeasonWeekQuery(rating_name, season_ID, week)
         )
         if game_ranking is None:
@@ -414,10 +414,10 @@ class Core(object):
         ]
 
         for season in seasons:
-            week_count = self._application.query(WeekCountBySeasonQuery(season.ID))
-            team_count = self._application.query(TeamCountBySeasonQuery(season.ID))
-            affiliation_count = self._application.query(AffiliationCountBySeasonQuery(season.ID))
-            game_count = self._application.query(GameCountBySeasonQuery(season.ID))
+            week_count = self._service.query(WeekCountBySeasonQuery(season.ID))
+            team_count = self._service.query(TeamCountBySeasonQuery(season.ID))
+            affiliation_count = self._service.query(AffiliationCountBySeasonQuery(season.ID))
+            game_count = self._service.query(GameCountBySeasonQuery(season.ID))
 
             season_summary_table.add_row(
                 [
@@ -569,7 +569,7 @@ class Core(object):
         print()
         print("Events:")
         if events:
-            seasons = self._application.query(SeasonsQuery()).seasons
+            seasons = self._service.query(SeasonsQuery()).seasons
             season_map = {s.ID: s for s in seasons}
             event_counts: Dict[int, Dict[Type[Event], int]] = {}
             other_counts: Dict[Type[Event], int] = {}
@@ -631,7 +631,7 @@ class Core(object):
             print("None")
 
     def _print_canceled_games(self) -> None:
-        canceled_games = self._application.query(CanceledGamesQuery()).games
+        canceled_games = self._service.query(CanceledGamesQuery()).games
         if canceled_games:
             print()
             print("Canceled Games:")
@@ -652,7 +652,7 @@ class Core(object):
             print()
             print("Notes:")
             for event in notes_events:
-                game = self._application.query(GameByIDQuery(event.ID))
+                game = self._service.query(GameByIDQuery(event.ID))
                 if game is not None:
                     print()
                     print(f"ID: {game.ID}")
@@ -677,7 +677,7 @@ class Core(object):
         fcs_team_errors = []
         game_errors = []
         other_errors = []
-        for error in self._application.errors:
+        for error in self._service.errors:
             if isinstance(error, FBSGameCountValidationError):
                 fbs_team_errors.append(error)
             elif isinstance(error, FCSGameCountValidationError):
@@ -701,8 +701,8 @@ class Core(object):
             print("FBS teams with too few games:")
             print()
             for fbs_error in fbs_team_errors:
-                fbs_error_season = self._application.query(SeasonByIDQuery(fbs_error.season_ID))
-                fbs_error_team = self._application.query(TeamByIDQuery(fbs_error.team_ID))
+                fbs_error_season = self._service.query(SeasonByIDQuery(fbs_error.season_ID))
+                fbs_error_team = self._service.query(TeamByIDQuery(fbs_error.team_ID))
                 if fbs_error_season is not None and fbs_error_team is not None:
                     print(
                         f"{fbs_error_season.year} {fbs_error_team.name}: {fbs_error.game_count}"
@@ -713,8 +713,8 @@ class Core(object):
             print("FCS teams with too many games:")
             print()
             for fcs_error in fcs_team_errors:
-                fcs_error_season = self._application.query(SeasonByIDQuery(fcs_error.season_ID))
-                fcs_error_team = self._application.query(TeamByIDQuery(fcs_error.team_ID))
+                fcs_error_season = self._service.query(SeasonByIDQuery(fcs_error.season_ID))
+                fcs_error_team = self._service.query(TeamByIDQuery(fcs_error.team_ID))
                 if fcs_error_season is not None and fcs_error_team is not None:
                     print(
                         f"{fcs_error_season.year} {fcs_error_team.name}: {fcs_error.game_count}"
@@ -727,7 +727,7 @@ class Core(object):
             print()
             print("Game Errors:")
             for error in game_errors:
-                game = self._application.query(GameByIDQuery(error.game_ID))
+                game = self._service.query(GameByIDQuery(error.game_ID))
                 if game is not None:
                     print()
                     print(f"ID: {game.ID}")
