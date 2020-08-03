@@ -4,7 +4,7 @@ from types import TracebackType
 from typing import Optional
 from typing import Type
 
-from tqdm import tqdm  # type: ignore
+from tqdm import tqdm
 from typing_extensions import Literal
 
 

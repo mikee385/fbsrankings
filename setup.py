@@ -1,4 +1,4 @@
-import setuptools  # type: ignore
+import setuptools
 
 from fbsrankings import __author__
 from fbsrankings import __version__

@@ -12,9 +12,9 @@ from typing import Type
 from typing import Union
 from uuid import UUID
 
-import jsonschema  # type: ignore
-from prettytable import PrettyTable  # type: ignore
-from tqdm import tqdm  # type: ignore
+import jsonschema
+from prettytable import PrettyTable
+from tqdm import tqdm
 from typing_extensions import Literal
 from typing_extensions import Protocol
 

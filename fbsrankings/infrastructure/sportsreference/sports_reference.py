@@ -6,7 +6,7 @@ from typing import Optional
 from typing import Tuple
 from urllib.request import urlopen
 
-from bs4 import BeautifulSoup  # type: ignore
+from bs4 import BeautifulSoup
 from bs4 import Tag
 from typing_extensions import Protocol
 
