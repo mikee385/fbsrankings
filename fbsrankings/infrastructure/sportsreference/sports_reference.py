@@ -106,11 +106,17 @@ class SportsReference(object):
         if source is None:
             raise ValueError(f"Source has not been added for year {year}")
 
-        team_html = urlopen(source.team_source)
+        if not source.team_source.lower().startswith("http"):
+            raise ValueError(f"Only HTTP is allowed for teams URL {source.team_source}")
+
+        team_html = urlopen(source.team_source)  # nosec
         team_soup = BeautifulSoup(team_html, "html5lib")
         team_rows = _html_iter(team_soup)
 
-        game_html = urlopen(source.game_source)
+        if not source.game_source.lower().startswith("http"):
+            raise ValueError(f"Only HTTP is allowed for games URL {source.game_source}")
+
+        game_html = urlopen(source.game_source)  # nosec
         game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
 
