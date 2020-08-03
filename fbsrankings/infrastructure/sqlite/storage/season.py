@@ -18,30 +18,24 @@ class SeasonSectionTable(object):
         (Name TEXT NOT NULL UNIQUE);"""
         )
 
-        cursor.execute(
-            Query.from_(self.table)
-            .select(self.table.Name)
+        cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
+        existing = [row[0] for row in cursor.fetchall()]
+        insert_sql = (
+            Query.into(self.table)
+            .columns(self.table.Name)
+            .insert(Parameter("?"))
             .get_sql()
         )
-        existing = [row[0] for row in cursor.fetchall()]
         for value in SeasonSection:
             if value.name not in existing:
                 cursor.execute(
-                    Query.into(self.table)
-                    .columns(self.table.Name)
-                    .insert(Parameter("?"))
-                    .get_sql(),
-                    [value.name],
+                    insert_sql, [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Season Sections:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -64,11 +58,7 @@ class SeasonTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Seasons:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()

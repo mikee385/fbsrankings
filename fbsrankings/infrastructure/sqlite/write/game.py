@@ -44,9 +44,7 @@ class GameRepository(BaseRepository):
     def get(self, ID: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.UUID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -62,7 +60,16 @@ class GameRepository(BaseRepository):
             self._query()
             .where(self._table.SeasonID == Parameter("?"))
             .where(self._table.Week == Parameter("?"))
-            .where(((self._table.HomeTeamID == Parameter("?")) & (self._table.AwayTeamID == Parameter("?"))) | ((self._table.AwayTeamID == Parameter("?")) & (self._table.HomeTeamID == Parameter("?"))))
+            .where(
+                (
+                    (self._table.HomeTeamID == Parameter("?"))
+                    & (self._table.AwayTeamID == Parameter("?"))
+                )
+                | (
+                    (self._table.AwayTeamID == Parameter("?"))
+                    & (self._table.HomeTeamID == Parameter("?"))
+                )
+            )
             .get_sql(),
             [
                 str(season_ID.value),
@@ -81,9 +88,7 @@ class GameRepository(BaseRepository):
     def for_season(self, season_ID: SeasonID) -> List[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.SeasonID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.SeasonID == Parameter("?")).get_sql(),
             [str(season_ID.value)],
         )
         rows = cursor.fetchall()
@@ -103,7 +108,7 @@ class GameRepository(BaseRepository):
             self._table.HomeTeamScore,
             self._table.AwayTeamScore,
             self._table.Status,
-            self._table.Notes
+            self._table.Notes,
         )
 
     def _to_game(
@@ -141,7 +146,7 @@ class GameRepository(BaseRepository):
                 self._table.HomeTeamScore,
                 self._table.AwayTeamScore,
                 self._table.Status,
-                self._table.Notes
+                self._table.Notes,
             )
             .insert(
                 Parameter("?"),
@@ -154,7 +159,7 @@ class GameRepository(BaseRepository):
                 Parameter("?"),
                 Parameter("?"),
                 Parameter("?"),
-                Parameter("?")
+                Parameter("?"),
             )
             .get_sql(),
             [

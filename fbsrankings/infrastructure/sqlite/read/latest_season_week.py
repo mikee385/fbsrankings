@@ -25,17 +25,33 @@ class LatestSeasonWeekQueryHandler(object):
     def __call__(
         self, query: LatestSeasonWeekQuery
     ) -> Optional[LatestSeasonWeekResult]:
-        season_subquery = Query.from_(self._game_table).select(
-            self._game_table.SeasonID,
-            self._season_table.Year,
-            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesCompleted"),
-            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesScheduled")
-        ).inner_join(self._season_table).on(self._season_table.UUID == self._game_table.SeasonID).groupby(self._game_table.SeasonID, self._season_table.Year).as_("season")
+        season_subquery = (
+            Query.from_(self._game_table)
+            .select(
+                self._game_table.SeasonID,
+                self._season_table.Year,
+                Sum(
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                ).as_("GamesCompleted"),
+                Sum(
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                ).as_("GamesScheduled"),
+            )
+            .inner_join(self._season_table)
+            .on(self._season_table.UUID == self._game_table.SeasonID)
+            .groupby(self._game_table.SeasonID, self._season_table.Year)
+            .as_("season")
+        )
 
         cursor = self._connection.cursor()
         cursor.execute(
             Query.from_(season_subquery)
-            .select(season_subquery.SeasonID, season_subquery.Year, season_subquery.GamesCompleted, season_subquery.GamesScheduled)
+            .select(
+                season_subquery.SeasonID,
+                season_subquery.Year,
+                season_subquery.GamesCompleted,
+                season_subquery.GamesScheduled,
+            )
             .where(season_subquery.GamesCompleted > 0)
             .orderby(season_subquery.Year, order=Order.desc)
             .limit(1)
@@ -53,17 +69,29 @@ class LatestSeasonWeekQueryHandler(object):
         if games_scheduled == 0:
             return LatestSeasonWeekResult(UUID(season_ID), year, None)
 
-        week_subquery = Query.from_(self._game_table).select(
-            self._game_table.Week,
-            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesCompleted"),
-            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesScheduled")
-        ).where(self._game_table.SeasonID == Parameter("?")).groupby(self._game_table.Week).as_("week")
+        week_subquery = (
+            Query.from_(self._game_table)
+            .select(
+                self._game_table.Week,
+                Sum(
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                ).as_("GamesCompleted"),
+                Sum(
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                ).as_("GamesScheduled"),
+            )
+            .where(self._game_table.SeasonID == Parameter("?"))
+            .groupby(self._game_table.Week)
+            .as_("week")
+        )
 
         cursor = self._connection.cursor()
         cursor.execute(
             Query.from_(week_subquery)
             .select(week_subquery.Week)
-            .where((week_subquery.GamesCompleted > 0) & (week_subquery.GamesScheduled == 0))
+            .where(
+                (week_subquery.GamesCompleted > 0) & (week_subquery.GamesScheduled == 0)
+            )
             .orderby(week_subquery.Week, order=Order.desc)
             .limit(1)
             .get_sql(),

@@ -18,36 +18,30 @@ class SubdivisionTable(object):
         (Name TEXT NOT NULL UNIQUE);"""
         )
 
-        cursor.execute(
-            Query.from_(self.table)
-            .select(self.table.Name)
+        cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
+        existing = [row[0] for row in cursor.fetchall()]
+        insert_sql = (
+            Query.into(self.table)
+            .columns(self.table.Name)
+            .insert(Parameter("?"))
             .get_sql()
         )
-        existing = [row[0] for row in cursor.fetchall()]
         for value in Subdivision:
             if value.name not in existing:
                 cursor.execute(
-                    Query.into(self.table)
-                    .columns(self.table.Name)
-                    .insert(Parameter("?"))
-                    .get_sql(),
-                    [value.name],
+                    insert_sql, [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Subdivisions:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS subdivision")
+        cursor.execute("DROP TABLE IF EXISTS subdivision")
 
 
 class AffiliationTable(object):
@@ -66,14 +60,10 @@ class AffiliationTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Affiliations:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS affiliation")
+        cursor.execute("DROP TABLE IF EXISTS affiliation")

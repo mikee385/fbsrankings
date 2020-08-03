@@ -23,8 +23,12 @@ class AffiliationCountBySeasonQueryHandler(object):
         cursor.execute(
             Query.from_(self._table)
             .select(
-                Sum(Case().when(self._table.Subdivision == "FBS", 1).else_(0)).as_("FBS_Count"),
-                Sum(Case().when(self._table.Subdivision == "FCS", 1).else_(0)).as_("FCS_Count")
+                Sum(Case().when(self._table.Subdivision == "FBS", 1).else_(0)).as_(
+                    "FBS_Count"
+                ),
+                Sum(Case().when(self._table.Subdivision == "FCS", 1).else_(0)).as_(
+                    "FCS_Count"
+                ),
             )
             .where(self._table.SeasonID == Parameter("?"))
             .get_sql(),

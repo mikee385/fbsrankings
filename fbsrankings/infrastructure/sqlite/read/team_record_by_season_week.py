@@ -31,7 +31,18 @@ class TeamRecordBySeasonWeekQueryHandler(object):
     def __call__(
         self, query: TeamRecordBySeasonWeekQuery
     ) -> Optional[TeamRecordBySeasonWeekResult]:
-        sql_query = Query.from_(self._record_table).select(self._record_table.UUID, self._record_table.SeasonID, self._season_table.Year, self._record_table.Week).inner_join(self._season_table).on(self._season_table.UUID == self._record_table.SeasonID).where(self._record_table.SeasonID == Parameter("?"))
+        sql_query = (
+            Query.from_(self._record_table)
+            .select(
+                self._record_table.UUID,
+                self._record_table.SeasonID,
+                self._season_table.Year,
+                self._record_table.Week,
+            )
+            .inner_join(self._season_table)
+            .on(self._season_table.UUID == self._record_table.SeasonID)
+            .where(self._record_table.SeasonID == Parameter("?"))
+        )
 
         params: List[SqliteParam] = [
             str(query.season_ID),
@@ -44,9 +55,7 @@ class TeamRecordBySeasonWeekQueryHandler(object):
             sql_query = sql_query.where(self._record_table.Week.isnull())
 
         cursor = self._connection.cursor()
-        cursor.execute(
-            sql_query.get_sql(), params
-        )
+        cursor.execute(sql_query.get_sql(), params)
         row = cursor.fetchone()
 
         values = []

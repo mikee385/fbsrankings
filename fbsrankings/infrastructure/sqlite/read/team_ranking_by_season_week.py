@@ -32,7 +32,23 @@ class TeamRankingBySeasonWeekQueryHandler(object):
     def __call__(
         self, query: TeamRankingBySeasonWeekQuery
     ) -> Optional[TeamRankingBySeasonWeekResult]:
-        sql_query = Query.from_(self._ranking_table).select(self._ranking_table.UUID, self._ranking_table.Name, self._ranking_table.SeasonID, self._season_table.Year, self._ranking_table.Week).inner_join(self._season_table).on(self._season_table.UUID == self._ranking_table.SeasonID).where((self._ranking_table.Name == Parameter("?")) & (self._ranking_table.Type == Parameter("?")) & (self._ranking_table.SeasonID == Parameter("?")))
+        sql_query = (
+            Query.from_(self._ranking_table)
+            .select(
+                self._ranking_table.UUID,
+                self._ranking_table.Name,
+                self._ranking_table.SeasonID,
+                self._season_table.Year,
+                self._ranking_table.Week,
+            )
+            .inner_join(self._season_table)
+            .on(self._season_table.UUID == self._ranking_table.SeasonID)
+            .where(
+                (self._ranking_table.Name == Parameter("?"))
+                & (self._ranking_table.Type == Parameter("?"))
+                & (self._ranking_table.SeasonID == Parameter("?"))
+            )
+        )
 
         params: List[SqliteParam] = [
             query.name,
@@ -47,9 +63,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
             sql_query = sql_query.where(self._ranking_table.Week.isnull())
 
         cursor = self._connection.cursor()
-        cursor.execute(
-            sql_query.get_sql(), params
-        )
+        cursor.execute(sql_query.get_sql(), params)
         row = cursor.fetchone()
 
         values = []

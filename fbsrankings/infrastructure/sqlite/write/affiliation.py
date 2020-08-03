@@ -34,9 +34,7 @@ class AffiliationRepository(BaseRepository):
     def get(self, ID: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.UUID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -61,9 +59,7 @@ class AffiliationRepository(BaseRepository):
     def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.SeasonID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.SeasonID == Parameter("?")).get_sql(),
             [str(season_ID.value)],
         )
         rows = cursor.fetchall()
@@ -76,7 +72,7 @@ class AffiliationRepository(BaseRepository):
             self._table.UUID,
             self._table.SeasonID,
             self._table.TeamID,
-            self._table.Subdivision
+            self._table.Subdivision,
         )
 
     def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Affiliation:
@@ -95,14 +91,9 @@ class AffiliationRepository(BaseRepository):
                 self._table.UUID,
                 self._table.SeasonID,
                 self._table.TeamID,
-                self._table.Subdivision
+                self._table.Subdivision,
             )
-            .insert(
-                Parameter("?"),
-                Parameter("?"),
-                Parameter("?"),
-                Parameter("?")
-            )
+            .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
             [
                 str(event.ID),

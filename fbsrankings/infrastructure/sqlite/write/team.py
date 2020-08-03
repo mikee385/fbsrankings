@@ -31,9 +31,7 @@ class TeamRepository(BaseRepository):
     def get(self, ID: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.UUID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -44,10 +42,7 @@ class TeamRepository(BaseRepository):
     def find(self, name: str) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.Name == Parameter("?"))
-            .get_sql(),
-            [name]
+            self._query().where(self._table.Name == Parameter("?")).get_sql(), [name]
         )
         row = cursor.fetchone()
         cursor.close()
@@ -62,9 +57,8 @@ class TeamRepository(BaseRepository):
 
         return [self._to_team(row) for row in rows if row is not None]
 
-    def _query(self) -> None:
-        return Query.from_(self._table).select(self._table.UUID,
-                                               self._table.Name)
+    def _query(self) -> Query:
+        return Query.from_(self._table).select(self._table.UUID, self._table.Name)
 
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
@@ -72,18 +66,8 @@ class TeamRepository(BaseRepository):
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
-            .columns(
-                self._table.UUID,
-                self._table.Name,
-            )
-            .insert(
-                Parameter("?"),
-                Parameter("?"),
-            )
+            .columns(self._table.UUID, self._table.Name,)
+            .insert(Parameter("?"), Parameter("?"),)
             .get_sql(),
-            [
-                str(event.ID),
-                event.name,
-            ],
+            [str(event.ID), event.name],
         )
-

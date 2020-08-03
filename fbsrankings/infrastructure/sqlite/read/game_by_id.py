@@ -42,7 +42,7 @@ class GameByIDQueryHandler(object):
                 self._game_table.HomeTeamScore,
                 self._game_table.AwayTeamScore,
                 self._game_table.Status,
-                self._game_table.Notes
+                self._game_table.Notes,
             )
             .inner_join(self._season_table)
             .on(self._season_table.UUID == self._game_table.SeasonID)

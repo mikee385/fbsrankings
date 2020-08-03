@@ -40,7 +40,7 @@ class CanceledGamesQueryHandler(object):
                 home_team_table.Name,
                 self._game_table.AwayTeamID,
                 away_team_table.Name,
-                self._game_table.Notes
+                self._game_table.Notes,
             )
             .inner_join(self._season_table)
             .on(self._season_table.UUID == self._game_table.SeasonID)

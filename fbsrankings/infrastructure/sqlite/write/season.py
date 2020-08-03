@@ -31,9 +31,7 @@ class SeasonRepository(BaseRepository):
     def get(self, ID: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.UUID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -44,10 +42,7 @@ class SeasonRepository(BaseRepository):
     def find(self, year: int) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.Year == Parameter("?"))
-            .get_sql(),
-            [year]
+            self._query().where(self._table.Year == Parameter("?")).get_sql(), [year]
         )
         row = cursor.fetchone()
         cursor.close()
@@ -56,20 +51,14 @@ class SeasonRepository(BaseRepository):
 
     def all(self) -> List[Season]:
         cursor = self._connection.cursor()
-        cursor.execute(
-            self._query()
-            .get_sql()
-        )
+        cursor.execute(self._query().get_sql())
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_season(row) for row in rows if row is not None]
 
     def _query(self) -> Query:
-        return Query.from_(self._table).select(
-            self._table.UUID,
-            self._table.Year
-        )
+        return Query.from_(self._table).select(self._table.UUID, self._table.Year)
 
     def _to_season(self, row: Tuple[str, int]) -> Season:
         return Season(self._bus, SeasonID(UUID(row[0])), row[1])
@@ -77,17 +66,8 @@ class SeasonRepository(BaseRepository):
     def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
-            .columns(
-                self._table.UUID,
-                self._table.Year
-            )
-            .insert(
-                Parameter("?"),
-                Parameter("?")
-            )
+            .columns(self._table.UUID, self._table.Year)
+            .insert(Parameter("?"), Parameter("?"))
             .get_sql(),
-            [
-                str(event.ID),
-                event.year
-            ],
+            [str(event.ID), event.year],
         )

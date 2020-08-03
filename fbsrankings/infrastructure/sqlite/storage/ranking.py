@@ -22,30 +22,24 @@ class RankingTypeTable(object):
         (Name TEXT NOT NULL UNIQUE);"""
         )
 
-        cursor.execute(
-            Query.from_(self.table)
-            .select(self.table.Name)
+        cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
+        existing = [row[0] for row in cursor.fetchall()]
+        insert_sql = (
+            Query.into(self.table)
+            .columns(self.table.Name)
+            .insert(Parameter("?"))
             .get_sql()
         )
-        existing = [row[0] for row in cursor.fetchall()]
         for value in RankingType:
             if value.name not in existing:
                 cursor.execute(
-                    Query.into(self.table)
-                    .columns(self.table.Name)
-                    .insert(Parameter("?"))
-                    .get_sql(),
-                    [value.name],
+                    insert_sql, [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Ranking Types:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -79,11 +73,7 @@ class RankingTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Rankings:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -95,7 +85,7 @@ class RankingTable(object):
         self.game_value_table.drop(cursor)
         self.team_value_table.drop(cursor)
 
-        cursor.execute(f"DROP TABLE IF EXISTS ranking")
+        cursor.execute("DROP TABLE IF EXISTS ranking")
 
 
 class TeamRankingValueTable(object):
@@ -118,17 +108,13 @@ class TeamRankingValueTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Ranking Values:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS teamrankingvalue")
+        cursor.execute("DROP TABLE IF EXISTS teamrankingvalue")
 
 
 class GameRankingValueTable(object):
@@ -151,11 +137,7 @@ class GameRankingValueTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Game Ranking Values:")
         cursor = connection.cursor()
-        cursor.execute(
-            Query.from_(self.table)
-            .select(RowID, self.table.star)
-            .get_sql()
-        )
+        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()

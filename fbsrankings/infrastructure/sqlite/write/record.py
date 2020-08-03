@@ -39,9 +39,7 @@ class TeamRecordRepository(BaseRepository):
     def get(self, ID: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._record_table.UUID == Parameter("?"))
-            .get_sql(),
+            self._query().where(self._record_table.UUID == Parameter("?")).get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -61,8 +59,7 @@ class TeamRecordRepository(BaseRepository):
 
         cursor = self._connection.cursor()
         cursor.execute(
-            query.get_sql(),
-            params,
+            query.get_sql(), params,
         )
         row = cursor.fetchone()
         cursor.close()
@@ -70,10 +67,10 @@ class TeamRecordRepository(BaseRepository):
         return self._to_record(row) if row is not None else None
 
     def _query(self) -> Query:
-        return Query.from_(self._table).select(
-            self._table.UUID,
-            self._table.SeasonID,
-            self._table.Week,
+        return Query.from_(self._record_table).select(
+            self._record_table.UUID,
+            self._record_table.SeasonID,
+            self._record_table.Week,
         )
 
     def _to_record(self, row: Tuple[str, str, Optional[int]],) -> TeamRecord:
@@ -107,7 +104,11 @@ class TeamRecordRepository(BaseRepository):
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3],)
 
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
-        query = Query.from_(self._record_table).select(self._record_table.UUID).where(self._record_table.SeasonID == Parameter("?"))
+        query = (
+            Query.from_(self._record_table)
+            .select(self._record_table.UUID)
+            .where(self._record_table.SeasonID == Parameter("?"))
+        )
         params: List[SqliteParam] = [str(event.season_ID)]
 
         if event.week is not None:
@@ -143,38 +144,23 @@ class TeamRecordRepository(BaseRepository):
                 self._record_table.SeasonID,
                 self._record_table.Week,
             )
-            .insert(
-                Parameter("?"),
-                Parameter("?"),
-                Parameter("?"),
-            )
+            .insert(Parameter("?"), Parameter("?"), Parameter("?"),)
             .get_sql(),
-            [
-                str(event.ID),
-                str(event.season_ID),
-                event.week
-            ],
+            [str(event.ID), str(event.season_ID), event.week],
+        )
+        insert_sql = (
+            Query.into(self._value_table)
+            .columns(
+                self._value_table.TeamRecordID,
+                self._value_table.TeamID,
+                self._value_table.Wins,
+                self._value_table.Losses,
+            )
+            .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
+            .get_sql()
         )
         for value in event.values:
             self._cursor.execute(
-                Query.into(self._value_table)
-                .columns(
-                    self._value_table.TeamRecordID,
-                    self._value_table.TeamID,
-                    self._value_table.Wins,
-                    self._value_table.Losses,
-                )
-                .insert(
-                    Parameter("?"),
-                    Parameter("?"),
-                    Parameter("?"),
-                    Parameter("?"),
-                )
-                .get_sql(),
-                [
-                    str(event.ID),
-                    str(value.team_ID),
-                    value.wins,
-                    value.losses,
-                ],
+                insert_sql,
+                [str(event.ID), str(value.team_ID), value.wins, value.losses],
             )
