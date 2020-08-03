@@ -5,6 +5,9 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
 from fbsrankings.domain import GameID
@@ -30,7 +33,7 @@ class GameRepository(BaseRepository):
         self._connection = connection
         self._cursor = cursor
 
-        self.table = GameTable()
+        self._table = GameTable().table
 
         bus.register_handler(GameCreatedEvent, self._handle_game_created)
         bus.register_handler(GameRescheduledEvent, self._handle_game_rescheduled)
@@ -41,7 +44,9 @@ class GameRepository(BaseRepository):
     def get(self, ID: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?",
+            self._query()
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -54,7 +59,11 @@ class GameRepository(BaseRepository):
     ) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=? AND Week=? AND ((HomeTeamID=? AND AwayTeamID=?) OR (AwayTeamID=? AND HomeTeamID=?))",
+            self._query()
+            .where(self._table.SeasonID == Parameter("?"))
+            .where(self._table.Week == Parameter("?"))
+            .where(((self._table.HomeTeamID == Parameter("?")) & (self._table.AwayTeamID == Parameter("?"))) | ((self._table.AwayTeamID == Parameter("?")) & (self._table.HomeTeamID == Parameter("?"))))
+            .get_sql(),
             [
                 str(season_ID.value),
                 week,
@@ -72,13 +81,30 @@ class GameRepository(BaseRepository):
     def for_season(self, season_ID: SeasonID) -> List[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=?",
+            self._query()
+            .where(self._table.SeasonID == Parameter("?"))
+            .get_sql(),
             [str(season_ID.value)],
         )
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_game(row) for row in rows if row is not None]
+
+    def _query(self) -> Query:
+        return Query.from_(self._table).select(
+            self._table.UUID,
+            self._table.SeasonID,
+            self._table.Week,
+            self._table.Date,
+            self._table.SeasonSection,
+            self._table.HomeTeamID,
+            self._table.AwayTeamID,
+            self._table.HomeTeamScore,
+            self._table.AwayTeamScore,
+            self._table.Status,
+            self._table.Notes
+        )
 
     def _to_game(
         self,
@@ -103,7 +129,34 @@ class GameRepository(BaseRepository):
 
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            Query.into(self._table)
+            .columns(
+                self._table.UUID,
+                self._table.SeasonID,
+                self._table.Week,
+                self._table.Date,
+                self._table.SeasonSection,
+                self._table.HomeTeamID,
+                self._table.AwayTeamID,
+                self._table.HomeTeamScore,
+                self._table.AwayTeamScore,
+                self._table.Status,
+                self._table.Notes
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?")
+            )
+            .get_sql(),
             [
                 str(event.ID),
                 str(event.season_ID),
@@ -121,19 +174,31 @@ class GameRepository(BaseRepository):
 
     def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._cursor.execute(
-            f"UPDATE {self.table.name} SET Week=?, Date=? WHERE UUID=?",
+            Query.update(self._table)
+            .set(self._table.Week, Parameter("?"))
+            .set(self._table.Date, Parameter("?"))
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [event.week, event.date, str(event.ID)],
         )
 
     def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
         self._cursor.execute(
-            f"UPDATE {self.table.name} SET Status=? WHERE UUID=?",
+            Query.update(self._table)
+            .set(self._table.Status, Parameter("?"))
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [GameStatus.CANCELED.name, str(event.ID)],
         )
 
     def _handle_game_completed(self, event: GameCompletedEvent) -> None:
         self._cursor.execute(
-            f"UPDATE {self.table.name} SET HomeTeamScore=?, AwayTeamScore=?, Status=? WHERE UUID=?",
+            Query.update(self._table)
+            .set(self._table.HomeTeamScore, Parameter("?"))
+            .set(self._table.AwayTeamScore, Parameter("?"))
+            .set(self._table.Status, Parameter("?"))
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [
                 event.home_team_score,
                 event.away_team_score,
@@ -144,6 +209,9 @@ class GameRepository(BaseRepository):
 
     def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         self._cursor.execute(
-            f"UPDATE {self.table.name} SET Notes=? WHERE UUID=?",
+            Query.update(self._table)
+            .set(self._table.Notes, Parameter("?"))
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [event.notes, str(event.ID)],
         )

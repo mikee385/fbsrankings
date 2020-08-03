@@ -4,6 +4,9 @@ from typing import Optional
 from typing import Union
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable
 from fbsrankings.infrastructure.sqlite.storage import TeamRecordTable
 from fbsrankings.infrastructure.sqlite.storage import TeamRecordValueTable
@@ -20,36 +23,46 @@ class TeamRecordBySeasonWeekQueryHandler(object):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-        self.record_table = TeamRecordTable()
-        self.value_table = TeamRecordValueTable()
-        self.season_table = SeasonTable()
-        self.team_table = TeamTable()
+        self._record_table = TeamRecordTable().table
+        self._value_table = TeamRecordValueTable().table
+        self._season_table = SeasonTable().table
+        self._team_table = TeamTable().table
 
     def __call__(
         self, query: TeamRecordBySeasonWeekQuery
     ) -> Optional[TeamRecordBySeasonWeekResult]:
-        where = "record.SeasonID=?"
+        sql_query = Query.from_(self._record_table).select(self._record_table.UUID, self._record_table.SeasonID, self._season_table.Year, self._record_table.Week).inner_join(self._season_table).on(self._season_table.UUID == self._record_table.SeasonID).where(self._record_table.SeasonID == Parameter("?"))
+
         params: List[SqliteParam] = [
             str(query.season_ID),
         ]
 
         if query.week is not None:
-            where += " AND Week=?"
+            sql_query = sql_query.where(self._record_table.Week == Parameter("?"))
             params.append(query.week)
         else:
-            where += " AND Week is NULL"
+            sql_query = sql_query.where(self._record_table.Week.isnull())
 
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT record.UUID, record.SeasonID, season.Year, record.Week FROM {self.record_table.name} AS record INNER JOIN {self.season_table.name} AS season ON season.UUID = record.SeasonID WHERE {where}",
-            params,
+            sql_query.get_sql(), params
         )
         row = cursor.fetchone()
 
         values = []
         if row is not None:
             cursor.execute(
-                f"SELECT value.TeamID, team.Name, value.Wins, value.Losses FROM {self.value_table.name} AS value INNER JOIN {self.team_table.name} AS team ON team.UUID = value.TeamID WHERE value.TeamRecordID=?",
+                Query.from_(self._value_table)
+                .select(
+                    self._value_table.TeamID,
+                    self._team_table.Name,
+                    self._value_table.Wins,
+                    self._value_table.Losses,
+                )
+                .inner_join(self._team_table)
+                .on(self._team_table.UUID == self._value_table.TeamID)
+                .where(self._value_table.TeamRecordID == Parameter("?"))
+                .get_sql(),
                 [row[0]],
             )
             values = [

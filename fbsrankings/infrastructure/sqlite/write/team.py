@@ -4,6 +4,9 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Team
 from fbsrankings.domain import TeamID
@@ -21,14 +24,16 @@ class TeamRepository(BaseRepository):
         self._connection = connection
         self._cursor = cursor
 
-        self.table = TeamTable()
+        self._table = TeamTable().table
 
         bus.register_handler(TeamCreatedEvent, self._handle_team_created)
 
     def get(self, ID: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?",
+            self._query()
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -39,7 +44,10 @@ class TeamRepository(BaseRepository):
     def find(self, name: str) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE Name=?", [name]
+            self._query()
+            .where(self._table.Name == Parameter("?"))
+            .get_sql(),
+            [name]
         )
         row = cursor.fetchone()
         cursor.close()
@@ -48,17 +56,34 @@ class TeamRepository(BaseRepository):
 
     def all(self) -> List[Team]:
         cursor = self._connection.cursor()
-        cursor.execute(f"SELECT {self.table.columns} FROM {self.table.name}")
+        cursor.execute(self._query().get_sql())
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_team(row) for row in rows if row is not None]
+
+    def _query(self) -> None:
+        return Query.from_(self._table).select(self._table.UUID,
+                                               self._table.Name)
 
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
 
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)",
-            [str(event.ID), event.name],
+            Query.into(self._table)
+            .columns(
+                self._table.UUID,
+                self._table.Name,
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?"),
+            )
+            .get_sql(),
+            [
+                str(event.ID),
+                event.name,
+            ],
         )
+

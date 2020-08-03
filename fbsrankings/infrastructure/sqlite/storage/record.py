@@ -1,16 +1,19 @@
 import sqlite3
 
+from pypika import Query
+from pypika import Table
+from pypika.pseudocolumns import RowID
+
 
 class TeamRecordTable(object):
     def __init__(self) -> None:
-        self.name = "teamrecord"
-        self.columns = "UUID, SeasonID, Week"
+        self.table = Table("teamrecord")
 
         self.value_table = TeamRecordValueTable()
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS teamrecord
             (UUID TEXT NOT NULL UNIQUE,
              SeasonID TEXT NOT NULL REFERENCES season(UUID),
              Week INT,
@@ -22,7 +25,11 @@ class TeamRecordTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Records:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -32,17 +39,16 @@ class TeamRecordTable(object):
     def drop(self, cursor: sqlite3.Cursor) -> None:
         self.value_table.drop(cursor)
 
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute("DROP TABLE IF EXISTS teamrecord")
 
 
 class TeamRecordValueTable(object):
     def __init__(self) -> None:
-        self.name = "teamrecordvalue"
-        self.columns = "TeamRecordID, TeamID, Wins, Losses"
+        self.table = Table("teamrecordvalue")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS teamrecordvalue
             (TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID),
              TeamID TEXT NOT NULL REFERENCES team(UUID),
              Wins INT NOT NULL,
@@ -53,10 +59,14 @@ class TeamRecordValueTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Record Values:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute("DROP TABLE IF EXISTS teamrecordvalue")

@@ -1,47 +1,62 @@
 import sqlite3
 
+from pypika import Parameter
+from pypika import Query
+from pypika import Table
+from pypika.pseudocolumns import RowID
+
 from fbsrankings.domain import GameStatus
 
 
 class GameStatusTable(object):
     def __init__(self) -> None:
-        self.name = "gamestatus"
-        self.columns = "Name"
+        self.table = Table("gamestatus")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS gamestatus
         (Name TEXT NOT NULL UNIQUE);"""
         )
 
-        cursor.execute(f"SELECT {self.columns} from {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(self.table.Name)
+            .get_sql()
+        )
         existing = [row[0] for row in cursor.fetchall()]
         for value in GameStatus:
             if value.name not in existing:
                 cursor.execute(
-                    f"INSERT INTO {self.name} ({self.columns}) VALUES (?)", [value.name]
+                    Query.into(self.table)
+                    .columns(self.table.Name)
+                    .insert(Parameter("?"))
+                    .get_sql(),
+                    [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Game Statuses:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute("DROP TABLE IF EXISTS gamestatus")
 
 
 class GameTable(object):
     def __init__(self) -> None:
-        self.name = "game"
-        self.columns = "UUID, SeasonID, Week, Date, SeasonSection, HomeTeamID, AwayTeamID, HomeTeamScore, AwayTeamScore, Status, Notes"
+        self.table = Table("game")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS game
             (UUID TEXT NOT NULL UNIQUE,
              SeasonID TEXT NOT NULL REFERENCES season(UUID),
              Week INT NOT NULL,
@@ -58,10 +73,14 @@ class GameTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Games:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute(f"DROP TABLE IF EXISTS game")

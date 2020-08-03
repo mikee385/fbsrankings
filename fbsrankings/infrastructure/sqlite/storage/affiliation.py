@@ -1,47 +1,62 @@
 import sqlite3
 
+from pypika import Parameter
+from pypika import Query
+from pypika import Table
+from pypika.pseudocolumns import RowID
+
 from fbsrankings.domain import Subdivision
 
 
 class SubdivisionTable(object):
     def __init__(self) -> None:
-        self.name = "subdivision"
-        self.columns = "Name"
+        self.table = Table("subdivision")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS subdivision
         (Name TEXT NOT NULL UNIQUE);"""
         )
 
-        cursor.execute(f"SELECT {self.columns} from {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(self.table.Name)
+            .get_sql()
+        )
         existing = [row[0] for row in cursor.fetchall()]
         for value in Subdivision:
             if value.name not in existing:
                 cursor.execute(
-                    f"INSERT INTO {self.name} ({self.columns}) VALUES (?)", [value.name]
+                    Query.into(self.table)
+                    .columns(self.table.Name)
+                    .insert(Parameter("?"))
+                    .get_sql(),
+                    [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Subdivisions:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute(f"DROP TABLE IF EXISTS subdivision")
 
 
 class AffiliationTable(object):
     def __init__(self) -> None:
-        self.name = "affiliation"
-        self.columns = "UUID, SeasonID, TeamID, Subdivision"
+        self.table = Table("affiliation")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS affiliation
             (UUID TEXT NOT NULL UNIQUE,
              SeasonID TEXT NOT NULL REFERENCES season(UUID),
              TeamID TEXT NOT NULL REFERENCES team(UUID),
@@ -51,10 +66,14 @@ class AffiliationTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Affiliations:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute(f"DROP TABLE IF EXISTS affiliation")

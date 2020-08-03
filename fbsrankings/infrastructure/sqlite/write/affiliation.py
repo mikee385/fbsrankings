@@ -4,6 +4,9 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
 from fbsrankings.domain import AffiliationID
@@ -24,14 +27,16 @@ class AffiliationRepository(BaseRepository):
         self._connection = connection
         self._cursor = cursor
 
-        self.table = AffiliationTable()
+        self._table = AffiliationTable().table
 
         bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
 
     def get(self, ID: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?",
+            self._query()
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -42,7 +47,10 @@ class AffiliationRepository(BaseRepository):
     def find(self, season_ID: SeasonID, team_ID: TeamID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=? AND TeamID=?",
+            self._query()
+            .where(self._table.SeasonID == Parameter("?"))
+            .where(self._table.TeamID == Parameter("?"))
+            .get_sql(),
             [str(season_ID.value), str(team_ID.value)],
         )
         row = cursor.fetchone()
@@ -53,13 +61,23 @@ class AffiliationRepository(BaseRepository):
     def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE SeasonID=?",
+            self._query()
+            .where(self._table.SeasonID == Parameter("?"))
+            .get_sql(),
             [str(season_ID.value)],
         )
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_affiliation(row) for row in rows if row is not None]
+
+    def _query(self) -> Query:
+        return Query.from_(self._table).select(
+            self._table.UUID,
+            self._table.SeasonID,
+            self._table.TeamID,
+            self._table.Subdivision
+        )
 
     def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Affiliation:
         return Affiliation(
@@ -72,7 +90,20 @@ class AffiliationRepository(BaseRepository):
 
     def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?, ?, ?)",
+            Query.into(self._table)
+            .columns(
+                self._table.UUID,
+                self._table.SeasonID,
+                self._table.TeamID,
+                self._table.Subdivision
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?")
+            )
+            .get_sql(),
             [
                 str(event.ID),
                 str(event.season_ID),

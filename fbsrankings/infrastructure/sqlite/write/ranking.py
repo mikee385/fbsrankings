@@ -9,7 +9,10 @@ from typing import TypeVar
 from typing import Union
 from uuid import UUID
 
-from typing_extensions import Protocol
+from pypika import Field
+from pypika import Parameter
+from pypika import Query
+from pypika import Table
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -36,35 +39,29 @@ T = TypeVar("T", bound=Identifier)
 SqliteParam = Union[None, int, float, str, bytes]
 
 
-class RankingValueTable(Protocol):
-    name: str
-    columns: str
-
-
 class RankingRepository(Generic[T], metaclass=ABCMeta):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus, value_table: Table, value_columns: List[Field]
     ) -> None:
         self._bus = bus
         self._connection = connection
         self._cursor = cursor
 
-        self.ranking_table = RankingTable()
+        self._ranking_table = RankingTable().table
+        self._value_table = value_table
+        self._value_columns = value_columns
 
     @property
     @abstractmethod
     def type(self) -> RankingType:
         raise NotImplementedError
 
-    @property
-    @abstractmethod
-    def value_table(self) -> RankingValueTable:
-        raise NotImplementedError
-
     def get(self, ID: RankingID) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE UUID=? AND Type=?",
+            self._query()
+            .where((self._ranking_table.UUID == Parameter("?")) & (self._ranking_table.Type == Parameter("?")))
+            .get_sql(),
             [str(ID.value), self.type.name],
         )
         row = cursor.fetchone()
@@ -75,29 +72,40 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
     def find(
         self, name: str, season_ID: SeasonID, week: Optional[int]
     ) -> Optional[Ranking[T]]:
-        where = "Name=? AND Type=? AND SeasonID=?"
+        query = self._query().where((self._ranking_table.Name == Parameter("?")) & (self._ranking_table.Type == Parameter("?")) & (self._ranking_table.SeasonID == Parameter("?")))
         params: List[SqliteParam] = [name, self.type.name, str(season_ID.value)]
 
         if week is not None:
-            where += " AND Week=?"
+            query = query.where(self._ranking_table.Week == Parameter("?"))
             params.append(week)
         else:
-            where += " AND Week is NULL"
+            query = query.where(self._ranking_table.Week.isnull())
 
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.ranking_table.columns} FROM {self.ranking_table.name} WHERE {where}",
-            params,
+            query.get_sql(), params,
         )
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_ranking(row) if row is not None else None
 
+    def _query(self) -> Query:
+        return Query.from_(self._ranking_table).select(
+            self._ranking_table.UUID,
+            self._ranking_table.Name,
+            self._ranking_table.Type,
+            self._ranking_table.SeasonID,
+            self._ranking_table.Week,
+        )
+
     def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]],) -> Ranking[T]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.value_table.columns} FROM {self.value_table.name} WHERE RankingID=?",
+            Query.from_(self._value_table)
+            .select(self._value_columns)
+            .where(self._value_table.RankingID == Parameter("?"))
+            .get_sql(),
             [row[0]],
         )
         rows = cursor.fetchall()
@@ -115,33 +123,56 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         )
 
     @abstractmethod
-    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[T]:
+    def _to_value(self) -> RankingValue[T]:
         raise NotImplementedError
 
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
-        where = "Name=? AND SeasonID=?"
-        params: List[SqliteParam] = [event.name, str(event.season_ID)]
+        query = Query.from_(self._ranking_table).select(self._ranking_table.UUID).where((self._ranking_table.Name == Parameter("?")) & (self._ranking_table.Type == Parameter("?")) & (self._ranking_table.SeasonID == Parameter("?")))
+        params: List[SqliteParam] = [event.name, self.type.name, str(event.season_ID)]
 
         if event.week is not None:
-            where += " AND Week=?"
+            query = query.where(self._ranking_table.Week == Parameter("?"))
             params.append(event.week)
         else:
-            where += " AND Week is NULL"
+            query = query.where(self._ranking_table.Week.isnull())
 
         self._cursor.execute(
-            f"SELECT UUID FROM {self.ranking_table.name} WHERE {where}", params,
+            query.get_sql(), params,
         )
         row = self._cursor.fetchone()
         if row is not None:
             self._cursor.execute(
-                f"DELETE FROM {self.value_table.name} WHERE RankingID=?", [row[0]],
+                Query.from_(self._value_table)
+                .delete()
+                .where(self._value_table.RankingID == Parameter("?"))
+                .get_sql(),
+                [row[0]],
             )
             self._cursor.execute(
-                f"DELETE FROM {self.ranking_table.name} WHERE UUID=?", [row[0]],
+                Query.from_(self._ranking_table)
+                .delete()
+                .where(self._ranking_table.UUID == Parameter("?"))
+                .get_sql(),
+                [row[0]],
             )
 
         self._cursor.execute(
-            f"INSERT INTO {self.ranking_table.name} ({self.ranking_table.columns}) VALUES (?, ?, ?, ?, ?)",
+            Query.into(self._ranking_table)
+            .columns(
+                self._ranking_table.UUID,
+                self._ranking_table.Name,
+                self._ranking_table.Type,
+                self._ranking_table.SeasonID,
+                self._ranking_table.Week,
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+            )
+            .get_sql(),
             [
                 str(event.ID),
                 event.name,
@@ -152,8 +183,23 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         )
         for value in event.values:
             self._cursor.execute(
-                f"INSERT INTO {self.value_table.name} ({self.value_table.columns}) VALUES (?, ?, ?, ?, ?)",
-                [str(event.ID), str(value.ID), value.order, value.rank, value.value],
+                Query.into(self._value_table)
+                .columns(self._value_columns)
+                .insert(
+                    Parameter("?"),
+                    Parameter("?"),
+                    Parameter("?"),
+                    Parameter("?"),
+                    Parameter("?"),
+                )
+                .get_sql(),
+                [
+                    str(event.ID),
+                    str(value.ID),
+                    value.order,
+                    value.rank,
+                    value.value
+                ],
             )
 
 
@@ -161,10 +207,17 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
     ) -> None:
-        RankingRepository.__init__(self, connection, cursor, bus)
-        BaseTeamRankingRepository.__init__(self, bus)
+        value_table = TeamRankingValueTable().table
+        value_columns = [
+            value_table.RankingID,
+            value_table.TeamID,
+            value_table.Ord,
+            value_table.Rank,
+            value_table.Value,
+        ]
 
-        self._value_table = TeamRankingValueTable()
+        RankingRepository.__init__(self, connection, cursor, bus, value_table, value_columns)
+        BaseTeamRankingRepository.__init__(self, bus)
 
         bus.register_handler(
             TeamRankingCalculatedEvent, self._handle_ranking_calculated
@@ -174,10 +227,6 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
     def type(self) -> RankingType:
         return RankingType.TEAM
 
-    @property
-    def value_table(self) -> RankingValueTable:
-        return self._value_table
-
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4],)
 
@@ -186,10 +235,17 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
     ) -> None:
-        RankingRepository.__init__(self, connection, cursor, bus)
-        BaseGameRankingRepository.__init__(self, bus)
+        value_table = GameRankingValueTable().table
+        value_columns = [
+            value_table.RankingID,
+            value_table.GameID,
+            value_table.Ord,
+            value_table.Rank,
+            value_table.Value,
+        ]
 
-        self._value_table = GameRankingValueTable()
+        RankingRepository.__init__(self, connection, cursor, bus, value_table, value_columns)
+        BaseGameRankingRepository.__init__(self, bus)
 
         bus.register_handler(
             GameRankingCalculatedEvent, self._handle_ranking_calculated
@@ -198,10 +254,6 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
     @property
     def type(self) -> RankingType:
         return RankingType.GAME
-
-    @property
-    def value_table(self) -> RankingValueTable:
-        return self._value_table
 
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4],)

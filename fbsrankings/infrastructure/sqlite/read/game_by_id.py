@@ -3,6 +3,9 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.infrastructure.sqlite.storage import GameTable
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable
 from fbsrankings.infrastructure.sqlite.storage import TeamTable
@@ -14,14 +17,41 @@ class GameByIDQueryHandler(object):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-        self.season_table = SeasonTable()
-        self.team_table = TeamTable()
-        self.game_table = GameTable()
+        self._season_table = SeasonTable().table
+        self._team_table = TeamTable().table
+        self._game_table = GameTable().table
 
     def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
+        home_team_table = self._team_table.as_("home_team")
+        away_team_table = self._team_table.as_("away_team")
+
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT game.UUID, game.SeasonID, season.Year, game.Week, game.Date, game.SeasonSection, game.HomeTeamID, home_team.Name, game.AwayTeamID, away_team.name, game.HomeTeamScore, game.AwayTeamScore, game.Status, game.Notes FROM {self.game_table.name} AS game INNER JOIN {self.season_table.name} AS season ON season.UUID = game.SeasonID INNER JOIN {self.team_table.name} AS home_team ON home_team.UUID = game.HomeTeamID INNER JOIN {self.team_table.name} AS away_team ON away_team.UUID = game.AwayTeamID WHERE game.UUID=?",
+            Query.from_(self._game_table)
+            .select(
+                self._game_table.UUID,
+                self._game_table.SeasonID,
+                self._season_table.Year,
+                self._game_table.Week,
+                self._game_table.Date,
+                self._game_table.SeasonSection,
+                self._game_table.HomeTeamID,
+                home_team_table.Name,
+                self._game_table.AwayTeamID,
+                away_team_table.Name,
+                self._game_table.HomeTeamScore,
+                self._game_table.AwayTeamScore,
+                self._game_table.Status,
+                self._game_table.Notes
+            )
+            .inner_join(self._season_table)
+            .on(self._season_table.UUID == self._game_table.SeasonID)
+            .inner_join(home_team_table)
+            .on(home_team_table.UUID == self._game_table.HomeTeamID)
+            .inner_join(away_team_table)
+            .on(away_team_table.UUID == self._game_table.AwayTeamID)
+            .where(self._game_table.UUID == Parameter("?"))
+            .get_sql(),
             [str(query.ID)],
         )
         row = cursor.fetchone()

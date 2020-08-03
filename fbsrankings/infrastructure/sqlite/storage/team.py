@@ -1,14 +1,17 @@
 import sqlite3
 
+from pypika import Query
+from pypika import Table
+from pypika.pseudocolumns import RowID
+
 
 class TeamTable(object):
     def __init__(self) -> None:
-        self.name = "team"
-        self.columns = "UUID, Name"
+        self.table = Table("team")
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.name}
+            """CREATE TABLE IF NOT EXISTS team
             (UUID TEXT NOT NULL UNIQUE,
              Name TEXT NOT NULL UNIQUE);"""
         )
@@ -16,10 +19,14 @@ class TeamTable(object):
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Teams:")
         cursor = connection.cursor()
-        cursor.execute(f"SELECT rowid, * FROM {self.name}")
+        cursor.execute(
+            Query.from_(self.table)
+            .select(RowID, self.table.star)
+            .get_sql()
+        )
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute(f"DROP TABLE IF EXISTS {self.name}")
+        cursor.execute("DROP TABLE IF EXISTS team")

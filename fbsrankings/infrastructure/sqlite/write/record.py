@@ -5,6 +5,9 @@ from typing import Tuple
 from typing import Union
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
@@ -28,15 +31,17 @@ class TeamRecordRepository(BaseRepository):
         self._connection = connection
         self._cursor = cursor
 
-        self.record_table = TeamRecordTable()
-        self.value_table = TeamRecordValueTable()
+        self._record_table = TeamRecordTable().table
+        self._value_table = TeamRecordValueTable().table
 
         bus.register_handler(TeamRecordCalculatedEvent, self._handle_record_calculated)
 
     def get(self, ID: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.record_table.columns} FROM {self.record_table.name} WHERE UUID=?",
+            self._query()
+            .where(self._record_table.UUID == Parameter("?"))
+            .get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -45,18 +50,18 @@ class TeamRecordRepository(BaseRepository):
         return self._to_record(row) if row is not None else None
 
     def find(self, season_ID: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
-        where = "SeasonID=?"
+        query = self._query().where(self._record_table.SeasonID == Parameter("?"))
         params: List[SqliteParam] = [str(season_ID.value)]
 
         if week is not None:
-            where += " AND Week=?"
+            query = query.where(self._record_table.Week == Parameter("?"))
             params.append(week)
         else:
-            where += " AND Week is NULL"
+            query = query.where(self._record_table.Week.isnull())
 
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.record_table.columns} FROM {self.record_table.name} WHERE {where}",
+            query.get_sql(),
             params,
         )
         row = cursor.fetchone()
@@ -64,10 +69,25 @@ class TeamRecordRepository(BaseRepository):
 
         return self._to_record(row) if row is not None else None
 
+    def _query(self) -> Query:
+        return Query.from_(self._table).select(
+            self._table.UUID,
+            self._table.SeasonID,
+            self._table.Week,
+        )
+
     def _to_record(self, row: Tuple[str, str, Optional[int]],) -> TeamRecord:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.value_table.columns} FROM {self.value_table.name} WHERE TeamRecordID=?",
+            Query.from_(self._value_table)
+            .select(
+                self._value_table.TeamRecordID,
+                self._value_table.TeamID,
+                self._value_table.Wins,
+                self._value_table.Losses,
+            )
+            .where(self._value_table.TeamRecordID == Parameter("?"))
+            .get_sql(),
             [row[0]],
         )
         rows = cursor.fetchall()
@@ -87,33 +107,74 @@ class TeamRecordRepository(BaseRepository):
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3],)
 
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
-        where = "SeasonID=?"
+        query = Query.from_(self._record_table).select(self._record_table.UUID).where(self._record_table.SeasonID == Parameter("?"))
         params: List[SqliteParam] = [str(event.season_ID)]
 
         if event.week is not None:
-            where += " AND Week=?"
+            query = query.where(self._record_table.Week == Parameter("?"))
             params.append(event.week)
         else:
-            where += " AND Week is NULL"
+            query = query.where(self._record_table.Week.isnull())
 
         self._cursor.execute(
-            f"SELECT UUID FROM {self.record_table.name} WHERE {where}", params,
+            query.get_sql(), params,
         )
         row = self._cursor.fetchone()
         if row is not None:
             self._cursor.execute(
-                f"DELETE FROM {self.value_table.name} WHERE TeamRecordID=?", [row[0]],
+                Query.from_(self._value_table)
+                .delete()
+                .where(self._value_table.TeamRecordID == Parameter("?"))
+                .get_sql(),
+                [row[0]],
             )
             self._cursor.execute(
-                f"DELETE FROM {self.record_table.name} WHERE UUID=?", [row[0]],
+                Query.from_(self._record_table)
+                .delete()
+                .where(self._record_table.UUID == Parameter("?"))
+                .get_sql(),
+                [row[0]],
             )
 
         self._cursor.execute(
-            f"INSERT INTO {self.record_table.name} ({self.record_table.columns}) VALUES (?, ?, ?)",
-            [str(event.ID), str(event.season_ID), event.week],
+            Query.into(self._record_table)
+            .columns(
+                self._record_table.UUID,
+                self._record_table.SeasonID,
+                self._record_table.Week,
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?"),
+                Parameter("?"),
+            )
+            .get_sql(),
+            [
+                str(event.ID),
+                str(event.season_ID),
+                event.week
+            ],
         )
         for value in event.values:
             self._cursor.execute(
-                f"INSERT INTO {self.value_table.name} ({self.value_table.columns}) VALUES (?, ?, ?, ?)",
-                [str(event.ID), str(value.team_ID), value.wins, value.losses],
+                Query.into(self._value_table)
+                .columns(
+                    self._value_table.TeamRecordID,
+                    self._value_table.TeamID,
+                    self._value_table.Wins,
+                    self._value_table.Losses,
+                )
+                .insert(
+                    Parameter("?"),
+                    Parameter("?"),
+                    Parameter("?"),
+                    Parameter("?"),
+                )
+                .get_sql(),
+                [
+                    str(event.ID),
+                    str(value.team_ID),
+                    value.wins,
+                    value.losses,
+                ],
             )

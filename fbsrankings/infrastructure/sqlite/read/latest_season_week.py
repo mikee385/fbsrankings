@@ -2,6 +2,12 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
+from pypika import Case
+from pypika import Order
+from pypika import Parameter
+from pypika import Query
+from pypika.functions import Sum
+
 from fbsrankings.domain import GameStatus
 from fbsrankings.infrastructure.sqlite.storage import GameTable
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable
@@ -13,26 +19,27 @@ class LatestSeasonWeekQueryHandler(object):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-        self.season_table = SeasonTable()
-        self.game_table = GameTable()
+        self._season_table = SeasonTable().table
+        self._game_table = GameTable().table
 
     def __call__(
         self, query: LatestSeasonWeekQuery
     ) -> Optional[LatestSeasonWeekResult]:
+        season_subquery = Query.from_(self._game_table).select(
+            self._game_table.SeasonID,
+            self._season_table.Year,
+            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesCompleted"),
+            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesScheduled")
+        ).inner_join(self._season_table).on(self._season_table.UUID == self._game_table.SeasonID).groupby(self._game_table.SeasonID, self._season_table.Year).as_("season")
+
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT SeasonID, Year, GamesCompleted, GamesScheduled "
-            + "FROM ("
-            + "SELECT game.SeasonID, season.year, "
-            + "SUM(CASE WHEN game.Status == ? THEN 1 ELSE 0 END) AS GamesCompleted, "
-            + "SUM(CASE WHEN game.Status == ? THEN 1 ELSE 0 END) AS GamesScheduled "
-            + f"FROM {self.game_table.name} AS game "
-            + f"INNER JOIN {self.season_table.name} AS season ON season.UUID = game.SeasonID "
-            + "GROUP BY game.SeasonID, season.Year"
-            + ") AS week "
-            + "WHERE GamesCompleted > 0 "
-            + "ORDER BY Year DESC "
-            + "LIMIT 1",
+            Query.from_(season_subquery)
+            .select(season_subquery.SeasonID, season_subquery.Year, season_subquery.GamesCompleted, season_subquery.GamesScheduled)
+            .where(season_subquery.GamesCompleted > 0)
+            .orderby(season_subquery.Year, order=Order.desc)
+            .limit(1)
+            .get_sql(),
             [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name],
         )
         row = cursor.fetchone()
@@ -46,20 +53,20 @@ class LatestSeasonWeekQueryHandler(object):
         if games_scheduled == 0:
             return LatestSeasonWeekResult(UUID(season_ID), year, None)
 
+        week_subquery = Query.from_(self._game_table).select(
+            self._game_table.Week,
+            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesCompleted"),
+            Sum(Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)).as_("GamesScheduled")
+        ).where(self._game_table.SeasonID == Parameter("?")).groupby(self._game_table.Week).as_("week")
+
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT Week "
-            + "FROM ("
-            + "SELECT game.Week, "
-            + "SUM(CASE WHEN game.Status == ? THEN 1 ELSE 0 END) AS GamesCompleted, "
-            + "SUM(CASE WHEN game.Status == ? THEN 1 ELSE 0 END) AS GamesScheduled "
-            + f"FROM {self.game_table.name} AS game "
-            + "WHERE game.SeasonID = ? "
-            + "GROUP BY game.Week"
-            + ") AS week "
-            + "WHERE GamesCompleted > 0 AND GamesScheduled == 0 "
-            + "ORDER BY Week DESC "
-            + "LIMIT 1",
+            Query.from_(week_subquery)
+            .select(week_subquery.Week)
+            .where((week_subquery.GamesCompleted > 0) & (week_subquery.GamesScheduled == 0))
+            .orderby(week_subquery.Week, order=Order.desc)
+            .limit(1)
+            .get_sql(),
             [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name, season_ID],
         )
         row = cursor.fetchone()

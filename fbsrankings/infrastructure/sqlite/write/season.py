@@ -4,6 +4,9 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from pypika import Parameter
+from pypika import Query
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Season
 from fbsrankings.domain import SeasonID
@@ -21,14 +24,16 @@ class SeasonRepository(BaseRepository):
         self._connection = connection
         self._cursor = cursor
 
-        self.table = SeasonTable()
+        self._table = SeasonTable().table
 
         bus.register_handler(SeasonCreatedEvent, self._handle_season_created)
 
     def get(self, ID: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE UUID=?",
+            self._query()
+            .where(self._table.UUID == Parameter("?"))
+            .get_sql(),
             [str(ID.value)],
         )
         row = cursor.fetchone()
@@ -39,7 +44,10 @@ class SeasonRepository(BaseRepository):
     def find(self, year: int) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            f"SELECT {self.table.columns} FROM {self.table.name} WHERE Year=?", [year]
+            self._query()
+            .where(self._table.Year == Parameter("?"))
+            .get_sql(),
+            [year]
         )
         row = cursor.fetchone()
         cursor.close()
@@ -48,17 +56,38 @@ class SeasonRepository(BaseRepository):
 
     def all(self) -> List[Season]:
         cursor = self._connection.cursor()
-        cursor.execute(f"SELECT {self.table.columns} FROM {self.table.name}")
+        cursor.execute(
+            self._query()
+            .get_sql()
+        )
         rows = cursor.fetchall()
         cursor.close()
 
         return [self._to_season(row) for row in rows if row is not None]
+
+    def _query(self) -> Query:
+        return Query.from_(self._table).select(
+            self._table.UUID,
+            self._table.Year
+        )
 
     def _to_season(self, row: Tuple[str, int]) -> Season:
         return Season(self._bus, SeasonID(UUID(row[0])), row[1])
 
     def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self.table.name} ({self.table.columns}) VALUES (?, ?)",
-            [str(event.ID), event.year],
+            Query.into(self._table)
+            .columns(
+                self._table.UUID,
+                self._table.Year
+            )
+            .insert(
+                Parameter("?"),
+                Parameter("?")
+            )
+            .get_sql(),
+            [
+                str(event.ID),
+                event.year
+            ],
         )
