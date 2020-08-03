@@ -14,6 +14,7 @@ setuptools = "*"
 twine = "*"
 typeguard = "*"
 wheel = "*"
+bandit = "*"
 
 [packages]
 bs4 = "*"
