@@ -21,6 +21,7 @@ html5lib = "*"
 jsonschema = "*"
 numpy = "*"
 prettytable = "*"
+pypika = "*"
 tqdm = "*"
 typing-extensions = "*"
 
