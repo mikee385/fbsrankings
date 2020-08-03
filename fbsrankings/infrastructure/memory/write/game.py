@@ -87,7 +87,7 @@ class GameRepository(BaseRepository):
                 None,
                 GameStatus.SCHEDULED.name,
                 event.notes,
-            )
+            ),
         )
 
     def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:

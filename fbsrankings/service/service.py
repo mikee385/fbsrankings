@@ -70,7 +70,7 @@ class Service(ContextManager["Service"]):
 
         self.seasons: List[int] = []
         self._sports_reference = SportsReference(
-            alternate_names, self.validation_service
+            alternate_names, self.validation_service,
         )
         for season in config["seasons"]:
             self.seasons.append(season["year"])

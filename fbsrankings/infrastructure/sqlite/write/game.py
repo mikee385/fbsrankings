@@ -26,7 +26,7 @@ from fbsrankings.infrastructure.sqlite.storage import GameTable
 
 class GameRepository(BaseRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -68,7 +68,7 @@ class GameRepository(BaseRepository):
                 | (
                     (self._table.AwayTeamID == Parameter("?"))
                     & (self._table.HomeTeamID == Parameter("?"))
-                )
+                ),
             )
             .get_sql(),
             [

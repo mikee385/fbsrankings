@@ -69,7 +69,7 @@ class SRSRankingService(TeamRankingService):
                     away_data = team_data[game.away_team_ID]
 
                     home_margin = self._adjust_margin(
-                        game.home_team_score - game.away_team_score
+                        game.home_team_score - game.away_team_score,
                     )
                     home_data.add_game(home_margin)
                     away_data.add_game(-home_margin)
@@ -97,14 +97,14 @@ class SRSRankingService(TeamRankingService):
             rankings.append(
                 self._repository.create(
                     SRSRankingService.name, season_data.season.ID, week, ranking_values,
-                )
+                ),
             )
 
         if season_is_complete:
             rankings.append(
                 self._repository.create(
                     SRSRankingService.name, season_data.season.ID, None, ranking_values,
-                )
+                ),
             )
 
         return rankings

@@ -18,8 +18,7 @@ class RankingTypeTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS rankingtype
-        (Name TEXT NOT NULL UNIQUE);"""
+            "CREATE TABLE IF NOT EXISTS rankingtype (Name TEXT NOT NULL UNIQUE);",
         )
 
         cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
@@ -45,26 +44,25 @@ class RankingTypeTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS rankingtype")
+        cursor.execute("DROP TABLE IF EXISTS rankingtype;")
 
 
 class RankingTable(object):
     def __init__(self) -> None:
         self.table = Table("ranking")
-        self.columns = "UUID, Name, Type, SeasonID, Week"
 
         self.team_value_table = TeamRankingValueTable()
         self.game_value_table = GameRankingValueTable()
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS ranking
-            (UUID TEXT NOT NULL UNIQUE,
-             Name TEXT NOT NULL,
-             Type TEXT NOT NULL REFERENCES rankingtype(Name),
-             SeasonID TEXT NOT NULL REFERENCES season(UUID),
-             Week INT,
-             UNIQUE(Name, SeasonID, Week));"""
+            "CREATE TABLE IF NOT EXISTS ranking "
+            + "(UUID TEXT NOT NULL UNIQUE, "
+            + "Name TEXT NOT NULL, "
+            + "Type TEXT NOT NULL REFERENCES rankingtype(Name), "
+            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            + "Week INT, "
+            + "UNIQUE(Name, SeasonID, Week));",
         )
 
         self.team_value_table.create(cursor)
@@ -85,24 +83,23 @@ class RankingTable(object):
         self.game_value_table.drop(cursor)
         self.team_value_table.drop(cursor)
 
-        cursor.execute("DROP TABLE IF EXISTS ranking")
+        cursor.execute("DROP TABLE IF EXISTS ranking;")
 
 
 class TeamRankingValueTable(object):
     def __init__(self) -> None:
         self.table = Table("teamrankingvalue")
-        self.columns = "RankingID, TeamID, Ord, Rank, Value"
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS teamrankingvalue
-            (RankingID TEXT NOT NULL REFERENCES ranking(UUID),
-             TeamID TEXT NOT NULL REFERENCES team(UUID),
-             Ord INT NOT NULL,
-             Rank INT NOT NULL,
-             Value REAL NOT NULL,
-             UNIQUE(RankingID, TeamID),
-             UNIQUE(RankingID, Ord));"""
+            "CREATE TABLE IF NOT EXISTS teamrankingvalue "
+            + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
+            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            + "Ord INT NOT NULL, "
+            + "Rank INT NOT NULL, "
+            + "Value REAL NOT NULL, "
+            + "UNIQUE(RankingID, TeamID), "
+            + "UNIQUE(RankingID, Ord));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -114,24 +111,23 @@ class TeamRankingValueTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS teamrankingvalue")
+        cursor.execute("DROP TABLE IF EXISTS teamrankingvalue;")
 
 
 class GameRankingValueTable(object):
     def __init__(self) -> None:
         self.table = Table("gamerankingvalue")
-        self.columns = "RankingID, GameID, Ord, Rank, Value"
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS gamerankingvalue
-            (RankingID TEXT NOT NULL REFERENCES ranking(UUID),
-             GameID TEXT NOT NULL REFERENCES game(UUID),
-             Ord INT NOT NULL,
-             Rank INT NOT NULL,
-             Value REAL NOT NULL,
-             UNIQUE(RankingID, GameID),
-             UNIQUE(RankingID, Ord));"""
+            "CREATE TABLE IF NOT EXISTS gamerankingvalue "
+            + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
+            + "GameID TEXT NOT NULL REFERENCES game(UUID), "
+            + "Ord INT NOT NULL, "
+            + "Rank INT NOT NULL, "
+            + "Value REAL NOT NULL, "
+            + "UNIQUE(RankingID, GameID), "
+            + "UNIQUE(RankingID, Ord));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -143,4 +139,4 @@ class GameRankingValueTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS gamerankingvalue")
+        cursor.execute("DROP TABLE IF EXISTS gamerankingvalue;")

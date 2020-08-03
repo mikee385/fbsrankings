@@ -42,7 +42,7 @@ class GameStorage(object):
         self._by_season: Dict[UUID, List[GameDto]] = {}
 
     def _get_key(
-        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID
+        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID,
     ) -> Tuple[UUID, int, UUID, UUID]:
         if team1_ID < team2_ID:
             return (season_ID, week, team1_ID, team2_ID)
@@ -51,11 +51,11 @@ class GameStorage(object):
 
     def add(self, game: GameDto) -> None:
         key = self._get_key(
-            game.season_ID, game.week, game.home_team_ID, game.away_team_ID
+            game.season_ID, game.week, game.home_team_ID, game.away_team_ID,
         )
         if key in self._by_key:
             raise ValueError(
-                f"Game already exists for week {game.week} in season {game.season_ID} between {game.home_team_ID} and {game.away_team_ID}"
+                f"Game already exists for week {game.week} in season {game.season_ID} between {game.home_team_ID} and {game.away_team_ID}",
             )
 
         self._by_ID[game.ID] = game
@@ -71,7 +71,7 @@ class GameStorage(object):
         return self._by_ID.get(ID)
 
     def find(
-        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID
+        self, season_ID: UUID, week: int, team1_ID: UUID, team2_ID: UUID,
     ) -> Optional[GameDto]:
         key = self._get_key(season_ID, week, team1_ID, team2_ID)
         return self._by_key.get(key)

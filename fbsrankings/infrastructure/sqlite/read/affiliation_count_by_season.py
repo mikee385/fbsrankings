@@ -17,17 +17,17 @@ class AffiliationCountBySeasonQueryHandler(object):
         self._table = AffiliationTable().table
 
     def __call__(
-        self, query: AffiliationCountBySeasonQuery
+        self, query: AffiliationCountBySeasonQuery,
     ) -> AffiliationCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
             Query.from_(self._table)
             .select(
                 Sum(Case().when(self._table.Subdivision == "FBS", 1).else_(0)).as_(
-                    "FBS_Count"
+                    "FBS_Count",
                 ),
                 Sum(Case().when(self._table.Subdivision == "FCS", 1).else_(0)).as_(
-                    "FCS_Count"
+                    "FCS_Count",
                 ),
             )
             .where(self._table.SeasonID == Parameter("?"))

@@ -91,7 +91,7 @@ class ColleyMatrixRankingService(TeamRankingService):
                     season_data.season.ID,
                     week,
                     ranking_values,
-                )
+                ),
             )
 
         if season_is_complete:
@@ -101,7 +101,7 @@ class ColleyMatrixRankingService(TeamRankingService):
                     season_data.season.ID,
                     None,
                     ranking_values,
-                )
+                ),
             )
 
         return rankings

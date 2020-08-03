@@ -30,7 +30,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
         self._team_table = TeamTable().table
 
     def __call__(
-        self, query: TeamRankingBySeasonWeekQuery
+        self, query: TeamRankingBySeasonWeekQuery,
     ) -> Optional[TeamRankingBySeasonWeekResult]:
         sql_query = (
             Query.from_(self._ranking_table)
@@ -46,7 +46,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
             .where(
                 (self._ranking_table.Name == Parameter("?"))
                 & (self._ranking_table.Type == Parameter("?"))
-                & (self._ranking_table.SeasonID == Parameter("?"))
+                & (self._ranking_table.SeasonID == Parameter("?")),
             )
         )
 
@@ -85,7 +85,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
             )
             values = [
                 TeamRankingValueBySeasonWeekResult(
-                    UUID(value[0]), value[1], value[2], value[3], value[4]
+                    UUID(value[0]), value[1], value[2], value[3], value[4],
                 )
                 for value in cursor.fetchall()
             ]
@@ -94,7 +94,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
 
         if row is not None:
             return TeamRankingBySeasonWeekResult(
-                UUID(row[0]), row[1], UUID(row[2]), row[3], row[4], values
+                UUID(row[0]), row[1], UUID(row[2]), row[3], row[4], values,
             )
         else:
             return None

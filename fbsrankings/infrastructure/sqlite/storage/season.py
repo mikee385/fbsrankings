@@ -14,8 +14,7 @@ class SeasonSectionTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS seasonsection
-        (Name TEXT NOT NULL UNIQUE);"""
+            "CREATE TABLE IF NOT EXISTS seasonsection (Name TEXT NOT NULL UNIQUE);",
         )
 
         cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
@@ -41,7 +40,7 @@ class SeasonSectionTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS seasonsection")
+        cursor.execute("DROP TABLE IF EXISTS seasonsection;")
 
 
 class SeasonTable(object):
@@ -50,9 +49,9 @@ class SeasonTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS season
-            (UUID TEXT NOT NULL UNIQUE,
-             Year INT  NOT NULL UNIQUE);"""
+            "CREATE TABLE IF NOT EXISTS season "
+            + "(UUID TEXT NOT NULL UNIQUE, "
+            + "Year INT  NOT NULL UNIQUE);",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -64,4 +63,4 @@ class SeasonTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS season")
+        cursor.execute("DROP TABLE IF EXISTS season;")

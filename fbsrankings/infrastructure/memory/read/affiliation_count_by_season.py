@@ -9,7 +9,7 @@ class AffiliationCountBySeasonQueryHandler(object):
         self._storage = storage
 
     def __call__(
-        self, query: AffiliationCountBySeasonQuery
+        self, query: AffiliationCountBySeasonQuery,
     ) -> AffiliationCountBySeasonResult:
         fbs_count = 0
         fcs_count = 0

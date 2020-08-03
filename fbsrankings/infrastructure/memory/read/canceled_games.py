@@ -35,7 +35,7 @@ class CanceledGamesQueryHandler(object):
                             game.away_team_ID,
                             away_team.name,
                             game.notes,
-                        )
+                        ),
                     )
 
         return CanceledGamesResult(games)

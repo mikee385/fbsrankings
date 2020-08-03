@@ -24,7 +24,7 @@ class ValidationError(ValueError):
 class MultipleValidationError(ValidationError):
     def __init__(self, errors: List[ValidationError]) -> None:
         super().__init__(
-            "Multiple validation errors have occurred. See the errors property for more details."
+            "Multiple validation errors have occurred. See the errors property for more details.",
         )
         self.errors = errors
 
@@ -95,7 +95,7 @@ class GameDataValidationError(ValidationError):
 
 class FBSGameCountValidationError(ValidationError):
     def __init__(
-        self, message: str, season_ID: UUID, team_ID: UUID, game_count: int
+        self, message: str, season_ID: UUID, team_ID: UUID, game_count: int,
     ) -> None:
         super().__init__(message)
         self.season_ID = season_ID
@@ -105,7 +105,7 @@ class FBSGameCountValidationError(ValidationError):
 
 class FCSGameCountValidationError(ValidationError):
     def __init__(
-        self, message: str, season_ID: UUID, team_ID: UUID, game_count: int
+        self, message: str, season_ID: UUID, team_ID: UUID, game_count: int,
     ) -> None:
         super().__init__(message)
         self.season_ID = season_ID
@@ -120,7 +120,7 @@ class RaiseBehavior(Enum):
 
 class ValidationService(object):
     def __init__(
-        self, raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY
+        self, raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY,
     ) -> None:
         self.raise_behavior = raise_behavior
         self.errors: List[ValidationError] = []
@@ -134,7 +134,7 @@ class ValidationService(object):
                     "year",
                     season.year,
                     year,
-                )
+                ),
             )
 
     def validate_team_data(self, team: Team, name: str) -> None:
@@ -146,7 +146,7 @@ class ValidationService(object):
                     "name",
                     team.name,
                     name,
-                )
+                ),
             )
 
     def validate_affiliation_data(
@@ -164,7 +164,7 @@ class ValidationService(object):
                     "season_ID",
                     affiliation.season_ID.value,
                     season_ID.value,
-                )
+                ),
             )
         if affiliation.team_ID != team_ID:
             self._handle_error(
@@ -174,7 +174,7 @@ class ValidationService(object):
                     "team_ID",
                     affiliation.team_ID.value,
                     team_ID.value,
-                )
+                ),
             )
         if affiliation.subdivision != subdivision:
             self._handle_error(
@@ -184,7 +184,7 @@ class ValidationService(object):
                     "subdivision",
                     affiliation.subdivision.name,
                     subdivision.name,
-                )
+                ),
             )
 
     def validate_game_data(
@@ -209,7 +209,7 @@ class ValidationService(object):
                     "season_ID",
                     game.season_ID.value,
                     season_ID.value,
-                )
+                ),
             )
         if game.week != week:
             self._handle_error(
@@ -219,7 +219,7 @@ class ValidationService(object):
                     "week",
                     game.week,
                     week,
-                )
+                ),
             )
         if game.date != date:
             self._handle_error(
@@ -229,7 +229,7 @@ class ValidationService(object):
                     "date",
                     game.date,
                     date,
-                )
+                ),
             )
         if game.season_section != season_section:
             self._handle_error(
@@ -239,7 +239,7 @@ class ValidationService(object):
                     "season_section",
                     game.season_section.name,
                     season_section.name,
-                )
+                ),
             )
         if game.home_team_ID != home_team_ID:
             self._handle_error(
@@ -249,7 +249,7 @@ class ValidationService(object):
                     "home_team_ID",
                     game.home_team_ID.value,
                     home_team_ID.value,
-                )
+                ),
             )
         if game.away_team_ID != away_team_ID:
             self._handle_error(
@@ -259,7 +259,7 @@ class ValidationService(object):
                     "away_team_ID",
                     game.away_team_ID.value,
                     away_team_ID.value,
-                )
+                ),
             )
         if game.home_team_score != home_team_score:
             self._handle_error(
@@ -269,7 +269,7 @@ class ValidationService(object):
                     "home_team_score",
                     game.home_team_score,
                     home_team_score,
-                )
+                ),
             )
         if game.away_team_score != away_team_score:
             self._handle_error(
@@ -279,7 +279,7 @@ class ValidationService(object):
                     "away_team_score",
                     game.away_team_score,
                     away_team_score,
-                )
+                ),
             )
         if game.status != status:
             self._handle_error(
@@ -289,7 +289,7 @@ class ValidationService(object):
                     "status",
                     game.status.name,
                     status.name,
-                )
+                ),
             )
         if game.notes != notes:
             self._handle_error(
@@ -299,7 +299,7 @@ class ValidationService(object):
                     "notes",
                     game.notes,
                     notes,
-                )
+                ),
             )
 
     def validate_season_games(
@@ -323,7 +323,7 @@ class ValidationService(object):
                         "subdivision",
                         affiliation.subdivision.name,
                         None,
-                    )
+                    ),
                 )
 
         for game in games:
@@ -339,7 +339,7 @@ class ValidationService(object):
                         "home_team_ID",
                         game.home_team_ID.value,
                         None,
-                    )
+                    ),
                 )
 
             if game.away_team_ID in fbs_game_counts:
@@ -354,7 +354,7 @@ class ValidationService(object):
                         "away_team",
                         game.away_team_ID.value,
                         None,
-                    )
+                    ),
                 )
 
         for team_ID, game_count in fbs_game_counts.items():
@@ -365,7 +365,7 @@ class ValidationService(object):
                         season_ID.value,
                         team_ID.value,
                         game_count,
-                    )
+                    ),
                 )
 
         for team_ID, game_count in fcs_game_counts.items():
@@ -376,7 +376,7 @@ class ValidationService(object):
                         season_ID.value,
                         team_ID.value,
                         game_count,
-                    )
+                    ),
                 )
 
     def raise_errors(self) -> None:

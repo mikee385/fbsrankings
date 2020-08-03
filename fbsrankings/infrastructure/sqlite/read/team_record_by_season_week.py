@@ -29,7 +29,7 @@ class TeamRecordBySeasonWeekQueryHandler(object):
         self._team_table = TeamTable().table
 
     def __call__(
-        self, query: TeamRecordBySeasonWeekQuery
+        self, query: TeamRecordBySeasonWeekQuery,
     ) -> Optional[TeamRecordBySeasonWeekResult]:
         sql_query = (
             Query.from_(self._record_table)
@@ -76,7 +76,7 @@ class TeamRecordBySeasonWeekQueryHandler(object):
             )
             values = [
                 TeamRecordValueBySeasonWeekResult(
-                    UUID(value[0]), value[1], value[2], value[3]
+                    UUID(value[0]), value[1], value[2], value[3],
                 )
                 for value in cursor.fetchall()
             ]
@@ -85,7 +85,7 @@ class TeamRecordBySeasonWeekQueryHandler(object):
 
         if row is not None:
             return TeamRecordBySeasonWeekResult(
-                UUID(row[0]), UUID(row[1]), row[2], row[3], values
+                UUID(row[0]), UUID(row[1]), row[2], row[3], values,
             )
         else:
             return None

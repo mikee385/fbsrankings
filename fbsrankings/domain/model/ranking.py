@@ -80,7 +80,7 @@ class RankingValue(Generic[T]):
         sort_key: Callable[[SeasonData, T, float], Any],
     ) -> List["RankingValue[T]"]:
         sorted_values = sorted(
-            value_map.items(), key=lambda t: sort_key(season_data, t[0], t[1])
+            value_map.items(), key=lambda t: sort_key(season_data, t[0], t[1]),
         )
 
         ranking_values = []
@@ -140,15 +140,15 @@ class Ranking(Generic[T]):
 class TeamRankingService(metaclass=ABCMeta):
     @staticmethod
     def _to_values(
-        season_data: SeasonData, value_map: Dict[TeamID, float]
+        season_data: SeasonData, value_map: Dict[TeamID, float],
     ) -> List[RankingValue[TeamID]]:
         return RankingValue.to_values(
-            season_data, value_map, TeamRankingService._sort_key
+            season_data, value_map, TeamRankingService._sort_key,
         )
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData, team_ID: TeamID, value: float
+        season_data: SeasonData, team_ID: TeamID, value: float,
     ) -> Tuple[float, str, str]:
         team = season_data.team_map[team_ID]
         return (-value, team.name.upper(), str(team_ID.value))
@@ -177,7 +177,7 @@ class TeamRankingRepository(metaclass=ABCMeta):
                     EventValue(value.ID.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
-            )
+            ),
         )
 
         return ranking
@@ -188,7 +188,7 @@ class TeamRankingRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int]
+        self, name: str, season_ID: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
@@ -196,15 +196,15 @@ class TeamRankingRepository(metaclass=ABCMeta):
 class GameRankingService(metaclass=ABCMeta):
     @staticmethod
     def _to_values(
-        season_data: SeasonData, value_map: Dict[GameID, float]
+        season_data: SeasonData, value_map: Dict[GameID, float],
     ) -> List[RankingValue[GameID]]:
         return RankingValue.to_values(
-            season_data, value_map, GameRankingService._sort_key
+            season_data, value_map, GameRankingService._sort_key,
         )
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData, game_ID: GameID, value: float
+        season_data: SeasonData, game_ID: GameID, value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
         game = season_data.game_map[game_ID]
         home_team = season_data.team_map[game.home_team_ID]
@@ -242,7 +242,7 @@ class GameRankingRepository(metaclass=ABCMeta):
                     EventValue(value.ID.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
-            )
+            ),
         )
 
         return ranking
@@ -253,6 +253,6 @@ class GameRankingRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int]
+        self, name: str, season_ID: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         raise NotImplementedError

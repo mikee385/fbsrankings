@@ -20,7 +20,7 @@ class SeasonsQueryHandler(object):
         cursor.execute(
             Query.from_(self._table)
             .select(self._table.UUID, self._table.Year)
-            .get_sql()
+            .get_sql(),
         )
         items = [SeasonResult(UUID(row[0]), row[1]) for row in cursor.fetchall()]
         cursor.close()

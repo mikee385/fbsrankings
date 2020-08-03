@@ -11,10 +11,10 @@ class GameRankingBySeasonWeekQueryHandler(object):
         self._storage = storage
 
     def __call__(
-        self, query: GameRankingBySeasonWeekQuery
+        self, query: GameRankingBySeasonWeekQuery,
     ) -> Optional[GameRankingBySeasonWeekResult]:
         ranking = self._storage.game_ranking.find(
-            query.name, query.season_ID, query.week
+            query.name, query.season_ID, query.week,
         )
         if ranking is not None:
             season = self._storage.season.get(ranking.season_ID)
@@ -48,7 +48,7 @@ class GameRankingBySeasonWeekQueryHandler(object):
                                     value.order,
                                     value.rank,
                                     value.value,
-                                )
+                                ),
                             )
 
                 return GameRankingBySeasonWeekResult(

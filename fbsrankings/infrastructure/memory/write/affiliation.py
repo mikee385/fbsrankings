@@ -49,5 +49,5 @@ class AffiliationRepository(BaseRepository):
 
     def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(
-            AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision)
+            AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision),
         )

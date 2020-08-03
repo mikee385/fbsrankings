@@ -70,7 +70,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
                     RankingValueDto(value.ID, value.order, value.rank, value.value)
                     for value in event.values
                 ],
-            )
+            ),
         )
 
 
@@ -80,7 +80,7 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
         BaseTeamRankingRepository.__init__(self, bus)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[TeamID]:
-        return RankingValue[TeamID](TeamID(dto.ID), dto.order, dto.rank, dto.value,)
+        return RankingValue[TeamID](TeamID(dto.ID), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamRankingCalculatedEvent):
@@ -96,7 +96,7 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
         BaseGameRankingRepository.__init__(self, bus)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[GameID]:
-        return RankingValue[GameID](GameID(dto.ID), dto.order, dto.rank, dto.value,)
+        return RankingValue[GameID](GameID(dto.ID), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, GameRankingCalculatedEvent):

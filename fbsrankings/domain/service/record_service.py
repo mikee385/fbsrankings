@@ -61,12 +61,12 @@ class TeamRecordService(object):
             ]
 
             records.append(
-                self._repository.create(season_data.season.ID, week, record_values,)
+                self._repository.create(season_data.season.ID, week, record_values),
             )
 
         if season_is_complete:
             records.append(
-                self._repository.create(season_data.season.ID, None, record_values,)
+                self._repository.create(season_data.season.ID, None, record_values),
             )
 
         return records

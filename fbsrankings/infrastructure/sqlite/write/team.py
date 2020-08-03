@@ -17,7 +17,7 @@ from fbsrankings.infrastructure.sqlite.storage import TeamTable
 
 class TeamRepository(BaseRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -42,7 +42,7 @@ class TeamRepository(BaseRepository):
     def find(self, name: str) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.Name == Parameter("?")).get_sql(), [name]
+            self._query().where(self._table.Name == Parameter("?")).get_sql(), [name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -66,8 +66,8 @@ class TeamRepository(BaseRepository):
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
-            .columns(self._table.UUID, self._table.Name,)
-            .insert(Parameter("?"), Parameter("?"),)
+            .columns(self._table.UUID, self._table.Name)
+            .insert(Parameter("?"), Parameter("?"))
             .get_sql(),
             [str(event.ID), event.name],
         )

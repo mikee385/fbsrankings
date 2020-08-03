@@ -8,7 +8,7 @@ from uuid import UUID
 
 class AffiliationDto(object):
     def __init__(
-        self, ID: UUID, season_ID: UUID, team_ID: UUID, subdivision: str
+        self, ID: UUID, season_ID: UUID, team_ID: UUID, subdivision: str,
     ) -> None:
         self.ID = ID
         self.season_ID = season_ID
@@ -26,7 +26,7 @@ class AffiliationStorage(object):
         key = (affiliation.season_ID, affiliation.team_ID)
         if key in self._by_key:
             raise ValueError(
-                f"Affiliation already exists for team {affiliation.team_ID} in season {affiliation.season_ID}"
+                f"Affiliation already exists for team {affiliation.team_ID} in season {affiliation.season_ID}",
             )
 
         self._by_ID[affiliation.ID] = affiliation

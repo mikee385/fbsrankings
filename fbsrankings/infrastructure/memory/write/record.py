@@ -23,7 +23,7 @@ class TeamRecordRepository(BaseRepository):
         dto = self._storage.get(ID.value)
         return self._to_record(dto) if dto is not None else None
 
-    def find(self, season_ID: SeasonID, week: Optional[int],) -> Optional[TeamRecord]:
+    def find(self, season_ID: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         dto = self._storage.find(season_ID.value, week)
         return self._to_record(dto) if dto is not None else None
 
@@ -56,5 +56,5 @@ class TeamRecordRepository(BaseRepository):
                     TeamRecordValueDto(value.team_ID, value.wins, value.losses)
                     for value in event.values
                 ],
-            )
+            ),
         )

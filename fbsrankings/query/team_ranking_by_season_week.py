@@ -7,7 +7,7 @@ from fbsrankings.common import Query
 
 class TeamRankingValueBySeasonWeekResult(object):
     def __init__(
-        self, ID: UUID, name: str, order: int, rank: int, value: float
+        self, ID: UUID, name: str, order: int, rank: int, value: float,
     ) -> None:
         self.ID = ID
         self.name = name

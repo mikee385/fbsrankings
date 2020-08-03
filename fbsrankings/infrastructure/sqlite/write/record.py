@@ -25,7 +25,7 @@ SqliteParam = Union[None, int, float, str, bytes]
 
 class TeamRecordRepository(BaseRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         self._bus = bus
         self._connection = connection
@@ -73,7 +73,7 @@ class TeamRecordRepository(BaseRepository):
             self._record_table.Week,
         )
 
-    def _to_record(self, row: Tuple[str, str, Optional[int]],) -> TeamRecord:
+    def _to_record(self, row: Tuple[str, str, Optional[int]]) -> TeamRecord:
         cursor = self._connection.cursor()
         cursor.execute(
             Query.from_(self._value_table)
@@ -101,7 +101,7 @@ class TeamRecordRepository(BaseRepository):
         )
 
     def _to_value(self, row: Tuple[str, str, int, int]) -> TeamRecordValue:
-        return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3],)
+        return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3])
 
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = (
@@ -144,7 +144,7 @@ class TeamRecordRepository(BaseRepository):
                 self._record_table.SeasonID,
                 self._record_table.Week,
             )
-            .insert(Parameter("?"), Parameter("?"), Parameter("?"),)
+            .insert(Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
             [str(event.ID), str(event.season_ID), event.week],
         )

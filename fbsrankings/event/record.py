@@ -7,7 +7,7 @@ from fbsrankings.common import Event
 
 class TeamRecordValue(object):
     def __init__(
-        self, team_ID: UUID, wins: int, losses: int, games: int, win_percentage: float
+        self, team_ID: UUID, wins: int, losses: int, games: int, win_percentage: float,
     ) -> None:
         self.team_ID = team_ID
         self.wins = wins

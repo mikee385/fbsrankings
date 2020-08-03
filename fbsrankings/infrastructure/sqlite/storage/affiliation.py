@@ -14,8 +14,7 @@ class SubdivisionTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS subdivision
-        (Name TEXT NOT NULL UNIQUE);"""
+            "CREATE TABLE IF NOT EXISTS subdivision (Name TEXT NOT NULL UNIQUE);",
         )
 
         cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
@@ -41,7 +40,7 @@ class SubdivisionTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS subdivision")
+        cursor.execute("DROP TABLE IF EXISTS subdivision;")
 
 
 class AffiliationTable(object):
@@ -50,11 +49,11 @@ class AffiliationTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS affiliation
-            (UUID TEXT NOT NULL UNIQUE,
-             SeasonID TEXT NOT NULL REFERENCES season(UUID),
-             TeamID TEXT NOT NULL REFERENCES team(UUID),
-             Subdivision TEXT NOT NULL REFERENCES subdivision(Name), UNIQUE(SeasonID, TeamID));"""
+            "CREATE TABLE IF NOT EXISTS affiliation "
+            + "(UUID TEXT NOT NULL UNIQUE, "
+            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            + "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), UNIQUE(SeasonID, TeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -66,4 +65,4 @@ class AffiliationTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS affiliation")
+        cursor.execute("DROP TABLE IF EXISTS affiliation;")

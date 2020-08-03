@@ -53,7 +53,7 @@ class TeamRecordStorage(object):
     def get(self, ID: UUID) -> Optional[TeamRecordDto]:
         return self._by_ID.get(ID)
 
-    def find(self, season_ID: UUID, week: Optional[int],) -> Optional[TeamRecordDto]:
+    def find(self, season_ID: UUID, week: Optional[int]) -> Optional[TeamRecordDto]:
         key = (season_ID, week)
         return self._by_key.get(key)
 

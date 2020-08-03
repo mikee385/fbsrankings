@@ -67,7 +67,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             self._query()
             .where(
                 (self._ranking_table.UUID == Parameter("?"))
-                & (self._ranking_table.Type == Parameter("?"))
+                & (self._ranking_table.Type == Parameter("?")),
             )
             .get_sql(),
             [str(ID.value), self.type.name],
@@ -78,12 +78,12 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         return self._to_ranking(row) if row is not None else None
 
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int]
+        self, name: str, season_ID: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[T]]:
         query = self._query().where(
             (self._ranking_table.Name == Parameter("?"))
             & (self._ranking_table.Type == Parameter("?"))
-            & (self._ranking_table.SeasonID == Parameter("?"))
+            & (self._ranking_table.SeasonID == Parameter("?")),
         )
         params: List[SqliteParam] = [name, self.type.name, str(season_ID.value)]
 
@@ -111,7 +111,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             self._ranking_table.Week,
         )
 
-    def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]],) -> Ranking[T]:
+    def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]]) -> Ranking[T]:
         cursor = self._connection.cursor()
         cursor.execute(
             Query.from_(self._value_table)
@@ -145,7 +145,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             .where(
                 (self._ranking_table.Name == Parameter("?"))
                 & (self._ranking_table.Type == Parameter("?"))
-                & (self._ranking_table.SeasonID == Parameter("?"))
+                & (self._ranking_table.SeasonID == Parameter("?")),
             )
         )
         params: List[SqliteParam] = [event.name, self.type.name, str(event.season_ID)]
@@ -222,7 +222,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
 
 class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         value_table = TeamRankingValueTable().table
         value_columns = [
@@ -234,12 +234,12 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
         ]
 
         RankingRepository.__init__(
-            self, connection, cursor, bus, value_table, value_columns
+            self, connection, cursor, bus, value_table, value_columns,
         )
         BaseTeamRankingRepository.__init__(self, bus)
 
         bus.register_handler(
-            TeamRankingCalculatedEvent, self._handle_ranking_calculated
+            TeamRankingCalculatedEvent, self._handle_ranking_calculated,
         )
 
     @property
@@ -247,12 +247,12 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
         return RankingType.TEAM
 
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
-        return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4],)
+        return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
 
 class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         value_table = GameRankingValueTable().table
         value_columns = [
@@ -264,12 +264,12 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
         ]
 
         RankingRepository.__init__(
-            self, connection, cursor, bus, value_table, value_columns
+            self, connection, cursor, bus, value_table, value_columns,
         )
         BaseGameRankingRepository.__init__(self, bus)
 
         bus.register_handler(
-            GameRankingCalculatedEvent, self._handle_ranking_calculated
+            GameRankingCalculatedEvent, self._handle_ranking_calculated,
         )
 
     @property
@@ -277,4 +277,4 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
         return RankingType.GAME
 
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
-        return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4],)
+        return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])

@@ -23,7 +23,7 @@ class LatestSeasonWeekQueryHandler(object):
         self._game_table = GameTable().table
 
     def __call__(
-        self, query: LatestSeasonWeekQuery
+        self, query: LatestSeasonWeekQuery,
     ) -> Optional[LatestSeasonWeekResult]:
         season_subquery = (
             Query.from_(self._game_table)
@@ -31,10 +31,10 @@ class LatestSeasonWeekQueryHandler(object):
                 self._game_table.SeasonID,
                 self._season_table.Year,
                 Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
                 ).as_("GamesCompleted"),
                 Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
                 ).as_("GamesScheduled"),
             )
             .inner_join(self._season_table)
@@ -74,10 +74,10 @@ class LatestSeasonWeekQueryHandler(object):
             .select(
                 self._game_table.Week,
                 Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
                 ).as_("GamesCompleted"),
                 Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0)
+                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
                 ).as_("GamesScheduled"),
             )
             .where(self._game_table.SeasonID == Parameter("?"))
@@ -90,7 +90,8 @@ class LatestSeasonWeekQueryHandler(object):
             Query.from_(week_subquery)
             .select(week_subquery.Week)
             .where(
-                (week_subquery.GamesCompleted > 0) & (week_subquery.GamesScheduled == 0)
+                (week_subquery.GamesCompleted > 0)
+                & (week_subquery.GamesScheduled == 0),
             )
             .orderby(week_subquery.Week, order=Order.desc)
             .limit(1)

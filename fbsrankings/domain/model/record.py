@@ -18,7 +18,7 @@ class TeamRecordID(Identifier):
 
 
 class TeamRecordValue(object):
-    def __init__(self, team_ID: TeamID, wins: int, losses: int,) -> None:
+    def __init__(self, team_ID: TeamID, wins: int, losses: int) -> None:
         self._team_ID = team_ID
         self._wins = wins
         self._losses = losses
@@ -100,7 +100,7 @@ class TeamRecordRepository(metaclass=ABCMeta):
                     )
                     for value in record.values
                 ],
-            )
+            ),
         )
 
         return record

@@ -180,7 +180,7 @@ class Game(object):
                 self.home_team_ID.value,
                 self.away_team_ID.value,
                 self.notes,
-            )
+            ),
         )
 
     def cancel(self) -> None:
@@ -203,7 +203,7 @@ class Game(object):
                 self.home_team_ID.value,
                 self.away_team_ID.value,
                 self.notes,
-            )
+            ),
         )
 
     def complete(self, home_team_score: int, away_team_score: int) -> None:
@@ -236,7 +236,7 @@ class Game(object):
                 home_team_score,
                 away_team_score,
                 self.notes,
-            )
+            ),
         )
 
     def _set_score(self, home_team_score: int, away_team_score: int) -> None:
@@ -274,7 +274,7 @@ class Game(object):
                 self.away_team_ID.value,
                 old_notes,
                 notes,
-            )
+            ),
         )
 
 
@@ -317,7 +317,7 @@ class GameRepository(metaclass=ABCMeta):
                 game.home_team_ID.value,
                 game.away_team_ID.value,
                 game.notes,
-            )
+            ),
         )
 
         return game

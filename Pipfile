@@ -9,6 +9,7 @@ black = "==19.10b0"
 flake8 = "*"
 flake8-black = "*"
 flake8-bugbear = "*"
+flake8-commas = "*"
 flake8-import-order = "*"
 mypy = "*"
 numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}

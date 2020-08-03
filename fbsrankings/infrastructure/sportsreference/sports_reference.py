@@ -75,7 +75,7 @@ class _Cache(object):
 
 class SportsReference(object):
     def __init__(
-        self, alternate_names: Dict[str, str], validation_service: ValidationService
+        self, alternate_names: Dict[str, str], validation_service: ValidationService,
     ) -> None:
         self._sources: Dict[int, _SeasonSource] = {}
 
@@ -98,7 +98,7 @@ class SportsReference(object):
             raise ValueError(f"Source already exists for year {year}")
 
         self._sources[year] = _SeasonSource(
-            year, postseason_start_week, source_type, team_source, game_source
+            year, postseason_start_week, source_type, team_source, game_source,
         )
 
     def import_season(self, year: int, repository: RepositoryManager) -> None:
@@ -125,7 +125,7 @@ class SportsReference(object):
         cache = _Cache()
         self._import_team_rows(team_rows, season, repository, cache)
         self._import_game_rows(
-            game_rows, season, source.postseason_start_week, repository, cache
+            game_rows, season, source.postseason_start_week, repository, cache,
         )
 
         most_recent_completed_week = 0
@@ -140,7 +140,7 @@ class SportsReference(object):
 
         if self._validation_service is not None:
             self._validation_service.validate_season_games(
-                season.ID, cache.affiliation.values(), cache.game.values()
+                season.ID, cache.affiliation.values(), cache.game.values(),
             )
 
     def _import_team_rows(
@@ -259,11 +259,11 @@ class SportsReference(object):
                     home_team_score = second_score
                 else:
                     raise ValueError(
-                        f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}'
+                        f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}',
                     )
 
                 home_team = self._import_team(
-                    repository.team, cache.team, home_team_name
+                    repository.team, cache.team, home_team_name,
                 )
                 self._import_affiliation(
                     repository.affiliation,
@@ -274,7 +274,7 @@ class SportsReference(object):
                 )
 
                 away_team = self._import_team(
-                    repository.team, cache.team, away_team_name
+                    repository.team, cache.team, away_team_name,
                 )
                 self._import_affiliation(
                     repository.affiliation,
@@ -316,7 +316,7 @@ class SportsReference(object):
         return season
 
     def _import_team(
-        self, repository: TeamRepository, cache: _TeamCache, name: str
+        self, repository: TeamRepository, cache: _TeamCache, name: str,
     ) -> Team:
         key = name
 
@@ -351,7 +351,7 @@ class SportsReference(object):
 
         if self._validation_service is not None:
             self._validation_service.validate_affiliation_data(
-                affiliation, season_ID, team_ID, affiliation.subdivision
+                affiliation, season_ID, team_ID, affiliation.subdivision,
             )
 
         return affiliation

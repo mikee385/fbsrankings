@@ -13,11 +13,11 @@ class TeamRecordTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS teamrecord
-            (UUID TEXT NOT NULL UNIQUE,
-             SeasonID TEXT NOT NULL REFERENCES season(UUID),
-             Week INT,
-             UNIQUE(SeasonID, Week));"""
+            "CREATE TABLE IF NOT EXISTS teamrecord "
+            + "(UUID TEXT NOT NULL UNIQUE, "
+            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            + "Week INT, "
+            + "UNIQUE(SeasonID, Week));",
         )
 
         self.value_table.create(cursor)
@@ -35,7 +35,7 @@ class TeamRecordTable(object):
     def drop(self, cursor: sqlite3.Cursor) -> None:
         self.value_table.drop(cursor)
 
-        cursor.execute("DROP TABLE IF EXISTS teamrecord")
+        cursor.execute("DROP TABLE IF EXISTS teamrecord;")
 
 
 class TeamRecordValueTable(object):
@@ -44,12 +44,12 @@ class TeamRecordValueTable(object):
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            """CREATE TABLE IF NOT EXISTS teamrecordvalue
-            (TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID),
-             TeamID TEXT NOT NULL REFERENCES team(UUID),
-             Wins INT NOT NULL,
-             Losses INT NOT NULL,
-             UNIQUE(TeamRecordID, TeamID));"""
+            "CREATE TABLE IF NOT EXISTS teamrecordvalue "
+            + "(TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID), "
+            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            + "Wins INT NOT NULL, "
+            + "Losses INT NOT NULL, "
+            + "UNIQUE(TeamRecordID, TeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -61,4 +61,4 @@ class TeamRecordValueTable(object):
         cursor.close()
 
     def drop(self, cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS teamrecordvalue")
+        cursor.execute("DROP TABLE IF EXISTS teamrecordvalue;")

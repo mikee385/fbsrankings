@@ -133,7 +133,7 @@ class Application(object):
             f"{rating_name} - Strength of Schedule - Total", season_ID, year, week,
         )
         game_ranking = self._get_game_ranking(
-            f"{rating_name} - Game Strength", season_ID, year, week
+            f"{rating_name} - Game Strength", season_ID, year, week,
         )
 
         self._print_table_title(year, week, "Teams", team_ranking.name)
@@ -193,7 +193,7 @@ class Application(object):
         season_ID = self._get_season(year).ID
         team_ranking = self._get_team_ranking(rating_name, season_ID, year, week)
         game_ranking = self._get_game_ranking(
-            f"{rating_name} - Game Strength", season_ID, year, week
+            f"{rating_name} - Game Strength", season_ID, year, week,
         )
 
         self._print_table_title(year, week, "Season Games", team_ranking.name)
@@ -236,17 +236,17 @@ class Application(object):
                 f"{rating_name} - Strength of Schedule - Total", season_ID, year, week,
             )
             game_ranking = self._get_game_ranking(
-                f"{rating_name} - Game Strength", season_ID, year, week
+                f"{rating_name} - Game Strength", season_ID, year, week,
             )
 
             self._print_table_title(year, week, "Teams", team_ranking.name)
             self._print_teams_table(
-                year, week, team_record, team_ranking, team_sos, limit
+                year, week, team_record, team_ranking, team_sos, limit,
             )
 
             self._print_table_title(year, week, "Season Games", team_ranking.name)
             self._print_games_table(
-                year, week, game_ranking.values, team_ranking, limit
+                year, week, game_ranking.values, team_ranking, limit,
             )
 
     class _UpdateTracker(object):
@@ -258,7 +258,7 @@ class Application(object):
             event_bus.register_handler(GameCanceledEvent, self)
 
         def __call__(
-            self, event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent]
+            self, event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
         ) -> None:
             season = self.updates.get(event.season_ID)
             if season is None:
@@ -283,7 +283,7 @@ class Application(object):
                 break
             else:
                 raise ValueError(
-                    f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'"
+                    f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'",
                 )
 
         return years
@@ -306,7 +306,7 @@ class Application(object):
             week = latest_season_week.week
         else:
             raise ValueError(
-                f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'"
+                f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'",
             )
 
         return (year, week)
@@ -336,7 +336,7 @@ class Application(object):
         return season
 
     def _get_team_record(
-        self, season_ID: UUID, year: int, week: Optional[int]
+        self, season_ID: UUID, year: int, week: Optional[int],
     ) -> TeamRecordBySeasonWeekResult:
         team_record = self._service.query(TeamRecordBySeasonWeekQuery(season_ID, week))
         if team_record is None:
@@ -350,12 +350,12 @@ class Application(object):
         self, rating_name: str, season_ID: UUID, year: int, week: Optional[int],
     ) -> TeamRankingBySeasonWeekResult:
         team_ranking = self._service.query(
-            TeamRankingBySeasonWeekQuery(rating_name, season_ID, week)
+            TeamRankingBySeasonWeekQuery(rating_name, season_ID, week),
         )
         if team_ranking is None:
             if week is not None:
                 raise ValueError(
-                    f"Team rankings not found for {rating_name}, {year}, Week {week}"
+                    f"Team rankings not found for {rating_name}, {year}, Week {week}",
                 )
             else:
                 raise ValueError(f"Team rankings not found for {rating_name}, {year}")
@@ -365,12 +365,12 @@ class Application(object):
         self, rating_name: str, season_ID: UUID, year: int, week: Optional[int],
     ) -> GameRankingBySeasonWeekResult:
         game_ranking = self._service.query(
-            GameRankingBySeasonWeekQuery(rating_name, season_ID, week)
+            GameRankingBySeasonWeekQuery(rating_name, season_ID, week),
         )
         if game_ranking is None:
             if week is not None:
                 raise ValueError(
-                    f"Game rankings not found for {rating_name}, {year}, Week {week}"
+                    f"Game rankings not found for {rating_name}, {year}, Week {week}",
                 )
             else:
                 raise ValueError(f"Game rankings not found for {rating_name}, {year}")
@@ -391,7 +391,7 @@ class Application(object):
             week_count = self._service.query(WeekCountBySeasonQuery(season.ID))
             team_count = self._service.query(TeamCountBySeasonQuery(season.ID))
             affiliation_count = self._service.query(
-                AffiliationCountBySeasonQuery(season.ID)
+                AffiliationCountBySeasonQuery(season.ID),
             )
             game_count = self._service.query(GameCountBySeasonQuery(season.ID))
 
@@ -403,14 +403,14 @@ class Application(object):
                     affiliation_count.fbs_count,
                     affiliation_count.fcs_count,
                     game_count.count,
-                ]
+                ],
             )
 
         print()
         print(season_summary_table)
 
     def _print_table_title(
-        self, year: int, week: Optional[int], header: str, rating_name: str
+        self, year: int, week: Optional[int], header: str, rating_name: str,
     ) -> None:
         print()
         if week is not None:
@@ -464,7 +464,7 @@ class Application(object):
                     ranking_value.value,
                     sos_value.rank,
                     sos_value.value,
-                ]
+                ],
             )
 
         print(table)
@@ -519,7 +519,7 @@ class Application(object):
                     and game.away_team_score is not None
                     else "",
                     game.value,
-                ]
+                ],
             )
 
         print(table)
@@ -588,7 +588,7 @@ class Application(object):
                         counts.get(TeamRecordCalculatedEvent, 0),
                         counts.get(TeamRankingCalculatedEvent, 0),
                         counts.get(GameRankingCalculatedEvent, 0),
-                    ]
+                    ],
                 )
             print(event_table)
 
@@ -642,7 +642,7 @@ class Application(object):
                         and game.away_team_score is not None
                     ):
                         print(
-                            f"{game.status}, {game.home_team_score} to {game.away_team_score}"
+                            f"{game.status}, {game.home_team_score} to {game.away_team_score}",
                         )
                     else:
                         print(game.status)
@@ -679,12 +679,12 @@ class Application(object):
             print()
             for fbs_error in fbs_team_errors:
                 fbs_error_season = self._service.query(
-                    SeasonByIDQuery(fbs_error.season_ID)
+                    SeasonByIDQuery(fbs_error.season_ID),
                 )
                 fbs_error_team = self._service.query(TeamByIDQuery(fbs_error.team_ID))
                 if fbs_error_season is not None and fbs_error_team is not None:
                     print(
-                        f"{fbs_error_season.year} {fbs_error_team.name}: {fbs_error.game_count}"
+                        f"{fbs_error_season.year} {fbs_error_team.name}: {fbs_error.game_count}",
                     )
 
         if fcs_team_errors:
@@ -693,12 +693,12 @@ class Application(object):
             print()
             for fcs_error in fcs_team_errors:
                 fcs_error_season = self._service.query(
-                    SeasonByIDQuery(fcs_error.season_ID)
+                    SeasonByIDQuery(fcs_error.season_ID),
                 )
                 fcs_error_team = self._service.query(TeamByIDQuery(fcs_error.team_ID))
                 if fcs_error_season is not None and fcs_error_team is not None:
                     print(
-                        f"{fcs_error_season.year} {fcs_error_team.name}: {fcs_error.game_count}"
+                        f"{fcs_error_season.year} {fcs_error_team.name}: {fcs_error.game_count}",
                     )
 
     def _print_game_errors(self, game_errors: List[GameDataValidationError]) -> None:
@@ -719,13 +719,13 @@ class Application(object):
                         and game.away_team_score is not None
                     ):
                         print(
-                            f"{game.status}, {game.home_team_score} to {game.away_team_score}"
+                            f"{game.status}, {game.home_team_score} to {game.away_team_score}",
                         )
                     else:
                         print(game.status)
                     print(game.notes)
                     print(
-                        f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}"
+                        f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}",
                     )
 
     def _print_other_errors(self, other_errors: List[ValidationError]) -> None:
