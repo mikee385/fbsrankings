@@ -27,8 +27,8 @@ class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
         self._bus.register_handler(type, handler)
 
     def close(self) -> None:
-        for type, handler in self._handlers.items():
-            self._bus.unregister_handler(type, handler)
+        for type in self._handlers:
+            self._bus.unregister_handler(type)
 
     def __enter__(self) -> "QueryManager":
         return self

@@ -29,7 +29,7 @@ class QueryBus:
         else:
             self._handlers[type] = handler
 
-    def unregister_handler(self, type: Type[Q], handler: QueryHandler[Q, R]) -> None:
+    def unregister_handler(self, type: Type[Q]) -> None:
         self._handlers.pop(type)
 
     def query(self, query: Query[R]) -> R:

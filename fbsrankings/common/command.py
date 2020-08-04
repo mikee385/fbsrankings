@@ -27,7 +27,7 @@ class CommandBus:
         else:
             self._handlers[type] = handler
 
-    def unregister_handler(self, type: Type[C], handler: CommandHandler[C]) -> None:
+    def unregister_handler(self, type: Type[C]) -> None:
         self._handlers.pop(type)
 
     def send(self, command: C) -> None:
