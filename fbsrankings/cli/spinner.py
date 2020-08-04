@@ -10,35 +10,36 @@ from typing_extensions import Literal
 
 class Spinner:
     def __init__(self, delay: Optional[float] = None) -> None:
-        self.busy = False
-        self.total = 0
-        self.increment = 1
+        self._bar = tqdm(total=100, bar_format="{desc}|{bar:10}| {elapsed}")
+
+        self._busy = False
+        self._total = 0
+        self._increment = 1
 
         if delay and float(delay):
-            self.delay = delay
+            self._delay = delay
         else:
-            self.delay = 0.01
+            self._delay = 0.01
 
     def _spinner_task(self) -> None:
-        while self.busy:
-            time.sleep(self.delay)
+        while self._busy:
+            time.sleep(self._delay)
 
-            self.bar.update(self.increment)
-            self.bar.refresh()
+            self._bar.update(self._increment)
+            self._bar.refresh()
 
-            self.total += self.increment
-            if self.total == 0:
-                self.increment = 1
-            elif self.total == 100:
-                self.increment = -1
+            self._total += self._increment
+            if self._total == 0:
+                self._increment = 1
+            elif self._total == 100:
+                self._increment = -1
 
     def __enter__(self) -> "Spinner":
-        self.bar = tqdm(total=100, bar_format="{desc}|{bar:10}| {elapsed}")
-        self.bar.set_description_str("    ")
+        self._bar.set_description_str("    ")
 
-        self.busy = True
-        self.total = 0
-        self.increment = 1
+        self._busy = True
+        self._total = 0
+        self._increment = 1
 
         threading.Thread(target=self._spinner_task).start()
 
@@ -50,17 +51,17 @@ class Spinner:
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self.busy = False
-        time.sleep(self.delay)
+        self._busy = False
+        time.sleep(self._delay)
 
-        self.bar.set_description_str("100%")
-        if self.total == 0:
-            self.bar.update(99)
-            self.bar.refresh()
-        elif self.total < 100:
-            self.bar.update(100 - self.total)
-            self.bar.refresh()
+        self._bar.set_description_str("100%")
+        if self._total == 0:
+            self._bar.update(99)
+            self._bar.refresh()
+        elif self._total < 100:
+            self._bar.update(100 - self._total)
+            self._bar.refresh()
 
-        self.bar.close()
+        self._bar.close()
 
         return False
