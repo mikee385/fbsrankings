@@ -36,20 +36,20 @@ class TeamRecordRepository(BaseRepository):
 
         bus.register_handler(TeamRecordCalculatedEvent, self._handle_record_calculated)
 
-    def get(self, ID: TeamRecordID) -> Optional[TeamRecord]:
+    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._record_table.UUID == Parameter("?")).get_sql(),
-            [str(ID.value)],
+            [str(id.value)],
         )
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_record(row) if row is not None else None
 
-    def find(self, season_ID: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
+    def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         query = self._query().where(self._record_table.SeasonID == Parameter("?"))
-        params: List[SqliteParam] = [str(season_ID.value)]
+        params: List[SqliteParam] = [str(season_id.value)]
 
         if week is not None:
             query = query.where(self._record_table.Week == Parameter("?"))
@@ -109,7 +109,7 @@ class TeamRecordRepository(BaseRepository):
             .select(self._record_table.UUID)
             .where(self._record_table.SeasonID == Parameter("?"))
         )
-        params: List[SqliteParam] = [str(event.season_ID)]
+        params: List[SqliteParam] = [str(event.season_id)]
 
         if event.week is not None:
             query = query.where(self._record_table.Week == Parameter("?"))
@@ -146,7 +146,7 @@ class TeamRecordRepository(BaseRepository):
             )
             .insert(Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
-            [str(event.ID), str(event.season_ID), event.week],
+            [str(event.id), str(event.season_id), event.week],
         )
         insert_sql = (
             Query.into(self._value_table)
@@ -162,5 +162,5 @@ class TeamRecordRepository(BaseRepository):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.ID), str(value.team_ID), value.wins, value.losses],
+                [str(event.id), str(value.team_id), value.wins, value.losses],
             )

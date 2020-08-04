@@ -5,8 +5,8 @@ from fbsrankings.common import Query
 
 
 class LatestSeasonWeekResult(object):
-    def __init__(self, season_ID: UUID, year: int, week: Optional[int]) -> None:
-        self.season_ID = season_ID
+    def __init__(self, season_id: UUID, year: int, week: Optional[int]) -> None:
+        self.season_id = season_id
         self.year = year
         self.week = week
 

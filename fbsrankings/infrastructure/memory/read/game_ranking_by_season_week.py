@@ -14,32 +14,32 @@ class GameRankingBySeasonWeekQueryHandler(object):
         self, query: GameRankingBySeasonWeekQuery,
     ) -> Optional[GameRankingBySeasonWeekResult]:
         ranking = self._storage.game_ranking.find(
-            query.name, query.season_ID, query.week,
+            query.name, query.season_id, query.week,
         )
         if ranking is not None:
-            season = self._storage.season.get(ranking.season_ID)
+            season = self._storage.season.get(ranking.season_id)
             if season is not None:
 
                 values = []
                 for value in ranking.values:
-                    game = self._storage.game.get(value.ID)
+                    game = self._storage.game.get(value.id)
 
                     if game is not None:
-                        home_team = self._storage.team.get(game.home_team_ID)
-                        away_team = self._storage.team.get(game.away_team_ID)
+                        home_team = self._storage.team.get(game.home_team_id)
+                        away_team = self._storage.team.get(game.away_team_id)
 
                         if home_team is not None and away_team is not None:
                             values.append(
                                 GameRankingValueBySeasonWeekResult(
-                                    game.ID,
-                                    game.season_ID,
+                                    game.id,
+                                    game.season_id,
                                     season.year,
                                     game.week,
                                     game.date,
                                     game.season_section,
-                                    game.home_team_ID,
+                                    game.home_team_id,
                                     home_team.name,
-                                    game.away_team_ID,
+                                    game.away_team_id,
                                     away_team.name,
                                     game.home_team_score,
                                     game.away_team_score,
@@ -52,9 +52,9 @@ class GameRankingBySeasonWeekQueryHandler(object):
                             )
 
                 return GameRankingBySeasonWeekResult(
-                    ranking.ID,
+                    ranking.id,
                     ranking.name,
-                    ranking.season_ID,
+                    ranking.season_id,
                     season.year,
                     ranking.week,
                     values,

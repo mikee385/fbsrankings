@@ -45,7 +45,7 @@ class TeamRecordBySeasonWeekQueryHandler(object):
         )
 
         params: List[SqliteParam] = [
-            str(query.season_ID),
+            str(query.season_id),
         ]
 
         if query.week is not None:

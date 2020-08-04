@@ -5,11 +5,11 @@ from fbsrankings.common import Query
 
 
 class TeamByIDResult(object):
-    def __init__(self, ID: UUID, name: str) -> None:
-        self.ID = ID
+    def __init__(self, id: UUID, name: str) -> None:
+        self.id = id
         self.name = name
 
 
 class TeamByIDQuery(Query[Optional[TeamByIDResult]]):
-    def __init__(self, ID: UUID) -> None:
-        self.ID = ID
+    def __init__(self, id: UUID) -> None:
+        self.id = id

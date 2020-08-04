@@ -32,9 +32,9 @@ class AffiliationCountBySeasonQueryHandler(object):
             )
             .where(self._table.SeasonID == Parameter("?"))
             .get_sql(),
-            [str(query.season_ID)],
+            [str(query.season_id)],
         )
         row = cursor.fetchone()
         cursor.close()
 
-        return AffiliationCountBySeasonResult(query.season_ID, row[0], row[1])
+        return AffiliationCountBySeasonResult(query.season_id, row[0], row[1])

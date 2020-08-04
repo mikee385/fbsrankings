@@ -25,18 +25,18 @@ class TeamRecordService(object):
         team_data: Dict[TeamID, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS:
-                team_data[affiliation.team_ID] = TeamData()
+                team_data[affiliation.team_id] = TeamData()
 
         season_is_complete = True
         games_by_week: Dict[int, List[Game]] = {}
         for game in season_data.game_map.values():
             winning_data = None
-            if game.winning_team_ID is not None:
-                winning_data = team_data.get(game.winning_team_ID)
+            if game.winning_team_id is not None:
+                winning_data = team_data.get(game.winning_team_id)
 
             losing_data = None
-            if game.losing_team_ID is not None:
-                losing_data = team_data.get(game.losing_team_ID)
+            if game.losing_team_id is not None:
+                losing_data = team_data.get(game.losing_team_id)
 
             if winning_data is not None and losing_data is not None:
                 week_games = games_by_week.setdefault(game.week, [])
@@ -48,25 +48,25 @@ class TeamRecordService(object):
         records = []
         for week in sorted(games_by_week.keys()):
             for game in games_by_week[week]:
-                if game.winning_team_ID is not None and game.losing_team_ID is not None:
-                    winning_data = team_data[game.winning_team_ID]
-                    losing_data = team_data[game.losing_team_ID]
+                if game.winning_team_id is not None and game.losing_team_id is not None:
+                    winning_data = team_data[game.winning_team_id]
+                    losing_data = team_data[game.losing_team_id]
 
                     winning_data.wins += 1
                     losing_data.losses += 1
 
             record_values = [
-                TeamRecordValue(ID, data.wins, data.losses)
-                for ID, data in team_data.items()
+                TeamRecordValue(id, data.wins, data.losses)
+                for id, data in team_data.items()
             ]
 
             records.append(
-                self._repository.create(season_data.season.ID, week, record_values),
+                self._repository.create(season_data.season.id, week, record_values),
             )
 
         if season_is_complete:
             records.append(
-                self._repository.create(season_data.season.ID, None, record_values),
+                self._repository.create(season_data.season.id, None, record_values),
             )
 
         return records

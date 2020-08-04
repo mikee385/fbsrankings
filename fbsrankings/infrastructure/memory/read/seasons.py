@@ -10,5 +10,5 @@ class SeasonsQueryHandler(object):
 
     def __call__(self, query: SeasonsQuery) -> SeasonsResult:
         return SeasonsResult(
-            [SeasonResult(item.ID, item.year) for item in self._storage.season.all()],
+            [SeasonResult(item.id, item.year) for item in self._storage.season.all()],
         )

@@ -8,45 +8,45 @@ from uuid import UUID
 
 class AffiliationDto(object):
     def __init__(
-        self, ID: UUID, season_ID: UUID, team_ID: UUID, subdivision: str,
+        self, id: UUID, season_id: UUID, team_id: UUID, subdivision: str,
     ) -> None:
-        self.ID = ID
-        self.season_ID = season_ID
-        self.team_ID = team_ID
+        self.id = id
+        self.season_id = season_id
+        self.team_id = team_id
         self.subdivision = subdivision
 
 
 class AffiliationStorage(object):
     def __init__(self) -> None:
-        self._by_ID: Dict[UUID, AffiliationDto] = {}
+        self._by_id: Dict[UUID, AffiliationDto] = {}
         self._by_key: Dict[Tuple[UUID, UUID], AffiliationDto] = {}
         self._by_season: Dict[UUID, List[AffiliationDto]] = {}
 
     def add(self, affiliation: AffiliationDto) -> None:
-        key = (affiliation.season_ID, affiliation.team_ID)
+        key = (affiliation.season_id, affiliation.team_id)
         if key in self._by_key:
             raise ValueError(
-                f"Affiliation already exists for team {affiliation.team_ID} in season {affiliation.season_ID}",
+                f"Affiliation already exists for team {affiliation.team_id} in season {affiliation.season_id}",
             )
 
-        self._by_ID[affiliation.ID] = affiliation
+        self._by_id[affiliation.id] = affiliation
         self._by_key[key] = affiliation
 
-        by_season = self._by_season.get(affiliation.season_ID)
+        by_season = self._by_season.get(affiliation.season_id)
         if by_season is None:
             by_season = []
-            self._by_season[affiliation.season_ID] = by_season
+            self._by_season[affiliation.season_id] = by_season
         by_season.append(affiliation)
 
-    def get(self, ID: UUID) -> Optional[AffiliationDto]:
-        return self._by_ID.get(ID)
+    def get(self, id: UUID) -> Optional[AffiliationDto]:
+        return self._by_id.get(id)
 
-    def find(self, season_ID: UUID, team_ID: UUID) -> Optional[AffiliationDto]:
-        key = (season_ID, team_ID)
+    def find(self, season_id: UUID, team_id: UUID) -> Optional[AffiliationDto]:
+        key = (season_id, team_id)
         return self._by_key.get(key)
 
-    def for_season(self, season_ID: UUID) -> List[AffiliationDto]:
-        by_season = self._by_season.get(season_ID)
+    def for_season(self, season_id: UUID) -> List[AffiliationDto]:
+        by_season = self._by_season.get(season_id)
         if by_season is None:
             return []
         return list(by_season)
@@ -55,6 +55,6 @@ class AffiliationStorage(object):
         return self._by_key.values()
 
     def drop(self) -> None:
-        self._by_ID = {}
+        self._by_id = {}
         self._by_key = {}
         self._by_season = {}

@@ -18,14 +18,14 @@ class TeamRecordID(Identifier):
 
 
 class TeamRecordValue(object):
-    def __init__(self, team_ID: TeamID, wins: int, losses: int) -> None:
-        self._team_ID = team_ID
+    def __init__(self, team_id: TeamID, wins: int, losses: int) -> None:
+        self._team_id = team_id
         self._wins = wins
         self._losses = losses
 
     @property
-    def team_ID(self) -> TeamID:
-        return self._team_ID
+    def team_id(self) -> TeamID:
+        return self._team_id
 
     @property
     def wins(self) -> int:
@@ -48,24 +48,24 @@ class TeamRecord(object):
     def __init__(
         self,
         bus: EventBus,
-        ID: TeamRecordID,
-        season_ID: SeasonID,
+        id: TeamRecordID,
+        season_id: SeasonID,
         week: Optional[int],
         values: List[TeamRecordValue],
     ) -> None:
         self._bus = bus
-        self._ID = ID
-        self._season_ID = season_ID
+        self._id = id
+        self._season_id = season_id
         self._week = week
         self._values = values
 
     @property
-    def ID(self) -> TeamRecordID:
-        return self._ID
+    def id(self) -> TeamRecordID:
+        return self._id
 
     @property
-    def season_ID(self) -> SeasonID:
-        return self._season_ID
+    def season_id(self) -> SeasonID:
+        return self._season_id
 
     @property
     def week(self) -> Optional[int]:
@@ -81,18 +81,18 @@ class TeamRecordRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(
-        self, season_ID: SeasonID, week: Optional[int], values: List[TeamRecordValue],
+        self, season_id: SeasonID, week: Optional[int], values: List[TeamRecordValue],
     ) -> TeamRecord:
-        ID = TeamRecordID(uuid4())
-        record = TeamRecord(self._bus, ID, season_ID, week, values)
+        id = TeamRecordID(uuid4())
+        record = TeamRecord(self._bus, id, season_id, week, values)
         self._bus.publish(
             TeamRecordCalculatedEvent(
-                record.ID.value,
-                record.season_ID.value,
+                record.id.value,
+                record.season_id.value,
                 record.week,
                 [
                     EventValue(
-                        value.team_ID.value,
+                        value.team_id.value,
                         value.wins,
                         value.losses,
                         value.games,
@@ -106,9 +106,9 @@ class TeamRecordRepository(metaclass=ABCMeta):
         return record
 
     @abstractmethod
-    def get(self, ID: TeamRecordID) -> Optional[TeamRecord]:
+    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
         raise NotImplementedError
 
     @abstractmethod
-    def find(self, season_ID: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
+    def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         raise NotImplementedError

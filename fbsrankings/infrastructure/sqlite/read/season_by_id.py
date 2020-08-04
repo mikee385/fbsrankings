@@ -23,7 +23,7 @@ class SeasonByIDQueryHandler(object):
             .select(self._table.UUID, self._table.Year)
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [str(query.ID)],
+            [str(query.id)],
         )
         row = cursor.fetchone()
         cursor.close()

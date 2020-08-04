@@ -19,24 +19,24 @@ class AffiliationRepository(BaseRepository):
         super().__init__(bus)
         self._storage = storage
 
-    def get(self, ID: AffiliationID) -> Optional[Affiliation]:
-        dto = self._storage.get(ID.value)
+    def get(self, id: AffiliationID) -> Optional[Affiliation]:
+        dto = self._storage.get(id.value)
         return self._to_affiliation(dto) if dto is not None else None
 
-    def find(self, season_ID: SeasonID, team_ID: TeamID) -> Optional[Affiliation]:
-        dto = self._storage.find(season_ID.value, team_ID.value)
+    def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
+        dto = self._storage.find(season_id.value, team_id.value)
         return self._to_affiliation(dto) if dto is not None else None
 
-    def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
-        dtos = self._storage.for_season(season_ID.value)
+    def for_season(self, season_id: SeasonID) -> List[Affiliation]:
+        dtos = self._storage.for_season(season_id.value)
         return [self._to_affiliation(dto) for dto in dtos if dto is not None]
 
     def _to_affiliation(self, dto: AffiliationDto) -> Affiliation:
         return Affiliation(
             self._bus,
-            AffiliationID(dto.ID),
-            SeasonID(dto.season_ID),
-            TeamID(dto.team_ID),
+            AffiliationID(dto.id),
+            SeasonID(dto.season_id),
+            TeamID(dto.team_id),
             Subdivision[dto.subdivision],
         )
 
@@ -49,5 +49,5 @@ class AffiliationRepository(BaseRepository):
 
     def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(
-            AffiliationDto(event.ID, event.season_ID, event.team_ID, event.subdivision),
+            AffiliationDto(event.id, event.season_id, event.team_id, event.subdivision),
         )

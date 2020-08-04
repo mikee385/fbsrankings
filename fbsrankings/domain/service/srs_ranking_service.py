@@ -34,18 +34,18 @@ class SRSRankingService(TeamRankingService):
         team_data: Dict[TeamID, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS:
-                team_data[affiliation.team_ID] = TeamData(len(team_data))
+                team_data[affiliation.team_id] = TeamData(len(team_data))
 
         season_is_complete = True
         games_by_week: Dict[int, List[Game]] = {}
         for game in season_data.game_map.values():
             winning_data = None
-            if game.winning_team_ID is not None:
-                winning_data = team_data.get(game.winning_team_ID)
+            if game.winning_team_id is not None:
+                winning_data = team_data.get(game.winning_team_id)
 
             losing_data = None
-            if game.losing_team_ID is not None:
-                losing_data = team_data.get(game.losing_team_ID)
+            if game.losing_team_id is not None:
+                losing_data = team_data.get(game.losing_team_id)
 
             if winning_data is not None and losing_data is not None:
                 week_games = games_by_week.setdefault(game.week, [])
@@ -65,8 +65,8 @@ class SRSRankingService(TeamRankingService):
                     game.home_team_score is not None
                     and game.away_team_score is not None
                 ):
-                    home_data = team_data[game.home_team_ID]
-                    away_data = team_data[game.away_team_ID]
+                    home_data = team_data[game.home_team_id]
+                    away_data = team_data[game.away_team_id]
 
                     home_margin = self._adjust_margin(
                         game.home_team_score - game.away_team_score,
@@ -91,19 +91,19 @@ class SRSRankingService(TeamRankingService):
             shift = numpy.sum(x) / n
             x -= shift
 
-            result = {ID: x[data.index] for ID, data in team_data.items()}
+            result = {id: x[data.index] for id, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_data.season.ID, week, ranking_values,
+                    SRSRankingService.name, season_data.season.id, week, ranking_values,
                 ),
             )
 
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_data.season.ID, None, ranking_values,
+                    SRSRankingService.name, season_data.season.id, None, ranking_values,
                 ),
             )
 

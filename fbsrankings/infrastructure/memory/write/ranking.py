@@ -31,22 +31,22 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         self._bus = bus
         self._storage = storage
 
-    def get(self, ID: RankingID) -> Optional[Ranking[T]]:
-        dto = self._storage.get(ID.value)
+    def get(self, id: RankingID) -> Optional[Ranking[T]]:
+        dto = self._storage.get(id.value)
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[T]]:
-        dto = self._storage.find(name, season_ID.value, week)
+        dto = self._storage.find(name, season_id.value, week)
         return self._to_ranking(dto) if dto is not None else None
 
     def _to_ranking(self, dto: RankingDto) -> Ranking[T]:
         return Ranking[T](
             self._bus,
-            RankingID(dto.ID),
+            RankingID(dto.id),
             dto.name,
-            SeasonID(dto.season_ID),
+            SeasonID(dto.season_id),
             dto.week,
             [self._to_value(value) for value in dto.values],
         )
@@ -62,12 +62,12 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
     def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
-                event.ID,
+                event.id,
                 event.name,
-                event.season_ID,
+                event.season_id,
                 event.week,
                 [
-                    RankingValueDto(value.ID, value.order, value.rank, value.value)
+                    RankingValueDto(value.id, value.order, value.rank, value.value)
                     for value in event.values
                 ],
             ),
@@ -80,7 +80,7 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
         BaseTeamRankingRepository.__init__(self, bus)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[TeamID]:
-        return RankingValue[TeamID](TeamID(dto.ID), dto.order, dto.rank, dto.value)
+        return RankingValue[TeamID](TeamID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamRankingCalculatedEvent):
@@ -96,7 +96,7 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
         BaseGameRankingRepository.__init__(self, bus)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[GameID]:
-        return RankingValue[GameID](GameID(dto.ID), dto.order, dto.rank, dto.value)
+        return RankingValue[GameID](GameID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, GameRankingCalculatedEvent):

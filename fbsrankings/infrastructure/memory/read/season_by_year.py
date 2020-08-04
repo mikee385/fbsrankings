@@ -12,6 +12,6 @@ class SeasonByYearQueryHandler(object):
     def __call__(self, query: SeasonByYearQuery) -> Optional[SeasonByYearResult]:
         season = self._storage.season.find(query.year)
         if season is not None:
-            return SeasonByYearResult(season.ID, season.year)
+            return SeasonByYearResult(season.id, season.year)
         else:
             return None

@@ -22,9 +22,9 @@ class TeamCountBySeasonQueryHandler(object):
             .select(Count(self._table.star))
             .where(self._table.SeasonID == Parameter("?"))
             .get_sql(),
-            [str(query.season_ID)],
+            [str(query.season_id)],
         )
         row = cursor.fetchone()
         cursor.close()
 
-        return TeamCountBySeasonResult(query.season_ID, row[0])
+        return TeamCountBySeasonResult(query.season_id, row[0])

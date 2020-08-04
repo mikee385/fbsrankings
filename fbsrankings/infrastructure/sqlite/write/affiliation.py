@@ -31,36 +31,36 @@ class AffiliationRepository(BaseRepository):
 
         bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
 
-    def get(self, ID: AffiliationID) -> Optional[Affiliation]:
+    def get(self, id: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(ID.value)],
+            [str(id.value)],
         )
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_affiliation(row) if row is not None else None
 
-    def find(self, season_ID: SeasonID, team_ID: TeamID) -> Optional[Affiliation]:
+    def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query()
             .where(self._table.SeasonID == Parameter("?"))
             .where(self._table.TeamID == Parameter("?"))
             .get_sql(),
-            [str(season_ID.value), str(team_ID.value)],
+            [str(season_id.value), str(team_id.value)],
         )
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_affiliation(row) if row is not None else None
 
-    def for_season(self, season_ID: SeasonID) -> List[Affiliation]:
+    def for_season(self, season_id: SeasonID) -> List[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.SeasonID == Parameter("?")).get_sql(),
-            [str(season_ID.value)],
+            [str(season_id.value)],
         )
         rows = cursor.fetchall()
         cursor.close()
@@ -96,9 +96,9 @@ class AffiliationRepository(BaseRepository):
             .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
             [
-                str(event.ID),
-                str(event.season_ID),
-                str(event.team_ID),
+                str(event.id),
+                str(event.season_id),
+                str(event.team_id),
                 event.subdivision,
             ],
         )

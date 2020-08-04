@@ -8,7 +8,7 @@ class ConfigSettings(TypedDict):
     storage_type: str
 
 
-class ConfigSettings_sqlite(ConfigSettings, total=False):
+class ConfigSettingsSqlite(ConfigSettings, total=False):
     database: str
 
 
@@ -21,6 +21,6 @@ class ConfigSeason(TypedDict):
 
 
 class Config(TypedDict):
-    settings: ConfigSettings_sqlite
+    settings: ConfigSettingsSqlite
     alternate_names: Dict[str, str]
     seasons: List[ConfigSeason]

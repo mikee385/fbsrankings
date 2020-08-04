@@ -41,11 +41,11 @@ class GameRepository(BaseRepository):
         bus.register_handler(GameCompletedEvent, self._handle_game_completed)
         bus.register_handler(GameNotesUpdatedEvent, self._handle_game_notes_updated)
 
-    def get(self, ID: GameID) -> Optional[Game]:
+    def get(self, id: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(ID.value)],
+            [str(id.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -53,7 +53,7 @@ class GameRepository(BaseRepository):
         return self._to_game(row) if row is not None else None
 
     def find(
-        self, season_ID: SeasonID, week: int, team1_ID: TeamID, team2_ID: TeamID,
+        self, season_id: SeasonID, week: int, team1_id: TeamID, team2_id: TeamID,
     ) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
@@ -72,12 +72,12 @@ class GameRepository(BaseRepository):
             )
             .get_sql(),
             [
-                str(season_ID.value),
+                str(season_id.value),
                 week,
-                str(team1_ID.value),
-                str(team2_ID.value),
-                str(team1_ID.value),
-                str(team2_ID.value),
+                str(team1_id.value),
+                str(team2_id.value),
+                str(team1_id.value),
+                str(team2_id.value),
             ],
         )
         row = cursor.fetchone()
@@ -85,11 +85,11 @@ class GameRepository(BaseRepository):
 
         return self._to_game(row) if row is not None else None
 
-    def for_season(self, season_ID: SeasonID) -> List[Game]:
+    def for_season(self, season_id: SeasonID) -> List[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.SeasonID == Parameter("?")).get_sql(),
-            [str(season_ID.value)],
+            [str(season_id.value)],
         )
         rows = cursor.fetchall()
         cursor.close()
@@ -163,13 +163,13 @@ class GameRepository(BaseRepository):
             )
             .get_sql(),
             [
-                str(event.ID),
-                str(event.season_ID),
+                str(event.id),
+                str(event.season_id),
                 event.week,
                 event.date,
                 event.season_section,
-                str(event.home_team_ID),
-                str(event.away_team_ID),
+                str(event.home_team_id),
+                str(event.away_team_id),
                 None,
                 None,
                 GameStatus.SCHEDULED.name,
@@ -184,7 +184,7 @@ class GameRepository(BaseRepository):
             .set(self._table.Date, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [event.week, event.date, str(event.ID)],
+            [event.week, event.date, str(event.id)],
         )
 
     def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
@@ -193,7 +193,7 @@ class GameRepository(BaseRepository):
             .set(self._table.Status, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [GameStatus.CANCELED.name, str(event.ID)],
+            [GameStatus.CANCELED.name, str(event.id)],
         )
 
     def _handle_game_completed(self, event: GameCompletedEvent) -> None:
@@ -208,7 +208,7 @@ class GameRepository(BaseRepository):
                 event.home_team_score,
                 event.away_team_score,
                 GameStatus.COMPLETED.name,
-                str(event.ID),
+                str(event.id),
             ],
         )
 
@@ -218,5 +218,5 @@ class GameRepository(BaseRepository):
             .set(self._table.Notes, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [event.notes, str(event.ID)],
+            [event.notes, str(event.id)],
         )

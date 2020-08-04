@@ -8,7 +8,7 @@ from tqdm import tqdm
 from typing_extensions import Literal
 
 
-class tspinner(object):
+class Spinner(object):
     def __init__(self, delay: Optional[float] = None) -> None:
         self.busy = False
         self.total = 0
@@ -32,7 +32,7 @@ class tspinner(object):
             elif self.total == 100:
                 self.increment = -1
 
-    def __enter__(self) -> "tspinner":
+    def __enter__(self) -> "Spinner":
         self.bar = tqdm(total=100, bar_format="{desc}|{bar:10}| {elapsed}")
         self.bar.set_description_str("    ")
 

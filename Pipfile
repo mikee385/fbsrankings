@@ -13,6 +13,7 @@ flake8-commas = "*"
 flake8-import-order = "*"
 mypy = "*"
 numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
+pep8-naming = "*"
 pre-commit = "*"
 setuptools = "*"
 twine = "*"

@@ -52,7 +52,7 @@ class GameByIDQueryHandler(object):
             .on(away_team_table.UUID == self._game_table.AwayTeamID)
             .where(self._game_table.UUID == Parameter("?"))
             .get_sql(),
-            [str(query.ID)],
+            [str(query.id)],
         )
         row = cursor.fetchone()
         cursor.close()

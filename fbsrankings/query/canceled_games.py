@@ -8,27 +8,27 @@ from fbsrankings.common import Query
 class CanceledGameResult(object):
     def __init__(
         self,
-        ID: UUID,
-        season_ID: UUID,
+        id: UUID,
+        season_id: UUID,
         year: int,
         week: int,
         date: datetime.date,
         season_section: str,
-        home_team_ID: UUID,
+        home_team_id: UUID,
         home_team_name: str,
-        away_team_ID: UUID,
+        away_team_id: UUID,
         away_team_name: str,
         notes: str,
     ) -> None:
-        self.ID = ID
-        self.season_ID = season_ID
+        self.id = id
+        self.season_id = season_id
         self.year = year
         self.week = week
         self.date = date
         self.season_section = season_section
-        self.home_team_ID = home_team_ID
+        self.home_team_id = home_team_id
         self.home_team_name = home_team_name
-        self.away_team_ID = away_team_ID
+        self.away_team_id = away_team_id
         self.away_team_name = away_team_name
         self.notes = notes
 

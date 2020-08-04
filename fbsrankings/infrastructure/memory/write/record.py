@@ -19,25 +19,25 @@ class TeamRecordRepository(BaseRepository):
         self._bus = bus
         self._storage = storage
 
-    def get(self, ID: TeamRecordID) -> Optional[TeamRecord]:
-        dto = self._storage.get(ID.value)
+    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
+        dto = self._storage.get(id.value)
         return self._to_record(dto) if dto is not None else None
 
-    def find(self, season_ID: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
-        dto = self._storage.find(season_ID.value, week)
+    def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
+        dto = self._storage.find(season_id.value, week)
         return self._to_record(dto) if dto is not None else None
 
     def _to_record(self, dto: TeamRecordDto) -> TeamRecord:
         return TeamRecord(
             self._bus,
-            TeamRecordID(dto.ID),
-            SeasonID(dto.season_ID),
+            TeamRecordID(dto.id),
+            SeasonID(dto.season_id),
             dto.week,
             [self._to_value(value) for value in dto.values],
         )
 
     def _to_value(self, dto: TeamRecordValueDto) -> TeamRecordValue:
-        return TeamRecordValue(TeamID(dto.team_ID), dto.wins, dto.losses)
+        return TeamRecordValue(TeamID(dto.team_id), dto.wins, dto.losses)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamRecordCalculatedEvent):
@@ -49,11 +49,11 @@ class TeamRecordRepository(BaseRepository):
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(
             TeamRecordDto(
-                event.ID,
-                event.season_ID,
+                event.id,
+                event.season_id,
                 event.week,
                 [
-                    TeamRecordValueDto(value.team_ID, value.wins, value.losses)
+                    TeamRecordValueDto(value.team_id, value.wins, value.losses)
                     for value in event.values
                 ],
             ),

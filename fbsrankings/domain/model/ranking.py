@@ -39,11 +39,11 @@ class SeasonData(object):
         games: Iterable[Game],
     ) -> None:
         self.season = season
-        self.team_map = {team.ID: team for team in teams}
+        self.team_map = {team.id: team for team in teams}
         self.affiliation_map = {
-            affiliation.team_ID: affiliation for affiliation in affiliations
+            affiliation.team_id: affiliation for affiliation in affiliations
         }
-        self.game_map = {game.ID: game for game in games}
+        self.game_map = {game.id: game for game in games}
 
 
 class RankingID(Identifier):
@@ -51,15 +51,15 @@ class RankingID(Identifier):
 
 
 class RankingValue(Generic[T]):
-    def __init__(self, ID: T, order: int, rank: int, value: float) -> None:
-        self._ID = ID
+    def __init__(self, id: T, order: int, rank: int, value: float) -> None:
+        self._id = id
         self._order = order
         self._rank = rank
         self._value = value
 
     @property
-    def ID(self) -> T:
-        return self._ID
+    def id(self) -> T:
+        return self._id
 
     @property
     def order(self) -> int:
@@ -103,30 +103,30 @@ class Ranking(Generic[T]):
     def __init__(
         self,
         bus: EventBus,
-        ID: RankingID,
+        id: RankingID,
         name: str,
-        season_ID: SeasonID,
+        season_id: SeasonID,
         week: Optional[int],
         values: Iterable[RankingValue[T]],
     ) -> None:
         self._bus = bus
-        self._ID = ID
+        self._id = id
         self._name = name
-        self._season_ID = season_ID
+        self._season_id = season_id
         self._week = week
         self._values = sorted(values, key=lambda v: v.order)
 
     @property
-    def ID(self) -> RankingID:
-        return self._ID
+    def id(self) -> RankingID:
+        return self._id
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def season_ID(self) -> SeasonID:
-        return self._season_ID
+    def season_id(self) -> SeasonID:
+        return self._season_id
 
     @property
     def week(self) -> Optional[int]:
@@ -148,10 +148,10 @@ class TeamRankingService(metaclass=ABCMeta):
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData, team_ID: TeamID, value: float,
+        season_data: SeasonData, team_id: TeamID, value: float,
     ) -> Tuple[float, str, str]:
-        team = season_data.team_map[team_ID]
-        return (-value, team.name.upper(), str(team_ID.value))
+        team = season_data.team_map[team_id]
+        return (-value, team.name.upper(), str(team_id.value))
 
 
 class TeamRankingRepository(metaclass=ABCMeta):
@@ -161,20 +161,20 @@ class TeamRankingRepository(metaclass=ABCMeta):
     def create(
         self,
         name: str,
-        season_ID: SeasonID,
+        season_id: SeasonID,
         week: Optional[int],
         values: Iterable[RankingValue[TeamID]],
     ) -> Ranking[TeamID]:
-        ID = RankingID(uuid4())
-        ranking = Ranking(self._bus, ID, name, season_ID, week, values)
+        id = RankingID(uuid4())
+        ranking = Ranking(self._bus, id, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
-                ranking.ID.value,
+                ranking.id.value,
                 ranking.name,
-                ranking.season_ID.value,
+                ranking.season_id.value,
                 ranking.week,
                 [
-                    EventValue(value.ID.value, value.order, value.rank, value.value)
+                    EventValue(value.id.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -183,12 +183,12 @@ class TeamRankingRepository(metaclass=ABCMeta):
         return ranking
 
     @abstractmethod
-    def get(self, ID: RankingID) -> Optional[Ranking[TeamID]]:
+    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
     @abstractmethod
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
@@ -204,18 +204,18 @@ class GameRankingService(metaclass=ABCMeta):
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData, game_ID: GameID, value: float,
+        season_data: SeasonData, game_id: GameID, value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
-        game = season_data.game_map[game_ID]
-        home_team = season_data.team_map[game.home_team_ID]
-        away_team = season_data.team_map[game.away_team_ID]
+        game = season_data.game_map[game_id]
+        home_team = season_data.team_map[game.home_team_id]
+        away_team = season_data.team_map[game.away_team_id]
 
         return (
             -value,
             game.date,
             home_team.name.upper(),
             away_team.name.upper(),
-            str(game_ID.value),
+            str(game_id.value),
         )
 
 
@@ -226,20 +226,20 @@ class GameRankingRepository(metaclass=ABCMeta):
     def create(
         self,
         name: str,
-        season_ID: SeasonID,
+        season_id: SeasonID,
         week: Optional[int],
         values: Iterable[RankingValue[GameID]],
     ) -> Ranking[GameID]:
-        ID = RankingID(uuid4())
-        ranking = Ranking(self._bus, ID, name, season_ID, week, values)
+        id = RankingID(uuid4())
+        ranking = Ranking(self._bus, id, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
-                ranking.ID.value,
+                ranking.id.value,
                 ranking.name,
-                ranking.season_ID.value,
+                ranking.season_id.value,
                 ranking.week,
                 [
-                    EventValue(value.ID.value, value.order, value.rank, value.value)
+                    EventValue(value.id.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -248,11 +248,11 @@ class GameRankingRepository(metaclass=ABCMeta):
         return ranking
 
     @abstractmethod
-    def get(self, ID: RankingID) -> Optional[Ranking[GameID]]:
+    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
         raise NotImplementedError
 
     @abstractmethod
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         raise NotImplementedError

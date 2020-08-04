@@ -64,10 +64,10 @@ class LatestSeasonWeekQueryHandler(object):
         if row is None:
             return None
 
-        season_ID, year, games_completed, games_scheduled = row
+        season_id, year, games_completed, games_scheduled = row
 
         if games_scheduled == 0:
-            return LatestSeasonWeekResult(UUID(season_ID), year, None)
+            return LatestSeasonWeekResult(UUID(season_id), year, None)
 
         week_subquery = (
             Query.from_(self._game_table)
@@ -96,12 +96,12 @@ class LatestSeasonWeekQueryHandler(object):
             .orderby(week_subquery.Week, order=Order.desc)
             .limit(1)
             .get_sql(),
-            [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name, season_ID],
+            [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name, season_id],
         )
         row = cursor.fetchone()
         cursor.close()
 
         if row:
-            return LatestSeasonWeekResult(UUID(season_ID), year, row[0])
+            return LatestSeasonWeekResult(UUID(season_id), year, row[0])
 
         return None

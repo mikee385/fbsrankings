@@ -61,7 +61,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
     def type(self) -> RankingType:
         raise NotImplementedError
 
-    def get(self, ID: RankingID) -> Optional[Ranking[T]]:
+    def get(self, id: RankingID) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query()
@@ -70,7 +70,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
                 & (self._ranking_table.Type == Parameter("?")),
             )
             .get_sql(),
-            [str(ID.value), self.type.name],
+            [str(id.value), self.type.name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -78,14 +78,14 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         return self._to_ranking(row) if row is not None else None
 
     def find(
-        self, name: str, season_ID: SeasonID, week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[T]]:
         query = self._query().where(
             (self._ranking_table.Name == Parameter("?"))
             & (self._ranking_table.Type == Parameter("?"))
             & (self._ranking_table.SeasonID == Parameter("?")),
         )
-        params: List[SqliteParam] = [name, self.type.name, str(season_ID.value)]
+        params: List[SqliteParam] = [name, self.type.name, str(season_id.value)]
 
         if week is not None:
             query = query.where(self._ranking_table.Week == Parameter("?"))
@@ -148,7 +148,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
                 & (self._ranking_table.SeasonID == Parameter("?")),
             )
         )
-        params: List[SqliteParam] = [event.name, self.type.name, str(event.season_ID)]
+        params: List[SqliteParam] = [event.name, self.type.name, str(event.season_id)]
 
         if event.week is not None:
             query = query.where(self._ranking_table.Week == Parameter("?"))
@@ -194,10 +194,10 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             )
             .get_sql(),
             [
-                str(event.ID),
+                str(event.id),
                 event.name,
                 self.type.name,
-                str(event.season_ID),
+                str(event.season_id),
                 event.week,
             ],
         )
@@ -216,7 +216,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.ID), str(value.ID), value.order, value.rank, value.value],
+                [str(event.id), str(value.id), value.order, value.rank, value.value],
             )
 
 

@@ -22,9 +22,9 @@ class WeekCountBySeasonQueryHandler(object):
             .select(Max(self._table.Week))
             .where(self._table.SeasonID == Parameter("?"))
             .get_sql(),
-            [str(query.season_ID)],
+            [str(query.season_id)],
         )
         row = cursor.fetchone()
         cursor.close()
 
-        return WeekCountBySeasonResult(query.season_ID, row[0])
+        return WeekCountBySeasonResult(query.season_id, row[0])

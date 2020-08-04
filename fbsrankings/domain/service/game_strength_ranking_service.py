@@ -18,12 +18,12 @@ class GameStrengthRankingService(GameRankingService):
     ) -> Ranking[GameID]:
         game_data: Dict[GameID, float] = {}
 
-        performance_map = {r.ID: r for r in performance_ranking.values}
+        performance_map = {r.id: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
             if game.status != GameStatus.CANCELED:
-                home_performance = performance_map.get(game.home_team_ID)
-                away_performance = performance_map.get(game.away_team_ID)
+                home_performance = performance_map.get(game.home_team_id)
+                away_performance = performance_map.get(game.away_team_id)
 
                 if home_performance is not None and away_performance is not None:
                     if home_performance.value > away_performance.value:
@@ -34,13 +34,13 @@ class GameStrengthRankingService(GameRankingService):
                         game_value = (
                             99 * home_performance.value + away_performance.value
                         ) / 100.0
-                    game_data[game.ID] = game_value
+                    game_data[game.id] = game_value
 
         ranking_values = GameRankingService._to_values(season_data, game_data)
 
         return self._repository.create(
             performance_ranking.name + " - Game Strength",
-            season_data.season.ID,
+            season_data.season.id,
             performance_ranking.week,
             ranking_values,
         )

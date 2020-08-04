@@ -10,8 +10,8 @@ class TeamByIDQueryHandler(object):
         self._storage = storage
 
     def __call__(self, query: TeamByIDQuery) -> Optional[TeamByIDResult]:
-        team = self._storage.team.get(query.ID)
+        team = self._storage.team.get(query.id)
         if team is not None:
-            return TeamByIDResult(team.ID, team.name)
+            return TeamByIDResult(team.id, team.name)
         else:
             return None

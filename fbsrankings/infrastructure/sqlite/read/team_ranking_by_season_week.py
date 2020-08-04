@@ -53,7 +53,7 @@ class TeamRankingBySeasonWeekQueryHandler(object):
         params: List[SqliteParam] = [
             query.name,
             RankingType.TEAM.name,
-            str(query.season_ID),
+            str(query.season_id),
         ]
 
         if query.week is not None:

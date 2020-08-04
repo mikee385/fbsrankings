@@ -16,8 +16,8 @@ class SeasonRepository(BaseRepository):
         super().__init__(bus)
         self._storage = storage
 
-    def get(self, ID: SeasonID) -> Optional[Season]:
-        dto = self._storage.get(ID.value)
+    def get(self, id: SeasonID) -> Optional[Season]:
+        dto = self._storage.get(id.value)
         return self._to_season(dto) if dto is not None else None
 
     def find(self, year: int) -> Optional[Season]:
@@ -29,7 +29,7 @@ class SeasonRepository(BaseRepository):
         return [self._to_season(dto) for dto in dtos if dto is not None]
 
     def _to_season(self, dto: SeasonDto) -> Season:
-        return Season(self._bus, SeasonID(dto.ID), dto.year)
+        return Season(self._bus, SeasonID(dto.id), dto.year)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, SeasonCreatedEvent):
@@ -39,4 +39,4 @@ class SeasonRepository(BaseRepository):
             return False
 
     def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
-        self._storage.add(SeasonDto(event.ID, event.year))
+        self._storage.add(SeasonDto(event.id, event.year))

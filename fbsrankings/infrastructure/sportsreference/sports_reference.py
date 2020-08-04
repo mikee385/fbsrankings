@@ -140,7 +140,7 @@ class SportsReference(object):
 
         if self._validation_service is not None:
             self._validation_service.validate_season_games(
-                season.ID, cache.affiliation.values(), cache.game.values(),
+                season.id, cache.affiliation.values(), cache.game.values(),
             )
 
     def _import_team_rows(
@@ -166,8 +166,8 @@ class SportsReference(object):
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.ID,
-                    team.ID,
+                    season.id,
+                    team.id,
                     Subdivision.FBS,
                 )
 
@@ -268,8 +268,8 @@ class SportsReference(object):
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.ID,
-                    home_team.ID,
+                    season.id,
+                    home_team.id,
                     Subdivision.FCS,
                 )
 
@@ -279,8 +279,8 @@ class SportsReference(object):
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.ID,
-                    away_team.ID,
+                    season.id,
+                    away_team.id,
                     Subdivision.FCS,
                 )
 
@@ -294,12 +294,12 @@ class SportsReference(object):
                 self._import_game(
                     repository.game,
                     cache.game,
-                    season.ID,
+                    season.id,
                     week,
                     date,
                     season_section,
-                    home_team.ID,
-                    away_team.ID,
+                    home_team.id,
+                    away_team.id,
                     home_team_score,
                     away_team_score,
                     notes,
@@ -336,22 +336,22 @@ class SportsReference(object):
         self,
         repository: AffiliationRepository,
         cache: _AffiliationCache,
-        season_ID: SeasonID,
-        team_ID: TeamID,
+        season_id: SeasonID,
+        team_id: TeamID,
         subdivision: Subdivision,
     ) -> Affiliation:
-        key = (season_ID, team_ID)
+        key = (season_id, team_id)
 
         affiliation = cache.get(key)
         if affiliation is None:
-            affiliation = repository.find(season_ID, team_ID)
+            affiliation = repository.find(season_id, team_id)
             if affiliation is None:
-                affiliation = repository.create(season_ID, team_ID, subdivision)
+                affiliation = repository.create(season_id, team_id, subdivision)
             cache[key] = affiliation
 
         if self._validation_service is not None:
             self._validation_service.validate_affiliation_data(
-                affiliation, season_ID, team_ID, affiliation.subdivision,
+                affiliation, season_id, team_id, affiliation.subdivision,
             )
 
         return affiliation
@@ -360,32 +360,32 @@ class SportsReference(object):
         self,
         repository: GameRepository,
         cache: _GameCache,
-        season_ID: SeasonID,
+        season_id: SeasonID,
         week: int,
         date: datetime.date,
         season_section: SeasonSection,
-        home_team_ID: TeamID,
-        away_team_ID: TeamID,
+        home_team_id: TeamID,
+        away_team_id: TeamID,
         home_team_score: Optional[int],
         away_team_score: Optional[int],
         notes: str,
     ) -> Game:
-        if home_team_ID < away_team_ID:
-            key = (season_ID, week, home_team_ID, away_team_ID)
+        if home_team_id < away_team_id:
+            key = (season_id, week, home_team_id, away_team_id)
         else:
-            key = (season_ID, week, away_team_ID, home_team_ID)
+            key = (season_id, week, away_team_id, home_team_id)
 
         game = cache.get(key)
         if game is None:
-            game = repository.find(season_ID, week, home_team_ID, away_team_ID)
+            game = repository.find(season_id, week, home_team_id, away_team_id)
             if game is None:
                 game = repository.create(
-                    season_ID,
+                    season_id,
                     week,
                     date,
                     season_section,
-                    home_team_ID,
-                    away_team_ID,
+                    home_team_id,
+                    away_team_id,
                     notes,
                 )
             cache[key] = game
@@ -406,12 +406,12 @@ class SportsReference(object):
         if self._validation_service is not None:
             self._validation_service.validate_game_data(
                 game,
-                season_ID,
+                season_id,
                 week,
                 date,
                 season_section,
-                home_team_ID,
-                away_team_ID,
+                home_team_id,
+                away_team_id,
                 home_team_score,
                 away_team_score,
                 game.status,

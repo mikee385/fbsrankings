@@ -7,9 +7,9 @@ from fbsrankings.common import Query
 
 class TeamRankingValueBySeasonWeekResult(object):
     def __init__(
-        self, ID: UUID, name: str, order: int, rank: int, value: float,
+        self, id: UUID, name: str, order: int, rank: int, value: float,
     ) -> None:
-        self.ID = ID
+        self.id = id
         self.name = name
         self.order = order
         self.rank = rank
@@ -19,23 +19,23 @@ class TeamRankingValueBySeasonWeekResult(object):
 class TeamRankingBySeasonWeekResult(object):
     def __init__(
         self,
-        ID: UUID,
+        id: UUID,
         name: str,
-        season_ID: UUID,
+        season_id: UUID,
         year: int,
         week: Optional[int],
         values: List[TeamRankingValueBySeasonWeekResult],
     ) -> None:
-        self.ID = ID
+        self.id = id
         self.name = name
-        self.season_ID = season_ID
+        self.season_id = season_id
         self.year = year
         self.week = week
         self.values = values
 
 
 class TeamRankingBySeasonWeekQuery(Query[Optional[TeamRankingBySeasonWeekResult]]):
-    def __init__(self, name: str, season_ID: UUID, week: Optional[int]) -> None:
+    def __init__(self, name: str, season_id: UUID, week: Optional[int]) -> None:
         self.name = name
-        self.season_ID = season_ID
+        self.season_id = season_id
         self.week = week
