@@ -36,8 +36,8 @@ class RankingRepository(Generic[T]):
         self._storage = storage
         self._to_value = to_value
 
-    def get(self, id: RankingID) -> Optional[Ranking[T]]:
-        dto = self._storage.get(id.value)
+    def get(self, id_: RankingID) -> Optional[Ranking[T]]:
+        dto = self._storage.get(id_.value)
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
@@ -49,7 +49,7 @@ class RankingRepository(Generic[T]):
     def _to_ranking(self, dto: RankingDto) -> Ranking[T]:
         return Ranking[T](
             self._bus,
-            RankingID(dto.id),
+            RankingID(dto.id_),
             dto.name,
             SeasonID(dto.season_id),
             dto.week,
@@ -59,12 +59,12 @@ class RankingRepository(Generic[T]):
     def handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
-                event.id,
+                event.id_,
                 event.name,
                 event.season_id,
                 event.week,
                 [
-                    RankingValueDto(value.id, value.order, value.rank, value.value)
+                    RankingValueDto(value.id_, value.order, value.rank, value.value)
                     for value in event.values
                 ],
             ),
@@ -77,8 +77,8 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
         self._repository = RankingRepository[TeamID](storage, bus, self._to_value)
 
-    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
-        return self._repository.get(id)
+    def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
+        return self._repository.get(id_)
 
     def find(
         self, name: str, season_id: SeasonID, week: Optional[int],
@@ -87,7 +87,7 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
     @staticmethod
     def _to_value(dto: RankingValueDto) -> RankingValue[TeamID]:
-        return RankingValue[TeamID](TeamID(dto.id), dto.order, dto.rank, dto.value)
+        return RankingValue[TeamID](TeamID(dto.id_), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamRankingCalculatedEvent):
@@ -102,8 +102,8 @@ class GameRankingRepository(BaseGameRankingRepository):
 
         self._repository = RankingRepository[GameID](storage, bus, self._to_value)
 
-    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
-        return self._repository.get(id)
+    def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
+        return self._repository.get(id_)
 
     def find(
         self, name: str, season_id: SeasonID, week: Optional[int],
@@ -112,7 +112,7 @@ class GameRankingRepository(BaseGameRankingRepository):
 
     @staticmethod
     def _to_value(dto: RankingValueDto) -> RankingValue[GameID]:
-        return RankingValue[GameID](GameID(dto.id), dto.order, dto.rank, dto.value)
+        return RankingValue[GameID](GameID(dto.id_), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, GameRankingCalculatedEvent):

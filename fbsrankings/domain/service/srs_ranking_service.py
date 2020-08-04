@@ -91,19 +91,25 @@ class SRSRankingService(TeamRankingService):
             shift = numpy.sum(x) / n
             x -= shift
 
-            result = {id: x[data.index] for id, data in team_data.items()}
+            result = {id_: x[data.index] for id_, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_data.season.id, week, ranking_values,
+                    SRSRankingService.name,
+                    season_data.season.id_,
+                    week,
+                    ranking_values,
                 ),
             )
 
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name, season_data.season.id, None, ranking_values,
+                    SRSRankingService.name,
+                    season_data.season.id_,
+                    None,
+                    ranking_values,
                 ),
             )
 

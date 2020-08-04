@@ -6,8 +6,8 @@ from fbsrankings.common import Query
 
 
 class TeamRecordValueBySeasonWeekResult:
-    def __init__(self, id: UUID, name: str, wins: int, losses: int) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, name: str, wins: int, losses: int) -> None:
+        self.id_ = id_
         self.name = name
         self.wins = wins
         self.losses = losses
@@ -24,13 +24,13 @@ class TeamRecordValueBySeasonWeekResult:
 class TeamRecordBySeasonWeekResult:
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         year: int,
         week: Optional[int],
         values: List[TeamRecordValueBySeasonWeekResult],
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.year = year
         self.week = week

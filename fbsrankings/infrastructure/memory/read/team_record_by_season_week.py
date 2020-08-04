@@ -29,6 +29,6 @@ class TeamRecordBySeasonWeekQueryHandler:
 
             if season is not None:
                 return TeamRecordBySeasonWeekResult(
-                    record.id, record.season_id, season.year, record.week, values,
+                    record.id_, record.season_id, season.year, record.week, values,
                 )
         return None

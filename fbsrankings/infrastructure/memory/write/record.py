@@ -20,8 +20,8 @@ class TeamRecordRepository(BaseRepository):
 
         self._storage = storage
 
-    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
-        dto = self._storage.get(id.value)
+    def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
+        dto = self._storage.get(id_.value)
         return self._to_record(dto) if dto is not None else None
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
@@ -31,7 +31,7 @@ class TeamRecordRepository(BaseRepository):
     def _to_record(self, dto: TeamRecordDto) -> TeamRecord:
         return TeamRecord(
             self._bus,
-            TeamRecordID(dto.id),
+            TeamRecordID(dto.id_),
             SeasonID(dto.season_id),
             dto.week,
             [self._to_value(value) for value in dto.values],
@@ -50,7 +50,7 @@ class TeamRecordRepository(BaseRepository):
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(
             TeamRecordDto(
-                event.id,
+                event.id_,
                 event.season_id,
                 event.week,
                 [

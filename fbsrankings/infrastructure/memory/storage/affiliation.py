@@ -8,9 +8,9 @@ from uuid import UUID
 
 class AffiliationDto:
     def __init__(
-        self, id: UUID, season_id: UUID, team_id: UUID, subdivision: str,
+        self, id_: UUID, season_id: UUID, team_id: UUID, subdivision: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.team_id = team_id
         self.subdivision = subdivision
@@ -29,7 +29,7 @@ class AffiliationStorage:
                 f"Affiliation already exists for team {affiliation.team_id} in season {affiliation.season_id}",
             )
 
-        self._by_id[affiliation.id] = affiliation
+        self._by_id[affiliation.id_] = affiliation
         self._by_key[key] = affiliation
 
         by_season = self._by_season.get(affiliation.season_id)
@@ -38,8 +38,8 @@ class AffiliationStorage:
             self._by_season[affiliation.season_id] = by_season
         by_season.append(affiliation)
 
-    def get(self, id: UUID) -> Optional[AffiliationDto]:
-        return self._by_id.get(id)
+    def get(self, id_: UUID) -> Optional[AffiliationDto]:
+        return self._by_id.get(id_)
 
     def find(self, season_id: UUID, team_id: UUID) -> Optional[AffiliationDto]:
         key = (season_id, team_id)

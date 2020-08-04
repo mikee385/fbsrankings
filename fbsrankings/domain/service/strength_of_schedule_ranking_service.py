@@ -31,7 +31,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
     ) -> Ranking[TeamID]:
         team_data: Dict[TeamID, TeamData] = {}
 
-        performance_map = {r.id: r for r in performance_ranking.values}
+        performance_map = {r.id_: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
             if game.status != GameStatus.CANCELED:
@@ -51,12 +51,12 @@ class StrengthOfScheduleRankingService(TeamRankingService):
                         team_data[game.away_team_id] = away_data
                     away_data.add_opponent(home_performance.value)
 
-        result = {id: data.strength_of_schedule for id, data in team_data.items()}
+        result = {id_: data.strength_of_schedule for id_, data in team_data.items()}
         ranking_values = TeamRankingService._to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Strength of Schedule - Total",
-            season_data.season.id,
+            season_data.season.id_,
             performance_ranking.week,
             ranking_values,
         )

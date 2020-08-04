@@ -33,8 +33,8 @@ class CalculateRankingsForSeasonCommandHandler:
                 raise ValueError(f"Season not found for {command.season_id_or_year}")
 
             teams = unit_of_work.team.all()
-            affiliations = unit_of_work.affiliation.for_season(season.id)
-            games = unit_of_work.game.for_season(season.id)
+            affiliations = unit_of_work.affiliation.for_season(season.id_)
+            games = unit_of_work.game.for_season(season.id_)
 
             season_data = SeasonData(season, teams, affiliations, games)
 

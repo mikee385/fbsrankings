@@ -5,8 +5,8 @@ from fbsrankings.common import Query
 
 
 class SeasonResult:
-    def __init__(self, id: UUID, year: int) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, year: int) -> None:
+        self.id_ = id_
         self.year = year
 
 

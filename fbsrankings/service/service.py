@@ -40,7 +40,7 @@ class DataSource(QueryManagerFactory, TransactionFactory, Protocol, metaclass=AB
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
@@ -120,11 +120,11 @@ class Service(ContextManager["Service"]):
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._query_manager.__exit__(type, value, traceback)
-        self._command_manager.__exit__(type, value, traceback)
-        self._data_source.__exit__(type, value, traceback)
+        self._query_manager.__exit__(type_, value, traceback)
+        self._command_manager.__exit__(type_, value, traceback)
+        self._data_source.__exit__(type_, value, traceback)
         return False

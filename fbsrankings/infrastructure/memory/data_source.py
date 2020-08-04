@@ -34,7 +34,7 @@ class DataSource(QueryManagerFactory, TransactionFactory):
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

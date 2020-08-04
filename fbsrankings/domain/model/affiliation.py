@@ -25,19 +25,19 @@ class Affiliation:
     def __init__(
         self,
         bus: EventBus,
-        id: AffiliationID,
+        id_: AffiliationID,
         season_id: SeasonID,
         team_id: TeamID,
         subdivision: Subdivision,
     ) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._season_id = season_id
         self._team_id = team_id
         self._subdivision = subdivision
 
     @property
-    def id(self) -> AffiliationID:
+    def id_(self) -> AffiliationID:
         return self._id
 
     @property
@@ -60,11 +60,11 @@ class AffiliationRepository(metaclass=ABCMeta):
     def create(
         self, season_id: SeasonID, team_id: TeamID, subdivision: Subdivision,
     ) -> Affiliation:
-        id = AffiliationID(uuid4())
-        affiliation = Affiliation(self._bus, id, season_id, team_id, subdivision)
+        id_ = AffiliationID(uuid4())
+        affiliation = Affiliation(self._bus, id_, season_id, team_id, subdivision)
         self._bus.publish(
             AffiliationCreatedEvent(
-                affiliation.id.value,
+                affiliation.id_.value,
                 affiliation.season_id.value,
                 affiliation.team_id.value,
                 affiliation.subdivision.name,
@@ -74,7 +74,7 @@ class AffiliationRepository(metaclass=ABCMeta):
         return affiliation
 
     @abstractmethod
-    def get(self, id: AffiliationID) -> Optional[Affiliation]:
+    def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         raise NotImplementedError
 
     @abstractmethod

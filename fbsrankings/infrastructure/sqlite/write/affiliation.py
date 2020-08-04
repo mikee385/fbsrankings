@@ -31,11 +31,11 @@ class AffiliationRepository(BaseRepository):
 
         bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
 
-    def get(self, id: AffiliationID) -> Optional[Affiliation]:
+    def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id.value)],
+            [str(id_.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -96,7 +96,7 @@ class AffiliationRepository(BaseRepository):
             .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
             [
-                str(event.id),
+                str(event.id_),
                 str(event.season_id),
                 str(event.team_id),
                 event.subdivision,

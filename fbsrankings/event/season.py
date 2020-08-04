@@ -4,6 +4,6 @@ from fbsrankings.common import Event
 
 
 class SeasonCreatedEvent(Event):
-    def __init__(self, id: UUID, year: int) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, year: int) -> None:
+        self.id_ = id_
         self.year = year

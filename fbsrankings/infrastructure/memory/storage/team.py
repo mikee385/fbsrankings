@@ -5,8 +5,8 @@ from uuid import UUID
 
 
 class TeamDto:
-    def __init__(self, id: UUID, name: str) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, name: str) -> None:
+        self.id_ = id_
         self.name = name
 
 
@@ -19,11 +19,11 @@ class TeamStorage:
         if team.name in self._by_key:
             raise ValueError(f"Team already exists for name {team.name}")
 
-        self._by_id[team.id] = team
+        self._by_id[team.id_] = team
         self._by_key[team.name] = team
 
-    def get(self, id: UUID) -> Optional[TeamDto]:
-        return self._by_id.get(id)
+    def get(self, id_: UUID) -> Optional[TeamDto]:
+        return self._by_id.get(id_)
 
     def find(self, name: str) -> Optional[TeamDto]:
         return self._by_key.get(name)

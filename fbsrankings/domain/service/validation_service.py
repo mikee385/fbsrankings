@@ -129,7 +129,7 @@ class ValidationService:
             self._handle_error(
                 SeasonDataValidationError(
                     f"Season.year does not match year: {season.year} vs. {year}",
-                    season.id.value,
+                    season.id_.value,
                     "year",
                     season.year,
                     year,
@@ -141,7 +141,7 @@ class ValidationService:
             self._handle_error(
                 TeamDataValidationError(
                     f"Team.name does not match name: {team.name} vs. {name}",
-                    team.id.value,
+                    team.id_.value,
                     "name",
                     team.name,
                     name,
@@ -159,7 +159,7 @@ class ValidationService:
             self._handle_error(
                 AffiliationDataValidationError(
                     f"Affiliation.season_id does not match season_id: {affiliation.season_id} vs. {season_id}",
-                    affiliation.id.value,
+                    affiliation.id_.value,
                     "season_id",
                     affiliation.season_id.value,
                     season_id.value,
@@ -169,7 +169,7 @@ class ValidationService:
             self._handle_error(
                 AffiliationDataValidationError(
                     f"Affiliation.team_id does not match team_id: {affiliation.team_id} vs. {team_id}",
-                    affiliation.id.value,
+                    affiliation.id_.value,
                     "team_id",
                     affiliation.team_id.value,
                     team_id.value,
@@ -179,7 +179,7 @@ class ValidationService:
             self._handle_error(
                 AffiliationDataValidationError(
                     f"Affiliation.subdivision does not match subdivision: {affiliation.subdivision} vs. {subdivision}",
-                    affiliation.id.value,
+                    affiliation.id_.value,
                     "subdivision",
                     affiliation.subdivision.name,
                     subdivision.name,
@@ -204,7 +204,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.season_id does not match season_id: {game.season_id} vs. {season_id}",
-                    game.id.value,
+                    game.id_.value,
                     "season_id",
                     game.season_id.value,
                     season_id.value,
@@ -214,7 +214,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.week does not match week: {game.week} vs. {week}",
-                    game.id.value,
+                    game.id_.value,
                     "week",
                     game.week,
                     week,
@@ -224,7 +224,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.date does not match date: {game.date} vs. {date}",
-                    game.id.value,
+                    game.id_.value,
                     "date",
                     game.date,
                     date,
@@ -234,7 +234,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.season_section does not match season_section: {game.season_section} vs. {season_section}",
-                    game.id.value,
+                    game.id_.value,
                     "season_section",
                     game.season_section.name,
                     season_section.name,
@@ -244,7 +244,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.home_team_id does not match home_team_id: {game.home_team_id} vs. {home_team_id}",
-                    game.id.value,
+                    game.id_.value,
                     "home_team_id",
                     game.home_team_id.value,
                     home_team_id.value,
@@ -254,7 +254,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.away_team_id does not match away_team_id: {game.away_team_id} vs. {away_team_id}",
-                    game.id.value,
+                    game.id_.value,
                     "away_team_id",
                     game.away_team_id.value,
                     away_team_id.value,
@@ -264,7 +264,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.home_team_score does not match home_team_score: {game.home_team_score} vs. {home_team_score}",
-                    game.id.value,
+                    game.id_.value,
                     "home_team_score",
                     game.home_team_score,
                     home_team_score,
@@ -274,7 +274,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.away_team_score does not match away_team_score: {game.away_team_score} vs. {away_team_score}",
-                    game.id.value,
+                    game.id_.value,
                     "away_team_score",
                     game.away_team_score,
                     away_team_score,
@@ -284,7 +284,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.status does not match status: {game.status} vs. {status}",
-                    game.id.value,
+                    game.id_.value,
                     "status",
                     game.status.name,
                     status.name,
@@ -294,7 +294,7 @@ class ValidationService:
             self._handle_error(
                 GameDataValidationError(
                     f"Game.notes does not match notes: {game.notes} vs. {notes}",
-                    game.id.value,
+                    game.id_.value,
                     "notes",
                     game.notes,
                     notes,
@@ -318,7 +318,7 @@ class ValidationService:
                 self._handle_error(
                     AffiliationDataValidationError(
                         f"Unknown subdivision: {affiliation.subdivision}",
-                        affiliation.id.value,
+                        affiliation.id_.value,
                         "subdivision",
                         affiliation.subdivision.name,
                         None,
@@ -334,7 +334,7 @@ class ValidationService:
                 self._handle_error(
                     GameDataValidationError(
                         "Unknown home team",
-                        game.id.value,
+                        game.id_.value,
                         "home_team_id",
                         game.home_team_id.value,
                         None,
@@ -349,7 +349,7 @@ class ValidationService:
                 self._handle_error(
                     GameDataValidationError(
                         "Unknown away team",
-                        game.id.value,
+                        game.id_.value,
                         "away_team",
                         game.away_team_id.value,
                         None,

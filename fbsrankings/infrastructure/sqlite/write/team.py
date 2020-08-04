@@ -28,11 +28,11 @@ class TeamRepository(BaseRepository):
 
         bus.register_handler(TeamCreatedEvent, self._handle_team_created)
 
-    def get(self, id: TeamID) -> Optional[Team]:
+    def get(self, id_: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id.value)],
+            [str(id_.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -69,5 +69,5 @@ class TeamRepository(BaseRepository):
             .columns(self._table.UUID, self._table.Name)
             .insert(Parameter("?"), Parameter("?"))
             .get_sql(),
-            [str(event.id), event.name],
+            [str(event.id_), event.name],
         )

@@ -48,19 +48,19 @@ class TeamRecord:
     def __init__(
         self,
         bus: EventBus,
-        id: TeamRecordID,
+        id_: TeamRecordID,
         season_id: SeasonID,
         week: Optional[int],
         values: List[TeamRecordValue],
     ) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._season_id = season_id
         self._week = week
         self._values = values
 
     @property
-    def id(self) -> TeamRecordID:
+    def id_(self) -> TeamRecordID:
         return self._id
 
     @property
@@ -83,11 +83,11 @@ class TeamRecordRepository(metaclass=ABCMeta):
     def create(
         self, season_id: SeasonID, week: Optional[int], values: List[TeamRecordValue],
     ) -> TeamRecord:
-        id = TeamRecordID(uuid4())
-        record = TeamRecord(self._bus, id, season_id, week, values)
+        id_ = TeamRecordID(uuid4())
+        record = TeamRecord(self._bus, id_, season_id, week, values)
         self._bus.publish(
             TeamRecordCalculatedEvent(
-                record.id.value,
+                record.id_.value,
                 record.season_id.value,
                 record.week,
                 [
@@ -106,7 +106,7 @@ class TeamRecordRepository(metaclass=ABCMeta):
         return record
 
     @abstractmethod
-    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
+    def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         raise NotImplementedError
 
     @abstractmethod

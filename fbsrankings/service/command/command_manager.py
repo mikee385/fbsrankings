@@ -47,20 +47,20 @@ class CommandManager(ContextManager["CommandManager"]):
             CalculateRankingsForSeasonCommandHandler(data_source, event_bus),
         )
 
-    def register_hander(self, type: Type[C], handler: CommandHandler[C]) -> None:
-        self._bus.register_handler(type, handler)
-        self._handlers[type] = handler
+    def register_hander(self, type_: Type[C], handler: CommandHandler[C]) -> None:
+        self._bus.register_handler(type_, handler)
+        self._handlers[type_] = handler
 
     def close(self) -> None:
-        for type in self._handlers:
-            self._bus.unregister_handler(type)
+        for type_ in self._handlers:
+            self._bus.unregister_handler(type_)
 
     def __enter__(self) -> "CommandManager":
         return self
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

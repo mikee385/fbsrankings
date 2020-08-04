@@ -7,7 +7,7 @@ from fbsrankings.common import Event
 class GameCreatedEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: int,
         date: datetime.date,
@@ -16,7 +16,7 @@ class GameCreatedEvent(Event):
         away_team_id: UUID,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.date = date
@@ -29,7 +29,7 @@ class GameCreatedEvent(Event):
 class GameRescheduledEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         old_week: int,
         old_date: datetime.date,
@@ -40,7 +40,7 @@ class GameRescheduledEvent(Event):
         away_team_id: UUID,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.old_week = old_week
         self.old_date = old_date
@@ -55,7 +55,7 @@ class GameRescheduledEvent(Event):
 class GameCanceledEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: int,
         date: datetime.date,
@@ -64,7 +64,7 @@ class GameCanceledEvent(Event):
         away_team_id: UUID,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.date = date
@@ -77,7 +77,7 @@ class GameCanceledEvent(Event):
 class GameCompletedEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: int,
         date: datetime.date,
@@ -88,7 +88,7 @@ class GameCompletedEvent(Event):
         away_team_score: int,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.date = date
@@ -103,7 +103,7 @@ class GameCompletedEvent(Event):
 class GameNotesUpdatedEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: int,
         date: datetime.date,
@@ -113,7 +113,7 @@ class GameNotesUpdatedEvent(Event):
         old_notes: str,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.date = date

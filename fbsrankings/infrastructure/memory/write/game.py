@@ -24,8 +24,8 @@ class GameRepository(BaseRepository):
         super().__init__(bus)
         self._storage = storage
 
-    def get(self, id: GameID) -> Optional[Game]:
-        dto = self._storage.get(id.value)
+    def get(self, id_: GameID) -> Optional[Game]:
+        dto = self._storage.get(id_.value)
         return self._to_game(dto) if dto is not None else None
 
     def find(
@@ -41,7 +41,7 @@ class GameRepository(BaseRepository):
     def _to_game(self, dto: GameDto) -> Game:
         return Game(
             self._bus,
-            GameID(dto.id),
+            GameID(dto.id_),
             SeasonID(dto.season_id),
             dto.week,
             dto.date,
@@ -75,7 +75,7 @@ class GameRepository(BaseRepository):
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(
             GameDto(
-                event.id,
+                event.id_,
                 event.season_id,
                 event.week,
                 event.date,
@@ -90,24 +90,24 @@ class GameRepository(BaseRepository):
         )
 
     def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
-        dto = self._storage.get(event.id)
+        dto = self._storage.get(event.id_)
         if dto is not None:
             dto.week = event.week
             dto.date = event.date
 
     def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
-        dto = self._storage.get(event.id)
+        dto = self._storage.get(event.id_)
         if dto is not None:
             dto.status = GameStatus.CANCELED.name
 
     def _handle_game_completed(self, event: GameCompletedEvent) -> None:
-        dto = self._storage.get(event.id)
+        dto = self._storage.get(event.id_)
         if dto is not None:
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
             dto.status = GameStatus.COMPLETED.name
 
     def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
-        dto = self._storage.get(event.id)
+        dto = self._storage.get(event.id_)
         if dto is not None:
             dto.notes = event.notes

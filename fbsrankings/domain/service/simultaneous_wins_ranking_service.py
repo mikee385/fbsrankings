@@ -83,13 +83,13 @@ class SimultaneousWinsRankingService(TeamRankingService):
 
             x = numpy.linalg.solve(a, b)
 
-            result = {id: x[data.index] for id, data in team_data.items()}
+            result = {id_: x[data.index] for id_, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
                     SimultaneousWinsRankingService.name,
-                    season_data.season.id,
+                    season_data.season.id_,
                     week,
                     ranking_values,
                 ),
@@ -99,7 +99,7 @@ class SimultaneousWinsRankingService(TeamRankingService):
             rankings.append(
                 self._repository.create(
                     SimultaneousWinsRankingService.name,
-                    season_data.season.id,
+                    season_data.season.id_,
                     None,
                     ranking_values,
                 ),

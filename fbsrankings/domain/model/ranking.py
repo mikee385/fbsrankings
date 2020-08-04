@@ -39,11 +39,11 @@ class SeasonData:
         games: Iterable[Game],
     ) -> None:
         self.season = season
-        self.team_map = {team.id: team for team in teams}
+        self.team_map = {team.id_: team for team in teams}
         self.affiliation_map = {
             affiliation.team_id: affiliation for affiliation in affiliations
         }
-        self.game_map = {game.id: game for game in games}
+        self.game_map = {game.id_: game for game in games}
 
 
 class RankingID(Identifier):
@@ -51,14 +51,14 @@ class RankingID(Identifier):
 
 
 class RankingValue(Generic[T]):
-    def __init__(self, id: T, order: int, rank: int, value: float) -> None:
-        self._id = id
+    def __init__(self, id_: T, order: int, rank: int, value: float) -> None:
+        self._id = id_
         self._order = order
         self._rank = rank
         self._value = value
 
     @property
-    def id(self) -> T:
+    def id_(self) -> T:
         return self._id
 
     @property
@@ -103,21 +103,21 @@ class Ranking(Generic[T]):
     def __init__(
         self,
         bus: EventBus,
-        id: RankingID,
+        id_: RankingID,
         name: str,
         season_id: SeasonID,
         week: Optional[int],
         values: Iterable[RankingValue[T]],
     ) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._name = name
         self._season_id = season_id
         self._week = week
         self._values = sorted(values, key=lambda v: v.order)
 
     @property
-    def id(self) -> RankingID:
+    def id_(self) -> RankingID:
         return self._id
 
     @property
@@ -165,16 +165,16 @@ class TeamRankingRepository(metaclass=ABCMeta):
         week: Optional[int],
         values: Iterable[RankingValue[TeamID]],
     ) -> Ranking[TeamID]:
-        id = RankingID(uuid4())
-        ranking = Ranking(self._bus, id, name, season_id, week, values)
+        id_ = RankingID(uuid4())
+        ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
-                ranking.id.value,
+                ranking.id_.value,
                 ranking.name,
                 ranking.season_id.value,
                 ranking.week,
                 [
-                    EventValue(value.id.value, value.order, value.rank, value.value)
+                    EventValue(value.id_.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -183,7 +183,7 @@ class TeamRankingRepository(metaclass=ABCMeta):
         return ranking
 
     @abstractmethod
-    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
+    def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -230,16 +230,16 @@ class GameRankingRepository(metaclass=ABCMeta):
         week: Optional[int],
         values: Iterable[RankingValue[GameID]],
     ) -> Ranking[GameID]:
-        id = RankingID(uuid4())
-        ranking = Ranking(self._bus, id, name, season_id, week, values)
+        id_ = RankingID(uuid4())
+        ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
-                ranking.id.value,
+                ranking.id_.value,
                 ranking.name,
                 ranking.season_id.value,
                 ranking.week,
                 [
-                    EventValue(value.id.value, value.order, value.rank, value.value)
+                    EventValue(value.id_.value, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -248,7 +248,7 @@ class GameRankingRepository(metaclass=ABCMeta):
         return ranking
 
     @abstractmethod
-    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
+    def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
         raise NotImplementedError
 
     @abstractmethod

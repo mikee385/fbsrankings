@@ -41,11 +41,11 @@ class GameRepository(BaseRepository):
         bus.register_handler(GameCompletedEvent, self._handle_game_completed)
         bus.register_handler(GameNotesUpdatedEvent, self._handle_game_notes_updated)
 
-    def get(self, id: GameID) -> Optional[Game]:
+    def get(self, id_: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id.value)],
+            [str(id_.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -163,7 +163,7 @@ class GameRepository(BaseRepository):
             )
             .get_sql(),
             [
-                str(event.id),
+                str(event.id_),
                 str(event.season_id),
                 event.week,
                 event.date,
@@ -184,7 +184,7 @@ class GameRepository(BaseRepository):
             .set(self._table.Date, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [event.week, event.date, str(event.id)],
+            [event.week, event.date, str(event.id_)],
         )
 
     def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
@@ -193,7 +193,7 @@ class GameRepository(BaseRepository):
             .set(self._table.Status, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [GameStatus.CANCELED.name, str(event.id)],
+            [GameStatus.CANCELED.name, str(event.id_)],
         )
 
     def _handle_game_completed(self, event: GameCompletedEvent) -> None:
@@ -208,7 +208,7 @@ class GameRepository(BaseRepository):
                 event.home_team_score,
                 event.away_team_score,
                 GameStatus.COMPLETED.name,
-                str(event.id),
+                str(event.id_),
             ],
         )
 
@@ -218,5 +218,5 @@ class GameRepository(BaseRepository):
             .set(self._table.Notes, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [event.notes, str(event.id)],
+            [event.notes, str(event.id_)],
         )

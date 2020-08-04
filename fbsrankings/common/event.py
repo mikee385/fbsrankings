@@ -21,12 +21,12 @@ class EventBus:
     def __init__(self) -> None:
         self._handlers: Dict[Type[Event], List[EventHandler[Any]]] = {}
 
-    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
-        existing = self._handlers.get(type)
+    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        existing = self._handlers.get(type_)
         if existing is not None:
             existing.append(handler)
         else:
-            self._handlers[type] = [handler]
+            self._handlers[type_] = [handler]
 
     def publish(self, event: E) -> None:
         handlers = self._handlers.get(type(event))
@@ -42,8 +42,8 @@ class EventRecorder(EventBus):
         self._bus = bus
         self.events: List[Event] = []
 
-    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
-        self._bus.register_handler(type, handler)
+    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        self._bus.register_handler(type_, handler)
 
     def publish(self, event: E) -> None:
         self.events.append(event)
@@ -60,8 +60,8 @@ class EventCounter(EventBus):
         self._bus = bus
         self.counts: Dict[Type[Event], int] = {}
 
-    def register_handler(self, type: Type[E], handler: EventHandler[E]) -> None:
-        self._bus.register_handler(type, handler)
+    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        self._bus.register_handler(type_, handler)
 
     def publish(self, event: E) -> None:
         count = self.counts.get(type(event))

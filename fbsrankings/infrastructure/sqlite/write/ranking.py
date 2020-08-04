@@ -46,7 +46,7 @@ class RankingRepository(Generic[T]):
         bus: EventBus,
         value_table: Table,
         value_columns: List[Field],
-        type: RankingType,
+        type_: RankingType,
         to_value: Callable[[Tuple[str, str, int, int, float]], RankingValue[T]],
     ) -> None:
         self._bus = bus
@@ -57,10 +57,10 @@ class RankingRepository(Generic[T]):
         self._value_table = value_table
         self._value_columns = value_columns
 
-        self._type = type
+        self._type = type_
         self._to_value = to_value
 
-    def get(self, id: RankingID) -> Optional[Ranking[T]]:
+    def get(self, id_: RankingID) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query()
@@ -69,7 +69,7 @@ class RankingRepository(Generic[T]):
                 & (self._ranking_table.Type == Parameter("?")),
             )
             .get_sql(),
-            [str(id.value), self._type.name],
+            [str(id_.value), self._type.name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -189,7 +189,7 @@ class RankingRepository(Generic[T]):
             )
             .get_sql(),
             [
-                str(event.id),
+                str(event.id_),
                 event.name,
                 self._type.name,
                 str(event.season_id),
@@ -211,7 +211,7 @@ class RankingRepository(Generic[T]):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.id), str(value.id), value.order, value.rank, value.value],
+                [str(event.id_), str(value.id_), value.order, value.rank, value.value],
             )
 
 
@@ -243,8 +243,8 @@ class TeamRankingRepository(BaseTeamRankingRepository):
             TeamRankingCalculatedEvent, self._repository.handle_ranking_calculated,
         )
 
-    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
-        return self._repository.get(id)
+    def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
+        return self._repository.get(id_)
 
     def find(
         self, name: str, season_id: SeasonID, week: Optional[int],
@@ -284,8 +284,8 @@ class GameRankingRepository(BaseGameRankingRepository):
             GameRankingCalculatedEvent, self._repository.handle_ranking_calculated,
         )
 
-    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
-        return self._repository.get(id)
+    def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
+        return self._repository.get(id_)
 
     def find(
         self, name: str, season_id: SeasonID, week: Optional[int],

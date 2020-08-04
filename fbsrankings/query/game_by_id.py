@@ -8,7 +8,7 @@ from fbsrankings.common import Query
 class GameByIDResult:
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         year: int,
         week: int,
@@ -23,7 +23,7 @@ class GameByIDResult:
         status: str,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.year = year
         self.week = week
@@ -40,5 +40,5 @@ class GameByIDResult:
 
 
 class GameByIDQuery(Query[Optional[GameByIDResult]]):
-    def __init__(self, id: UUID) -> None:
-        self.id = id
+    def __init__(self, id_: UUID) -> None:
+        self.id_ = id_

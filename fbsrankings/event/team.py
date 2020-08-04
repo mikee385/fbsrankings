@@ -4,6 +4,6 @@ from fbsrankings.common import Event
 
 
 class TeamCreatedEvent(Event):
-    def __init__(self, id: UUID, name: str) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, name: str) -> None:
+        self.id_ = id_
         self.name = name

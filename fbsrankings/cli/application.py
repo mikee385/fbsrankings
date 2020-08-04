@@ -174,7 +174,7 @@ class Application:
 
         year, week = self._parse_season_week(season)
 
-        season_id = self._get_season(year).id
+        season_id = self._get_season(year).id_
         record = self._get_team_record(season_id, year, week)
         ranking = self._get_team_ranking(rating_name, season_id, year, week)
         sos = self._get_team_ranking(
@@ -190,7 +190,7 @@ class Application:
 
         year, week = self._parse_season_week(season)
 
-        season_id = self._get_season(year).id
+        season_id = self._get_season(year).id_
         team_ranking = self._get_team_ranking(rating_name, season_id, year, week)
         game_ranking = self._get_game_ranking(
             f"{rating_name} - Game Strength", season_id, year, week,
@@ -208,11 +208,11 @@ class Application:
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._service.__exit__(type, value, traceback)
+        self._service.__exit__(type_, value, traceback)
         return False
 
     def _print_check(self) -> None:
@@ -387,12 +387,12 @@ class Application:
         ]
 
         for season in seasons:
-            week_count = self._service.query(WeekCountBySeasonQuery(season.id))
-            team_count = self._service.query(TeamCountBySeasonQuery(season.id))
+            week_count = self._service.query(WeekCountBySeasonQuery(season.id_))
+            team_count = self._service.query(TeamCountBySeasonQuery(season.id_))
             affiliation_count = self._service.query(
-                AffiliationCountBySeasonQuery(season.id),
+                AffiliationCountBySeasonQuery(season.id_),
             )
-            game_count = self._service.query(GameCountBySeasonQuery(season.id))
+            game_count = self._service.query(GameCountBySeasonQuery(season.id_))
 
             season_summary_table.add_row(
                 [
@@ -425,8 +425,8 @@ class Application:
         sos: TeamRankingBySeasonWeekResult,
         limit: Optional[int],
     ) -> None:
-        record_map = {v.id: v for v in record.values}
-        sos_map = {v.id: v for v in sos.values}
+        record_map = {v.id_: v for v in record.values}
+        sos_map = {v.id_: v for v in sos.values}
 
         table = PrettyTable()
         table.field_names = [
@@ -451,8 +451,8 @@ class Application:
             values = ranking.values[:limit]
 
         for ranking_value in values:
-            record_value = record_map[ranking_value.id]
-            sos_value = sos_map[ranking_value.id]
+            record_value = record_map[ranking_value.id_]
+            sos_value = sos_map[ranking_value.id_]
 
             table.add_row(
                 [
@@ -473,7 +473,7 @@ class Application:
         team_ranking: TeamRankingBySeasonWeekResult,
         limit: Optional[int],
     ) -> None:
-        team_map = {v.id: v for v in team_ranking.values}
+        team_map = {v.id_: v for v in team_ranking.values}
 
         table = PrettyTable()
         table.field_names = [
@@ -540,7 +540,7 @@ class Application:
         print("Events:")
         if events:
             seasons = self._service.query(SeasonsQuery()).seasons
-            season_map = {s.id: s for s in seasons}
+            season_map = {s.id_: s for s in seasons}
             event_counts: Dict[int, Dict[Type[Event], int]] = {}
             other_counts: Dict[Type[Event], int] = {}
 
@@ -610,7 +610,7 @@ class Application:
             print("Canceled Games:")
             for game in canceled_games:
                 print()
-                print(f"ID: {game.id}")
+                print(f"ID: {game.id_}")
                 print(f"Year {game.year}, Week {game.week}")
                 print(game.date)
                 print(game.season_section)
@@ -625,10 +625,10 @@ class Application:
             print()
             print("Notes:")
             for event in notes_events:
-                game = self._service.query(GameByIDQuery(event.id))
+                game = self._service.query(GameByIDQuery(event.id_))
                 if game is not None:
                     print()
-                    print(f"ID: {game.id}")
+                    print(f"ID: {game.id_}")
                     print(f"Year {game.year}, Week {game.week}")
                     print(game.date)
                     print(game.season_section)
@@ -705,7 +705,7 @@ class Application:
                 game = self._service.query(GameByIDQuery(error.game_id))
                 if game is not None:
                     print()
-                    print(f"ID: {game.id}")
+                    print(f"ID: {game.id_}")
                     print(f"Year {game.year}, Week {game.week}")
                     print(game.date)
                     print(game.season_section)

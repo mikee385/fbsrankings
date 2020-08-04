@@ -22,20 +22,20 @@ class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
         self._bus = query_bus
         self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
 
-    def register_handler(self, type: Type[Q], handler: QueryHandler[Q, R]) -> None:
-        self._handlers[type] = handler
-        self._bus.register_handler(type, handler)
+    def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
+        self._handlers[type_] = handler
+        self._bus.register_handler(type_, handler)
 
     def close(self) -> None:
-        for type in self._handlers:
-            self._bus.unregister_handler(type)
+        for type_ in self._handlers:
+            self._bus.unregister_handler(type_)
 
     def __enter__(self) -> "QueryManager":
         return self
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

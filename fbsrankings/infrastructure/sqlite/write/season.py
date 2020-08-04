@@ -28,11 +28,11 @@ class SeasonRepository(BaseRepository):
 
         bus.register_handler(SeasonCreatedEvent, self._handle_season_created)
 
-    def get(self, id: SeasonID) -> Optional[Season]:
+    def get(self, id_: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id.value)],
+            [str(id_.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -69,5 +69,5 @@ class SeasonRepository(BaseRepository):
             .columns(self._table.UUID, self._table.Year)
             .insert(Parameter("?"), Parameter("?"))
             .get_sql(),
-            [str(event.id), event.year],
+            [str(event.id_), event.year],
         )

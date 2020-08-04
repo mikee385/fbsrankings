@@ -56,17 +56,17 @@ class TeamRecordService:
                     losing_data.losses += 1
 
             record_values = [
-                TeamRecordValue(id, data.wins, data.losses)
-                for id, data in team_data.items()
+                TeamRecordValue(id_, data.wins, data.losses)
+                for id_, data in team_data.items()
             ]
 
             records.append(
-                self._repository.create(season_data.season.id, week, record_values),
+                self._repository.create(season_data.season.id_, week, record_values),
             )
 
         if season_is_complete:
             records.append(
-                self._repository.create(season_data.season.id, None, record_values),
+                self._repository.create(season_data.season.id_, None, record_values),
             )
 
         return records

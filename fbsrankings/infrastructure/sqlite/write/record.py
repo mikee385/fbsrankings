@@ -37,11 +37,11 @@ class TeamRecordRepository(BaseRepository):
 
         bus.register_handler(TeamRecordCalculatedEvent, self._handle_record_calculated)
 
-    def get(self, id: TeamRecordID) -> Optional[TeamRecord]:
+    def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._record_table.UUID == Parameter("?")).get_sql(),
-            [str(id.value)],
+            [str(id_.value)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -148,7 +148,7 @@ class TeamRecordRepository(BaseRepository):
             )
             .insert(Parameter("?"), Parameter("?"), Parameter("?"))
             .get_sql(),
-            [str(event.id), str(event.season_id), event.week],
+            [str(event.id_), str(event.season_id), event.week],
         )
         insert_sql = (
             Query.into(self._value_table)
@@ -164,5 +164,5 @@ class TeamRecordRepository(BaseRepository):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.id), str(value.team_id), value.wins, value.losses],
+                [str(event.id_), str(value.team_id), value.wins, value.losses],
             )

@@ -21,13 +21,13 @@ class SeasonID(Identifier):
 
 
 class Season:
-    def __init__(self, bus: EventBus, id: SeasonID, year: int) -> None:
+    def __init__(self, bus: EventBus, id_: SeasonID, year: int) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._year = year
 
     @property
-    def id(self) -> SeasonID:
+    def id_(self) -> SeasonID:
         return self._id
 
     @property
@@ -40,14 +40,14 @@ class SeasonRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(self, year: int) -> Season:
-        id = SeasonID(uuid4())
-        season = Season(self._bus, id, year)
-        self._bus.publish(SeasonCreatedEvent(season.id.value, season.year))
+        id_ = SeasonID(uuid4())
+        season = Season(self._bus, id_, year)
+        self._bus.publish(SeasonCreatedEvent(season.id_.value, season.year))
 
         return season
 
     @abstractmethod
-    def get(self, id: SeasonID) -> Optional[Season]:
+    def get(self, id_: SeasonID) -> Optional[Season]:
         raise NotImplementedError
 
     @abstractmethod

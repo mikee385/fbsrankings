@@ -16,8 +16,8 @@ class TeamRepository(BaseRepository):
         super().__init__(bus)
         self._storage = storage
 
-    def get(self, id: TeamID) -> Optional[Team]:
-        dto = self._storage.get(id.value)
+    def get(self, id_: TeamID) -> Optional[Team]:
+        dto = self._storage.get(id_.value)
         return self._to_team(dto) if dto is not None else None
 
     def find(self, name: str) -> Optional[Team]:
@@ -29,7 +29,7 @@ class TeamRepository(BaseRepository):
         return [self._to_team(dto) for dto in dtos if dto is not None]
 
     def _to_team(self, dto: TeamDto) -> Team:
-        return Team(self._bus, TeamID(dto.id), dto.name)
+        return Team(self._bus, TeamID(dto.id_), dto.name)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamCreatedEvent):
@@ -38,4 +38,4 @@ class TeamRepository(BaseRepository):
         return False
 
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
-        self._storage.add(TeamDto(event.id, event.name))
+        self._storage.add(TeamDto(event.id_, event.name))

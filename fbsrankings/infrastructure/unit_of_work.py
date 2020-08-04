@@ -73,10 +73,10 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
 
     def __exit__(
         self,
-        type: Optional[Type[BaseException]],
+        type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._transaction.__exit__(type, value, traceback)
+        self._transaction.__exit__(type_, value, traceback)
         self._inner_bus.clear()
         return False

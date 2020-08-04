@@ -26,7 +26,7 @@ class LatestSeasonWeekQueryHandler:
         ):
             season_data = _Data()
             weeks: Dict[int, _Data] = {}
-            for game in self._storage.game.for_season(season.id):
+            for game in self._storage.game.for_season(season.id_):
                 week_data = weeks.setdefault(game.week, _Data())
                 if game.status == GameStatus.COMPLETED.name:
                     season_data.has_completed = True
@@ -36,7 +36,7 @@ class LatestSeasonWeekQueryHandler:
                     week_data.has_scheduled = True
 
             if season_data.has_scheduled is False and season_data.has_completed is True:
-                return LatestSeasonWeekResult(season.id, season.year, None)
+                return LatestSeasonWeekResult(season.id_, season.year, None)
 
             completed_weeks: List[int] = []
             for week, data in weeks.items():
@@ -44,6 +44,6 @@ class LatestSeasonWeekQueryHandler:
                     completed_weeks.append(week)
             if len(completed_weeks) > 0:
                 sorted_weeks = sorted(completed_weeks, reverse=True)
-                return LatestSeasonWeekResult(season.id, season.year, sorted_weeks[0])
+                return LatestSeasonWeekResult(season.id_, season.year, sorted_weeks[0])
 
         return None

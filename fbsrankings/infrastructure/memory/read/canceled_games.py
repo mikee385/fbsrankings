@@ -24,7 +24,7 @@ class CanceledGamesQueryHandler:
                 ):
                     games.append(
                         CanceledGameResult(
-                            game.id,
+                            game.id_,
                             game.season_id,
                             season.year,
                             game.week,

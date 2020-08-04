@@ -7,8 +7,8 @@ from uuid import UUID
 
 
 class RankingValueDto:
-    def __init__(self, id: UUID, order: int, rank: int, value: float) -> None:
-        self.id = id
+    def __init__(self, id_: UUID, order: int, rank: int, value: float) -> None:
+        self.id_ = id_
         self.order = order
         self.rank = rank
         self.value = value
@@ -17,13 +17,13 @@ class RankingValueDto:
 class RankingDto:
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         name: str,
         season_id: UUID,
         week: Optional[int],
         values: List[RankingValueDto],
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.name = name
         self.season_id = season_id
         self.week = week
@@ -41,10 +41,10 @@ class RankingStorage:
 
         existing = self._by_key.pop(key, None)
         if existing is not None:
-            self._by_id.pop(existing.id)
+            self._by_id.pop(existing.id_)
             self._by_season[existing.season_id].remove(existing)
 
-        self._by_id[ranking.id] = ranking
+        self._by_id[ranking.id_] = ranking
         self._by_key[key] = ranking
 
         by_season = self._by_season.get(ranking.season_id)
@@ -53,8 +53,8 @@ class RankingStorage:
             self._by_season[ranking.season_id] = by_season
         by_season.append(ranking)
 
-    def get(self, id: UUID) -> Optional[RankingDto]:
-        return self._by_id.get(id)
+    def get(self, id_: UUID) -> Optional[RankingDto]:
+        return self._by_id.get(id_)
 
     def find(
         self, name: str, season_id: UUID, week: Optional[int],

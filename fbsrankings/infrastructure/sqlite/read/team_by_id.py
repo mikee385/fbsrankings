@@ -23,7 +23,7 @@ class TeamByIDQueryHandler:
             .select(self._table.UUID, self._table.Name)
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [str(query.id)],
+            [str(query.id_)],
         )
         row = cursor.fetchone()
         cursor.close()

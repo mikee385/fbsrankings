@@ -14,13 +14,13 @@ class TeamID(Identifier):
 
 
 class Team:
-    def __init__(self, bus: EventBus, id: TeamID, name: str) -> None:
+    def __init__(self, bus: EventBus, id_: TeamID, name: str) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._name = name
 
     @property
-    def id(self) -> TeamID:
+    def id_(self) -> TeamID:
         return self._id
 
     @property
@@ -33,14 +33,14 @@ class TeamRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(self, name: str) -> Team:
-        id = TeamID(uuid4())
-        team = Team(self._bus, id, name)
-        self._bus.publish(TeamCreatedEvent(team.id.value, team.name))
+        id_ = TeamID(uuid4())
+        team = Team(self._bus, id_, name)
+        self._bus.publish(TeamCreatedEvent(team.id_.value, team.name))
 
         return team
 
     @abstractmethod
-    def get(self, id: TeamID) -> Optional[Team]:
+    def get(self, id_: TeamID) -> Optional[Team]:
         raise NotImplementedError
 
     @abstractmethod

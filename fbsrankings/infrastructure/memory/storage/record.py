@@ -16,12 +16,12 @@ class TeamRecordValueDto:
 class TeamRecordDto:
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: Optional[int],
         values: List[TeamRecordValueDto],
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.values = values
@@ -38,10 +38,10 @@ class TeamRecordStorage:
 
         existing = self._by_key.pop(key, None)
         if existing is not None:
-            self._by_id.pop(existing.id)
+            self._by_id.pop(existing.id_)
             self._by_season[existing.season_id].remove(existing)
 
-        self._by_id[record.id] = record
+        self._by_id[record.id_] = record
         self._by_key[key] = record
 
         by_season = self._by_season.get(record.season_id)
@@ -50,8 +50,8 @@ class TeamRecordStorage:
             self._by_season[record.season_id] = by_season
         by_season.append(record)
 
-    def get(self, id: UUID) -> Optional[TeamRecordDto]:
-        return self._by_id.get(id)
+    def get(self, id_: UUID) -> Optional[TeamRecordDto]:
+        return self._by_id.get(id_)
 
     def find(self, season_id: UUID, week: Optional[int]) -> Optional[TeamRecordDto]:
         key = (season_id, week)

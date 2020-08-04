@@ -40,7 +40,7 @@ class Game:
     def __init__(
         self,
         bus: EventBus,
-        id: GameID,
+        id_: GameID,
         season_id: SeasonID,
         week: int,
         date: datetime.date,
@@ -53,7 +53,7 @@ class Game:
         notes: str,
     ) -> None:
         self._bus = bus
-        self._id = id
+        self._id = id_
         self._season_id = season_id
         self._week = week
         self._date = date
@@ -95,7 +95,7 @@ class Game:
         self._notes = notes
 
     @property
-    def id(self) -> GameID:
+    def id_(self) -> GameID:
         return self._id
 
     @property
@@ -158,7 +158,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be rescheduled if it is still scheduled",
-                self.id.value,
+                self.id_.value,
                 self.status.name,
             )
 
@@ -170,7 +170,7 @@ class Game:
 
         self._bus.publish(
             GameRescheduledEvent(
-                self.id.value,
+                self.id_.value,
                 self.season_id.value,
                 old_week,
                 old_date,
@@ -187,7 +187,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be canceled if it is still scheduled",
-                self.id.value,
+                self.id_.value,
                 self.status.name,
             )
 
@@ -195,7 +195,7 @@ class Game:
 
         self._bus.publish(
             GameCanceledEvent(
-                self.id.value,
+                self.id_.value,
                 self.season_id.value,
                 self.week,
                 self.date,
@@ -210,7 +210,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be completed if it is still scheduled",
-                self.id.value,
+                self.id_.value,
                 self.status.name,
             )
 
@@ -226,7 +226,7 @@ class Game:
 
         self._bus.publish(
             GameCompletedEvent(
-                self.id.value,
+                self.id_.value,
                 self.season_id.value,
                 self.week,
                 self.date,
@@ -265,7 +265,7 @@ class Game:
 
         self._bus.publish(
             GameNotesUpdatedEvent(
-                self.id.value,
+                self.id_.value,
                 self.season_id.value,
                 self.week,
                 self.date,
@@ -292,10 +292,10 @@ class GameRepository(metaclass=ABCMeta):
         away_team_id: TeamID,
         notes: str,
     ) -> Game:
-        id = GameID(uuid4())
+        id_ = GameID(uuid4())
         game = Game(
             self._bus,
-            id,
+            id_,
             season_id,
             week,
             date,
@@ -309,7 +309,7 @@ class GameRepository(metaclass=ABCMeta):
         )
         self._bus.publish(
             GameCreatedEvent(
-                game.id.value,
+                game.id_.value,
                 game.season_id.value,
                 game.week,
                 game.date,
@@ -323,7 +323,7 @@ class GameRepository(metaclass=ABCMeta):
         return game
 
     @abstractmethod
-    def get(self, id: GameID) -> Optional[Game]:
+    def get(self, id_: GameID) -> Optional[Game]:
         raise NotImplementedError
 
     @abstractmethod

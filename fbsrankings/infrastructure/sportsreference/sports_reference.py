@@ -141,7 +141,7 @@ class SportsReference:
 
         if self._validation_service is not None:
             self._validation_service.validate_season_games(
-                season.id, cache.affiliation.values(), cache.game.values(),
+                season.id_, cache.affiliation.values(), cache.game.values(),
             )
 
     def _import_team_rows(
@@ -167,8 +167,8 @@ class SportsReference:
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.id,
-                    team.id,
+                    season.id_,
+                    team.id_,
                     Subdivision.FBS,
                 )
 
@@ -269,8 +269,8 @@ class SportsReference:
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.id,
-                    home_team.id,
+                    season.id_,
+                    home_team.id_,
                     Subdivision.FCS,
                 )
 
@@ -280,8 +280,8 @@ class SportsReference:
                 self._import_affiliation(
                     repository.affiliation,
                     cache.affiliation,
-                    season.id,
-                    away_team.id,
+                    season.id_,
+                    away_team.id_,
                     Subdivision.FCS,
                 )
 
@@ -295,12 +295,12 @@ class SportsReference:
                 self._import_game(
                     repository.game,
                     cache.game,
-                    season.id,
+                    season.id_,
                     week,
                     date,
                     season_section,
-                    home_team.id,
-                    away_team.id,
+                    home_team.id_,
+                    away_team.id_,
                     home_team_score,
                     away_team_score,
                     notes,

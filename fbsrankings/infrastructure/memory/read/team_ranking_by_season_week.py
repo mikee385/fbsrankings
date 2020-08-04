@@ -21,17 +21,17 @@ class TeamRankingBySeasonWeekQueryHandler:
 
             values = []
             for value in ranking.values:
-                team = self._storage.team.get(value.id)
+                team = self._storage.team.get(value.id_)
                 if team is not None:
                     values.append(
                         TeamRankingValueBySeasonWeekResult(
-                            value.id, team.name, value.order, value.rank, value.value,
+                            value.id_, team.name, value.order, value.rank, value.value,
                         ),
                     )
 
             if season is not None:
                 return TeamRankingBySeasonWeekResult(
-                    ranking.id,
+                    ranking.id_,
                     ranking.name,
                     ranking.season_id,
                     season.year,

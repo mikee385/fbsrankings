@@ -19,12 +19,12 @@ class TeamRecordValue:
 class TeamRecordCalculatedEvent(Event):
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: Optional[int],
         values: List[TeamRecordValue],
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.values = values

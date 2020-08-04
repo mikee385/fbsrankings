@@ -10,7 +10,7 @@ from uuid import UUID
 class GameDto:
     def __init__(
         self,
-        id: UUID,
+        id_: UUID,
         season_id: UUID,
         week: int,
         date: datetime.date,
@@ -22,7 +22,7 @@ class GameDto:
         status: str,
         notes: str,
     ) -> None:
-        self.id = id
+        self.id_ = id_
         self.season_id = season_id
         self.week = week
         self.date = date
@@ -58,7 +58,7 @@ class GameStorage:
                 f"Game already exists for week {game.week} in season {game.season_id} between {game.home_team_id} and {game.away_team_id}",
             )
 
-        self._by_id[game.id] = game
+        self._by_id[game.id_] = game
         self._by_key[key] = game
 
         by_season = self._by_season.get(game.season_id)
@@ -67,8 +67,8 @@ class GameStorage:
             self._by_season[game.season_id] = by_season
         by_season.append(game)
 
-    def get(self, id: UUID) -> Optional[GameDto]:
-        return self._by_id.get(id)
+    def get(self, id_: UUID) -> Optional[GameDto]:
+        return self._by_id.get(id_)
 
     def find(
         self, season_id: UUID, week: int, team1_id: UUID, team2_id: UUID,

@@ -20,14 +20,14 @@ class CommandBus:
     def __init__(self) -> None:
         self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 
-    def register_handler(self, type: Type[C], handler: CommandHandler[C]) -> None:
-        existing = self._handlers.get(type)
+    def register_handler(self, type_: Type[C], handler: CommandHandler[C]) -> None:
+        existing = self._handlers.get(type_)
         if existing is not None:
-            raise ValueError(f"A handler has already been registered for {type}")
-        self._handlers[type] = handler
+            raise ValueError(f"A handler has already been registered for {type_}")
+        self._handlers[type_] = handler
 
-    def unregister_handler(self, type: Type[C]) -> None:
-        self._handlers.pop(type)
+    def unregister_handler(self, type_: Type[C]) -> None:
+        self._handlers.pop(type_)
 
     def send(self, command: C) -> None:
         handler = self._handlers.get(type(command))

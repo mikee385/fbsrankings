@@ -22,7 +22,7 @@ class GameRankingBySeasonWeekQueryHandler:
 
                 values = []
                 for value in ranking.values:
-                    game = self._storage.game.get(value.id)
+                    game = self._storage.game.get(value.id_)
 
                     if game is not None:
                         home_team = self._storage.team.get(game.home_team_id)
@@ -31,7 +31,7 @@ class GameRankingBySeasonWeekQueryHandler:
                         if home_team is not None and away_team is not None:
                             values.append(
                                 GameRankingValueBySeasonWeekResult(
-                                    game.id,
+                                    game.id_,
                                     game.season_id,
                                     season.year,
                                     game.week,
@@ -52,7 +52,7 @@ class GameRankingBySeasonWeekQueryHandler:
                             )
 
                 return GameRankingBySeasonWeekResult(
-                    ranking.id,
+                    ranking.id_,
                     ranking.name,
                     ranking.season_id,
                     season.year,
