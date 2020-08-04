@@ -39,7 +39,8 @@ class SubdivisionTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS subdivision;")
 
 
@@ -47,13 +48,15 @@ class AffiliationTable:
     def __init__(self) -> None:
         self.table = Table("affiliation")
 
-    def create(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS affiliation "
             + "(UUID TEXT NOT NULL UNIQUE, "
             + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
             + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), UNIQUE(SeasonID, TeamID));",
+            + "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), "
+            + "UNIQUE(SeasonID, TeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -64,5 +67,6 @@ class AffiliationTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS affiliation;")

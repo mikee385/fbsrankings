@@ -39,7 +39,8 @@ class GameStatusTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS gamestatus;")
 
 
@@ -47,7 +48,8 @@ class GameTable:
     def __init__(self) -> None:
         self.table = Table("game")
 
-    def create(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS game "
             + "(UUID TEXT NOT NULL UNIQUE, "
@@ -71,5 +73,6 @@ class GameTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS game;")

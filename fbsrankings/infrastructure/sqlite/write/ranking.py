@@ -251,7 +251,8 @@ class TeamRankingRepository(BaseTeamRankingRepository):
     ) -> Optional[Ranking[TeamID]]:
         return self._repository.find(name, season_id, week)
 
-    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
+    @staticmethod
+    def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
 
@@ -291,5 +292,6 @@ class GameRankingRepository(BaseGameRankingRepository):
     ) -> Optional[Ranking[GameID]]:
         return self._repository.find(name, season_id, week)
 
-    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
+    @staticmethod
+    def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])

@@ -37,7 +37,8 @@ class Storage:
         finally:
             cursor.close()
 
-    def drop(self, connection: sqlite3.Connection) -> None:
+    @staticmethod
+    def drop(connection: sqlite3.Connection) -> None:
         cursor = connection.cursor()
         cursor.execute("begin")
         try:

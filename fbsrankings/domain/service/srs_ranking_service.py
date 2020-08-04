@@ -109,7 +109,8 @@ class SRSRankingService(TeamRankingService):
 
         return rankings
 
-    def _adjust_margin(self, margin: int) -> int:
+    @staticmethod
+    def _adjust_margin(margin: int) -> int:
         if margin > 24:
             return 24
         elif margin < -24:

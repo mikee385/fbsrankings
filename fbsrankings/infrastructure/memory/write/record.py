@@ -37,7 +37,8 @@ class TeamRecordRepository(BaseRepository):
             [self._to_value(value) for value in dto.values],
         )
 
-    def _to_value(self, dto: TeamRecordValueDto) -> TeamRecordValue:
+    @staticmethod
+    def _to_value(dto: TeamRecordValueDto) -> TeamRecordValue:
         return TeamRecordValue(TeamID(dto.team_id), dto.wins, dto.losses)
 
     def handle(self, event: Event) -> bool:

@@ -101,7 +101,8 @@ class TeamRecordRepository(BaseRepository):
             values,
         )
 
-    def _to_value(self, row: Tuple[str, str, int, int]) -> TeamRecordValue:
+    @staticmethod
+    def _to_value(row: Tuple[str, str, int, int]) -> TeamRecordValue:
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3])
 
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:

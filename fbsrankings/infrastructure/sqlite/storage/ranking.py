@@ -43,7 +43,8 @@ class RankingTypeTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS rankingtype;")
 
 
@@ -90,7 +91,8 @@ class TeamRankingValueTable:
     def __init__(self) -> None:
         self.table = Table("teamrankingvalue")
 
-    def create(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS teamrankingvalue "
             + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
@@ -110,7 +112,8 @@ class TeamRankingValueTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS teamrankingvalue;")
 
 
@@ -118,7 +121,8 @@ class GameRankingValueTable:
     def __init__(self) -> None:
         self.table = Table("gamerankingvalue")
 
-    def create(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS gamerankingvalue "
             + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
@@ -138,5 +142,6 @@ class GameRankingValueTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS gamerankingvalue;")

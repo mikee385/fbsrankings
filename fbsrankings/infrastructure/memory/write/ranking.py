@@ -85,7 +85,8 @@ class TeamRankingRepository(BaseTeamRankingRepository):
     ) -> Optional[Ranking[TeamID]]:
         return self._repository.find(name, season_id, week)
 
-    def _to_value(self, dto: RankingValueDto) -> RankingValue[TeamID]:
+    @staticmethod
+    def _to_value(dto: RankingValueDto) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
@@ -110,7 +111,8 @@ class GameRankingRepository(BaseGameRankingRepository):
     ) -> Optional[Ranking[GameID]]:
         return self._repository.find(name, season_id, week)
 
-    def _to_value(self, dto: RankingValueDto) -> RankingValue[GameID]:
+    @staticmethod
+    def _to_value(dto: RankingValueDto) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:

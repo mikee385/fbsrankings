@@ -9,7 +9,8 @@ class TeamTable:
     def __init__(self) -> None:
         self.table = Table("team")
 
-    def create(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS team "
             + "(UUID TEXT NOT NULL UNIQUE, "
@@ -24,5 +25,6 @@ class TeamTable:
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    def drop(self, cursor: sqlite3.Cursor) -> None:
+    @staticmethod
+    def drop(cursor: sqlite3.Cursor) -> None:
         cursor.execute("DROP TABLE IF EXISTS team;")

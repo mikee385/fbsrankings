@@ -311,7 +311,8 @@ class Application:
 
         return (year, week)
 
-    def _parse_rating(self, rating: str) -> str:
+    @staticmethod
+    def _parse_rating(rating: str) -> str:
         if rating.casefold() == "SRS".casefold():
             return "SRS"
         elif rating.casefold() == "colley-matrix".casefold():
@@ -321,7 +322,8 @@ class Application:
         else:
             raise ValueError(f"Unknown rating type: {rating}")
 
-    def _parse_top(self, top: str) -> Optional[int]:
+    @staticmethod
+    def _parse_top(top: str) -> Optional[int]:
         if top.isdecimal():
             return int(top)
         elif top.casefold() == "all".casefold():
@@ -409,8 +411,9 @@ class Application:
         print()
         print(season_summary_table)
 
+    @staticmethod
     def _print_table_title(
-        self, year: int, week: Optional[int], header: str, rating_name: str,
+        year: int, week: Optional[int], header: str, rating_name: str,
     ) -> None:
         print()
         if week is not None:
@@ -418,8 +421,8 @@ class Application:
         else:
             print(f"{year} {header}, {rating_name}:")
 
+    @staticmethod
     def _print_teams_table(
-        self,
         record: TeamRecordBySeasonWeekResult,
         ranking: TeamRankingBySeasonWeekResult,
         sos: TeamRankingBySeasonWeekResult,
@@ -467,8 +470,8 @@ class Application:
 
         print(table)
 
+    @staticmethod
     def _print_games_table(
-        self,
         game_values: List[GameRankingValueBySeasonWeekResult],
         team_ranking: TeamRankingBySeasonWeekResult,
         limit: Optional[int],
@@ -724,7 +727,8 @@ class Application:
                         f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}",
                     )
 
-    def _print_other_errors(self, other_errors: List[ValidationError]) -> None:
+    @staticmethod
+    def _print_other_errors(other_errors: List[ValidationError]) -> None:
         if other_errors:
             print()
             print("Other Errors:")
