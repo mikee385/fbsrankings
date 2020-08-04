@@ -1,6 +1,5 @@
 import sqlite3
-from abc import ABCMeta
-from abc import abstractmethod
+from typing import Callable
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -39,7 +38,7 @@ T = TypeVar("T", bound=Identifier)
 SqliteParam = Union[None, int, float, str, bytes]
 
 
-class RankingRepository(Generic[T], metaclass=ABCMeta):
+class RankingRepository(Generic[T]):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -47,6 +46,8 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         bus: EventBus,
         value_table: Table,
         value_columns: List[Field],
+        type: RankingType,
+        to_value: Callable[[Tuple[str, str, int, int, float]], RankingValue[T]],
     ) -> None:
         self._bus = bus
         self._connection = connection
@@ -56,10 +57,8 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         self._value_table = value_table
         self._value_columns = value_columns
 
-    @property
-    @abstractmethod
-    def type(self) -> RankingType:
-        raise NotImplementedError
+        self._type = type
+        self._to_value = to_value
 
     def get(self, id: RankingID) -> Optional[Ranking[T]]:
         cursor = self._connection.cursor()
@@ -70,7 +69,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
                 & (self._ranking_table.Type == Parameter("?")),
             )
             .get_sql(),
-            [str(id.value), self.type.name],
+            [str(id.value), self._type.name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -85,7 +84,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             & (self._ranking_table.Type == Parameter("?"))
             & (self._ranking_table.SeasonID == Parameter("?")),
         )
-        params: List[SqliteParam] = [name, self.type.name, str(season_id.value)]
+        params: List[SqliteParam] = [name, self._type.name, str(season_id.value)]
 
         if week is not None:
             query = query.where(self._ranking_table.Week == Parameter("?"))
@@ -134,11 +133,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             values,
         )
 
-    @abstractmethod
-    def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[T]:
-        raise NotImplementedError
-
-    def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         query = (
             Query.from_(self._ranking_table)
             .select(self._ranking_table.UUID)
@@ -148,7 +143,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
                 & (self._ranking_table.SeasonID == Parameter("?")),
             )
         )
-        params: List[SqliteParam] = [event.name, self.type.name, str(event.season_id)]
+        params: List[SqliteParam] = [event.name, self._type.name, str(event.season_id)]
 
         if event.week is not None:
             query = query.where(self._ranking_table.Week == Parameter("?"))
@@ -196,7 +191,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             [
                 str(event.id),
                 event.name,
-                self.type.name,
+                self._type.name,
                 str(event.season_id),
                 event.week,
             ],
@@ -220,10 +215,12 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             )
 
 
-class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository):
+class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
+        super().__init__(bus)
+
         value_table = TeamRankingValueTable().table
         value_columns = [
             value_table.RankingID,
@@ -232,28 +229,38 @@ class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository
             value_table.Rank,
             value_table.Value,
         ]
-
-        RankingRepository.__init__(
-            self, connection, cursor, bus, value_table, value_columns,
+        self._repository = RankingRepository[TeamID](
+            connection,
+            cursor,
+            bus,
+            value_table,
+            value_columns,
+            RankingType.TEAM,
+            self._to_value,
         )
-        BaseTeamRankingRepository.__init__(self, bus)
 
         bus.register_handler(
-            TeamRankingCalculatedEvent, self._handle_ranking_calculated,
+            TeamRankingCalculatedEvent, self._repository.handle_ranking_calculated,
         )
 
-    @property
-    def type(self) -> RankingType:
-        return RankingType.TEAM
+    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
+        return self._repository.get(id)
+
+    def find(
+        self, name: str, season_id: SeasonID, week: Optional[int],
+    ) -> Optional[Ranking[TeamID]]:
+        return self._repository.find(name, season_id, week)
 
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
 
-class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository):
+class GameRankingRepository(BaseGameRankingRepository):
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
+        super().__init__(bus)
+
         value_table = GameRankingValueTable().table
         value_columns = [
             value_table.RankingID,
@@ -262,19 +269,27 @@ class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository
             value_table.Rank,
             value_table.Value,
         ]
-
-        RankingRepository.__init__(
-            self, connection, cursor, bus, value_table, value_columns,
+        self._repository = RankingRepository[GameID](
+            connection,
+            cursor,
+            bus,
+            value_table,
+            value_columns,
+            RankingType.GAME,
+            self._to_value,
         )
-        BaseGameRankingRepository.__init__(self, bus)
 
         bus.register_handler(
-            GameRankingCalculatedEvent, self._handle_ranking_calculated,
+            GameRankingCalculatedEvent, self._repository.handle_ranking_calculated,
         )
 
-    @property
-    def type(self) -> RankingType:
-        return RankingType.GAME
+    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
+        return self._repository.get(id)
+
+    def find(
+        self, name: str, season_id: SeasonID, week: Optional[int],
+    ) -> Optional[Ranking[GameID]]:
+        return self._repository.find(name, season_id, week)
 
     def _to_value(self, row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])

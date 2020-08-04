@@ -1,5 +1,4 @@
-from abc import ABCMeta
-from abc import abstractmethod
+from typing import Callable
 from typing import Generic
 from typing import Optional
 from typing import TypeVar
@@ -26,10 +25,16 @@ from fbsrankings.infrastructure.memory.storage import RankingValueDto
 T = TypeVar("T", bound=Identifier)
 
 
-class RankingRepository(Generic[T], metaclass=ABCMeta):
-    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+class RankingRepository(Generic[T]):
+    def __init__(
+        self,
+        storage: RankingStorage,
+        bus: EventBus,
+        to_value: Callable[[RankingValueDto], RankingValue[T]],
+    ) -> None:
         self._bus = bus
         self._storage = storage
+        self._to_value = to_value
 
     def get(self, id: RankingID) -> Optional[Ranking[T]]:
         dto = self._storage.get(id.value)
@@ -51,15 +56,7 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
             [self._to_value(value) for value in dto.values],
         )
 
-    @abstractmethod
-    def _to_value(self, dto: RankingValueDto) -> RankingValue[T]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def handle(self, event: Event) -> bool:
-        raise NotImplementedError
-
-    def _handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
                 event.id,
@@ -74,33 +71,51 @@ class RankingRepository(Generic[T], metaclass=ABCMeta):
         )
 
 
-class TeamRankingRepository(RankingRepository[TeamID], BaseTeamRankingRepository):
+class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        RankingRepository.__init__(self, storage, bus)
-        BaseTeamRankingRepository.__init__(self, bus)
+        super().__init__(bus)
+
+        self._repository = RankingRepository[TeamID](storage, bus, self._to_value)
+
+    def get(self, id: RankingID) -> Optional[Ranking[TeamID]]:
+        return self._repository.get(id)
+
+    def find(
+        self, name: str, season_id: SeasonID, week: Optional[int],
+    ) -> Optional[Ranking[TeamID]]:
+        return self._repository.find(name, season_id, week)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, TeamRankingCalculatedEvent):
-            self._handle_ranking_calculated(event)
+            self._repository.handle_ranking_calculated(event)
             return True
         else:
             return False
 
 
-class GameRankingRepository(RankingRepository[GameID], BaseGameRankingRepository):
+class GameRankingRepository(BaseGameRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        RankingRepository.__init__(self, storage, bus)
-        BaseGameRankingRepository.__init__(self, bus)
+        super().__init__(bus)
+
+        self._repository = RankingRepository[GameID](storage, bus, self._to_value)
+
+    def get(self, id: RankingID) -> Optional[Ranking[GameID]]:
+        return self._repository.get(id)
+
+    def find(
+        self, name: str, season_id: SeasonID, week: Optional[int],
+    ) -> Optional[Ranking[GameID]]:
+        return self._repository.find(name, season_id, week)
 
     def _to_value(self, dto: RankingValueDto) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(dto.id), dto.order, dto.rank, dto.value)
 
     def handle(self, event: Event) -> bool:
         if isinstance(event, GameRankingCalculatedEvent):
-            self._handle_ranking_calculated(event)
+            self._repository.handle_ranking_calculated(event)
             return True
         else:
             return False
