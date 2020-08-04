@@ -1,0 +1,24 @@
+[MESSAGES CONTROL]
+disable = bad-continuation,
+	bad-whitespace,
+	duplicate-code,
+	line-too-long,
+	missing-class-docstring,
+	missing-function-docstring,
+	missing-module-docstring,
+	too-few-public-methods,
+	too-many-arguments,
+	too-many-branches,
+	too-many-instance-attributes,
+	too-many-locals,
+	too-many-statements,
+
+[FORMAT]
+good-names = n,a,b,x,C,E,Q,R,T
+max-line-length = 88
+
+[SIMILARITIES]
+min-similarity-lines = 1000
+ignore-comments = yes
+ignore-docstrings = yes
+ignore-imports = yes
