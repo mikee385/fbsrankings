@@ -137,7 +137,7 @@ class Application:
         )
 
         self._print_table_title(year, week, "Teams", team_ranking.name)
-        self._print_teams_table(year, week, team_record, team_ranking, team_sos, limit)
+        self._print_teams_table(team_record, team_ranking, team_sos, limit)
 
         completed_games = []
         scheduled_games = []
@@ -152,15 +152,15 @@ class Application:
 
         if len(next_week_games) > 0:
             self._print_table_title(year, week, "Next Week Games", team_ranking.name)
-            self._print_games_table(year, week, next_week_games, team_ranking, limit)
+            self._print_games_table(next_week_games, team_ranking, limit)
 
         if len(scheduled_games) > 0:
             self._print_table_title(year, week, "Remaining Games", team_ranking.name)
-            self._print_games_table(year, week, scheduled_games, team_ranking, limit)
+            self._print_games_table(scheduled_games, team_ranking, limit)
 
         if len(completed_games) > 0:
             self._print_table_title(year, week, "Completed Games", team_ranking.name)
-            self._print_games_table(year, week, completed_games, team_ranking, limit)
+            self._print_games_table(completed_games, team_ranking, limit)
 
     def print_seasons(self, top: str) -> None:
         limit = self._parse_top(top)
@@ -182,7 +182,7 @@ class Application:
         )
 
         self._print_table_title(year, week, "Teams", ranking.name)
-        self._print_teams_table(year, week, record, ranking, sos, limit)
+        self._print_teams_table(record, ranking, sos, limit)
 
     def print_games(self, season: str, rating: str, top: str) -> None:
         rating_name = self._parse_rating(rating)
@@ -197,7 +197,7 @@ class Application:
         )
 
         self._print_table_title(year, week, "Season Games", team_ranking.name)
-        self._print_games_table(year, week, game_ranking.values, team_ranking, limit)
+        self._print_games_table(game_ranking.values, team_ranking, limit)
 
     def close(self) -> None:
         self._service.close()
@@ -241,12 +241,12 @@ class Application:
 
             self._print_table_title(year, week, "Teams", team_ranking.name)
             self._print_teams_table(
-                year, week, team_record, team_ranking, team_sos, limit,
+                team_record, team_ranking, team_sos, limit,
             )
 
             self._print_table_title(year, week, "Season Games", team_ranking.name)
             self._print_games_table(
-                year, week, game_ranking.values, team_ranking, limit,
+                game_ranking.values, team_ranking, limit,
             )
 
     class _UpdateTracker:
@@ -420,8 +420,6 @@ class Application:
 
     def _print_teams_table(
         self,
-        year: int,
-        week: Optional[int],
         record: TeamRecordBySeasonWeekResult,
         ranking: TeamRankingBySeasonWeekResult,
         sos: TeamRankingBySeasonWeekResult,
@@ -471,8 +469,6 @@ class Application:
 
     def _print_games_table(
         self,
-        year: int,
-        week: Optional[int],
         game_values: List[GameRankingValueBySeasonWeekResult],
         team_ranking: TeamRankingBySeasonWeekResult,
         limit: Optional[int],
