@@ -30,7 +30,7 @@ from fbsrankings.event import TeamRankingCalculatedEvent
 T = TypeVar("T", bound=Identifier)
 
 
-class SeasonData(object):
+class SeasonData:
     def __init__(
         self,
         season: Season,

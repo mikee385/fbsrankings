@@ -14,7 +14,7 @@ from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import CanceledGamesResult
 
 
-class CanceledGamesQueryHandler(object):
+class CanceledGamesQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

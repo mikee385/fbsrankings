@@ -1,7 +1,7 @@
 from uuid import UUID
 
 
-class Identifier(object):
+class Identifier:
     def __init__(self, value: UUID) -> None:
         self.value = value
 

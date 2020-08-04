@@ -4,13 +4,13 @@ from typing import Optional
 from uuid import UUID
 
 
-class SeasonDto(object):
+class SeasonDto:
     def __init__(self, id: UUID, year: int) -> None:
         self.id = id
         self.year = year
 
 
-class SeasonStorage(object):
+class SeasonStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, SeasonDto] = {}
         self._by_key: Dict[int, SeasonDto] = {}

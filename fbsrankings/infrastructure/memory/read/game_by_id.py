@@ -5,7 +5,7 @@ from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameByIDResult
 
 
-class GameByIDQueryHandler(object):
+class GameByIDQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

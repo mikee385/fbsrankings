@@ -6,7 +6,7 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class GameRankingValueBySeasonWeekResult(object):
+class GameRankingValueBySeasonWeekResult:
     def __init__(
         self,
         id: UUID,
@@ -46,7 +46,7 @@ class GameRankingValueBySeasonWeekResult(object):
         self.value = value
 
 
-class GameRankingBySeasonWeekResult(object):
+class GameRankingBySeasonWeekResult:
     def __init__(
         self,
         id: UUID,

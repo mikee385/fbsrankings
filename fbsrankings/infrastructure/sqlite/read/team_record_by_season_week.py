@@ -19,7 +19,7 @@ from fbsrankings.query import TeamRecordValueBySeasonWeekResult
 SqliteParam = Union[None, int, float, str, bytes]
 
 
-class TeamRecordBySeasonWeekQueryHandler(object):
+class TeamRecordBySeasonWeekQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

@@ -6,7 +6,7 @@ from typing import Tuple
 from uuid import UUID
 
 
-class RankingValueDto(object):
+class RankingValueDto:
     def __init__(self, id: UUID, order: int, rank: int, value: float) -> None:
         self.id = id
         self.order = order
@@ -14,7 +14,7 @@ class RankingValueDto(object):
         self.value = value
 
 
-class RankingDto(object):
+class RankingDto:
     def __init__(
         self,
         id: UUID,
@@ -30,7 +30,7 @@ class RankingDto(object):
         self.values = values
 
 
-class RankingStorage(object):
+class RankingStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, RankingDto] = {}
         self._by_key: Dict[Tuple[str, UUID, Optional[int]], RankingDto] = {}

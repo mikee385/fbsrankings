@@ -4,7 +4,7 @@ from fbsrankings.query import AffiliationCountBySeasonQuery
 from fbsrankings.query import AffiliationCountBySeasonResult
 
 
-class AffiliationCountBySeasonQueryHandler(object):
+class AffiliationCountBySeasonQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

@@ -7,7 +7,7 @@ from typing import Tuple
 from uuid import UUID
 
 
-class GameDto(object):
+class GameDto:
     def __init__(
         self,
         id: UUID,
@@ -35,7 +35,7 @@ class GameDto(object):
         self.notes = notes
 
 
-class GameStorage(object):
+class GameStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, GameDto] = {}
         self._by_key: Dict[Tuple[UUID, int, UUID, UUID], GameDto] = {}

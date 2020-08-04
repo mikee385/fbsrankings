@@ -17,7 +17,7 @@ E = TypeVar("E", bound=Event, contravariant=True)
 EventHandler = Callable[[E], None]
 
 
-class EventBus(object):
+class EventBus:
     def __init__(self) -> None:
         self._handlers: Dict[Type[Event], List[EventHandler[Any]]] = {}
 

@@ -3,7 +3,7 @@ from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamCountBySeasonResult
 
 
-class TeamCountBySeasonQueryHandler(object):
+class TeamCountBySeasonQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

@@ -118,7 +118,7 @@ class RaiseBehavior(Enum):
     ON_DEMAND = 1
 
 
-class ValidationService(object):
+class ValidationService:
     def __init__(
         self, raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY,
     ) -> None:

@@ -16,7 +16,7 @@ C = TypeVar("C", bound=Command, contravariant=True)
 CommandHandler = Callable[[C], None]
 
 
-class CommandBus(object):
+class CommandBus:
     def __init__(self) -> None:
         self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 

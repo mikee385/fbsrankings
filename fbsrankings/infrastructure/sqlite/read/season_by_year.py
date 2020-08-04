@@ -10,7 +10,7 @@ from fbsrankings.query import SeasonByYearQuery
 from fbsrankings.query import SeasonByYearResult
 
 
-class SeasonByYearQueryHandler(object):
+class SeasonByYearQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

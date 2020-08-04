@@ -15,7 +15,7 @@ from fbsrankings.query import LatestSeasonWeekQuery
 from fbsrankings.query import LatestSeasonWeekResult
 
 
-class LatestSeasonWeekQueryHandler(object):
+class LatestSeasonWeekQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

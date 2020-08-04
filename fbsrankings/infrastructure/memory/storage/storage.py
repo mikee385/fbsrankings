@@ -6,7 +6,7 @@ from fbsrankings.infrastructure.memory.storage.season import SeasonStorage
 from fbsrankings.infrastructure.memory.storage.team import TeamStorage
 
 
-class Storage(object):
+class Storage:
     def __init__(self) -> None:
         self.season = SeasonStorage()
         self.team = TeamStorage()

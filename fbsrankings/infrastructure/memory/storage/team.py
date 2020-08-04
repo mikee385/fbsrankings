@@ -4,13 +4,13 @@ from typing import Optional
 from uuid import UUID
 
 
-class TeamDto(object):
+class TeamDto:
     def __init__(self, id: UUID, name: str) -> None:
         self.id = id
         self.name = name
 
 
-class TeamStorage(object):
+class TeamStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, TeamDto] = {}
         self._by_key: Dict[str, TeamDto] = {}

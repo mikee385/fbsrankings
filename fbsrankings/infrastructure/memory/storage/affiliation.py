@@ -6,7 +6,7 @@ from typing import Tuple
 from uuid import UUID
 
 
-class AffiliationDto(object):
+class AffiliationDto:
     def __init__(
         self, id: UUID, season_id: UUID, team_id: UUID, subdivision: str,
     ) -> None:
@@ -16,7 +16,7 @@ class AffiliationDto(object):
         self.subdivision = subdivision
 
 
-class AffiliationStorage(object):
+class AffiliationStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, AffiliationDto] = {}
         self._by_key: Dict[Tuple[UUID, UUID], AffiliationDto] = {}

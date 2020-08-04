@@ -8,7 +8,7 @@ from pypika.pseudocolumns import RowID
 from fbsrankings.domain import GameStatus
 
 
-class GameStatusTable(object):
+class GameStatusTable:
     def __init__(self) -> None:
         self.table = Table("gamestatus")
 
@@ -43,7 +43,7 @@ class GameStatusTable(object):
         cursor.execute("DROP TABLE IF EXISTS gamestatus;")
 
 
-class GameTable(object):
+class GameTable:
     def __init__(self) -> None:
         self.table = Table("game")
 

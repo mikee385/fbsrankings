@@ -8,7 +8,7 @@ from tqdm import tqdm
 from typing_extensions import Literal
 
 
-class Spinner(object):
+class Spinner:
     def __init__(self, delay: Optional[float] = None) -> None:
         self.busy = False
         self.total = 0

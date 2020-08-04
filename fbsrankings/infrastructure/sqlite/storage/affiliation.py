@@ -8,7 +8,7 @@ from pypika.pseudocolumns import RowID
 from fbsrankings.domain import Subdivision
 
 
-class SubdivisionTable(object):
+class SubdivisionTable:
     def __init__(self) -> None:
         self.table = Table("subdivision")
 
@@ -43,7 +43,7 @@ class SubdivisionTable(object):
         cursor.execute("DROP TABLE IF EXISTS subdivision;")
 
 
-class AffiliationTable(object):
+class AffiliationTable:
     def __init__(self) -> None:
         self.table = Table("affiliation")
 

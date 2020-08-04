@@ -5,7 +5,7 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class TeamRecordValueBySeasonWeekResult(object):
+class TeamRecordValueBySeasonWeekResult:
     def __init__(self, id: UUID, name: str, wins: int, losses: int) -> None:
         self.id = id
         self.name = name
@@ -21,7 +21,7 @@ class TeamRecordValueBySeasonWeekResult(object):
         return float(self.wins) / self.games if self.wins > 0 else 0.0
 
 
-class TeamRecordBySeasonWeekResult(object):
+class TeamRecordBySeasonWeekResult:
     def __init__(
         self,
         id: UUID,

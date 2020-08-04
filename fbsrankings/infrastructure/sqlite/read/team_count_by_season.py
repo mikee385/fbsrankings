@@ -9,7 +9,7 @@ from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamCountBySeasonResult
 
 
-class TeamCountBySeasonQueryHandler(object):
+class TeamCountBySeasonQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

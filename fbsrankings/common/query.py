@@ -18,7 +18,7 @@ class Query(Generic[R], metaclass=ABCMeta):
 QueryHandler = Callable[[Q], R]
 
 
-class QueryBus(object):
+class QueryBus:
     def __init__(self) -> None:
         self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
 

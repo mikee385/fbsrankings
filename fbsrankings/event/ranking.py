@@ -6,7 +6,7 @@ from uuid import UUID
 from fbsrankings.common import Event
 
 
-class RankingValue(object):
+class RankingValue:
     def __init__(self, id: UUID, order: int, rank: int, value: float) -> None:
         self.id = id
         self.order = order

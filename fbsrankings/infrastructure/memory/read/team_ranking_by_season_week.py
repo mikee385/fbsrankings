@@ -6,7 +6,7 @@ from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRankingValueBySeasonWeekResult
 
 
-class TeamRankingBySeasonWeekQueryHandler(object):
+class TeamRankingBySeasonWeekQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

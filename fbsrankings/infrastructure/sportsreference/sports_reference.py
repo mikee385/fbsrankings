@@ -44,7 +44,7 @@ class RepositoryManager(Protocol):
         raise NotImplementedError
 
 
-class _SeasonSource(object):
+class _SeasonSource:
     def __init__(
         self,
         year: int,
@@ -66,14 +66,14 @@ _AffiliationCache = Dict[Tuple[SeasonID, TeamID], Affiliation]
 _GameCache = Dict[Tuple[SeasonID, int, TeamID, TeamID], Game]
 
 
-class _Cache(object):
+class _Cache:
     def __init__(self) -> None:
         self.team: _TeamCache = {}
         self.affiliation: _AffiliationCache = {}
         self.game: _GameCache = {}
 
 
-class SportsReference(object):
+class SportsReference:
     def __init__(
         self, alternate_names: Dict[str, str], validation_service: ValidationService,
     ) -> None:

@@ -5,7 +5,7 @@ from pypika import Table
 from pypika.pseudocolumns import RowID
 
 
-class TeamTable(object):
+class TeamTable:
     def __init__(self) -> None:
         self.table = Table("team")
 

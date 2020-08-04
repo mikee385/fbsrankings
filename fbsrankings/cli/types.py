@@ -3,7 +3,7 @@ import os
 import re
 
 
-class FileType(object):
+class FileType:
     def __call__(self, value: str) -> str:
         if os.path.isfile(value):
             return value
@@ -11,7 +11,7 @@ class FileType(object):
             raise argparse.ArgumentTypeError(f"'{value}' must be a valid file path")
 
 
-class SeasonRangeType(object):
+class SeasonRangeType:
     def __call__(self, value: str) -> str:
         if value.isdecimal():
             return value
@@ -27,7 +27,7 @@ class SeasonRangeType(object):
             )
 
 
-class SeasonWeekType(object):
+class SeasonWeekType:
     def __call__(self, value: str) -> str:
         if value.isdecimal():
             return value
@@ -41,7 +41,7 @@ class SeasonWeekType(object):
             )
 
 
-class NumberOrAllType(object):
+class NumberOrAllType:
     def __call__(self, value: str) -> str:
         if value.isdecimal():
             return value

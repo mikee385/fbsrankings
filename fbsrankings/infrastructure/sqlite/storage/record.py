@@ -5,7 +5,7 @@ from pypika import Table
 from pypika.pseudocolumns import RowID
 
 
-class TeamRecordTable(object):
+class TeamRecordTable:
     def __init__(self) -> None:
         self.table = Table("teamrecord")
 
@@ -38,7 +38,7 @@ class TeamRecordTable(object):
         cursor.execute("DROP TABLE IF EXISTS teamrecord;")
 
 
-class TeamRecordValueTable(object):
+class TeamRecordValueTable:
     def __init__(self) -> None:
         self.table = Table("teamrecordvalue")
 

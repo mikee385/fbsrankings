@@ -11,13 +11,13 @@ from fbsrankings.domain.model.record import TeamRecordValue
 from fbsrankings.domain.model.team import TeamID
 
 
-class TeamData(object):
+class TeamData:
     def __init__(self) -> None:
         self.wins = 0
         self.losses = 0
 
 
-class TeamRecordService(object):
+class TeamRecordService:
     def __init__(self, repository: TeamRecordRepository) -> None:
         self._repository = repository
 

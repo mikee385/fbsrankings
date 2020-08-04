@@ -21,7 +21,7 @@ class AffiliationID(Identifier):
     pass
 
 
-class Affiliation(object):
+class Affiliation:
     def __init__(
         self,
         bus: EventBus,

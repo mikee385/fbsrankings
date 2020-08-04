@@ -8,7 +8,7 @@ from pypika.pseudocolumns import RowID
 from fbsrankings.domain import SeasonSection
 
 
-class SeasonSectionTable(object):
+class SeasonSectionTable:
     def __init__(self) -> None:
         self.table = Table("seasonsection")
 
@@ -43,7 +43,7 @@ class SeasonSectionTable(object):
         cursor.execute("DROP TABLE IF EXISTS seasonsection;")
 
 
-class SeasonTable(object):
+class SeasonTable:
     def __init__(self) -> None:
         self.table = Table("season")
 

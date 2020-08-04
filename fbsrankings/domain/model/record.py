@@ -17,7 +17,7 @@ class TeamRecordID(Identifier):
     pass
 
 
-class TeamRecordValue(object):
+class TeamRecordValue:
     def __init__(self, team_id: TeamID, wins: int, losses: int) -> None:
         self._team_id = team_id
         self._wins = wins
@@ -44,7 +44,7 @@ class TeamRecordValue(object):
         return float(self.wins) / self.games if self.wins > 0 else 0.0
 
 
-class TeamRecord(object):
+class TeamRecord:
     def __init__(
         self,
         bus: EventBus,

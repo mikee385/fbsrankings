@@ -5,7 +5,7 @@ from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
 
 
-class ImportSeasonByYearCommandHandler(object):
+class ImportSeasonByYearCommandHandler:
     def __init__(
         self,
         sports_reference: SportsReference,

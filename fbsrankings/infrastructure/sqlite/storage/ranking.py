@@ -12,7 +12,7 @@ class RankingType(Enum):
     GAME = 1
 
 
-class RankingTypeTable(object):
+class RankingTypeTable:
     def __init__(self) -> None:
         self.table = Table("rankingtype")
 
@@ -47,7 +47,7 @@ class RankingTypeTable(object):
         cursor.execute("DROP TABLE IF EXISTS rankingtype;")
 
 
-class RankingTable(object):
+class RankingTable:
     def __init__(self) -> None:
         self.table = Table("ranking")
 
@@ -86,7 +86,7 @@ class RankingTable(object):
         cursor.execute("DROP TABLE IF EXISTS ranking;")
 
 
-class TeamRankingValueTable(object):
+class TeamRankingValueTable:
     def __init__(self) -> None:
         self.table = Table("teamrankingvalue")
 
@@ -114,7 +114,7 @@ class TeamRankingValueTable(object):
         cursor.execute("DROP TABLE IF EXISTS teamrankingvalue;")
 
 
-class GameRankingValueTable(object):
+class GameRankingValueTable:
     def __init__(self) -> None:
         self.table = Table("gamerankingvalue")
 

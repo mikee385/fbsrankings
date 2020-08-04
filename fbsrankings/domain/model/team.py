@@ -13,7 +13,7 @@ class TeamID(Identifier):
     pass
 
 
-class Team(object):
+class Team:
     def __init__(self, bus: EventBus, id: TeamID, name: str) -> None:
         self._bus = bus
         self._id = id

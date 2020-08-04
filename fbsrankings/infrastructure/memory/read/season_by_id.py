@@ -5,7 +5,7 @@ from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonByIDResult
 
 
-class SeasonByIDQueryHandler(object):
+class SeasonByIDQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

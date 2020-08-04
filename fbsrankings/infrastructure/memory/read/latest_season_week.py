@@ -8,13 +8,13 @@ from fbsrankings.query import LatestSeasonWeekQuery
 from fbsrankings.query import LatestSeasonWeekResult
 
 
-class _Data(object):
+class _Data:
     def __init__(self) -> None:
         self.has_completed = False
         self.has_scheduled = False
 
 
-class LatestSeasonWeekQueryHandler(object):
+class LatestSeasonWeekQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

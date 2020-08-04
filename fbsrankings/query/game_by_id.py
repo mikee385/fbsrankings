@@ -5,7 +5,7 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class GameByIDResult(object):
+class GameByIDResult:
     def __init__(
         self,
         id: UUID,

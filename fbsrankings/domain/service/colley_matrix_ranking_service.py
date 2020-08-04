@@ -13,7 +13,7 @@ from fbsrankings.domain.model.ranking import TeamRankingService
 from fbsrankings.domain.model.team import TeamID
 
 
-class TeamData(object):
+class TeamData:
     def __init__(self, index: int) -> None:
         self.index = index
         self.game_total = 0

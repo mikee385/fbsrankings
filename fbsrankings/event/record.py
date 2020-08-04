@@ -5,7 +5,7 @@ from uuid import UUID
 from fbsrankings.common import Event
 
 
-class TeamRecordValue(object):
+class TeamRecordValue:
     def __init__(
         self, team_id: UUID, wins: int, losses: int, games: int, win_percentage: float,
     ) -> None:

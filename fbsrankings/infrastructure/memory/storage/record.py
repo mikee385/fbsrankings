@@ -6,14 +6,14 @@ from typing import Tuple
 from uuid import UUID
 
 
-class TeamRecordValueDto(object):
+class TeamRecordValueDto:
     def __init__(self, team_id: UUID, wins: int, losses: int) -> None:
         self.team_id = team_id
         self.wins = wins
         self.losses = losses
 
 
-class TeamRecordDto(object):
+class TeamRecordDto:
     def __init__(
         self,
         id: UUID,
@@ -27,7 +27,7 @@ class TeamRecordDto(object):
         self.values = values
 
 
-class TeamRecordStorage(object):
+class TeamRecordStorage:
     def __init__(self) -> None:
         self._by_id: Dict[UUID, TeamRecordDto] = {}
         self._by_key: Dict[Tuple[UUID, Optional[int]], TeamRecordDto] = {}

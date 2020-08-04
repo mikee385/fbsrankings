@@ -13,7 +13,7 @@ from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameByIDResult
 
 
-class GameByIDQueryHandler(object):
+class GameByIDQueryHandler:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 

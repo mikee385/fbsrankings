@@ -14,7 +14,7 @@ from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure import UnitOfWork
 
 
-class CalculateRankingsForSeasonCommandHandler(object):
+class CalculateRankingsForSeasonCommandHandler:
     def __init__(self, data_source: TransactionFactory, event_bus: EventBus) -> None:
         self._data_source = data_source
         self._event_bus = event_bus

@@ -5,7 +5,7 @@ from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import CanceledGamesResult
 
 
-class CanceledGamesQueryHandler(object):
+class CanceledGamesQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 

@@ -5,7 +5,7 @@ from uuid import UUID
 from fbsrankings.common import Query
 
 
-class CanceledGameResult(object):
+class CanceledGameResult:
     def __init__(
         self,
         id: UUID,
@@ -33,7 +33,7 @@ class CanceledGameResult(object):
         self.notes = notes
 
 
-class CanceledGamesResult(object):
+class CanceledGamesResult:
     def __init__(self, games: List[CanceledGameResult]) -> None:
         self.games = games
 

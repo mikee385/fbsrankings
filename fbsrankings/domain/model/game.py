@@ -36,7 +36,7 @@ class GameStatusError(Exception):
         self.status = status
 
 
-class Game(object):
+class Game:
     def __init__(
         self,
         bus: EventBus,

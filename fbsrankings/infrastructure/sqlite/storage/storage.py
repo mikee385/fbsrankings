@@ -12,7 +12,7 @@ from fbsrankings.infrastructure.sqlite.storage.season import SeasonTable
 from fbsrankings.infrastructure.sqlite.storage.team import TeamTable
 
 
-class Storage(object):
+class Storage:
     def __init__(self, connection: sqlite3.Connection) -> None:
         cursor = connection.cursor()
         cursor.execute("begin")

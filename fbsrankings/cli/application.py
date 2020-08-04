@@ -64,7 +64,7 @@ from fbsrankings.query import WeekCountBySeasonQuery
 from fbsrankings.service import Service
 
 
-class Application(object):
+class Application:
     def __init__(self, config_location: str):
         package_dir = Path(__file__).resolve().parent.parent
 
@@ -249,7 +249,7 @@ class Application(object):
                 year, week, game_ranking.values, team_ranking, limit,
             )
 
-    class _UpdateTracker(object):
+    class _UpdateTracker:
         def __init__(self, event_bus: EventBus) -> None:
             self.updates: Dict[UUID, List[int]] = {}
 
