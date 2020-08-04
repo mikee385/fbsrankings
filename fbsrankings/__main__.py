@@ -1,11 +1,11 @@
 import sys
 
-use_typeguard = False
+USE_TYPEGUARD = False
 if "--use-typeguard" in sys.argv:
     sys.argv.remove("--use-typeguard")
-    use_typeguard = True
+    USE_TYPEGUARD = True
 
-if use_typeguard:
+if USE_TYPEGUARD:
     print("Performing runtime type checks...")
 
     from typeguard.importhook import install_import_hook

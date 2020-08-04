@@ -83,8 +83,8 @@ class SRSRankingService(TeamRankingService):
 
             try:
                 x = numpy.linalg.solve(a, b)
-            except numpy.linalg.LinAlgError as ex:
-                if str(ex) == "Singular matrix":
+            except numpy.linalg.LinAlgError as error:
+                if str(error) == "Singular matrix":
                     continue
                 raise
 
