@@ -114,9 +114,9 @@ class SRSRankingService(TeamRankingService):
             return 24
         elif margin < -24:
             return -24
-        elif margin > 0 and margin < 7:
+        elif 0 < margin < 7:
             return 7
-        elif margin < 0 and margin > -7:
+        elif 0 > margin > -7:
             return -7
         else:
             return margin
