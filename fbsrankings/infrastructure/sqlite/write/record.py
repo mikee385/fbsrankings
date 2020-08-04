@@ -27,7 +27,8 @@ class TeamRecordRepository(BaseRepository):
     def __init__(
         self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
-        self._bus = bus
+        super().__init__(bus)
+
         self._connection = connection
         self._cursor = cursor
 

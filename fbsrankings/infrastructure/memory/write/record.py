@@ -16,7 +16,8 @@ from fbsrankings.infrastructure.memory.storage import TeamRecordValueDto
 
 class TeamRecordRepository(BaseRepository):
     def __init__(self, storage: TeamRecordStorage, bus: EventBus) -> None:
-        self._bus = bus
+        super().__init__(bus)
+
         self._storage = storage
 
     def get(self, id: TeamRecordID) -> Optional[TeamRecord]:

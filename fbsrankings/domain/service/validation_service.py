@@ -17,8 +17,7 @@ from fbsrankings.domain.model.team import TeamID
 
 
 class ValidationError(ValueError):
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
 class MultipleValidationError(ValidationError):

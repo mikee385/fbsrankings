@@ -37,6 +37,8 @@ class EventBus:
 
 class EventRecorder(EventBus):
     def __init__(self, bus: EventBus) -> None:
+        super().__init__()
+
         self._bus = bus
         self.events: List[Event] = []
 
@@ -53,6 +55,8 @@ class EventRecorder(EventBus):
 
 class EventCounter(EventBus):
     def __init__(self, bus: EventBus) -> None:
+        super().__init__()
+
         self._bus = bus
         self.counts: Dict[Type[Event], int] = {}
 
