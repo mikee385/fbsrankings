@@ -5,15 +5,15 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.domain import Affiliation
-from fbsrankings.domain import Game
-from fbsrankings.domain import GameStatus
-from fbsrankings.domain import Season
-from fbsrankings.domain import SeasonID
-from fbsrankings.domain import SeasonSection
-from fbsrankings.domain import Subdivision
-from fbsrankings.domain import Team
-from fbsrankings.domain import TeamID
+from fbsrankings.domain.model.affiliation import Affiliation
+from fbsrankings.domain.model.affiliation import Subdivision
+from fbsrankings.domain.model.game import Game
+from fbsrankings.domain.model.game import GameStatus
+from fbsrankings.domain.model.season import Season
+from fbsrankings.domain.model.season import SeasonID
+from fbsrankings.domain.model.season import SeasonSection
+from fbsrankings.domain.model.team import Team
+from fbsrankings.domain.model.team import TeamID
 
 
 class ValidationError(ValueError):
