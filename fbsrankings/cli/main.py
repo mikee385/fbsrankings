@@ -228,7 +228,7 @@ def main() -> None:
 
     try:
         args.func(args)
-    except Exception as ex:
+    except Exception as ex:  # pylint: disable=broad-except
         if args.trace:
             raise
         else:
