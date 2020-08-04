@@ -79,6 +79,6 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
         return False
 
 
-class TransactionFactory(Protocol):
+class TransactionFactory(Protocol, metaclass=ABCMeta):
     def transaction(self, event_bus: EventBus) -> Transaction:
         raise NotImplementedError

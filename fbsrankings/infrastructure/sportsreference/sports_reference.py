@@ -1,4 +1,5 @@
 import datetime
+from abc import ABCMeta
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -26,7 +27,7 @@ from fbsrankings.domain import TeamRepository
 from fbsrankings.domain import ValidationService
 
 
-class RepositoryManager(Protocol):
+class RepositoryManager(Protocol, metaclass=ABCMeta):
     @property
     def season(self) -> SeasonRepository:
         raise NotImplementedError

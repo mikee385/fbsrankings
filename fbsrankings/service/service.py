@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from types import TracebackType
 from typing import ContextManager
 from typing import List
@@ -27,7 +28,7 @@ from fbsrankings.service.config import Config
 R = TypeVar("R", covariant=True)
 
 
-class DataSource(QueryManagerFactory, TransactionFactory, Protocol):
+class DataSource(QueryManagerFactory, TransactionFactory, Protocol, metaclass=ABCMeta):
     def drop(self) -> None:
         pass
 

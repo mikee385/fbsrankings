@@ -43,6 +43,6 @@ class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
         return False
 
 
-class QueryManagerFactory(Protocol):
+class QueryManagerFactory(Protocol, metaclass=ABCMeta):
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
         raise NotImplementedError

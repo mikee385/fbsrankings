@@ -1,5 +1,6 @@
 import json
 import re
+from abc import ABCMeta
 from pathlib import Path
 from types import TracebackType
 from typing import cast
@@ -544,7 +545,7 @@ class Application:
             event_counts: Dict[int, Dict[Type[Event], int]] = {}
             other_counts: Dict[Type[Event], int] = {}
 
-            class _SeasonEvent(Protocol):
+            class _SeasonEvent(Protocol, metaclass=ABCMeta):
                 season_id: UUID
 
             for event in events:
