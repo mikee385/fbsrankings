@@ -26,7 +26,8 @@ class AffiliationStorage:
         key = (affiliation.season_id, affiliation.team_id)
         if key in self._by_key:
             raise ValueError(
-                f"Affiliation already exists for team {affiliation.team_id} in season {affiliation.season_id}",
+                f"Affiliation already exists for team {affiliation.team_id} in season"
+                f" {affiliation.season_id}",
             )
 
         self._by_id[affiliation.id_] = affiliation

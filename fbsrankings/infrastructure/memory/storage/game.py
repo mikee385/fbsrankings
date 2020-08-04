@@ -55,7 +55,8 @@ class GameStorage:
         )
         if key in self._by_key:
             raise ValueError(
-                f"Game already exists for week {game.week} in season {game.season_id} between {game.home_team_id} and {game.away_team_id}",
+                f"Game already exists for week {game.week} in season {game.season_id}"
+                f" between {game.home_team_id} and {game.away_team_id}",
             )
 
         self._by_id[game.id_] = game

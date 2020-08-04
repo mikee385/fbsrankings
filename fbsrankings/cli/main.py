@@ -35,7 +35,8 @@ common_parser.add_argument(
 
 main_parser = argparse.ArgumentParser(
     prog="fbsrankings",
-    description="Team and game rankings for FBS college football based on data from sportsreference.com.",
+    description="Team and game rankings for FBS college football based on data from"
+    " sportsreference.com.",
     parents=[common_parser],
     allow_abbrev=False,
 )
@@ -55,7 +56,10 @@ import_parser.add_argument(
     nargs="*",
     default=["latest"],
     action="store",
-    help="Single season (e.g. 2018), range of seasons (e.g. 2015-2018), 'latest' to import the most recent season, or 'all' to import all available seasons. Multiple seasons and/or ranges can also be provided (e.g. 2010 2012-2014 2016 2018-2020).",
+    help="Single season (e.g. 2018), range of seasons (e.g. 2015-2018), 'latest' to"
+    " import the most recent season, or 'all' to import all available seasons."
+    " Multiple seasons and/or ranges can also be provided (e.g. 2010 2012-2014 2016"
+    " 2018-2020).",
 )
 import_parser.add_argument(
     "-d",
@@ -101,7 +105,8 @@ latest_parser.add_argument(
     type=NumberOrAllType(),
     default="10",
     action="store",
-    help="number of teams and games to display, or 'all' to display all teams and games",
+    help="number of teams and games to display, or 'all' to display all teams and"
+    " games",
 )
 
 
@@ -147,7 +152,8 @@ teams_parser.add_argument(
     nargs="?",
     default="latest",
     action="store",
-    help="Single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest' to print the most recent rankings.",
+    help="Single season (e.g. 2018), a specific week within a season (e.g. 2014w10),"
+    " or 'latest' to print the most recent rankings.",
 )
 teams_parser.add_argument(
     "-r",
@@ -188,7 +194,8 @@ games_parser.add_argument(
     nargs="?",
     default="latest",
     action="store",
-    help="Single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest' to print the most recent rankings.",
+    help="Single season (e.g. 2018), a specific week within a season (e.g. 2014w10),"
+    " or 'latest' to print the most recent rankings.",
 )
 games_parser.add_argument(
     "-r",

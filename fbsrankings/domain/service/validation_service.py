@@ -23,7 +23,8 @@ class ValidationError(ValueError):
 class MultipleValidationError(ValidationError):
     def __init__(self, errors: List[ValidationError]) -> None:
         super().__init__(
-            "Multiple validation errors have occurred. See the errors property for more details.",
+            "Multiple validation errors have occurred. See the errors property for"
+            " more details.",
         )
         self.errors = errors
 
@@ -158,7 +159,8 @@ class ValidationService:
         if affiliation.season_id != season_id:
             self._handle_error(
                 AffiliationDataValidationError(
-                    f"Affiliation.season_id does not match season_id: {affiliation.season_id} vs. {season_id}",
+                    "Affiliation.season_id does not match season_id:"
+                    f" {affiliation.season_id} vs. {season_id}",
                     affiliation.id_.value,
                     "season_id",
                     affiliation.season_id.value,
@@ -168,7 +170,8 @@ class ValidationService:
         if affiliation.team_id != team_id:
             self._handle_error(
                 AffiliationDataValidationError(
-                    f"Affiliation.team_id does not match team_id: {affiliation.team_id} vs. {team_id}",
+                    "Affiliation.team_id does not match team_id:"
+                    f" {affiliation.team_id} vs. {team_id}",
                     affiliation.id_.value,
                     "team_id",
                     affiliation.team_id.value,
@@ -178,7 +181,8 @@ class ValidationService:
         if affiliation.subdivision != subdivision:
             self._handle_error(
                 AffiliationDataValidationError(
-                    f"Affiliation.subdivision does not match subdivision: {affiliation.subdivision} vs. {subdivision}",
+                    "Affiliation.subdivision does not match subdivision:"
+                    f" {affiliation.subdivision} vs. {subdivision}",
                     affiliation.id_.value,
                     "subdivision",
                     affiliation.subdivision.name,
@@ -203,7 +207,8 @@ class ValidationService:
         if game.season_id != season_id:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.season_id does not match season_id: {game.season_id} vs. {season_id}",
+                    f"Game.season_id does not match season_id: {game.season_id} vs."
+                    f" {season_id}",
                     game.id_.value,
                     "season_id",
                     game.season_id.value,
@@ -233,7 +238,8 @@ class ValidationService:
         if game.season_section != season_section:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.season_section does not match season_section: {game.season_section} vs. {season_section}",
+                    "Game.season_section does not match season_section:"
+                    f" {game.season_section} vs. {season_section}",
                     game.id_.value,
                     "season_section",
                     game.season_section.name,
@@ -243,7 +249,8 @@ class ValidationService:
         if game.home_team_id != home_team_id:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.home_team_id does not match home_team_id: {game.home_team_id} vs. {home_team_id}",
+                    "Game.home_team_id does not match home_team_id:"
+                    f" {game.home_team_id} vs. {home_team_id}",
                     game.id_.value,
                     "home_team_id",
                     game.home_team_id.value,
@@ -253,7 +260,8 @@ class ValidationService:
         if game.away_team_id != away_team_id:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.away_team_id does not match away_team_id: {game.away_team_id} vs. {away_team_id}",
+                    "Game.away_team_id does not match away_team_id:"
+                    f" {game.away_team_id} vs. {away_team_id}",
                     game.id_.value,
                     "away_team_id",
                     game.away_team_id.value,
@@ -263,7 +271,8 @@ class ValidationService:
         if game.home_team_score != home_team_score:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.home_team_score does not match home_team_score: {game.home_team_score} vs. {home_team_score}",
+                    "Game.home_team_score does not match home_team_score:"
+                    f" {game.home_team_score} vs. {home_team_score}",
                     game.id_.value,
                     "home_team_score",
                     game.home_team_score,
@@ -273,7 +282,8 @@ class ValidationService:
         if game.away_team_score != away_team_score:
             self._handle_error(
                 GameDataValidationError(
-                    f"Game.away_team_score does not match away_team_score: {game.away_team_score} vs. {away_team_score}",
+                    "Game.away_team_score does not match away_team_score:"
+                    f" {game.away_team_score} vs. {away_team_score}",
                     game.id_.value,
                     "away_team_score",
                     game.away_team_score,

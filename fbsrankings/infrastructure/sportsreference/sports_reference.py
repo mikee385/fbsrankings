@@ -260,7 +260,8 @@ class SportsReference:
                     home_team_score = second_score
                 else:
                     raise ValueError(
-                        f'Unable to convert symbol "{home_away_symbol}" to an "@" on line {counter}',
+                        f'Unable to convert symbol "{home_away_symbol}" to an "@" on'
+                        f" line {counter}",
                     )
 
                 home_team = self._import_team(

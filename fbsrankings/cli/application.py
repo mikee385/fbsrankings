@@ -283,7 +283,8 @@ class Application:
                 break
             else:
                 raise ValueError(
-                    f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'",
+                    f"'{value}' must be a single season (e.g. 2018), a range"
+                    " (e.g. 2015-2018), 'latest', or 'all'",
                 )
 
         return years
@@ -306,7 +307,8 @@ class Application:
             week = latest_season_week.week
         else:
             raise ValueError(
-                f"'{season_week}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'",
+                f"'{season_week}' must be season a single season (e.g. 2018), a"
+                " specific week within a season (e.g. 2014w10), or 'latest'",
             )
 
         return (year, week)
@@ -638,7 +640,8 @@ class Application:
                         and game.away_team_score is not None
                     ):
                         print(
-                            f"{game.status}, {game.home_team_score} to {game.away_team_score}",
+                            f"{game.status}, {game.home_team_score} to"
+                            f" {game.away_team_score}",
                         )
                     else:
                         print(game.status)
@@ -680,7 +683,8 @@ class Application:
                 fbs_error_team = self._service.query(TeamByIDQuery(fbs_error.team_id))
                 if fbs_error_season is not None and fbs_error_team is not None:
                     print(
-                        f"{fbs_error_season.year} {fbs_error_team.name}: {fbs_error.game_count}",
+                        f"{fbs_error_season.year} {fbs_error_team.name}:"
+                        f" {fbs_error.game_count}",
                     )
 
         if fcs_team_errors:
@@ -694,7 +698,8 @@ class Application:
                 fcs_error_team = self._service.query(TeamByIDQuery(fcs_error.team_id))
                 if fcs_error_season is not None and fcs_error_team is not None:
                     print(
-                        f"{fcs_error_season.year} {fcs_error_team.name}: {fcs_error.game_count}",
+                        f"{fcs_error_season.year} {fcs_error_team.name}:"
+                        f" {fcs_error.game_count}",
                     )
 
     def _print_game_errors(self, game_errors: List[GameDataValidationError]) -> None:
@@ -715,13 +720,15 @@ class Application:
                         and game.away_team_score is not None
                     ):
                         print(
-                            f"{game.status}, {game.home_team_score} to {game.away_team_score}",
+                            f"{game.status}, {game.home_team_score} to"
+                            f" {game.away_team_score}",
                         )
                     else:
                         print(game.status)
                     print(game.notes)
                     print(
-                        f"For {error.attribute_name}, expected: {error.expected_value}, found: {error.attribute_value}",
+                        f"For {error.attribute_name}, expected: {error.expected_value},"
+                        f" found: {error.attribute_value}",
                     )
 
     @staticmethod

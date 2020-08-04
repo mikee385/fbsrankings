@@ -23,7 +23,8 @@ class SeasonRangeType:
             return value
 
         raise argparse.ArgumentTypeError(
-            f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018), 'latest', or 'all'",
+            f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018),"
+            " 'latest', or 'all'",
         )
 
 
@@ -37,7 +38,8 @@ class SeasonWeekType:
             return value
 
         raise argparse.ArgumentTypeError(
-            f"'{value}' must be season a single season (e.g. 2018), a specific week within a season (e.g. 2014w10), or 'latest'",
+            f"'{value}' must be season a single season (e.g. 2018), a specific week"
+            " within a season (e.g. 2014w10), or 'latest'",
         )
 
 

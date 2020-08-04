@@ -2,7 +2,6 @@
 disable = bad-continuation,
 	bad-whitespace,
 	duplicate-code,
-	line-too-long,
 	missing-class-docstring,
 	missing-function-docstring,
 	missing-module-docstring,
