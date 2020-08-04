@@ -3,6 +3,5 @@ ignore = E203, E501, W503
 max-line-length = 88
 max-complexity = 18
 select = A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
-per-file-ignores = __init__.py: F401
 import-order-style = pep8
 application-import-names = fbsrankings
