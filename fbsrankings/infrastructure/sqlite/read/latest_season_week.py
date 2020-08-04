@@ -49,7 +49,6 @@ class LatestSeasonWeekQueryHandler:
             .select(
                 season_subquery.SeasonID,
                 season_subquery.Year,
-                season_subquery.GamesCompleted,
                 season_subquery.GamesScheduled,
             )
             .where(season_subquery.GamesCompleted > 0)
@@ -64,7 +63,7 @@ class LatestSeasonWeekQueryHandler:
         if row is None:
             return None
 
-        season_id, year, games_completed, games_scheduled = row
+        season_id, year, games_scheduled = row
 
         if games_scheduled == 0:
             return LatestSeasonWeekResult(UUID(season_id), year, None)
