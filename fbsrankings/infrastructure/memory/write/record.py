@@ -45,8 +45,7 @@ class TeamRecordRepository(BaseRepository):
         if isinstance(event, TeamRecordCalculatedEvent):
             self._handle_record_calculated(event)
             return True
-        else:
-            return False
+        return False
 
     def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(

@@ -136,5 +136,4 @@ class GameRankingBySeasonWeekQueryHandler:
             return GameRankingBySeasonWeekResult(
                 UUID(row[0]), row[1], UUID(row[2]), row[3], row[4], values,
             )
-        else:
-            return None
+        return None

@@ -86,8 +86,8 @@ class SRSRankingService(TeamRankingService):
             except numpy.linalg.LinAlgError as ex:
                 if str(ex) == "Singular matrix":
                     continue
-                else:
-                    raise
+                raise
+
             shift = numpy.sum(x) / n
             x -= shift
 
@@ -113,11 +113,10 @@ class SRSRankingService(TeamRankingService):
     def _adjust_margin(margin: int) -> int:
         if margin > 24:
             return 24
-        elif margin < -24:
+        if margin < -24:
             return -24
-        elif 0 < margin < 7:
+        if 0 < margin < 7:
             return 7
-        elif 0 > margin > -7:
+        if 0 > margin > -7:
             return -7
-        else:
-            return margin
+        return margin

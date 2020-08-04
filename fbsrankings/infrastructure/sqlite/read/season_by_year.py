@@ -30,5 +30,4 @@ class SeasonByYearQueryHandler:
 
         if row:
             return SeasonByYearResult(UUID(row[0]), row[1])
-        else:
-            return None
+        return None

@@ -13,5 +13,4 @@ class TeamByIDQueryHandler:
         team = self._storage.team.get(query.id)
         if team is not None:
             return TeamByIDResult(team.id, team.name)
-        else:
-            return None
+        return None

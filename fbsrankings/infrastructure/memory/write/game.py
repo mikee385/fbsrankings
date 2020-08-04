@@ -58,20 +58,19 @@ class GameRepository(BaseRepository):
         if isinstance(event, GameCreatedEvent):
             self._handle_game_created(event)
             return True
-        elif isinstance(event, GameRescheduledEvent):
+        if isinstance(event, GameRescheduledEvent):
             self._handle_game_rescheduled(event)
             return True
-        elif isinstance(event, GameCanceledEvent):
+        if isinstance(event, GameCanceledEvent):
             self._handle_game_canceled(event)
             return True
-        elif isinstance(event, GameCompletedEvent):
+        if isinstance(event, GameCompletedEvent):
             self._handle_game_completed(event)
             return True
-        elif isinstance(event, GameNotesUpdatedEvent):
+        if isinstance(event, GameNotesUpdatedEvent):
             self._handle_game_notes_updated(event)
             return True
-        else:
-            return False
+        return False
 
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(

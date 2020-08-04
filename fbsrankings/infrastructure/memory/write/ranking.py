@@ -93,8 +93,7 @@ class TeamRankingRepository(BaseTeamRankingRepository):
         if isinstance(event, TeamRankingCalculatedEvent):
             self._repository.handle_ranking_calculated(event)
             return True
-        else:
-            return False
+        return False
 
 
 class GameRankingRepository(BaseGameRankingRepository):
@@ -119,5 +118,4 @@ class GameRankingRepository(BaseGameRankingRepository):
         if isinstance(event, GameRankingCalculatedEvent):
             self._repository.handle_ranking_calculated(event)
             return True
-        else:
-            return False
+        return False

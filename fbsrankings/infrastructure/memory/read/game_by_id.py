@@ -33,7 +33,4 @@ class GameByIDQueryHandler:
                     game.status,
                     game.notes,
                 )
-            else:
-                return None
-        else:
-            return None
+        return None

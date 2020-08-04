@@ -26,8 +26,7 @@ class QueryBus:
         existing = self._handlers.get(type)
         if existing is not None:
             raise ValueError(f"A handler has already been registered for {type}")
-        else:
-            self._handlers[type] = handler
+        self._handlers[type] = handler
 
     def unregister_handler(self, type: Type[Q]) -> None:
         self._handlers.pop(type)
@@ -36,5 +35,4 @@ class QueryBus:
         handler = cast(QueryHandler[Query[R], R], self._handlers.get(type(query)))
         if handler is None:
             raise ValueError(f"No handler has been registered for {type(query)}")
-        else:
-            return handler(query)
+        return handler(query)

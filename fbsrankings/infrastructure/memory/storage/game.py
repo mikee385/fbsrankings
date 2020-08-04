@@ -47,8 +47,7 @@ class GameStorage:
     ) -> Tuple[UUID, int, UUID, UUID]:
         if team1_id < team2_id:
             return (season_id, week, team1_id, team2_id)
-        else:
-            return (season_id, week, team2_id, team1_id)
+        return (season_id, week, team2_id, team1_id)
 
     def add(self, game: GameDto) -> None:
         key = self._get_key(

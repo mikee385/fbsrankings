@@ -44,8 +44,7 @@ class AffiliationRepository(BaseRepository):
         if isinstance(event, AffiliationCreatedEvent):
             self._handle_affiliation_created(event)
             return True
-        else:
-            return False
+        return False
 
     def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(

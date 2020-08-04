@@ -229,10 +229,10 @@ def main() -> None:
     try:
         args.func(args)
     except Exception as ex:  # pylint: disable=broad-except
-        if args.trace:
-            raise
-        else:
+        if not args.trace:
             print_err(str(ex))
+        else:
+            raise
 
 
 if __name__ == "__main__":

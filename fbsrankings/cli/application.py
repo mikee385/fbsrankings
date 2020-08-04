@@ -315,21 +315,21 @@ class Application:
     def _parse_rating(rating: str) -> str:
         if rating.casefold() == "SRS".casefold():
             return "SRS"
-        elif rating.casefold() == "colley-matrix".casefold():
+        if rating.casefold() == "colley-matrix".casefold():
             return "Colley Matrix"
-        elif rating.casefold() == "simultaneous-wins".casefold():
+        if rating.casefold() == "simultaneous-wins".casefold():
             return "Simultaneous Wins"
-        else:
-            raise ValueError(f"Unknown rating type: {rating}")
+
+        raise ValueError(f"Unknown rating type: {rating}")
 
     @staticmethod
     def _parse_top(top: str) -> Optional[int]:
         if top.isdecimal():
             return int(top)
-        elif top.casefold() == "all".casefold():
+        if top.casefold() == "all".casefold():
             return None
-        else:
-            raise ValueError(f"'{top}' must be a positive integer or 'all'")
+
+        raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
     def _get_season(self, year: int) -> SeasonByYearResult:
         season = self._service.query(SeasonByYearQuery(year))
@@ -344,8 +344,7 @@ class Application:
         if team_record is None:
             if week is not None:
                 raise ValueError(f"Team records not found for {year}, Week {week}")
-            else:
-                raise ValueError(f"Team records not found for {year}")
+            raise ValueError(f"Team records not found for {year}")
         return team_record
 
     def _get_team_ranking(
@@ -359,8 +358,7 @@ class Application:
                 raise ValueError(
                     f"Team rankings not found for {rating_name}, {year}, Week {week}",
                 )
-            else:
-                raise ValueError(f"Team rankings not found for {rating_name}, {year}")
+            raise ValueError(f"Team rankings not found for {rating_name}, {year}")
         return team_ranking
 
     def _get_game_ranking(
@@ -374,8 +372,7 @@ class Application:
                 raise ValueError(
                     f"Game rankings not found for {rating_name}, {year}, Week {week}",
                 )
-            else:
-                raise ValueError(f"Game rankings not found for {rating_name}, {year}")
+            raise ValueError(f"Game rankings not found for {rating_name}, {year}")
         return game_ranking
 
     def _print_seasons_table(self, seasons: Iterable[SeasonResult]) -> None:

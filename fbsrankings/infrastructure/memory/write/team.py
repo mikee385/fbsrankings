@@ -35,8 +35,7 @@ class TeamRepository(BaseRepository):
         if isinstance(event, TeamCreatedEvent):
             self._handle_team_created(event)
             return True
-        else:
-            return False
+        return False
 
     def _handle_team_created(self, event: TeamCreatedEvent) -> None:
         self._storage.add(TeamDto(event.id, event.name))

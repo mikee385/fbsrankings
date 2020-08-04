@@ -87,5 +87,4 @@ class TeamRecordBySeasonWeekQueryHandler:
             return TeamRecordBySeasonWeekResult(
                 UUID(row[0]), UUID(row[1]), row[2], row[3], values,
             )
-        else:
-            return None
+        return None

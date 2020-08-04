@@ -74,5 +74,4 @@ class GameByIDQueryHandler:
                 row[12],
                 row[13],
             )
-        else:
-            return None
+        return None

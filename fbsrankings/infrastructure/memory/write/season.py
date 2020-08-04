@@ -35,8 +35,7 @@ class SeasonRepository(BaseRepository):
         if isinstance(event, SeasonCreatedEvent):
             self._handle_season_created(event)
             return True
-        else:
-            return False
+        return False
 
     def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
         self._storage.add(SeasonDto(event.id, event.year))

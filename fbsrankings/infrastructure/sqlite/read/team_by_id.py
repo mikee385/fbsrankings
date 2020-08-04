@@ -30,5 +30,4 @@ class TeamByIDQueryHandler:
 
         if row:
             return TeamByIDResult(UUID(row[0]), row[1])
-        else:
-            return None
+        return None

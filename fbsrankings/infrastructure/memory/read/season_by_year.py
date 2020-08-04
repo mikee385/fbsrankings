@@ -13,5 +13,4 @@ class SeasonByYearQueryHandler:
         season = self._storage.season.find(query.year)
         if season is not None:
             return SeasonByYearResult(season.id, season.year)
-        else:
-            return None
+        return None

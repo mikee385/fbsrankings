@@ -59,7 +59,4 @@ class GameRankingBySeasonWeekQueryHandler:
                     ranking.week,
                     values,
                 )
-            else:
-                return None
-        else:
-            return None
+        return None

@@ -383,7 +383,7 @@ class ValidationService:
             error = self.errors[0]
             self.errors.clear()
             raise error
-        elif len(self.errors) > 1:
+        if len(self.errors) > 1:
             error = MultipleValidationError(self.errors)
             self.errors = []
             raise error
@@ -391,5 +391,5 @@ class ValidationService:
     def _handle_error(self, error: ValidationError) -> None:
         if self.raise_behavior == RaiseBehavior.IMMEDIATELY:
             raise error
-        elif self.raise_behavior == RaiseBehavior.ON_DEMAND:
+        if self.raise_behavior == RaiseBehavior.ON_DEMAND:
             self.errors.append(error)
