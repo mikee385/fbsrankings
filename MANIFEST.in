@@ -1,4 +1,4 @@
 include LICENSE
-include py.typed
+include fbsrankings/py.typed
 include fbsrankings/config.json
 include fbsrankings/service/schema.json
