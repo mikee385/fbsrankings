@@ -30,8 +30,11 @@ setuptools.setup(
         "jsonschema",
         "numpy",
         "prettytable",
+        "pypika",
         "tqdm",
         "typing-extensions",
     ],
     entry_points={"console_scripts": ["fbsrankings=fbsrankings.cli.main:main"]},
+    include_package_data=True,
+    zip_safe=False,
 )
