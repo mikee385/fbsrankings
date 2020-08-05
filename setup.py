@@ -11,11 +11,12 @@ setuptools.setup(
     version=__version__,
     author=__author__,
     author_email="mikee385@gmail.com",
-    description="Import college football teams and games from sportsreference.com and calculate rankings for the Division I Football Bowl Subdivision (FBS) teams",
+    description="Import college football teams and games from sportsreference.com and"
+    " calculate rankings for the Division I Football Bowl Subdivision (FBS) teams",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mikee385/fbsrankings",
-    packages=["fbsrankings"],
+    packages=setuptools.find_packages(),
     license="MIT",
     classifiers=[
         "Environment :: Console",
