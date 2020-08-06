@@ -1,4 +1,5 @@
-from setuptools import setup
+import pkg_resources
+import setuptools
 
-if __name__ == "__main__":
-    setup()
+pkg_resources.require("setuptools>=39.2")
+setuptools.setup()
