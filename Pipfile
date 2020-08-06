@@ -17,6 +17,7 @@ numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
 pep8-naming = "*"
 pre-commit = "*"
 pylint = "*"
+pyroma = "*"
 setuptools = "*"
 twine = "*"
 typeguard = "*"

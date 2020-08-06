@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a354f00b3ee7cbf8f71df61bc962c85b1e2a3d4e8d645a1899ae073cba7dcff0"
+            "sha256": "95cd8c0cb3a2a65af6658fb7fe35455141becfe8298d9f41e73bcbef68fc5974"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -579,6 +579,14 @@
             ],
             "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.4.7"
+        },
+        "pyroma": {
+            "hashes": [
+                "sha256:351758a81e2a12c970deb73687e239636aad52795cd81429695073d59fff0699",
+                "sha256:c49c00377219626bf83df42adf018cc231e6162b68cc7aaf2ff1c63803924102"
+            ],
+            "index": "pypi",
+            "version": "==2.6"
         },
         "pywin32-ctypes": {
             "hashes": [
