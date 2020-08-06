@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 bandit = "*"
 black = "==19.10b0"
+bump2version = "*"
 flake8 = "*"
 flake8-black = "*"
 flake8-bugbear = "*"
