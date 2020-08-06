@@ -71,14 +71,14 @@ class Application:
         if config_location is not None:
             config_path = Path(config_location).resolve()
         else:
-            config_path = package_dir / "config.json"
+            config_path = package_dir / "data" / "config.json"
         if not config_path.is_file():
             raise ValueError(f"'{config_path}' must be a valid file path")
 
         with open(config_path) as config_file:
             config = json.load(config_file)
 
-        schema_path = package_dir / "service" / "schema.json"
+        schema_path = package_dir / "data" / "schema.json"
         with open(schema_path) as schema_file:
             schema = json.load(schema_file)
         jsonschema.validate(config, schema)
