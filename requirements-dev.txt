@@ -5,7 +5,6 @@ bandit==1.6.2
 beautifulsoup4==4.9.1
 black==19.10b0
 bleach==3.1.5
-bs4==0.0.1
 bump2version==1.0.0
 certifi==2020.6.20
 cfgv==3.2.0
@@ -14,7 +13,7 @@ click==7.1.2
 colorama==0.4.3
 distlib==0.3.1
 docutils==0.16
--e git+https://github.com/mikee385/fbsrankings@17c1143356e321f1822f372ac8e982861b0931bd#egg=fbsrankings
+-e git+https://github.com/mikee385/fbsrankings@0be9df5ffbf56c510f8d2f0817890ef87d862a7a#egg=fbsrankings
 filelock==3.0.12
 flake8==3.8.3
 flake8-black==0.2.1
