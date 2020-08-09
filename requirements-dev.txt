@@ -38,7 +38,7 @@ mypy==0.782
 mypy-extensions==0.4.3
 nodeenv==1.4.0
 numpy==1.19.1
-numpy-stubs==0.0.1
+numpy-stubs @ git+https://github.com/numpy/numpy-stubs@c49d2d6875971a669a166ea93ef998911af283a1
 packaging==20.4
 pathspec==0.8.0
 pbr==5.4.5
