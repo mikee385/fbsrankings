@@ -79,5 +79,5 @@ repos:
     rev: v0.782
     hooks:
     -   id: mypy
-        additional_dependencies: [typeguard, "git+https://github.com/numpy/numpy-stubs"]
+        additional_dependencies: [typeguard]
         args: [--strict]

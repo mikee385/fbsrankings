@@ -13,7 +13,7 @@ click==7.1.2
 colorama==0.4.3
 distlib==0.3.1
 docutils==0.16
--e git+https://github.com/mikee385/fbsrankings@0be9df5ffbf56c510f8d2f0817890ef87d862a7a#egg=fbsrankings
+-e git+https://github.com/mikee385/fbsrankings@65acd2c7b6004f405166cc6dffcd719f05411354#egg=fbsrankings
 filelock==3.0.12
 flake8==3.8.3
 flake8-black==0.2.1
@@ -37,7 +37,6 @@ mypy==0.782
 mypy-extensions==0.4.3
 nodeenv==1.4.0
 numpy==1.19.1
-numpy-stubs @ git+https://github.com/numpy/numpy-stubs@c49d2d6875971a669a166ea93ef998911af283a1
 packaging==20.4
 pathspec==0.8.0
 pbr==5.4.5
