@@ -1,8 +1,9 @@
 include .bumpversion.cfg
+include .gitignore
 include .pre-commit-config.yaml
 include LICENSE
-include Pipfile
-include Pipfile.lock
+include Makefile
+include README.md
 include requirements.txt
 include requirements-dev.in
 include requirements-dev.txt
