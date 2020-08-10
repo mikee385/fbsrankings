@@ -93,8 +93,8 @@ latest_parser.add_argument(
     "-r",
     "--rating",
     type=str.casefold,
-    choices=["SRS", "colley-matrix", "simultaneous-wins"],
-    default="SRS",
+    choices=["srs", "colley-matrix", "simultaneous-wins"],
+    default="srs",
     action="store",
     help="rating calculation to use for rankings",
 )
