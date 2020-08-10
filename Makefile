@@ -1,5 +1,5 @@
 .PHONY:
-    init
+	init
     setup
     upgrade
     check
@@ -8,6 +8,7 @@
     build
     install
     upload
+
 
 init:
     python -m pip install pip --upgrade
@@ -22,7 +23,17 @@ upgrade:
     pip-compile --output-file=requirements.txt setup.py --upgrade
     sort-requirements requirements.txt
     pip-compile --output-file=requirements-dev.txt requirements-dev.in --upgrade
-    python -c "import re; p = re.compile('file://[^\r\n]+fbsrankings'); filename = 'requirements-dev.txt'; f = open(filename); file_text = p.sub('.                    ', f.read()); f.close(); f = open(filename, 'w'); f.write(file_text); f.close();"
+    python -c "\
+import re; \
+p = re.compile('file://[^\r\n]+fbsrankings'); \
+filename = 'requirements-dev.txt'; \
+f = open(filename); \
+file_text = p.sub('.                    ', f.read()); \
+f.close(); \
+f = open(filename, 'w'); \
+f.write(file_text); \
+f.close(); \
+"
     sort-requirements requirements-dev.txt
     pip-sync requirements-dev.txt
 
