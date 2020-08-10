@@ -1,5 +1,5 @@
 .PHONY:
-	init
+    init
     setup
     upgrade
     check
@@ -7,8 +7,8 @@
     clean
     build
     install
+    run
     upload
-
 
 init:
     python -m pip install pip --upgrade
@@ -62,20 +62,20 @@ install:
     pip install .
 
 run:
-	fbsrankings --help
-	fbsrankings --version
-	fbsrankings import all --drop --check --trace
-	fbsrankings seasons --trace
-	fbsrankings latest --trace
-	fbsrankings latest --rating=SRS --top=5 --trace
-	fbsrankings latest --rating=colley-matrix --top=5 --trace
-	fbsrankings latest --rating=simultaneous-wins --top=5 --trace
-	fbsrankings teams --trace
-	fbsrankings teams 2010 --trace
-	fbsrankings teams 2010w10 --trace
-	fbsrankings games --trace
-	fbsrankings games 2010 --trace
-	fbsrankings games 2010w10 --trace
+    fbsrankings --help
+    fbsrankings --version
+    fbsrankings import all --drop --check --trace
+    fbsrankings seasons --trace
+    fbsrankings latest --trace
+    fbsrankings latest --rating=SRS --top=5 --trace
+    fbsrankings latest --rating=colley-matrix --top=5 --trace
+    fbsrankings latest --rating=simultaneous-wins --top=5 --trace
+    fbsrankings teams --trace
+    fbsrankings teams 2010 --trace
+    fbsrankings teams 2010w10 --trace
+    fbsrankings games --trace
+    fbsrankings games 2010 --trace
+    fbsrankings games 2010w10 --trace
 
 upload:
     twine upload --repository testpypi dist/*
