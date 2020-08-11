@@ -77,17 +77,19 @@ class SRSRankingService(TeamRankingService):
                     a[home_data.index, away_data.index] -= 1.0
                     a[away_data.index, home_data.index] -= 1.0
 
+            too_few_games = False
             for data in team_data.values():
-                a[data.index, data.index] = max(data.game_total, 1.0)
+                if data.game_total < 1:
+                    too_few_games = True
+                    break
+            if too_few_games:
+                continue
+
+            for data in team_data.values():
+                a[data.index, data.index] = data.game_total
                 b[data.index] = data.point_margin
 
-            try:
-                x = numpy.linalg.solve(a, b)
-            except numpy.linalg.LinAlgError as error:
-                if str(error) == "Singular matrix":
-                    continue
-                raise
-
+            x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
             shift = numpy.sum(x) / n
             x -= shift
 
