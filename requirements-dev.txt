@@ -7,7 +7,8 @@
 -e .                      # via -r requirements-dev.in
 appdirs==1.4.4            # via black, virtualenv
 astroid==2.4.2            # via pylint
-attrs==19.3.0             # via black, flake8-bugbear, jsonschema
+atomicwrites==1.4.0       # via pytest
+attrs==19.3.0             # via black, flake8-bugbear, jsonschema, pytest
 bandit==1.6.2             # via fbsrankings
 beautifulsoup4==4.9.1     # via fbsrankings
 black==19.10b0            # via fbsrankings, flake8-black
@@ -17,7 +18,7 @@ certifi==2020.6.20        # via requests
 cfgv==3.2.0               # via pre-commit
 chardet==3.0.4            # via requests
 click==7.1.2              # via black, pip-tools
-colorama==0.4.3           # via bandit, pylint, twine
+colorama==0.4.3           # via bandit, pylint, pytest, twine
 distlib==0.3.1            # via virtualenv
 docopt==0.6.2             # via py-make
 docutils==0.16            # via pyroma, readme-renderer
@@ -33,25 +34,29 @@ gitpython==3.1.7          # via bandit
 html5lib==1.1             # via fbsrankings
 identify==1.4.25          # via pre-commit
 idna==2.10                # via requests
-importlib-metadata==1.7.0  # via flake8, jsonschema, keyring, pre-commit, stevedore, twine, virtualenv
+importlib-metadata==1.7.0  # via flake8, jsonschema, keyring, pluggy, pre-commit, pytest, stevedore, twine, virtualenv
 importlib-resources==3.0.0  # via pre-commit, virtualenv
+iniconfig==1.0.1          # via pytest
 isort==4.3.21             # via pylint
 jsonschema==3.2.0         # via fbsrankings
 keyring==21.3.0           # via twine
 lazy-object-proxy==1.4.3  # via astroid
 mccabe==0.6.1             # via flake8, pylint
+more-itertools==8.4.0     # via pytest
 mypy==0.782               # via fbsrankings
 mypy-extensions==0.4.3    # via mypy
 nodeenv==1.4.0            # via pre-commit
 numpy==1.19.1             # via fbsrankings
-packaging==20.4           # via bleach
+packaging==20.4           # via bleach, pytest
 pathspec==0.8.0           # via black
 pbr==5.4.5                # via stevedore
 pep8-naming==0.11.1       # via fbsrankings
 pip-tools==5.3.1          # via fbsrankings
 pkginfo==1.5.0.1          # via twine
+pluggy==0.13.1            # via pytest
 pre-commit==2.6.0         # via fbsrankings
 prettytable==0.7.2        # via fbsrankings
+py==1.9.0                 # via pytest
 py-make==0.1.1            # via fbsrankings
 pycodestyle==2.6.0        # via flake8, flake8-import-order
 pyflakes==2.2.0           # via flake8
@@ -61,6 +66,7 @@ pyparsing==2.4.7          # via packaging
 pypika==0.38.0            # via fbsrankings
 pyroma==2.6               # via fbsrankings
 pyrsistent==0.16.0        # via jsonschema
+pytest==6.0.1             # via fbsrankings
 pywin32-ctypes==0.2.0     # via keyring
 pyyaml==5.3.1             # via bandit, pre-commit
 readme-renderer==26.0     # via twine
@@ -73,7 +79,7 @@ smmap==3.0.4              # via gitdb
 sort-requirements==1.3.0  # via fbsrankings
 soupsieve==2.0.1          # via beautifulsoup4
 stevedore==3.2.0          # via bandit
-toml==0.10.1              # via black, pre-commit, pylint
+toml==0.10.1              # via black, pre-commit, pylint, pytest
 tqdm==4.48.2              # via fbsrankings, twine
 twine==3.2.0              # via fbsrankings
 typed-ast==1.4.1          # via astroid, black, mypy

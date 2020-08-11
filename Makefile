@@ -7,6 +7,7 @@
     clean
     build
     install
+    test
     run
     upload
 
@@ -59,7 +60,10 @@ build:
 
 install:
     init
-    pip install .
+    pip install .[test]
+
+test:
+    pytest
 
 run:
     fbsrankings --help
