@@ -233,7 +233,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = main_parser.parse_args(argv)
     if not hasattr(args, "func"):
         main_parser.print_help()
-        return 1
+        sys.exit(0)
 
     try:
         args.func(args)
@@ -241,10 +241,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if args.trace:
             raise
         print_err(str(error))
-        return 1
+        sys.exit(1)
 
-    return 0
+    sys.exit(0)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
