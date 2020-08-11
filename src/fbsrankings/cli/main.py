@@ -238,11 +238,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         args.func(args)
     except Exception as error:  # pylint: disable=broad-except
-        if not args.trace:
-            print_err(str(error))
-            return 1
-        else:
+        if args.trace:
             raise
+        print_err(str(error))
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
