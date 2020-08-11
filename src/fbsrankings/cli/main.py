@@ -1,5 +1,7 @@
 import argparse
 import sys
+from typing import Optional
+from typing import Sequence
 
 from fbsrankings import __version__
 from fbsrankings.cli.application import Application
@@ -227,20 +229,21 @@ games_parser.set_defaults(func=print_games)
 # ENTRY POINT--------------------------------
 
 
-def main() -> None:
-    args = main_parser.parse_args()
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    args = main_parser.parse_args(argv)
     if not hasattr(args, "func"):
         main_parser.print_help()
-        sys.exit(1)
+        return 1
 
     try:
         args.func(args)
     except Exception as error:  # pylint: disable=broad-except
         if not args.trace:
             print_err(str(error))
+            return 1
         else:
             raise
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
