@@ -68,6 +68,11 @@ test:
 test-types:
     pytest --typeguard-packages=fbsrankings
 
+test-coverage:
+    coverage erase
+    coverage run --source=src -m pytest
+    coverage report
+
 run:
     fbsrankings --help
     fbsrankings --version
