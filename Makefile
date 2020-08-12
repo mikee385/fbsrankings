@@ -63,14 +63,14 @@ install:
     pip install .[test]
 
 test:
-    pytest
+    pytest tests
 
 test-types:
-    pytest --typeguard-packages=fbsrankings
+    pytest tests --typeguard-packages=fbsrankings
 
 test-coverage:
     coverage erase
-    coverage run --source=src -m pytest
+    coverage run --source=src -m pytest tests
     coverage report
 
 run:
