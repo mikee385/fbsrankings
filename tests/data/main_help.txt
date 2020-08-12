@@ -1,0 +1,14 @@
+usage: fbsrankings [-h] [--version] [--config FILE] [--trace]
+                   {import,latest,seasons,teams,games} ...
+
+Team and game rankings for FBS college football based on data from
+sportsreference.com.
+
+positional arguments:
+  {import,latest,seasons,teams,games}
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --config FILE         location of config file
+  --trace               show the full stack trace when an error occurs

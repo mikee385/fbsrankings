@@ -1,0 +1,33 @@
+{
+    "settings": {
+    },
+    "alternate_names": {
+        "Alabama-Birmingham": "UAB",
+        "Brigham Young": "BYU",
+        "Central Florida": "UCF",
+        "Louisiana State": "LSU",
+        "Mississippi": "Ole Miss",
+        "Pittsburgh": "Pitt",
+        "Southern California": "USC",
+        "Southern Methodist": "SMU",
+        "Texas Christian": "TCU",
+        "Texas-El Paso": "UTEP",
+        "Texas-San Antonio": "UTSA"
+    },
+    "seasons": [
+        {
+            "year": 2012,
+            "postseason_start_week": 16,
+            "source_type": "URL",
+            "teams": "https://www.sports-reference.com/cfb/years/2012-standings.html",
+            "games": "https://www.sports-reference.com/cfb/years/2012-schedule.html"
+        },
+        {
+            "year": 2013,
+            "postseason_start_week": 17,
+            "source_type": "URL",
+            "teams": "https://www.sports-reference.com/cfb/years/2013-standings.html",
+            "games": "https://www.sports-reference.com/cfb/years/2013-schedule.html"
+        }
+    ]
+}
