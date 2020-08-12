@@ -38,12 +38,12 @@ f.close(); "
     pip-sync requirements-dev.txt
 
 check:
-    black src/fbsrankings
-    flake8 src/fbsrankings
-    pylint src/fbsrankings
-    bandit -r src/fbsrankings
+    black src tests setup.py
+    flake8 src tests setup.py
+    pylint src tests setup.py
+    bandit -r src
     pyroma .
-    mypy src/fbsrankings
+    mypy src tests setup.py
 
 pre-commit:
     pre-commit run --all-files
