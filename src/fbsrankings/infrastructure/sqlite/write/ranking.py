@@ -12,6 +12,7 @@ from pypika import Field
 from pypika import Parameter
 from pypika import Query
 from pypika import Table
+from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -101,7 +102,7 @@ class RankingRepository(Generic[T]):
 
         return self._to_ranking(row) if row is not None else None
 
-    def _query(self) -> Query:
+    def _query(self) -> QueryBuilder:
         return Query.from_(self._ranking_table).select(
             self._ranking_table.UUID,
             self._ranking_table.Name,

@@ -7,6 +7,7 @@ from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
+from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
@@ -67,7 +68,7 @@ class TeamRecordRepository(BaseRepository):
 
         return self._to_record(row) if row is not None else None
 
-    def _query(self) -> Query:
+    def _query(self) -> QueryBuilder:
         return Query.from_(self._record_table).select(
             self._record_table.UUID,
             self._record_table.SeasonID,

@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
+from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Season
@@ -57,7 +58,7 @@ class SeasonRepository(BaseRepository):
 
         return [self._to_season(row) for row in rows if row is not None]
 
-    def _query(self) -> Query:
+    def _query(self) -> QueryBuilder:
         return Query.from_(self._table).select(self._table.UUID, self._table.Year)
 
     def _to_season(self, row: Tuple[str, int]) -> Season:

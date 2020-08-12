@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
+from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
@@ -67,7 +68,7 @@ class AffiliationRepository(BaseRepository):
 
         return [self._to_affiliation(row) for row in rows if row is not None]
 
-    def _query(self) -> Query:
+    def _query(self) -> QueryBuilder:
         return Query.from_(self._table).select(
             self._table.UUID,
             self._table.SeasonID,
