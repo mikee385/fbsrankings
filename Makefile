@@ -65,6 +65,9 @@ install:
 test:
     pytest
 
+test-types:
+    pytest --typeguard-packages=fbsrankings
+
 run:
     fbsrankings --help
     fbsrankings --version
