@@ -1,14 +1,16 @@
 .PHONY:
     init
-    setup
+    install
+    install-test
+    install-dev
     upgrade
     check
     pre-commit
+    test
+    test-types
+    test-coverage
     clean
     build
-    install
-    test
-    run
     upload
 
 init:
@@ -16,7 +18,15 @@ init:
     pip install setuptools --upgrade
     pip install wheel --upgrade
 
-setup:
+install:
+    init
+    pip install .
+
+install-test:
+    init
+    pip install .[test]
+
+install-dev:
     init
     pip install -r requirements-dev.txt
 
@@ -48,20 +58,6 @@ check:
 pre-commit:
     pre-commit run --all-files
 
-clean:
-    python -c "import shutil; shutil.rmtree('build', True)"
-    python -c "import shutil; shutil.rmtree('dist', True)"
-    python -c "import shutil; shutil.rmtree('src/fbsrankings.egg-info', True)"
-    python -m venv env/install --clear
-
-build:
-    clean
-    python setup.py sdist bdist_wheel
-
-install:
-    init
-    pip install .[test]
-
 test:
     pytest tests
 
@@ -73,21 +69,15 @@ test-coverage:
     coverage run --source=src -m pytest tests
     coverage report
 
-run:
-    fbsrankings --help
-    fbsrankings --version
-    fbsrankings import all --drop --check --trace
-    fbsrankings seasons --trace
-    fbsrankings latest --trace
-    fbsrankings latest --rating=SRS --top=5 --trace
-    fbsrankings latest --rating=colley-matrix --top=5 --trace
-    fbsrankings latest --rating=simultaneous-wins --top=5 --trace
-    fbsrankings teams --trace
-    fbsrankings teams 2010 --trace
-    fbsrankings teams 2010w10 --trace
-    fbsrankings games --trace
-    fbsrankings games 2010 --trace
-    fbsrankings games 2010w10 --trace
+clean:
+    python -c "import shutil; shutil.rmtree('build', True)"
+    python -c "import shutil; shutil.rmtree('dist', True)"
+    python -c "import shutil; shutil.rmtree('src/fbsrankings.egg-info', True)"
+    python -m venv env/install --clear
+
+build:
+    clean
+    python setup.py sdist bdist_wheel
 
 upload:
     twine upload --repository testpypi dist/*
