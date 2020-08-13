@@ -1,14 +1,16 @@
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Query
 
 
+@dataclass(frozen=True)
 class GameCountBySeasonResult:
-    def __init__(self, season_id: UUID, count: int) -> None:
-        self.season_id = season_id
-        self.count = count
+    season_id: UUID
+    count: int
 
 
+@dataclass(frozen=True)
 class GameCountBySeasonQuery(Query[GameCountBySeasonResult]):
-    def __init__(self, season_id: UUID) -> None:
-        self.season_id = season_id
+    season_id: UUID

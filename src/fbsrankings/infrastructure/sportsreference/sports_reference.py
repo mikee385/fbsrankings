@@ -9,6 +9,7 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from bs4 import Tag
+from dataclasses import dataclass  # pylint: disable=wrong-import-order
 from typing_extensions import Protocol
 
 from fbsrankings.domain import Affiliation
@@ -45,21 +46,13 @@ class RepositoryManager(Protocol, metaclass=ABCMeta):
         raise NotImplementedError
 
 
+@dataclass(frozen=True)
 class _SeasonSource:
-    def __init__(
-        self,
-        year: int,
-        postseason_start_week: int,
-        source_type: str,
-        team_source: str,
-        game_source: str,
-    ) -> None:
-        self.year = year
-        self.postseason_start_week = postseason_start_week
-
-        self.source_type = source_type
-        self.team_source = team_source
-        self.game_source = game_source
+    year: int
+    postseason_start_week: int
+    source_type: str
+    team_source: str
+    game_source: str
 
 
 _TeamCache = Dict[str, Team]

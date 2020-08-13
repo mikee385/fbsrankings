@@ -2,40 +2,32 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Query
 
 
+@dataclass(frozen=True)
 class TeamRankingValueBySeasonWeekResult:
-    def __init__(
-        self, id_: UUID, name: str, order: int, rank: int, value: float,
-    ) -> None:
-        self.id_ = id_
-        self.name = name
-        self.order = order
-        self.rank = rank
-        self.value = value
+    id_: UUID
+    name: str
+    order: int
+    rank: int
+    value: float
 
 
+@dataclass(frozen=True)
 class TeamRankingBySeasonWeekResult:
-    def __init__(
-        self,
-        id_: UUID,
-        name: str,
-        season_id: UUID,
-        year: int,
-        week: Optional[int],
-        values: List[TeamRankingValueBySeasonWeekResult],
-    ) -> None:
-        self.id_ = id_
-        self.name = name
-        self.season_id = season_id
-        self.year = year
-        self.week = week
-        self.values = values
+    id_: UUID
+    name: str
+    season_id: UUID
+    year: int
+    week: Optional[int]
+    values: List[TeamRankingValueBySeasonWeekResult]
 
 
+@dataclass(frozen=True)
 class TeamRankingBySeasonWeekQuery(Query[Optional[TeamRankingBySeasonWeekResult]]):
-    def __init__(self, name: str, season_id: UUID, week: Optional[int]) -> None:
-        self.name = name
-        self.season_id = season_id
-        self.week = week
+    name: str
+    season_id: UUID
+    week: Optional[int]

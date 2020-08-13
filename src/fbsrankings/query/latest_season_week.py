@@ -1,15 +1,18 @@
 from typing import Optional
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Query
 
 
+@dataclass(frozen=True)
 class LatestSeasonWeekResult:
-    def __init__(self, season_id: UUID, year: int, week: Optional[int]) -> None:
-        self.season_id = season_id
-        self.year = year
-        self.week = week
+    season_id: UUID
+    year: int
+    week: Optional[int]
 
 
+@dataclass(frozen=True)
 class LatestSeasonWeekQuery(Query[Optional[LatestSeasonWeekResult]]):
     pass

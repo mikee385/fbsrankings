@@ -1,15 +1,17 @@
 from typing import Optional
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Query
 
 
+@dataclass(frozen=True)
 class TeamByIDResult:
-    def __init__(self, id_: UUID, name: str) -> None:
-        self.id_ = id_
-        self.name = name
+    id_: UUID
+    name: str
 
 
+@dataclass(frozen=True)
 class TeamByIDQuery(Query[Optional[TeamByIDResult]]):
-    def __init__(self, id_: UUID) -> None:
-        self.id_ = id_
+    id_: UUID

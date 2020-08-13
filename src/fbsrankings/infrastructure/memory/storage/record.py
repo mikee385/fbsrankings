@@ -5,26 +5,22 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from dataclasses import dataclass
 
+
+@dataclass(frozen=True)
 class TeamRecordValueDto:
-    def __init__(self, team_id: UUID, wins: int, losses: int) -> None:
-        self.team_id = team_id
-        self.wins = wins
-        self.losses = losses
+    team_id: UUID
+    wins: int
+    losses: int
 
 
+@dataclass(frozen=True)
 class TeamRecordDto:
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        week: Optional[int],
-        values: List[TeamRecordValueDto],
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.week = week
-        self.values = values
+    id_: UUID
+    season_id: UUID
+    week: Optional[int]
+    values: List[TeamRecordValueDto]
 
 
 class TeamRecordStorage:

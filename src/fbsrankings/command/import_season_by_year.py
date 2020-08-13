@@ -1,6 +1,8 @@
+from dataclasses import dataclass
+
 from fbsrankings.common import Command
 
 
+@dataclass(frozen=True)
 class ImportSeasonByYearCommand(Command):
-    def __init__(self, year: int) -> None:
-        self.year = year
+    year: int

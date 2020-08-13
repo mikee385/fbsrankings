@@ -1,124 +1,71 @@
 import datetime
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Event
 
 
+@dataclass(frozen=True)
 class GameCreatedEvent(Event):
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        week: int,
-        date: datetime.date,
-        season_section: str,
-        home_team_id: UUID,
-        away_team_id: UUID,
-        notes: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.week = week
-        self.date = date
-        self.season_section = season_section
-        self.home_team_id = home_team_id
-        self.away_team_id = away_team_id
-        self.notes = notes
+    id_: UUID
+    season_id: UUID
+    week: int
+    date: datetime.date
+    season_section: str
+    home_team_id: UUID
+    away_team_id: UUID
+    notes: str
 
 
+@dataclass(frozen=True)
 class GameRescheduledEvent(Event):
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        old_week: int,
-        old_date: datetime.date,
-        week: int,
-        date: datetime.date,
-        season_section: str,
-        home_team_id: UUID,
-        away_team_id: UUID,
-        notes: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.old_week = old_week
-        self.old_date = old_date
-        self.week = week
-        self.date = date
-        self.season_section = season_section
-        self.home_team_id = home_team_id
-        self.away_team_id = away_team_id
-        self.notes = notes
+    id_: UUID
+    season_id: UUID
+    old_week: int
+    old_date: datetime.date
+    week: int
+    date: datetime.date
+    season_section: str
+    home_team_id: UUID
+    away_team_id: UUID
+    notes: str
 
 
+@dataclass(frozen=True)
 class GameCanceledEvent(Event):
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        week: int,
-        date: datetime.date,
-        season_section: str,
-        home_team_id: UUID,
-        away_team_id: UUID,
-        notes: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.week = week
-        self.date = date
-        self.season_section = season_section
-        self.home_team_id = home_team_id
-        self.away_team_id = away_team_id
-        self.notes = notes
+    id_: UUID
+    season_id: UUID
+    week: int
+    date: datetime.date
+    season_section: str
+    home_team_id: UUID
+    away_team_id: UUID
+    notes: str
 
 
+@dataclass(frozen=True)
 class GameCompletedEvent(Event):
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        week: int,
-        date: datetime.date,
-        season_section: str,
-        home_team_id: UUID,
-        away_team_id: UUID,
-        home_team_score: int,
-        away_team_score: int,
-        notes: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.week = week
-        self.date = date
-        self.season_section = season_section
-        self.home_team_id = home_team_id
-        self.away_team_id = away_team_id
-        self.home_team_score = home_team_score
-        self.away_team_score = away_team_score
-        self.notes = notes
+    id_: UUID
+    season_id: UUID
+    week: int
+    date: datetime.date
+    season_section: str
+    home_team_id: UUID
+    away_team_id: UUID
+    home_team_score: int
+    away_team_score: int
+    notes: str
 
 
+@dataclass(frozen=True)
 class GameNotesUpdatedEvent(Event):
-    def __init__(
-        self,
-        id_: UUID,
-        season_id: UUID,
-        week: int,
-        date: datetime.date,
-        season_section: str,
-        home_team_id: UUID,
-        away_team_id: UUID,
-        old_notes: str,
-        notes: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.week = week
-        self.date = date
-        self.season_section = season_section
-        self.home_team_id = home_team_id
-        self.away_team_id = away_team_id
-        self.old_notes = old_notes
-        self.notes = notes
+    id_: UUID
+    season_id: UUID
+    week: int
+    date: datetime.date
+    season_section: str
+    home_team_id: UUID
+    away_team_id: UUID
+    old_notes: str
+    notes: str

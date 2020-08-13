@@ -5,15 +5,15 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from dataclasses import dataclass
 
+
+@dataclass(frozen=True)
 class AffiliationDto:
-    def __init__(
-        self, id_: UUID, season_id: UUID, team_id: UUID, subdivision: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.team_id = team_id
-        self.subdivision = subdivision
+    id_: UUID
+    season_id: UUID
+    team_id: UUID
+    subdivision: str
 
 
 class AffiliationStorage:

@@ -1,13 +1,13 @@
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Event
 
 
+@dataclass(frozen=True)
 class AffiliationCreatedEvent(Event):
-    def __init__(
-        self, id_: UUID, season_id: UUID, team_id: UUID, subdivision: str,
-    ) -> None:
-        self.id_ = id_
-        self.season_id = season_id
-        self.team_id = team_id
-        self.subdivision = subdivision
+    id_: UUID
+    season_id: UUID
+    team_id: UUID
+    subdivision: str

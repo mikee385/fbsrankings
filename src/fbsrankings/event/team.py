@@ -1,9 +1,11 @@
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Event
 
 
+@dataclass(frozen=True)
 class TeamCreatedEvent(Event):
-    def __init__(self, id_: UUID, name: str) -> None:
-        self.id_ = id_
-        self.name = name
+    id_: UUID
+    name: str

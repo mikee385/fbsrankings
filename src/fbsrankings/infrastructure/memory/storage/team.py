@@ -3,11 +3,13 @@ from typing import Iterable
 from typing import Optional
 from uuid import UUID
 
+from dataclasses import dataclass
 
+
+@dataclass(frozen=True)
 class TeamDto:
-    def __init__(self, id_: UUID, name: str) -> None:
-        self.id_ = id_
-        self.name = name
+    id_: UUID
+    name: str
 
 
 class TeamStorage:

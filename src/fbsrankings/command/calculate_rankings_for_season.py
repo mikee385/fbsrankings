@@ -1,9 +1,11 @@
 from typing import Union
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Command
 
 
+@dataclass(frozen=True)
 class CalculateRankingsForSeasonCommand(Command):
-    def __init__(self, season_id_or_year: Union[UUID, int]) -> None:
-        self.season_id_or_year = season_id_or_year
+    season_id_or_year: Union[UUID, int]

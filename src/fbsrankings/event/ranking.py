@@ -3,36 +3,33 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
+from dataclasses import dataclass
+
 from fbsrankings.common import Event
 
 
+@dataclass(frozen=True)
 class RankingValue:
-    def __init__(self, id_: UUID, order: int, rank: int, value: float) -> None:
-        self.id_ = id_
-        self.order = order
-        self.rank = rank
-        self.value = value
+    id_: UUID
+    order: int
+    rank: int
+    value: float
 
 
+@dataclass(frozen=True)
 class RankingCalculatedEvent(Event, metaclass=ABCMeta):
-    def __init__(
-        self,
-        id_: UUID,
-        name: str,
-        season_id: UUID,
-        week: Optional[int],
-        values: List[RankingValue],
-    ) -> None:
-        self.id_ = id_
-        self.name = name
-        self.season_id = season_id
-        self.week = week
-        self.values = values
+    id_: UUID
+    name: str
+    season_id: UUID
+    week: Optional[int]
+    values: List[RankingValue]
 
 
+@dataclass(frozen=True)
 class TeamRankingCalculatedEvent(RankingCalculatedEvent):
     pass
 
 
+@dataclass(frozen=True)
 class GameRankingCalculatedEvent(RankingCalculatedEvent):
     pass
