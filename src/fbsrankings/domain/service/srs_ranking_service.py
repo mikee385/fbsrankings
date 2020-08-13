@@ -55,8 +55,8 @@ class SRSRankingService(TeamRankingService):
                 season_is_complete = False
 
         n = len(team_data)
-        a = numpy.zeros((n, n))
-        b = numpy.zeros(n)
+        a = numpy.zeros((n + 1, n))
+        b = numpy.zeros(n + 1)
 
         rankings = []
         for week in sorted(games_by_week.keys()):
@@ -77,21 +77,13 @@ class SRSRankingService(TeamRankingService):
                     a[home_data.index, away_data.index] -= 1.0
                     a[away_data.index, home_data.index] -= 1.0
 
-            too_few_games = False
-            for data in team_data.values():
-                if data.game_total < 1:
-                    too_few_games = True
-                    break
-            if too_few_games:
-                continue
-
             for data in team_data.values():
                 a[data.index, data.index] = data.game_total
                 b[data.index] = data.point_margin
+                a[n, data.index] = 1.0
+            b[n] = 0.0
 
             x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
-            shift = numpy.sum(x) / n
-            x -= shift
 
             result = {id_: x[data.index] for id_, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
