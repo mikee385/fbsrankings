@@ -33,7 +33,9 @@ install-dev:
 upgrade:
     pip-compile --output-file=requirements.txt setup.py --upgrade
     sort-requirements requirements.txt
+    python -c "f = open('requirements-dev.in', 'w'); f.write('-e .[dev]'); f.close()"
     pip-compile --output-file=requirements-dev.txt requirements-dev.in --upgrade
+    python -c "import os; os.remove('requirements-dev.in')"
     python -c "\
 import re; \
 p = re.compile('file://[^\r\n]+fbsrankings'); \
