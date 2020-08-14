@@ -47,7 +47,7 @@ mypy==0.782               # via fbsrankings
 mypy-extensions==0.4.3    # via mypy
 nodeenv==1.4.0            # via pre-commit
 numpy==1.19.1             # via fbsrankings
-packaging==20.4           # via bleach, pytest
+packaging==20.4           # via bleach, pytest, wheel
 pathspec==0.8.0           # via black
 pbr==5.4.5                # via stevedore
 pep8-naming==0.11.1       # via fbsrankings
@@ -88,7 +88,7 @@ typing-extensions==3.7.4.2  # via fbsrankings, mypy
 urllib3==1.25.10          # via requests
 virtualenv==20.0.30       # via pre-commit
 webencodings==0.5.1       # via bleach, html5lib
-wheel==0.34.2             # via fbsrankings
+wheel==0.35.0             # via fbsrankings
 wrapt==1.12.1             # via astroid
 zipp==3.1.0               # via importlib-metadata, importlib-resources
 
