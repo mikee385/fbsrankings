@@ -31,6 +31,7 @@ install-dev:
     pip install -r requirements-dev.txt
 
 upgrade:
+    init
     pip-compile --output-file=requirements.txt setup.py --upgrade
     sort-requirements requirements.txt
     python -c "f = open('requirements-dev.in', 'w'); f.write('-e .[dev]'); f.close()"
