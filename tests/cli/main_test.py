@@ -182,9 +182,8 @@ def test_main_import_all_sqlite_file(
     assert "Importing season data:" in captured_err
     assert "Calculating rankings:" in captured_err
 
-    assert os.path.exists(test_db) and os.path.isfile(
-        test_db,
-    ), "Test database is missing"
+    assert os.path.exists(test_db), "Test database is missing"
+    assert os.path.isfile(test_db), "Test database is not a file"
 
 
 def test_main_import_all_sqlite_memory(

@@ -10,7 +10,9 @@ from typing_extensions import Literal
 
 class Spinner:
     def __init__(self, delay: Optional[float] = None) -> None:
-        self._bar = tqdm(total=100, bar_format="{desc}|{bar:10}| {elapsed}")
+        self._bar = tqdm(
+            total=100, bar_format="{desc}|{bar:10}| {elapsed}",  # noqa: FS003
+        )
 
         self._busy = False
         self._total = 0

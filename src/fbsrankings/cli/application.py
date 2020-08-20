@@ -65,7 +65,7 @@ from fbsrankings.service import Service
 
 
 class Application:
-    def __init__(self, config_location: str):
+    def __init__(self, config_location: str) -> None:
         package_dir = Path(__file__).resolve().parent.parent
 
         if config_location is not None:
