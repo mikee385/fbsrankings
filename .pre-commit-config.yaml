@@ -72,10 +72,3 @@ repos:
     -   id: mypy
         additional_dependencies: ["pytest"]
         args: [--strict]
--   repo: local
-    hooks:
-    -   id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
