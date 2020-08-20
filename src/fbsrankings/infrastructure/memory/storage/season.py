@@ -30,7 +30,7 @@ class SeasonStorage:
     def find(self, year: int) -> Optional[SeasonDto]:
         return self._by_key.get(year)
 
-    def all(self) -> Iterable[SeasonDto]:
+    def all_(self) -> Iterable[SeasonDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

@@ -24,8 +24,8 @@ class TeamRepository(BaseRepository):
         dto = self._storage.find(name)
         return self._to_team(dto) if dto is not None else None
 
-    def all(self) -> List[Team]:
-        dtos = self._storage.all()
+    def all_(self) -> List[Team]:
+        dtos = self._storage.all_()
         return [self._to_team(dto) for dto in dtos if dto is not None]
 
     def _to_team(self, dto: TeamDto) -> Team:

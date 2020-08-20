@@ -55,5 +55,5 @@ class SeasonRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def all(self) -> List[Season]:
+    def all_(self) -> List[Season]:
         raise NotImplementedError

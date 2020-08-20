@@ -11,7 +11,7 @@ class CanceledGamesQueryHandler:
 
     def __call__(self, query: CanceledGamesQuery) -> CanceledGamesResult:
         games = []
-        for game in self._storage.game.all():
+        for game in self._storage.game.all_():
             if game.status == GameStatus.CANCELED.name:
                 season = self._storage.season.get(game.season_id)
                 home_team = self._storage.team.get(game.home_team_id)

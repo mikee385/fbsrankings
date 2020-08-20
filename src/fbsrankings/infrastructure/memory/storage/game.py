@@ -72,7 +72,7 @@ class GameStorage:
             return []
         return list(by_season)
 
-    def all(self) -> Iterable[GameDto]:
+    def all_(self) -> Iterable[GameDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

@@ -50,7 +50,7 @@ class TeamRepository(BaseRepository):
 
         return self._to_team(row) if row is not None else None
 
-    def all(self) -> List[Team]:
+    def all_(self) -> List[Team]:
         cursor = self._connection.cursor()
         cursor.execute(self._query().get_sql())
         rows = cursor.fetchall()

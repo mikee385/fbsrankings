@@ -63,7 +63,7 @@ class RankingStorage:
             return []
         return list(by_season)
 
-    def all(self) -> Iterable[RankingDto]:
+    def all_(self) -> Iterable[RankingDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

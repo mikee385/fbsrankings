@@ -59,7 +59,7 @@ class TeamRecordStorage:
             return []
         return list(by_season)
 
-    def all(self) -> Iterable[TeamRecordDto]:
+    def all_(self) -> Iterable[TeamRecordDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

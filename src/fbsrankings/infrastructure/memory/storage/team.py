@@ -30,7 +30,7 @@ class TeamStorage:
     def find(self, name: str) -> Optional[TeamDto]:
         return self._by_key.get(name)
 
-    def all(self) -> Iterable[TeamDto]:
+    def all_(self) -> Iterable[TeamDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

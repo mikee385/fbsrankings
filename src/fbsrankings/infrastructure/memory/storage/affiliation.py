@@ -52,7 +52,7 @@ class AffiliationStorage:
             return []
         return list(by_season)
 
-    def all(self) -> Iterable[AffiliationDto]:
+    def all_(self) -> Iterable[AffiliationDto]:
         return self._by_key.values()
 
     def drop(self) -> None:

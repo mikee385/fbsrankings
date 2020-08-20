@@ -24,8 +24,8 @@ class SeasonRepository(BaseRepository):
         dto = self._storage.find(year)
         return self._to_season(dto) if dto is not None else None
 
-    def all(self) -> List[Season]:
-        dtos = self._storage.all()
+    def all_(self) -> List[Season]:
+        dtos = self._storage.all_()
         return [self._to_season(dto) for dto in dtos if dto is not None]
 
     def _to_season(self, dto: SeasonDto) -> Season:

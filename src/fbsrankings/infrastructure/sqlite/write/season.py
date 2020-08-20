@@ -50,7 +50,7 @@ class SeasonRepository(BaseRepository):
 
         return self._to_season(row) if row is not None else None
 
-    def all(self) -> List[Season]:
+    def all_(self) -> List[Season]:
         cursor = self._connection.cursor()
         cursor.execute(self._query().get_sql())
         rows = cursor.fetchall()

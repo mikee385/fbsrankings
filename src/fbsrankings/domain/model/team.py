@@ -48,5 +48,5 @@ class TeamRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def all(self) -> List[Team]:
+    def all_(self) -> List[Team]:
         raise NotImplementedError
