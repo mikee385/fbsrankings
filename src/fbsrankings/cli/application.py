@@ -111,8 +111,8 @@ class Application:
             self._print_check()
 
         self._print_events()
-        # self._print_canceled_games()
-        # self._print_notes()
+        # self._print_canceled_games()  # noqa: E800
+        # self._print_notes()  # noqa: E800
         self._print_errors()
 
     def print_latest(self, rating: str, top: str) -> None:
