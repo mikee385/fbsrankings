@@ -8,7 +8,7 @@
 appdirs==1.4.4            # via black, virtualenv
 astroid==2.4.2            # via pylint
 atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via black, flake8-bugbear, flake8-eradicate, pytest
+attrs==20.1.0             # via black, flake8-bugbear, flake8-eradicate, pytest
 bandit==1.6.2             # via fbsrankings
 beautifulsoup4==4.9.1     # via fbsrankings
 black==19.10b0            # via fbsrankings
@@ -48,8 +48,8 @@ idna==2.10                # via requests
 importlib-metadata==1.7.0  # via flake8, flake8-comprehensions, flake8-typing-imports, keyring, pluggy, pre-commit, pytest, stevedore, twine, virtualenv
 importlib-resources==3.0.0  # via pre-commit, virtualenv
 iniconfig==1.0.1          # via pytest
-isort==4.3.21             # via pylint
-keyring==21.3.0           # via twine
+isort==5.4.2              # via pylint
+keyring==21.3.1           # via twine
 lazy-object-proxy==1.4.3  # via astroid
 mccabe==0.6.1             # via flake8, pylint
 more-itertools==8.4.0     # via pytest
@@ -72,7 +72,7 @@ pycodestyle==2.6.0        # via flake8
 pydantic==1.6.1           # via fbsrankings
 pyflakes==2.2.0           # via flake8
 pygments==2.6.1           # via pyroma, readme-renderer
-pylint==2.5.3             # via fbsrankings
+pylint==2.6.0             # via fbsrankings
 pyparsing==2.4.7          # via packaging
 pypika==0.38.0            # via fbsrankings
 pyroma==2.6               # via fbsrankings
