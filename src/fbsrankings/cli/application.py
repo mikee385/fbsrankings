@@ -12,7 +12,6 @@ from typing import Type
 from typing import Union
 from uuid import UUID
 
-import jsonschema
 from prettytable import PrettyTable
 from tqdm import tqdm
 from typing_extensions import Literal
@@ -61,6 +60,7 @@ from fbsrankings.query import TeamRankingBySeasonWeekResult
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.query import TeamRecordBySeasonWeekResult
 from fbsrankings.query import WeekCountBySeasonQuery
+from fbsrankings.service import Config
 from fbsrankings.service import Service
 
 
@@ -76,12 +76,9 @@ class Application:
             raise ValueError(f"'{config_path}' must be a valid file path")
 
         with open(config_path) as config_file:
-            config = json.load(config_file)
+            config_data = json.load(config_file)
 
-        schema_path = package_dir / "data" / "schema.json"
-        with open(schema_path) as schema_file:
-            schema = json.load(schema_file)
-        jsonschema.validate(config, schema)
+        config = Config(**config_data)
 
         self._event_bus = EventRecorder(EventBus())
         self._service = Service(config, self._event_bus)

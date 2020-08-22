@@ -52,18 +52,18 @@ class Service(ContextManager["Service"]):
         self._event_bus = event_bus
         self._data_source: DataSource
 
-        storage_type = config["storage_type"]
+        storage_type = config.storage_type
         if storage_type == "memory":
             self._data_source = MemoryDataSource()
 
         elif storage_type == "sqlite":
-            database = config["database"]
-            self._data_source = SqliteDataSource(database)
+            database = config.database
+            self._data_source = SqliteDataSource(str(database))
 
         else:
             raise ValueError(f"Unknown storage type: {storage_type}")
 
-        alternate_names = config.get("alternate_names")
+        alternate_names = config.alternate_names
         if alternate_names is None:
             alternate_names = {}
 
@@ -73,14 +73,14 @@ class Service(ContextManager["Service"]):
         self._sports_reference = SportsReference(
             alternate_names, self.validation_service,
         )
-        for season in config["seasons"]:
-            self.seasons.append(season["year"])
+        for season in config.seasons:
+            self.seasons.append(season.year)
             self._sports_reference.add_source(
-                season["year"],
-                season["postseason_start_week"],
-                season["source_type"],
-                season["teams"],
-                season["games"],
+                season.year,
+                season.postseason_start_week,
+                season.source_type,
+                str(season.teams),
+                str(season.games),
             )
 
         self._command_bus = CommandBus()

@@ -83,5 +83,6 @@ repos:
     hooks:
     -   id: mypy
         additional_dependencies:
+        -   pydantic
         -   pytest
         args: [--strict]

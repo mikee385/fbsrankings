@@ -4,22 +4,15 @@
 #
 #    pip-compile --output-file=requirements.txt setup.py
 #
-attrs==19.3.0             # via jsonschema
 beautifulsoup4==4.9.1     # via fbsrankings (setup.py)
-dataclasses==0.7          # via fbsrankings (setup.py)
+dataclasses==0.7          # via fbsrankings (setup.py), pydantic
 html5lib==1.1             # via fbsrankings (setup.py)
-importlib-metadata==1.7.0  # via jsonschema
-jsonschema==3.2.0         # via fbsrankings (setup.py)
 numpy==1.19.1             # via fbsrankings (setup.py)
 prettytable==0.7.2        # via fbsrankings (setup.py)
+pydantic==1.6.1           # via fbsrankings (setup.py)
 pypika==0.38.0            # via fbsrankings (setup.py)
-pyrsistent==0.16.0        # via jsonschema
-six==1.15.0               # via html5lib, jsonschema, pyrsistent
+six==1.15.0               # via html5lib
 soupsieve==2.0.1          # via beautifulsoup4
 tqdm==4.48.2              # via fbsrankings (setup.py)
 typing-extensions==3.7.4.2  # via fbsrankings (setup.py)
 webencodings==0.5.1       # via html5lib
-zipp==3.1.0               # via importlib-metadata
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools

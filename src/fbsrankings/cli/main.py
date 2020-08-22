@@ -240,7 +240,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     except Exception as error:  # pylint: disable=broad-except
         if args.trace:
             raise
-        print_err(str(error))
+        print_err(f"{type(error).__name__}: {str(error)}")
         sys.exit(1)
 
     sys.exit(0)
