@@ -52,12 +52,12 @@ class Service(ContextManager["Service"]):
         self._event_bus = event_bus
         self._data_source: DataSource
 
-        storage_type = config["settings"]["storage_type"]
+        storage_type = config["storage_type"]
         if storage_type == "memory":
             self._data_source = MemoryDataSource()
 
         elif storage_type == "sqlite":
-            database = config["settings"]["database"]
+            database = config["database"]
             self._data_source = SqliteDataSource(database)
 
         else:

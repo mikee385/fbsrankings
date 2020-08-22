@@ -3,25 +3,17 @@
     "id": "https://github.com/mikee385/fbsrankings/blob/master/fbsrankings/application/config_schema.json",
     "type": "object",
     "required": [
-        "settings",
+        "storage_type",
         "seasons"
     ],
     "properties": {
-        "settings": {
-            "type": "object",
-            "required": [
-                "storage_type"
-            ],
-            "properties": {
-                "storage_type": {
-                    "type": "string",
-                    "enum": [ "sqlite", "memory" ]
-                },
-                "database": {
-                    "type": "string",
-                    "additionalProperties": { "type": "string" }
-                }
-            }
+        "storage_type": {
+            "type": "string",
+            "enum": [ "sqlite", "memory" ]
+        },
+        "database": {
+            "type": "string",
+            "additionalProperties": { "type": "string" }
         },
         "alternate_names": {
             "type": "object"

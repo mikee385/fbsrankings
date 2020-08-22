@@ -47,8 +47,8 @@ def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
     db_path = test_path / "test_data.db"
     with open(src_path) as src_file, open(dest_path, "w") as dest_file:
         src_json = json.load(src_file)
-        src_json["settings"]["storage_type"] = "sqlite"
-        src_json["settings"]["database"] = str(db_path)
+        src_json["storage_type"] = "sqlite"
+        src_json["database"] = str(db_path)
         json.dump(src_json, dest_file)
     return dest_path, db_path
 
@@ -59,8 +59,8 @@ def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
     dest_path = test_path / "test_config.json"
     with open(src_path) as src_file, open(dest_path, "w") as dest_file:
         src_json = json.load(src_file)
-        src_json["settings"]["storage_type"] = "sqlite"
-        src_json["settings"]["database"] = ":memory:"
+        src_json["storage_type"] = "sqlite"
+        src_json["database"] = ":memory:"
         json.dump(src_json, dest_file)
     return dest_path
 
@@ -71,7 +71,7 @@ def memory_config(data_path: Path, test_path: Path) -> Path:
     dest_path = test_path / "test_config.json"
     with open(src_path) as src_file, open(dest_path, "w") as dest_file:
         src_json = json.load(src_file)
-        src_json["settings"]["storage_type"] = "memory"
+        src_json["storage_type"] = "memory"
         json.dump(src_json, dest_file)
     return dest_path
 
