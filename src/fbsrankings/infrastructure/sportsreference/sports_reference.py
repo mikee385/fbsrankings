@@ -74,7 +74,7 @@ class SportsReference:
         self._sources: Dict[int, _SeasonSource] = {}
 
         if alternate_names is not None:
-            self._alternate_names = alternate_names
+            self._alternate_names = {key.lower(): value for key, value in alternate_names.items()}
         else:
             self._alternate_names = {}
 
@@ -154,8 +154,8 @@ class SportsReference:
         for row in team_rows:
             if row[rank_index].isdigit():
                 name = row[name_index].strip()
-                if name in self._alternate_names:
-                    name = self._alternate_names[name]
+                if name.lower() in self._alternate_names:
+                    name = self._alternate_names[name.lower()]
                 team = self._import_team(repository.team, cache.team, name)
                 self._import_affiliation(
                     repository.affiliation,
@@ -221,8 +221,8 @@ class SportsReference:
                     start = first_team_name.find(")")
                     first_team_name = first_team_name[start + 2 :].strip()
 
-                if first_team_name in self._alternate_names:
-                    first_team_name = self._alternate_names[first_team_name]
+                if first_team_name.lower() in self._alternate_names:
+                    first_team_name = self._alternate_names[first_team_name.lower()]
 
                 if first_score_string == "":
                     first_score = None
@@ -233,8 +233,8 @@ class SportsReference:
                     start = second_team_name.find(")")
                     second_team_name = second_team_name[start + 2 :].strip()
 
-                if second_team_name in self._alternate_names:
-                    second_team_name = self._alternate_names[second_team_name]
+                if second_team_name.lower() in self._alternate_names:
+                    second_team_name = self._alternate_names[second_team_name.lower()]
 
                 if second_score_string == "":
                     second_score = None

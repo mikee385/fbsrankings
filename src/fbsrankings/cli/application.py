@@ -1,4 +1,3 @@
-import json
 import re
 from pathlib import Path
 from types import TracebackType
@@ -71,14 +70,11 @@ class Application:
         if config_location is not None:
             config_path = Path(config_location).resolve()
         else:
-            config_path = package_dir / "data" / "config.json"
+            config_path = package_dir / "data" / "fbsrankings.ini"
         if not config_path.is_file():
             raise ValueError(f"'{config_path}' must be a valid file path")
 
-        with open(config_path) as config_file:
-            config_data = json.load(config_file)
-
-        config = Config(**config_data)
+        config = Config.from_ini(config_path)
 
         self._event_bus = EventRecorder(EventBus())
         self._service = Service(config, self._event_bus)

@@ -8,6 +8,6 @@ include requirements.txt
 include requirements-dev.in
 include requirements-dev.txt
 include src/fbsrankings/py.typed
-include src/fbsrankings/data/config.json
+include src/fbsrankings/data/fbsrankings.ini
 recursive-include tests *.py
 recursive-include tests/data *
