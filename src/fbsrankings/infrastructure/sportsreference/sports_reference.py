@@ -74,7 +74,9 @@ class SportsReference:
         self._sources: Dict[int, _SeasonSource] = {}
 
         if alternate_names is not None:
-            self._alternate_names = {key.lower(): value for key, value in alternate_names.items()}
+            self._alternate_names = {
+                key.lower(): value for key, value in alternate_names.items()
+            }
         else:
             self._alternate_names = {}
 
