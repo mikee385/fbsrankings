@@ -104,9 +104,14 @@ class Application:
             self._print_check()
 
         self._print_events()
-        # self._print_canceled_games()  # noqa: E800
-        # self._print_notes()  # noqa: E800
-        self._print_errors()
+
+        debug = False
+        if debug:
+            self._print_canceled_games()
+            self._print_notes()
+            self._raise_errors()
+        else:
+            self._print_errors()
 
     def print_latest(self, rating: str, top: str) -> None:
         rating_name = self._parse_rating(rating)
@@ -371,15 +376,9 @@ class Application:
         return game_ranking
 
     def _print_seasons_table(self, seasons: Iterable[SeasonResult]) -> None:
-        season_summary_table = PrettyTable()
-        season_summary_table.field_names = [
-            "Season",
-            "Weeks",
-            "Teams",
-            "FBS",
-            "FCS",
-            "Games",
-        ]
+        season_summary_table = PrettyTable(
+            field_names=["Season", "Weeks", "Teams", "FBS", "FCS", "Games"],
+        )
 
         for season in seasons:
             week_count = self._service.query(WeekCountBySeasonQuery(season.id_))
@@ -423,22 +422,17 @@ class Application:
         record_map = {v.id_: v for v in record.values}
         sos_map = {v.id_: v for v in sos.values}
 
-        table = PrettyTable()
-        table.field_names = [
-            "#",
-            "Team",
-            "W-L",
-            "Val",
-            "SOS_#",
-            "SOS_Val",
-        ]
+        table = PrettyTable(
+            field_names=["#", "Team", "W-L", "Val", "SOS_#", "SOS_Val"],
+        )
         table.align["#"] = "r"
         table.align["Team"] = "l"
         table.align["W-L"] = "r"
         table.align["Val"] = "c"
         table.align["SOS_#"] = "r"
         table.align["SOS_Val"] = "c"
-        table.float_format = ".3"
+        table.float_format["Val"] = ".3"  # pylint: disable=E1137
+        table.float_format["SOS_Val"] = ".3"  # pylint: disable=E1137
 
         if limit is None:
             values = ranking.values
@@ -470,16 +464,9 @@ class Application:
     ) -> None:
         team_map = {v.id_: v for v in team_ranking.values}
 
-        table = PrettyTable()
-        table.field_names = [
-            "Date",
-            "H#",
-            "Home",
-            "A#",
-            "Away",
-            "Score",
-            "Val",
-        ]
+        table = PrettyTable(
+            field_names=["Date", "H#", "Home", "A#", "Away", "Score", "Val"],
+        )
         table.align["Date"] = "c"
         table.align["H#"] = "r"
         table.align["Home"] = "l"
@@ -487,7 +474,7 @@ class Application:
         table.align["Away"] = "l"
         table.align["Score"] = "r"
         table.align["Val"] = "c"
-        table.float_format = ".3"
+        table.float_format["Val"] = ".3"  # pylint: disable=E1137
 
         if limit is None:
             values = game_values
@@ -553,19 +540,20 @@ class Application:
                     year_counts.setdefault(event_type, 0)
                     year_counts[event_type] += 1
 
-            event_table = PrettyTable()
-            event_table.field_names = [
-                "Year",
-                "Tm",
-                "GmS",
-                "GmC",
-                "GmR",
-                "GmX",
-                "GmN",
-                "TRd",
-                "TRk",
-                "GRk",
-            ]
+            event_table = PrettyTable(
+                field_names=[
+                    "Year",
+                    "Tm",
+                    "GmS",
+                    "GmC",
+                    "GmR",
+                    "GmX",
+                    "GmN",
+                    "TRd",
+                    "TRk",
+                    "GRk",
+                ],
+            )
             for year, counts in event_counts.items():
                 event_table.add_row(
                     [
@@ -584,8 +572,7 @@ class Application:
             print(event_table)
 
             if other_counts:
-                other_table = PrettyTable()
-                other_table.field_names = ["Type", "Count"]
+                other_table = PrettyTable(field_names=["Type", "Count"])
                 other_table.align["Type"] = "l"
                 other_table.align["Count"] = "r"
 
@@ -732,3 +719,6 @@ class Application:
             print()
             for error in other_errors:
                 print(error)
+
+    def _raise_errors(self) -> None:
+        self._service.validation_service.raise_errors()

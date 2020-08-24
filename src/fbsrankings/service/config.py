@@ -18,14 +18,10 @@ class ConfigStorageType(str, Enum):
     MEMORY = "memory"
 
 
-class ConfigSourceType(str, Enum):
-    URL = "URL"
-
-
 class ConfigSeason(BaseModel):
     year: PositiveInt
     postseason_start_week: PositiveInt
-    source_type: ConfigSourceType
+    source_type: str
     teams: Union[AnyHttpUrl, Path]
     games: Union[AnyHttpUrl, Path]
 

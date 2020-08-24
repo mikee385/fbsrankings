@@ -11,7 +11,6 @@ from fbsrankings.event import SeasonCreatedEvent
 
 
 class SeasonSection(Enum):
-    PRESEASON = 0
     REGULAR_SEASON = 1
     POSTSEASON = 2
 

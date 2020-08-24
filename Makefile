@@ -53,10 +53,11 @@ f.close(); "
 check:
     black src tests setup.py
     flake8 src tests setup.py
+    mypy src tests setup.py
+    vulture src tests setup.py
     pylint src tests setup.py
     bandit -r src
     pyroma .
-    mypy src tests setup.py
 
 pre-commit:
     pre-commit run --all-files

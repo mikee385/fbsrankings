@@ -24,6 +24,7 @@ from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 from fbsrankings.service.command import CommandManager
 from fbsrankings.service.config import Config
+from fbsrankings.service.config import ConfigStorageType
 
 R = TypeVar("R", covariant=True)
 
@@ -53,10 +54,10 @@ class Service(ContextManager["Service"]):
         self._data_source: DataSource
 
         storage_type = config.storage_type
-        if storage_type == "memory":
+        if storage_type == ConfigStorageType.MEMORY:
             self._data_source = MemoryDataSource()
 
-        elif storage_type == "sqlite":
+        elif storage_type == ConfigStorageType.SQLITE:
             database = config.database
             self._data_source = SqliteDataSource(str(database))
 

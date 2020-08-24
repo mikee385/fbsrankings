@@ -51,25 +51,3 @@ class EventRecorder(EventBus):
 
     def clear(self) -> None:
         self.events = []
-
-
-class EventCounter(EventBus):
-    def __init__(self, bus: EventBus) -> None:
-        super().__init__()
-
-        self._bus = bus
-        self.counts: Dict[Type[Event], int] = {}
-
-    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
-        self._bus.register_handler(type_, handler)
-
-    def publish(self, event: E) -> None:
-        count = self.counts.get(type(event))
-        if count is None:
-            self.counts[type(event)] = 1
-        else:
-            self.counts[type(event)] += 1
-        self._bus.publish(event)
-
-    def clear(self) -> None:
-        self.counts = {}

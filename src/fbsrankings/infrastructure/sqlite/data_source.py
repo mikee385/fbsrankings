@@ -30,8 +30,7 @@ class DataSource(QueryManagerFactory, TransactionFactory):
             database_path.parent.mkdir(parents=True, exist_ok=True)
             self._database = str(database_path)
 
-        self._connection = sqlite3.connect(self._database)
-        self._connection.isolation_level = None
+        self._connection = sqlite3.connect(self._database, isolation_level=None)
         self._connection.execute("PRAGMA foreign_keys = ON")
 
         self._storage = Storage(self._connection)

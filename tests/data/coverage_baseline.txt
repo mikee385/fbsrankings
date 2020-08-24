@@ -3,7 +3,7 @@ Name                                                                        Stmt
 src\fbsrankings\__init__.py                                                     2      0   100%
 src\fbsrankings\__main__.py                                                     3      3     0%
 src\fbsrankings\cli\__init__.py                                                 2      0   100%
-src\fbsrankings\cli\application.py                                            453    124    73%
+src\fbsrankings\cli\application.py                                            456    127    72%
 src\fbsrankings\cli\error.py                                                    4      0   100%
 src\fbsrankings\cli\main.py                                                    69      6    91%
 src\fbsrankings\cli\spinner.py                                                 45      3    93%
@@ -11,18 +11,18 @@ src\fbsrankings\cli\types.py                                                   3
 src\fbsrankings\command\__init__.py                                             3      0   100%
 src\fbsrankings\command\calculate_rankings_for_season.py                        7      0   100%
 src\fbsrankings\command\import_season_by_year.py                                5      0   100%
-src\fbsrankings\common\__init__.py                                             12      0   100%
+src\fbsrankings\common\__init__.py                                             11      0   100%
 src\fbsrankings\common\command.py                                              25      2    92%
-src\fbsrankings\common\event.py                                                51     11    78%
+src\fbsrankings\common\event.py                                                36      1    97%
 src\fbsrankings\common\identifier.py                                           68     43    37%
 src\fbsrankings\common\query.py                                                28      2    93%
 src\fbsrankings\domain\__init__.py                                             45      0   100%
 src\fbsrankings\domain\model\__init__.py                                        0      0   100%
 src\fbsrankings\domain\model\affiliation.py                                    52      3    94%
-src\fbsrankings\domain\model\game.py                                          169     27    84%
+src\fbsrankings\domain\model\game.py                                          169     25    85%
 src\fbsrankings\domain\model\ranking.py                                       136      4    97%
 src\fbsrankings\domain\model\record.py                                         67      2    97%
-src\fbsrankings\domain\model\season.py                                         43      3    93%
+src\fbsrankings\domain\model\season.py                                         42      3    93%
 src\fbsrankings\domain\model\team.py                                           38      3    92%
 src\fbsrankings\domain\service\__init__.py                                      0      0   100%
 src\fbsrankings\domain\service\colley_matrix_ranking_service.py                69      1    99%
@@ -31,7 +31,7 @@ src\fbsrankings\domain\service\record_service.py                               4
 src\fbsrankings\domain\service\simultaneous_wins_ranking_service.py            69      2    97%
 src\fbsrankings\domain\service\srs_ranking_service.py                          79      1    99%
 src\fbsrankings\domain\service\strength_of_schedule_ranking_service.py         41      0   100%
-src\fbsrankings\domain\service\validation_service.py                          142     62    56%
+src\fbsrankings\domain\service\validation_service.py                          164     66    60%
 src\fbsrankings\event\__init__.py                                              15      0   100%
 src\fbsrankings\event\affiliation.py                                            9      0   100%
 src\fbsrankings\event\game.py                                                  59      0   100%
@@ -78,7 +78,7 @@ src\fbsrankings\infrastructure\query_manager.py                                3
 src\fbsrankings\infrastructure\sportsreference\__init__.py                      2      0   100%
 src\fbsrankings\infrastructure\sportsreference\sports_reference.py            221     12    95%
 src\fbsrankings\infrastructure\sqlite\__init__.py                               2      0   100%
-src\fbsrankings\infrastructure\sqlite\data_source.py                           42      4    90%
+src\fbsrankings\infrastructure\sqlite\data_source.py                           41      4    90%
 src\fbsrankings\infrastructure\sqlite\read\__init__.py                         16      0   100%
 src\fbsrankings\infrastructure\sqlite\read\affiliation_count_by_season.py      18      0   100%
 src\fbsrankings\infrastructure\sqlite\read\canceled_games.py                   26      7    73%
@@ -133,7 +133,7 @@ src\fbsrankings\service\command\__init__.py                                     
 src\fbsrankings\service\command\calculate_rankings_for_season.py               44      4    91%
 src\fbsrankings\service\command\command_manager.py                             36      0   100%
 src\fbsrankings\service\command\import_season_by_year.py                       14      0   100%
-src\fbsrankings\service\config.py                                              48      1    98%
-src\fbsrankings\service\service.py                                             81      9    89%
+src\fbsrankings\service\config.py                                              46      1    98%
+src\fbsrankings\service\service.py                                             82      9    89%
 -----------------------------------------------------------------------------------------------
-TOTAL                                                                        5056    668    87%
+TOTAL                                                                        5062    663    87%

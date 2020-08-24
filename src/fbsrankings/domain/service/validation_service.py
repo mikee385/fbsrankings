@@ -290,6 +290,76 @@ class ValidationService:
                     away_team_score,
                 ),
             )
+
+        winning_team_id: Optional[TeamID]
+        losing_team_id: Optional[TeamID]
+        winning_team_score: Optional[int]
+        losing_team_score: Optional[int]
+        if home_team_score is not None and away_team_score is not None:
+            if home_team_score > away_team_score:
+                winning_team_id = home_team_id
+                losing_team_id = away_team_id
+                winning_team_score = home_team_score
+                losing_team_score = away_team_score
+            else:
+                winning_team_id = away_team_id
+                losing_team_id = home_team_id
+                winning_team_score = away_team_score
+                losing_team_score = home_team_score
+        else:
+            winning_team_id = None
+            losing_team_id = None
+            winning_team_score = None
+            losing_team_score = None
+
+        if game.winning_team_id != winning_team_id:
+            self._handle_error(
+                GameDataValidationError(
+                    "Game.winning_team_id does not match winning_team_id:"
+                    f" {game.winning_team_id} vs. {winning_team_id}",
+                    game.id_.value,
+                    "winning_team_id",
+                    game.winning_team_id.value
+                    if game.winning_team_id is not None
+                    else None,
+                    winning_team_id.value if winning_team_id is not None else None,
+                ),
+            )
+        if game.losing_team_id != losing_team_id:
+            self._handle_error(
+                GameDataValidationError(
+                    "Game.losing_team_id does not match losing_team_id:"
+                    f" {game.losing_team_id} vs. {losing_team_id}",
+                    game.id_.value,
+                    "losing_team_id",
+                    game.losing_team_id.value
+                    if game.losing_team_id is not None
+                    else None,
+                    losing_team_id.value if losing_team_id is not None else None,
+                ),
+            )
+        if game.winning_team_score != winning_team_score:
+            self._handle_error(
+                GameDataValidationError(
+                    "Game.winning_team_score does not match winning_team_score:"
+                    f" {game.winning_team_score} vs. {winning_team_score}",
+                    game.id_.value,
+                    "winning_team_score",
+                    game.winning_team_score,
+                    winning_team_score,
+                ),
+            )
+        if game.losing_team_score != losing_team_score:
+            self._handle_error(
+                GameDataValidationError(
+                    "Game.losing_team_score does not match losing_team_score:"
+                    f" {game.losing_team_score} vs. {losing_team_score}",
+                    game.id_.value,
+                    "losing_team_score",
+                    game.losing_team_score,
+                    losing_team_score,
+                ),
+            )
         if game.status != status:
             self._handle_error(
                 GameDataValidationError(
