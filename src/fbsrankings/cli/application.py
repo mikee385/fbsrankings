@@ -47,6 +47,7 @@ from fbsrankings.query import GameRankingBySeasonWeekQuery
 from fbsrankings.query import GameRankingBySeasonWeekResult
 from fbsrankings.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.query import LatestSeasonWeekQuery
+from fbsrankings.query import PostseasonGameCountBySeasonQuery
 from fbsrankings.query import SeasonByIDQuery
 from fbsrankings.query import SeasonByYearQuery
 from fbsrankings.query import SeasonByYearResult
@@ -377,7 +378,7 @@ class Application:
 
     def _print_seasons_table(self, seasons: Iterable[SeasonResult]) -> None:
         season_summary_table = PrettyTable(
-            field_names=["Season", "Weeks", "Teams", "FBS", "FCS", "Games"],
+            field_names=["Season", "Weeks", "Teams", "FBS", "FCS", "Games", "Post"],
         )
 
         for season in seasons:
@@ -387,6 +388,9 @@ class Application:
                 AffiliationCountBySeasonQuery(season.id_),
             )
             game_count = self._service.query(GameCountBySeasonQuery(season.id_))
+            postseason_game_count = self._service.query(
+                PostseasonGameCountBySeasonQuery(season.id_),
+            )
 
             season_summary_table.add_row(
                 [
@@ -396,6 +400,7 @@ class Application:
                     affiliation_count.fbs_count,
                     affiliation_count.fcs_count,
                     game_count.count,
+                    postseason_game_count.count,
                 ],
             )
 

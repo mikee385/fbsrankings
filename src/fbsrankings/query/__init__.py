@@ -13,6 +13,8 @@ from .game_ranking_by_season_week import GameRankingBySeasonWeekResult
 from .game_ranking_by_season_week import GameRankingValueBySeasonWeekResult
 from .latest_season_week import LatestSeasonWeekQuery
 from .latest_season_week import LatestSeasonWeekResult
+from .postseason_game_count_by_season import PostseasonGameCountBySeasonQuery
+from .postseason_game_count_by_season import PostseasonGameCountBySeasonResult
 from .season_by_id import SeasonByIDQuery
 from .season_by_id import SeasonByIDResult
 from .season_by_year import SeasonByYearQuery
@@ -48,6 +50,8 @@ __all__ = [
     "GameRankingValueBySeasonWeekResult",
     "LatestSeasonWeekQuery",
     "LatestSeasonWeekResult",
+    "PostseasonGameCountBySeasonQuery",
+    "PostseasonGameCountBySeasonResult",
     "SeasonByIDQuery",
     "SeasonByIDResult",
     "SeasonByYearQuery",

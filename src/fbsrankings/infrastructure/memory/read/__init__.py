@@ -5,6 +5,7 @@ from .game_by_id import GameByIDQueryHandler
 from .game_count_by_season import GameCountBySeasonQueryHandler
 from .game_ranking_by_season_week import GameRankingBySeasonWeekQueryHandler
 from .latest_season_week import LatestSeasonWeekQueryHandler
+from .postseason_game_count_by_season import PostseasonGameCountBySeasonQueryHandler
 from .query_manager import QueryManager
 from .season_by_id import SeasonByIDQueryHandler
 from .season_by_year import SeasonByYearQueryHandler
@@ -22,6 +23,7 @@ __all__ = [
     "GameCountBySeasonQueryHandler",
     "GameRankingBySeasonWeekQueryHandler",
     "LatestSeasonWeekQueryHandler",
+    "PostseasonGameCountBySeasonQueryHandler",
     "QueryManager",
     "SeasonByIDQueryHandler",
     "SeasonByYearQueryHandler",
