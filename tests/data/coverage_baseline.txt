@@ -31,7 +31,7 @@ src\fbsrankings\domain\service\record_service.py                                
 src\fbsrankings\domain\service\simultaneous_wins_ranking_service.py                69      2    97%
 src\fbsrankings\domain\service\srs_ranking_service.py                              79      1    99%
 src\fbsrankings\domain\service\strength_of_schedule_ranking_service.py             41      0   100%
-src\fbsrankings\domain\service\validation_service.py                              164     66    60%
+src\fbsrankings\domain\service\validation_service.py                              181     72    60%
 src\fbsrankings\event\__init__.py                                                  15      0   100%
 src\fbsrankings\event\affiliation.py                                                9      0   100%
 src\fbsrankings\event\game.py                                                      59      0   100%
@@ -139,4 +139,4 @@ src\fbsrankings\service\command\import_season_by_year.py                        
 src\fbsrankings\service\config.py                                                  45      1    98%
 src\fbsrankings\service\service.py                                                 82      9    89%
 ---------------------------------------------------------------------------------------------------
-TOTAL                                                                            5114    663    87%
+TOTAL                                                                            5131    669    87%

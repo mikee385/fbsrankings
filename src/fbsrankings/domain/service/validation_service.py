@@ -113,6 +113,20 @@ class FCSGameCountValidationError(ValidationError):
         self.game_count = game_count
 
 
+class PostseasonGameCountValidationError(ValidationError):
+    def __init__(
+        self,
+        message: str,
+        season_id: UUID,
+        regular_season_game_count: int,
+        postseason_game_count: int,
+    ) -> None:
+        super().__init__(message)
+        self.season_id = season_id
+        self.regular_season_game_count = regular_season_game_count
+        self.postseason_game_count = postseason_game_count
+
+
 class RaiseBehavior(Enum):
     IMMEDIATELY = 0
     ON_DEMAND = 1
@@ -405,6 +419,9 @@ class ValidationService:
                     ),
                 )
 
+        regular_season_game_count = 0
+        postseason_game_count = 0
+
         for game in games:
             if game.home_team_id in fbs_game_counts:
                 fbs_game_counts[game.home_team_id] += 1
@@ -436,6 +453,11 @@ class ValidationService:
                     ),
                 )
 
+            if game.season_section == SeasonSection.REGULAR_SEASON:
+                regular_season_game_count += 1
+            elif game.season_section == SeasonSection.POSTSEASON:
+                postseason_game_count += 1
+
         for team_id, game_count in fbs_game_counts.items():
             if game_count < 10:
                 self._handle_error(
@@ -457,6 +479,26 @@ class ValidationService:
                         game_count,
                     ),
                 )
+
+        postseason_percentage = float(postseason_game_count) / regular_season_game_count
+        if postseason_percentage < 0.03:
+            self._handle_error(
+                PostseasonGameCountValidationError(
+                    "Too few postseason games",
+                    season_id.value,
+                    regular_season_game_count,
+                    postseason_game_count,
+                ),
+            )
+        elif postseason_percentage > 0.06:
+            self._handle_error(
+                PostseasonGameCountValidationError(
+                    "Too many postseason games",
+                    season_id.value,
+                    regular_season_game_count,
+                    postseason_game_count,
+                ),
+            )
 
     def raise_errors(self) -> None:
         if len(self.errors) == 1:
