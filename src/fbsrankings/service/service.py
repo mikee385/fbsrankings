@@ -77,11 +77,7 @@ class Service(ContextManager["Service"]):
         for season in config.seasons:
             self.seasons.append(season.year)
             self._sports_reference.add_source(
-                season.year,
-                season.postseason_start_week,
-                season.source_type,
-                str(season.teams),
-                str(season.games),
+                season.year, season.source_type, str(season.teams), str(season.games),
             )
 
         self._command_bus = CommandBus()

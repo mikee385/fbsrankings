@@ -49,7 +49,6 @@ class RepositoryManager(Protocol, metaclass=ABCMeta):
 @dataclass(frozen=True)
 class _SeasonSource:
     year: int
-    postseason_start_week: int
     source_type: str
     team_source: str
     game_source: str
@@ -83,18 +82,13 @@ class SportsReference:
         self._validation_service = validation_service
 
     def add_source(
-        self,
-        year: int,
-        postseason_start_week: int,
-        source_type: str,
-        team_source: str,
-        game_source: str,
+        self, year: int, source_type: str, team_source: str, game_source: str,
     ) -> None:
         if self._sources.get(year) is not None:
             raise ValueError(f"Source already exists for year {year}")
 
         self._sources[year] = _SeasonSource(
-            year, postseason_start_week, source_type, team_source, game_source,
+            year, source_type, team_source, game_source,
         )
 
     def import_season(self, year: int, repository: RepositoryManager) -> None:
@@ -121,7 +115,7 @@ class SportsReference:
         cache = _Cache()
         self._import_team_rows(team_rows, season, repository, cache)
         self._import_game_rows(
-            game_rows, season, source.postseason_start_week, repository, cache,
+            game_rows, season, repository, cache,
         )
 
         most_recent_completed_week = 0
@@ -171,7 +165,6 @@ class SportsReference:
         self,
         game_rows: Iterator[List[str]],
         season: Season,
-        postseason_start_week: int,
         repository: RepositoryManager,
         cache: _Cache,
     ) -> None:
@@ -201,6 +194,9 @@ class SportsReference:
         second_score_index = second_team_index + 1
 
         home_away_index = first_score_index + 1
+
+        army_navy_found = False
+        postseason = False
 
         for counter, row in enumerate(game_rows):
             if row[rank_index].isdigit():
@@ -283,7 +279,14 @@ class SportsReference:
 
                 notes = row[notes_index].strip()
 
-                if week >= postseason_start_week:
+                if (home_team_name == "Army" and away_team_name == "Navy") or (
+                    away_team_name == "Army" and home_team_name == "Navy"
+                ):
+                    army_navy_found = True
+                elif " Bowl" in notes and army_navy_found:
+                    postseason = True
+
+                if postseason:
                     season_section = SeasonSection.POSTSEASON
                 else:
                     season_section = SeasonSection.REGULAR_SEASON

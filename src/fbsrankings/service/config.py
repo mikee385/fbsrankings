@@ -20,7 +20,6 @@ class ConfigStorageType(str, Enum):
 
 class ConfigSeason(BaseModel):
     year: PositiveInt
-    postseason_start_week: PositiveInt
     source_type: str
     teams: Union[AnyHttpUrl, Path]
     games: Union[AnyHttpUrl, Path]
