@@ -7,7 +7,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import AnyHttpUrl
 from pydantic import BaseModel
 from pydantic import PositiveInt
 from typing_extensions import Literal
@@ -18,18 +17,11 @@ class ConfigStorageType(str, Enum):
     MEMORY = "memory"
 
 
-class ConfigSeason(BaseModel):
-    year: PositiveInt
-    source_type: str
-    teams: Union[AnyHttpUrl, Path]
-    games: Union[AnyHttpUrl, Path]
-
-
 class Config(BaseModel):
     storage_type: ConfigStorageType
     database: Optional[Union[Path, Literal[":memory:"]]]
     alternate_names: Optional[Dict[str, str]]
-    seasons: List[ConfigSeason]
+    seasons: List[PositiveInt]
 
     @staticmethod
     def from_ini(file_path: Path) -> "Config":
@@ -42,19 +34,15 @@ class Config(BaseModel):
             raise ValueError(f"{file_path}: No [fbsrankings] section in config file")
 
         for key, value in parser["fbsrankings"].items():
-            data[key] = value
+            if key == "seasons":
+                data[key] = value.split()
+            else:
+                data[key] = value
 
-        seasons = []
         for header, section in parser.items():
             if header.startswith("fbsrankings."):
                 name = header[12:]
                 values = dict(section.items())
-
-                if name.startswith("season-"):
-                    values["year"] = name[7:]
-                    seasons.append(values)
-                else:
-                    data[name] = values
-        data["seasons"] = seasons
+                data[name] = values
 
         return Config(**data)

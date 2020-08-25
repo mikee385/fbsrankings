@@ -77,7 +77,7 @@ src\fbsrankings\infrastructure\memory\write\team.py                             
 src\fbsrankings\infrastructure\memory\write\transaction.py                         59      2    97%
 src\fbsrankings\infrastructure\query_manager.py                                    32      1    97%
 src\fbsrankings\infrastructure\sportsreference\__init__.py                          2      0   100%
-src\fbsrankings\infrastructure\sportsreference\sports_reference.py                226     12    95%
+src\fbsrankings\infrastructure\sportsreference\sports_reference.py                214     10    95%
 src\fbsrankings\infrastructure\sqlite\__init__.py                                   2      0   100%
 src\fbsrankings\infrastructure\sqlite\data_source.py                               41      4    90%
 src\fbsrankings\infrastructure\sqlite\read\__init__.py                             17      0   100%
@@ -136,7 +136,7 @@ src\fbsrankings\service\command\__init__.py                                     
 src\fbsrankings\service\command\calculate_rankings_for_season.py                   44      4    91%
 src\fbsrankings\service\command\command_manager.py                                 36      0   100%
 src\fbsrankings\service\command\import_season_by_year.py                           14      0   100%
-src\fbsrankings\service\config.py                                                  45      1    98%
-src\fbsrankings\service\service.py                                                 82      9    89%
+src\fbsrankings\service\config.py                                                  36      1    97%
+src\fbsrankings\service\service.py                                                 79      9    89%
 ---------------------------------------------------------------------------------------------------
-TOTAL                                                                            5131    669    87%
+TOTAL                                                                            5107    667    87%

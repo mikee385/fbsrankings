@@ -64,21 +64,17 @@ class Service(ContextManager["Service"]):
         else:
             raise ValueError(f"Unknown storage type: {storage_type}")
 
+        self.seasons = [int(season) for season in config.seasons]
+
         alternate_names = config.alternate_names
         if alternate_names is None:
             alternate_names = {}
 
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
-        self.seasons: List[int] = []
         self._sports_reference = SportsReference(
             alternate_names, self.validation_service,
         )
-        for season in config.seasons:
-            self.seasons.append(season.year)
-            self._sports_reference.add_source(
-                season.year, season.source_type, str(season.teams), str(season.games),
-            )
 
         self._command_bus = CommandBus()
         self._command_manager = CommandManager(

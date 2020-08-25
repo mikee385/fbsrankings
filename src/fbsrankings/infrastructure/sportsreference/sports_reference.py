@@ -9,7 +9,6 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from bs4 import Tag
-from dataclasses import dataclass  # pylint: disable=wrong-import-order
 from typing_extensions import Protocol
 
 from fbsrankings.domain import Affiliation
@@ -46,14 +45,6 @@ class RepositoryManager(Protocol, metaclass=ABCMeta):
         raise NotImplementedError
 
 
-@dataclass(frozen=True)
-class _SeasonSource:
-    year: int
-    source_type: str
-    team_source: str
-    game_source: str
-
-
 _TeamCache = Dict[str, Team]
 _AffiliationCache = Dict[Tuple[SeasonID, TeamID], Affiliation]
 _GameCache = Dict[Tuple[SeasonID, int, TeamID, TeamID], Game]
@@ -70,8 +61,6 @@ class SportsReference:
     def __init__(
         self, alternate_names: Dict[str, str], validation_service: ValidationService,
     ) -> None:
-        self._sources: Dict[int, _SeasonSource] = {}
-
         if alternate_names is not None:
             self._alternate_names = {
                 key.lower(): value for key, value in alternate_names.items()
@@ -81,36 +70,24 @@ class SportsReference:
 
         self._validation_service = validation_service
 
-    def add_source(
-        self, year: int, source_type: str, team_source: str, game_source: str,
-    ) -> None:
-        if self._sources.get(year) is not None:
-            raise ValueError(f"Source already exists for year {year}")
-
-        self._sources[year] = _SeasonSource(
-            year, source_type, team_source, game_source,
-        )
-
     def import_season(self, year: int, repository: RepositoryManager) -> None:
-        source = self._sources.get(year)
-        if source is None:
-            raise ValueError(f"Source has not been added for year {year}")
+        team_url = f"https://www.sports-reference.com/cfb/years/{year}-standings.html"
+        if not team_url.lower().startswith("http"):
+            raise ValueError(f"Only HTTP is allowed for teams URL {team_url}")
 
-        if not source.team_source.lower().startswith("http"):
-            raise ValueError(f"Only HTTP is allowed for teams URL {source.team_source}")
-
-        team_html = urlopen(source.team_source)  # nosec
+        team_html = urlopen(team_url)  # nosec
         team_soup = BeautifulSoup(team_html, "html5lib")
         team_rows = _html_iter(team_soup)
 
-        if not source.game_source.lower().startswith("http"):
-            raise ValueError(f"Only HTTP is allowed for games URL {source.game_source}")
+        game_url = f"https://www.sports-reference.com/cfb/years/{year}-schedule.html"
+        if not game_url.lower().startswith("http"):
+            raise ValueError(f"Only HTTP is allowed for games URL {game_url}")
 
-        game_html = urlopen(source.game_source)  # nosec
+        game_html = urlopen(game_url)  # nosec
         game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
 
-        season = self._import_season(repository.season, source.year)
+        season = self._import_season(repository.season, year)
 
         cache = _Cache()
         self._import_team_rows(team_rows, season, repository, cache)
