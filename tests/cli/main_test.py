@@ -85,6 +85,11 @@ def memory_config(data_path: Path, test_path: Path) -> Path:
     return dest_path
 
 
+@pytest.fixture()  # type: ignore
+def test_seasons() -> List[str]:
+    return ["2012", "2013"]
+
+
 def test_main_help(
     capsys: Any,
     data_path: Path,
@@ -160,13 +165,14 @@ def test_main_invalid_command(
     assert captured_err == expected_err
 
 
-def test_main_import_all_sqlite_file(
+def test_main_import_sqlite_file(
     capsys: Any,
     data_path: Path,
     test_path: Path,
     sqlite_file_config: Tuple[Path, Path],
+    test_seasons: List[str],
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_all_drop_check.txt"])
+    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
     with open(files[0]) as expected_file:
         expected_out = expected_file.read()
 
@@ -175,7 +181,7 @@ def test_main_import_all_sqlite_file(
         main(
             [
                 "import",
-                "all",
+                *test_seasons,
                 "--drop",
                 "--check",
                 f"--config={test_config}",
@@ -195,10 +201,14 @@ def test_main_import_all_sqlite_file(
     assert os.path.isfile(test_db), "Test database is not a file"
 
 
-def test_main_import_all_sqlite_memory(
-    capsys: Any, data_path: Path, test_path: Path, sqlite_memory_config: Path,
+def test_main_import_sqlite_memory(
+    capsys: Any,
+    data_path: Path,
+    test_path: Path,
+    sqlite_memory_config: Path,
+    test_seasons: List[str],
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_all_drop_check.txt"])
+    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
     with open(files[0]) as expected_file:
         expected_out = expected_file.read()
 
@@ -206,7 +216,7 @@ def test_main_import_all_sqlite_memory(
         main(
             [
                 "import",
-                "all",
+                *test_seasons,
                 "--drop",
                 "--check",
                 f"--config={sqlite_memory_config}",
@@ -223,10 +233,14 @@ def test_main_import_all_sqlite_memory(
     assert "Calculating rankings:" in captured_err
 
 
-def test_main_import_all_memory(
-    capsys: Any, data_path: Path, test_path: Path, memory_config: Path,
+def test_main_import_memory(
+    capsys: Any,
+    data_path: Path,
+    test_path: Path,
+    memory_config: Path,
+    test_seasons: List[str],
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_all_drop_check.txt"])
+    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
     with open(files[0]) as expected_file:
         expected_out = expected_file.read()
 
@@ -234,7 +248,7 @@ def test_main_import_all_memory(
         main(
             [
                 "import",
-                "all",
+                *test_seasons,
                 "--drop",
                 "--check",
                 f"--config={memory_config}",

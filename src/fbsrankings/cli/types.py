@@ -17,14 +17,10 @@ class SeasonRangeType:
             return value
         if re.match(r"[0-9]+-[0-9]+", value):
             return value
-        if value.casefold() == "latest".casefold():
-            return value
-        if value.casefold() == "all".casefold():
-            return value
 
         raise argparse.ArgumentTypeError(
-            f"'{value}' must be a single season (e.g. 2018), a range (e.g. 2015-2018),"
-            " 'latest', or 'all'",
+            f"'{value}' must be a single season (e.g. 2018) or a range"
+            " (e.g. 2015-2018)",
         )
 
 

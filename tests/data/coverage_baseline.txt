@@ -3,11 +3,11 @@ Name                                                                            
 src\fbsrankings\__init__.py                                                         2      0   100%
 src\fbsrankings\__main__.py                                                         3      3     0%
 src\fbsrankings\cli\__init__.py                                                     2      0   100%
-src\fbsrankings\cli\application.py                                                458    127    72%
+src\fbsrankings\cli\application.py                                                454    126    72%
 src\fbsrankings\cli\error.py                                                        4      0   100%
 src\fbsrankings\cli\main.py                                                        69      6    91%
 src\fbsrankings\cli\spinner.py                                                     45      3    93%
-src\fbsrankings\cli\types.py                                                       35      7    80%
+src\fbsrankings\cli\types.py                                                       31      6    81%
 src\fbsrankings\command\__init__.py                                                 3      0   100%
 src\fbsrankings\command\calculate_rankings_for_season.py                            7      0   100%
 src\fbsrankings\command\import_season_by_year.py                                    5      0   100%
@@ -136,7 +136,7 @@ src\fbsrankings\service\command\__init__.py                                     
 src\fbsrankings\service\command\calculate_rankings_for_season.py                   44      4    91%
 src\fbsrankings\service\command\command_manager.py                                 36      0   100%
 src\fbsrankings\service\command\import_season_by_year.py                           14      0   100%
-src\fbsrankings\service\config.py                                                  36      1    97%
-src\fbsrankings\service\service.py                                                 79      9    89%
+src\fbsrankings\service\config.py                                                  31      1    97%
+src\fbsrankings\service\service.py                                                 78      9    88%
 ---------------------------------------------------------------------------------------------------
-TOTAL                                                                            5107    667    87%
+TOTAL                                                                            5093    665    87%

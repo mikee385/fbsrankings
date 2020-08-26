@@ -265,7 +265,8 @@ class Application:
             elif event.week not in season:
                 season.append(event.week)
 
-    def _parse_seasons(self, seasons: Iterable[str]) -> List[int]:
+    @staticmethod
+    def _parse_seasons(seasons: Iterable[str]) -> List[int]:
         years: List[int] = []
         for value in seasons:
             if value.isdecimal():
@@ -275,15 +276,10 @@ class Application:
                 start_year = int(year_strings[0])
                 end_year = int(year_strings[1])
                 years.extend(range(start_year, end_year + 1))
-            elif value.casefold() == "latest".casefold():
-                years.append(max(self._service.seasons))
-            elif value.casefold() == "all".casefold():
-                years = self._service.seasons
-                break
             else:
                 raise ValueError(
-                    f"'{value}' must be a single season (e.g. 2018), a range"
-                    " (e.g. 2015-2018), 'latest', or 'all'",
+                    f"'{value}' must be a single season (e.g. 2018) or a range"
+                    " (e.g. 2015-2018)",
                 )
 
         return years

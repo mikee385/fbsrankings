@@ -55,11 +55,9 @@ import_parser.add_argument(
     "seasons",
     metavar="SEASON",
     type=SeasonRangeType(),
-    nargs="*",
-    default=["latest"],
+    nargs="+",
     action="store",
-    help="Single season (e.g. 2018), range of seasons (e.g. 2015-2018), 'latest' to"
-    " import the most recent season, or 'all' to import all available seasons."
+    help="Single season (e.g. 2018) or range of seasons (e.g. 2015-2018)."
     " Multiple seasons and/or ranges can also be provided (e.g. 2010 2012-2014 2016"
     " 2018-2020).",
 )

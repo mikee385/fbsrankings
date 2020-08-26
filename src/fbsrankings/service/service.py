@@ -64,8 +64,6 @@ class Service(ContextManager["Service"]):
         else:
             raise ValueError(f"Unknown storage type: {storage_type}")
 
-        self.seasons = [int(season) for season in config.seasons]
-
         alternate_names = config.alternate_names
         if alternate_names is None:
             alternate_names = {}
