@@ -78,7 +78,7 @@ pypika==0.38.0            # via fbsrankings
 pyroma==2.6               # via fbsrankings
 pytest==6.0.1             # via fbsrankings
 pywin32-ctypes==0.2.0     # via keyring
-pyyaml==5.3.1             # via bandit, pre-commit
+pyyaml==5.4             # via bandit, pre-commit
 readme-renderer==26.0     # via twine
 regex==2020.7.14          # via black
 requests==2.24.0          # via requests-toolbelt, twine
