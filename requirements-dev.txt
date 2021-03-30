@@ -71,7 +71,7 @@ py-make==0.1.1            # via fbsrankings
 pycodestyle==2.6.0        # via flake8
 pydantic==1.6.1           # via fbsrankings
 pyflakes==2.2.0           # via flake8
-pygments==2.6.1           # via pyroma, readme-renderer
+pygments==2.7.4           # via pyroma, readme-renderer
 pylint==2.6.0             # via fbsrankings
 pyparsing==2.4.7          # via packaging
 pypika==0.38.0            # via fbsrankings
