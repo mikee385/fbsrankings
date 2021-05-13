@@ -9,7 +9,7 @@ dataclasses==0.7          # via fbsrankings (setup.py), pydantic
 html5lib==1.1             # via fbsrankings (setup.py)
 numpy==1.19.1             # via fbsrankings (setup.py)
 prettytable==0.7.2        # via fbsrankings (setup.py)
-pydantic==1.6.1           # via fbsrankings (setup.py)
+pydantic==1.6.2           # via fbsrankings (setup.py)
 pypika==0.38.0            # via fbsrankings (setup.py)
 six==1.15.0               # via html5lib
 soupsieve==2.0.1          # via beautifulsoup4
