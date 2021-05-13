@@ -69,7 +69,7 @@ prettytable==0.7.2        # via fbsrankings
 py==1.10.0                 # via pytest
 py-make==0.1.1            # via fbsrankings
 pycodestyle==2.6.0        # via flake8
-pydantic==1.6.1           # via fbsrankings
+pydantic==1.6.2           # via fbsrankings
 pyflakes==2.2.0           # via flake8
 pygments==2.7.4           # via pyroma, readme-renderer
 pylint==2.6.0             # via fbsrankings
