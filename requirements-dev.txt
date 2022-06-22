@@ -56,7 +56,7 @@ more-itertools==8.4.0     # via pytest
 mypy==0.782               # via fbsrankings
 mypy-extensions==0.4.3    # via mypy
 nodeenv==1.4.0            # via pre-commit
-numpy==1.19.1             # via fbsrankings
+numpy==1.22.0             # via fbsrankings
 packaging==20.4           # via bleach, pytest
 pathspec==0.8.0           # via black
 pbr==5.4.5                # via stevedore
