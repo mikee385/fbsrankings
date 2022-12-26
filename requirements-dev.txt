@@ -99,7 +99,7 @@ urllib3==1.25.10          # via requests
 virtualenv==20.0.31       # via pre-commit
 vulture==2.1              # via fbsrankings
 webencodings==0.5.1       # via bleach, html5lib
-wheel==0.35.1             # via fbsrankings
+wheel==0.38.1             # via fbsrankings
 wrapt==1.12.1             # via astroid
 zipp==3.1.0               # via importlib-metadata, importlib-resources
 
