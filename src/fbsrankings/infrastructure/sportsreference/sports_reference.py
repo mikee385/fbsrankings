@@ -1,5 +1,6 @@
 import datetime
 from abc import ABCMeta
+from abc import abstractmethod
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -29,18 +30,22 @@ from fbsrankings.domain import ValidationService
 
 class RepositoryManager(Protocol, metaclass=ABCMeta):
     @property
+    @abstractmethod
     def season(self) -> SeasonRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def team(self) -> TeamRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def affiliation(self) -> AffiliationRepository:
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def game(self) -> GameRepository:
         raise NotImplementedError
 
@@ -216,7 +221,7 @@ class SportsReference:
                 else:
                     second_score = int(second_score_string)
 
-                if home_away_symbol == "":
+                if home_away_symbol in ("", "N"):
                     home_team_name = first_team_name
                     home_team_score = first_score
                     away_team_name = second_team_name
