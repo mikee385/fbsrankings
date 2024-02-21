@@ -139,6 +139,10 @@ class Ranking(Generic[T]):
 
 
 class TeamRankingService(metaclass=ABCMeta):
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+
     @staticmethod
     def _to_values(
         season_data: SeasonData,
@@ -203,6 +207,10 @@ class TeamRankingRepository(metaclass=ABCMeta):
 
 
 class GameRankingService(metaclass=ABCMeta):
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+
     @staticmethod
     def _to_values(
         season_data: SeasonData,

@@ -16,7 +16,7 @@ class RankingValue:
     value: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True)  # noqa: B024
 class RankingCalculatedEvent(Event, metaclass=ABCMeta):
     id_: UUID
     name: str

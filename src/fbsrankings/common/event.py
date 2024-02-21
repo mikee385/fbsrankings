@@ -7,7 +7,7 @@ from typing import Type
 from typing import TypeVar
 
 
-class Event(metaclass=ABCMeta):
+class Event(metaclass=ABCMeta):  # noqa: B024
     pass
 
 

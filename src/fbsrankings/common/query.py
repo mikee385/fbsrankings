@@ -11,7 +11,7 @@ R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
 
 
-class Query(Generic[R], metaclass=ABCMeta):
+class Query(Generic[R], metaclass=ABCMeta):  # noqa: B024
     pass
 
 

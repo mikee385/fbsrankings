@@ -40,7 +40,7 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
         raise NotImplementedError
 
     @property
-    # @abstractmethod
+    @abstractmethod
     def team_record(self) -> TeamRecordRepository:
         raise NotImplementedError
 
@@ -80,5 +80,6 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
 
 
 class TransactionFactory(Protocol, metaclass=ABCMeta):
+    @abstractmethod
     def transaction(self, event_bus: EventBus) -> Transaction:
         raise NotImplementedError

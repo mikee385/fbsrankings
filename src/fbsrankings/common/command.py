@@ -6,7 +6,7 @@ from typing import Type
 from typing import TypeVar
 
 
-class Command(metaclass=ABCMeta):
+class Command(metaclass=ABCMeta):  # noqa: B024
     pass
 
 

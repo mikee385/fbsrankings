@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
 from typing import List
@@ -30,22 +31,26 @@ R = TypeVar("R", covariant=True)
 
 
 class DataSource(QueryManagerFactory, TransactionFactory, Protocol, metaclass=ABCMeta):
+    @abstractmethod
     def drop(self) -> None:
-        pass
+        raise NotImplementedError
 
+    @abstractmethod
     def close(self) -> None:
-        pass
+        raise NotImplementedError
 
+    @abstractmethod
     def __enter__(self) -> "DataSource":
-        pass
+        raise NotImplementedError
 
+    @abstractmethod
     def __exit__(
         self,
         type_: Optional[Type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        pass
+        raise NotImplementedError
 
 
 class Service(ContextManager["Service"]):

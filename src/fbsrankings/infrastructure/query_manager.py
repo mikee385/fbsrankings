@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from abc import abstractmethod
 from types import TracebackType
 from typing import Any
 from typing import ContextManager
@@ -18,6 +19,7 @@ Q = TypeVar("Q", contravariant=True)
 
 
 class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
+    @abstractmethod
     def __init__(self, query_bus: QueryBus) -> None:
         self._bus = query_bus
         self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
@@ -44,5 +46,6 @@ class QueryManager(ContextManager["QueryManager"], metaclass=ABCMeta):
 
 
 class QueryManagerFactory(Protocol, metaclass=ABCMeta):
+    @abstractmethod
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
         raise NotImplementedError

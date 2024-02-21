@@ -31,7 +31,7 @@ class Storage:
             RankingTable().create(cursor)
 
             cursor.execute("commit")
-        except:  # noqa: E722
+        except Exception:
             cursor.execute("rollback")
             raise
         finally:
@@ -69,7 +69,7 @@ class Storage:
             RankingTable().create(cursor)
 
             cursor.execute("commit")
-        except:  # noqa: E722
+        except Exception:
             cursor.execute("rollback")
             raise
         finally:
