@@ -82,16 +82,16 @@ class SportsReference:
         if not team_url.lower().startswith("http"):
             raise ValueError(f"Only HTTP is allowed for teams URL {team_url}")
 
-        team_html = urlopen(team_url)  # nosec
-        team_soup = BeautifulSoup(team_html, "html5lib")
+        with urlopen(team_url) as team_html:  # nosec
+            team_soup = BeautifulSoup(team_html, "html5lib")
         team_rows = _html_iter(team_soup)
 
         game_url = f"https://www.sports-reference.com/cfb/years/{year}-schedule.html"
         if not game_url.lower().startswith("http"):
             raise ValueError(f"Only HTTP is allowed for games URL {game_url}")
 
-        game_html = urlopen(game_url)  # nosec
-        game_soup = BeautifulSoup(game_html, "html5lib")
+        with urlopen(game_url) as game_html:  # nosec
+            game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
 
         season = self._import_season(repository.season, year)
