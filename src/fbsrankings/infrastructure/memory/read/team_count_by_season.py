@@ -9,6 +9,5 @@ class TeamCountBySeasonQueryHandler:
 
     def __call__(self, query: TeamCountBySeasonQuery) -> TeamCountBySeasonResult:
         return TeamCountBySeasonResult(
-            query.season_id,
-            len(self._storage.affiliation.for_season(query.season_id)),
+            query.season_id, len(self._storage.affiliation.for_season(query.season_id)),
         )

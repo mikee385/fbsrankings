@@ -67,21 +67,18 @@ class QueryManager(BaseQueryManager):
             AffiliationCountBySeasonQueryHandler(self._connection),
         )
         self.register_handler(
-            CanceledGamesQuery,
-            CanceledGamesQueryHandler(self._connection),
+            CanceledGamesQuery, CanceledGamesQueryHandler(self._connection),
         )
         self.register_handler(GameByIDQuery, GameByIDQueryHandler(self._connection))
         self.register_handler(
-            GameCountBySeasonQuery,
-            GameCountBySeasonQueryHandler(self._connection),
+            GameCountBySeasonQuery, GameCountBySeasonQueryHandler(self._connection),
         )
         self.register_handler(
             GameRankingBySeasonWeekQuery,
             GameRankingBySeasonWeekQueryHandler(self._connection),
         )
         self.register_handler(
-            LatestSeasonWeekQuery,
-            LatestSeasonWeekQueryHandler(self._connection),
+            LatestSeasonWeekQuery, LatestSeasonWeekQueryHandler(self._connection),
         )
         self.register_handler(
             PostseasonGameCountBySeasonQuery,
@@ -89,14 +86,12 @@ class QueryManager(BaseQueryManager):
         )
         self.register_handler(SeasonByIDQuery, SeasonByIDQueryHandler(self._connection))
         self.register_handler(
-            SeasonByYearQuery,
-            SeasonByYearQueryHandler(self._connection),
+            SeasonByYearQuery, SeasonByYearQueryHandler(self._connection),
         )
         self.register_handler(SeasonsQuery, SeasonsQueryHandler(self._connection))
         self.register_handler(TeamByIDQuery, TeamByIDQueryHandler(self._connection))
         self.register_handler(
-            TeamCountBySeasonQuery,
-            TeamCountBySeasonQueryHandler(self._connection),
+            TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(self._connection),
         )
         self.register_handler(
             TeamRankingBySeasonWeekQuery,
@@ -107,6 +102,5 @@ class QueryManager(BaseQueryManager):
             TeamRecordBySeasonWeekQueryHandler(self._connection),
         )
         self.register_handler(
-            WeekCountBySeasonQuery,
-            WeekCountBySeasonQueryHandler(self._connection),
+            WeekCountBySeasonQuery, WeekCountBySeasonQueryHandler(self._connection),
         )

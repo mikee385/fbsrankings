@@ -120,9 +120,7 @@ latest_parser.set_defaults(func=print_latest)
 # SEASONS------------------------------------
 
 seasons_parser = subparsers.add_parser(
-    "seasons",
-    description="Print a summary of all seasons.",
-    parents=[common_parser],
+    "seasons", description="Print a summary of all seasons.", parents=[common_parser],
 )
 seasons_parser.add_argument(
     "-t",
@@ -145,9 +143,7 @@ seasons_parser.set_defaults(func=print_seasons)
 # TEAMS--------------------------------------
 
 teams_parser = subparsers.add_parser(
-    "teams",
-    description="Print team rankings for SEASON.",
-    parents=[common_parser],
+    "teams", description="Print team rankings for SEASON.", parents=[common_parser],
 )
 teams_parser.add_argument(
     "season",
@@ -189,9 +185,7 @@ teams_parser.set_defaults(func=print_teams)
 # PRINT GAMES--------------------------------
 
 games_parser = subparsers.add_parser(
-    "games",
-    description="Print game rankings for SEASON.",
-    parents=[common_parser],
+    "games", description="Print game rankings for SEASON.", parents=[common_parser],
 )
 games_parser.add_argument(
     "season",

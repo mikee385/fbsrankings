@@ -17,8 +17,7 @@ class AffiliationCountBySeasonQueryHandler:
         self._table = AffiliationTable().table
 
     def __call__(
-        self,
-        query: AffiliationCountBySeasonQuery,
+        self, query: AffiliationCountBySeasonQuery,
     ) -> AffiliationCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(

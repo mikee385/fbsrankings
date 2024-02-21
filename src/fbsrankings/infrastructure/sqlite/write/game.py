@@ -27,10 +27,7 @@ from fbsrankings.infrastructure.sqlite.storage import GameTable
 
 class GameRepository(BaseRepository):
     def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -57,11 +54,7 @@ class GameRepository(BaseRepository):
         return self._to_game(row) if row is not None else None
 
     def find(
-        self,
-        season_id: SeasonID,
-        week: int,
-        team1_id: TeamID,
-        team2_id: TeamID,
+        self, season_id: SeasonID, week: int, team1_id: TeamID, team2_id: TeamID,
     ) -> Optional[Game]:
         cursor = self._connection.cursor()
         cursor.execute(
@@ -122,17 +115,7 @@ class GameRepository(BaseRepository):
     def _to_game(
         self,
         row: Tuple[
-            str,
-            str,
-            int,
-            str,
-            str,
-            str,
-            str,
-            Optional[int],
-            Optional[int],
-            str,
-            str,
+            str, str, int, str, str, str, str, Optional[int], Optional[int], str, str,
         ],
     ) -> Game:
         return Game(

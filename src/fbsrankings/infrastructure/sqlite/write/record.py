@@ -26,10 +26,7 @@ SqliteParam = Union[None, int, float, str, bytes]
 
 class TeamRecordRepository(BaseRepository):
     def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -64,8 +61,7 @@ class TeamRecordRepository(BaseRepository):
 
         cursor = self._connection.cursor()
         cursor.execute(
-            query.get_sql(),
-            params,
+            query.get_sql(), params,
         )
         row = cursor.fetchone()
         cursor.close()
@@ -125,8 +121,7 @@ class TeamRecordRepository(BaseRepository):
             query = query.where(self._record_table.Week.isnull())
 
         self._cursor.execute(
-            query.get_sql(),
-            params,
+            query.get_sql(), params,
         )
         row = self._cursor.fetchone()
         if row is not None:

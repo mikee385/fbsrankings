@@ -328,11 +328,7 @@ class GameRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self,
-        season_id: SeasonID,
-        week: int,
-        team1_id: TeamID,
-        team2_id: TeamID,
+        self, season_id: SeasonID, week: int, team1_id: TeamID, team2_id: TeamID,
     ) -> Optional[Game]:
         raise NotImplementedError
 

@@ -19,13 +19,10 @@ class LatestSeasonWeekQueryHandler:
         self._storage = storage
 
     def __call__(
-        self,
-        query: LatestSeasonWeekQuery,
+        self, query: LatestSeasonWeekQuery,
     ) -> Optional[LatestSeasonWeekResult]:
         for season in sorted(
-            self._storage.season.all_(),
-            key=lambda s: s.year,
-            reverse=True,
+            self._storage.season.all_(), key=lambda s: s.year, reverse=True,
         ):
             season_data = _Data()
             weeks: Dict[int, _Data] = {}

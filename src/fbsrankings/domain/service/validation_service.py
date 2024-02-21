@@ -95,11 +95,7 @@ class GameDataValidationError(ValidationError):
 
 class FBSGameCountValidationError(ValidationError):
     def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        team_id: UUID,
-        game_count: int,
+        self, message: str, season_id: UUID, team_id: UUID, game_count: int,
     ) -> None:
         super().__init__(message)
         self.season_id = season_id
@@ -109,11 +105,7 @@ class FBSGameCountValidationError(ValidationError):
 
 class FCSGameCountValidationError(ValidationError):
     def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        team_id: UUID,
-        game_count: int,
+        self, message: str, season_id: UUID, team_id: UUID, game_count: int,
     ) -> None:
         super().__init__(message)
         self.season_id = season_id
@@ -142,8 +134,7 @@ class RaiseBehavior(Enum):
 
 class ValidationService:
     def __init__(
-        self,
-        raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY,
+        self, raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY,
     ) -> None:
         self.raise_behavior = raise_behavior
         self.errors: List[ValidationError] = []

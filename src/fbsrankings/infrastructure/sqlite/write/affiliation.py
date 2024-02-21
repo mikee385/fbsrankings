@@ -21,10 +21,7 @@ from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 class AffiliationRepository(BaseRepository):
     def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
+        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
     ) -> None:
         super().__init__(bus)
 

@@ -17,8 +17,7 @@ class PostseasonGameCountBySeasonQueryHandler:
         self._table = GameTable().table
 
     def __call__(
-        self,
-        query: PostseasonGameCountBySeasonQuery,
+        self, query: PostseasonGameCountBySeasonQuery,
     ) -> PostseasonGameCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(

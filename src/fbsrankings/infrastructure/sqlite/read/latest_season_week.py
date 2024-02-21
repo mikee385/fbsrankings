@@ -23,8 +23,7 @@ class LatestSeasonWeekQueryHandler:
         self._game_table = GameTable().table
 
     def __call__(
-        self,
-        query: LatestSeasonWeekQuery,
+        self, query: LatestSeasonWeekQuery,
     ) -> Optional[LatestSeasonWeekResult]:
         season_subquery = (
             Query.from_(self._game_table)

@@ -64,9 +64,7 @@ class _Cache:
 
 class SportsReference:
     def __init__(
-        self,
-        alternate_names: Dict[str, str],
-        validation_service: ValidationService,
+        self, alternate_names: Dict[str, str], validation_service: ValidationService,
     ) -> None:
         if alternate_names is not None:
             self._alternate_names = {
@@ -99,10 +97,7 @@ class SportsReference:
         cache = _Cache()
         self._import_team_rows(team_rows, season, repository, cache)
         self._import_game_rows(
-            game_rows,
-            season,
-            repository,
-            cache,
+            game_rows, season, repository, cache,
         )
 
         most_recent_completed_week = 0
@@ -117,9 +112,7 @@ class SportsReference:
 
         if self._validation_service is not None:
             self._validation_service.validate_season_games(
-                season.id_,
-                cache.affiliation.values(),
-                cache.game.values(),
+                season.id_, cache.affiliation.values(), cache.game.values(),
             )
 
     def _import_team_rows(
@@ -245,9 +238,7 @@ class SportsReference:
                     )
 
                 home_team = self._import_team(
-                    repository.team,
-                    cache.team,
-                    home_team_name,
+                    repository.team, cache.team, home_team_name,
                 )
                 self._import_affiliation(
                     repository.affiliation,
@@ -258,9 +249,7 @@ class SportsReference:
                 )
 
                 away_team = self._import_team(
-                    repository.team,
-                    cache.team,
-                    away_team_name,
+                    repository.team, cache.team, away_team_name,
                 )
                 self._import_affiliation(
                     repository.affiliation,
@@ -309,10 +298,7 @@ class SportsReference:
         return season
 
     def _import_team(
-        self,
-        repository: TeamRepository,
-        cache: _TeamCache,
-        name: str,
+        self, repository: TeamRepository, cache: _TeamCache, name: str,
     ) -> Team:
         key = name
 
@@ -347,10 +333,7 @@ class SportsReference:
 
         if self._validation_service is not None:
             self._validation_service.validate_affiliation_data(
-                affiliation,
-                season_id,
-                team_id,
-                affiliation.subdivision,
+                affiliation, season_id, team_id, affiliation.subdivision,
             )
 
         return affiliation

@@ -11,8 +11,7 @@ class TeamRecordBySeasonWeekQueryHandler:
         self._storage = storage
 
     def __call__(
-        self,
-        query: TeamRecordBySeasonWeekQuery,
+        self, query: TeamRecordBySeasonWeekQuery,
     ) -> Optional[TeamRecordBySeasonWeekResult]:
         record = self._storage.team_record.find(query.season_id, query.week)
         if record is not None:
@@ -24,19 +23,12 @@ class TeamRecordBySeasonWeekQueryHandler:
                 if team is not None:
                     values.append(
                         TeamRecordValueBySeasonWeekResult(
-                            value.team_id,
-                            team.name,
-                            value.wins,
-                            value.losses,
+                            value.team_id, team.name, value.wins, value.losses,
                         ),
                     )
 
             if season is not None:
                 return TeamRecordBySeasonWeekResult(
-                    record.id_,
-                    record.season_id,
-                    season.year,
-                    record.week,
-                    values,
+                    record.id_, record.season_id, season.year, record.week, values,
                 )
         return None

@@ -81,10 +81,7 @@ class TeamRecordRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(
-        self,
-        season_id: SeasonID,
-        week: Optional[int],
-        values: List[TeamRecordValue],
+        self, season_id: SeasonID, week: Optional[int], values: List[TeamRecordValue],
     ) -> TeamRecord:
         id_ = TeamRecordID(uuid4())
         record = TeamRecord(self._bus, id_, season_id, week, values)

@@ -32,10 +32,7 @@ class GameStorage:
 
     @staticmethod
     def _get_key(
-        season_id: UUID,
-        week: int,
-        team1_id: UUID,
-        team2_id: UUID,
+        season_id: UUID, week: int, team1_id: UUID, team2_id: UUID,
     ) -> Tuple[UUID, int, UUID, UUID]:
         if team1_id < team2_id:
             return (season_id, week, team1_id, team2_id)
@@ -43,10 +40,7 @@ class GameStorage:
 
     def add(self, game: GameDto) -> None:
         key = self._get_key(
-            game.season_id,
-            game.week,
-            game.home_team_id,
-            game.away_team_id,
+            game.season_id, game.week, game.home_team_id, game.away_team_id,
         )
         if key in self._by_key:
             raise ValueError(
@@ -67,11 +61,7 @@ class GameStorage:
         return self._by_id.get(id_)
 
     def find(
-        self,
-        season_id: UUID,
-        week: int,
-        team1_id: UUID,
-        team2_id: UUID,
+        self, season_id: UUID, week: int, team1_id: UUID, team2_id: UUID,
     ) -> Optional[GameDto]:
         key = self._get_key(season_id, week, team1_id, team2_id)
         return self._by_key.get(key)

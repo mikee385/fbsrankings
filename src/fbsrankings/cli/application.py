@@ -129,16 +129,10 @@ class Application:
         team_record = self._get_team_record(season_id, year, week)
         team_ranking = self._get_team_ranking(rating_name, season_id, year, week)
         team_sos = self._get_team_ranking(
-            f"{rating_name} - Strength of Schedule - Total",
-            season_id,
-            year,
-            week,
+            f"{rating_name} - Strength of Schedule - Total", season_id, year, week,
         )
         game_ranking = self._get_game_ranking(
-            f"{rating_name} - Game Strength",
-            season_id,
-            year,
-            week,
+            f"{rating_name} - Game Strength", season_id, year, week,
         )
 
         self._print_table_title(year, week, "Teams", team_ranking.name)
@@ -183,10 +177,7 @@ class Application:
         record = self._get_team_record(season_id, year, week)
         ranking = self._get_team_ranking(rating_name, season_id, year, week)
         sos = self._get_team_ranking(
-            f"{rating_name} - Strength of Schedule - Total",
-            season_id,
-            year,
-            week,
+            f"{rating_name} - Strength of Schedule - Total", season_id, year, week,
         )
 
         self._print_table_title(year, week, "Teams", ranking.name)
@@ -201,10 +192,7 @@ class Application:
         season_id = self._get_season(year).id_
         team_ranking = self._get_team_ranking(rating_name, season_id, year, week)
         game_ranking = self._get_game_ranking(
-            f"{rating_name} - Game Strength",
-            season_id,
-            year,
-            week,
+            f"{rating_name} - Game Strength", season_id, year, week,
         )
 
         self._print_table_title(year, week, "Season Games", team_ranking.name)
@@ -244,31 +232,20 @@ class Application:
             team_record = self._get_team_record(season_id, year, week)
             team_ranking = self._get_team_ranking(rating_name, season_id, year, week)
             team_sos = self._get_team_ranking(
-                f"{rating_name} - Strength of Schedule - Total",
-                season_id,
-                year,
-                week,
+                f"{rating_name} - Strength of Schedule - Total", season_id, year, week,
             )
             game_ranking = self._get_game_ranking(
-                f"{rating_name} - Game Strength",
-                season_id,
-                year,
-                week,
+                f"{rating_name} - Game Strength", season_id, year, week,
             )
 
             self._print_table_title(year, week, "Teams", team_ranking.name)
             self._print_teams_table(
-                team_record,
-                team_ranking,
-                team_sos,
-                limit,
+                team_record, team_ranking, team_sos, limit,
             )
 
             self._print_table_title(year, week, "Season Games", team_ranking.name)
             self._print_games_table(
-                game_ranking.values,
-                team_ranking,
-                limit,
+                game_ranking.values, team_ranking, limit,
             )
 
     class _UpdateTracker:
@@ -280,8 +257,7 @@ class Application:
             event_bus.register_handler(GameCanceledEvent, self)
 
         def __call__(
-            self,
-            event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
+            self, event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
         ) -> None:
             season = self.updates.get(event.season_id)
             if season is None:
@@ -359,10 +335,7 @@ class Application:
         return season
 
     def _get_team_record(
-        self,
-        season_id: UUID,
-        year: int,
-        week: Optional[int],
+        self, season_id: UUID, year: int, week: Optional[int],
     ) -> TeamRecordBySeasonWeekResult:
         team_record = self._service.query(TeamRecordBySeasonWeekQuery(season_id, week))
         if team_record is None:
@@ -372,11 +345,7 @@ class Application:
         return team_record
 
     def _get_team_ranking(
-        self,
-        rating_name: str,
-        season_id: UUID,
-        year: int,
-        week: Optional[int],
+        self, rating_name: str, season_id: UUID, year: int, week: Optional[int],
     ) -> TeamRankingBySeasonWeekResult:
         team_ranking = self._service.query(
             TeamRankingBySeasonWeekQuery(rating_name, season_id, week),
@@ -390,11 +359,7 @@ class Application:
         return team_ranking
 
     def _get_game_ranking(
-        self,
-        rating_name: str,
-        season_id: UUID,
-        year: int,
-        week: Optional[int],
+        self, rating_name: str, season_id: UUID, year: int, week: Optional[int],
     ) -> GameRankingBySeasonWeekResult:
         game_ranking = self._service.query(
             GameRankingBySeasonWeekQuery(rating_name, season_id, week),
@@ -440,10 +405,7 @@ class Application:
 
     @staticmethod
     def _print_table_title(
-        year: int,
-        week: Optional[int],
-        header: str,
-        rating_name: str,
+        year: int, week: Optional[int], header: str, rating_name: str,
     ) -> None:
         print()
         if week is not None:

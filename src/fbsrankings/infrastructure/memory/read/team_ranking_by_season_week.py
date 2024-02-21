@@ -11,13 +11,10 @@ class TeamRankingBySeasonWeekQueryHandler:
         self._storage = storage
 
     def __call__(
-        self,
-        query: TeamRankingBySeasonWeekQuery,
+        self, query: TeamRankingBySeasonWeekQuery,
     ) -> Optional[TeamRankingBySeasonWeekResult]:
         ranking = self._storage.team_ranking.find(
-            query.name,
-            query.season_id,
-            query.week,
+            query.name, query.season_id, query.week,
         )
         if ranking is not None:
             season = self._storage.season.get(ranking.season_id)
@@ -28,11 +25,7 @@ class TeamRankingBySeasonWeekQueryHandler:
                 if team is not None:
                     values.append(
                         TeamRankingValueBySeasonWeekResult(
-                            value.id_,
-                            team.name,
-                            value.order,
-                            value.rank,
-                            value.value,
+                            value.id_, team.name, value.order, value.rank, value.value,
                         ),
                     )
 

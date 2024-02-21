@@ -80,8 +80,7 @@ class RankingValue(Generic[T]):
         sort_key: Callable[[SeasonData, T, float], SupportsRichComparison],
     ) -> List["RankingValue[T]"]:
         sorted_values = sorted(
-            value_map.items(),
-            key=lambda t: sort_key(season_data, t[0], t[1]),
+            value_map.items(), key=lambda t: sort_key(season_data, t[0], t[1]),
         )
 
         ranking_values = []
@@ -141,20 +140,15 @@ class Ranking(Generic[T]):
 class TeamRankingService(metaclass=ABCMeta):  # noqa: B024
     @staticmethod
     def _to_values(
-        season_data: SeasonData,
-        value_map: Dict[TeamID, float],
+        season_data: SeasonData, value_map: Dict[TeamID, float],
     ) -> List[RankingValue[TeamID]]:
         return RankingValue.to_values(
-            season_data,
-            value_map,
-            TeamRankingService._sort_key,
+            season_data, value_map, TeamRankingService._sort_key,
         )
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData,
-        team_id: TeamID,
-        value: float,
+        season_data: SeasonData, team_id: TeamID, value: float,
     ) -> Tuple[float, str, str]:
         team = season_data.team_map[team_id]
         return (-value, team.name.upper(), str(team_id.value))
@@ -194,10 +188,7 @@ class TeamRankingRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self,
-        name: str,
-        season_id: SeasonID,
-        week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[TeamID]]:
         raise NotImplementedError
 
@@ -205,20 +196,15 @@ class TeamRankingRepository(metaclass=ABCMeta):
 class GameRankingService(metaclass=ABCMeta):  # noqa: B024
     @staticmethod
     def _to_values(
-        season_data: SeasonData,
-        value_map: Dict[GameID, float],
+        season_data: SeasonData, value_map: Dict[GameID, float],
     ) -> List[RankingValue[GameID]]:
         return RankingValue.to_values(
-            season_data,
-            value_map,
-            GameRankingService._sort_key,
+            season_data, value_map, GameRankingService._sort_key,
         )
 
     @staticmethod
     def _sort_key(
-        season_data: SeasonData,
-        game_id: GameID,
-        value: float,
+        season_data: SeasonData, game_id: GameID, value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
         game = season_data.game_map[game_id]
         home_team = season_data.team_map[game.home_team_id]
@@ -267,9 +253,6 @@ class GameRankingRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(
-        self,
-        name: str,
-        season_id: SeasonID,
-        week: Optional[int],
+        self, name: str, season_id: SeasonID, week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         raise NotImplementedError

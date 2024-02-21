@@ -58,10 +58,7 @@ class AffiliationRepository(metaclass=ABCMeta):
         self._bus = bus
 
     def create(
-        self,
-        season_id: SeasonID,
-        team_id: TeamID,
-        subdivision: Subdivision,
+        self, season_id: SeasonID, team_id: TeamID, subdivision: Subdivision,
     ) -> Affiliation:
         id_ = AffiliationID(uuid4())
         affiliation = Affiliation(self._bus, id_, season_id, team_id, subdivision)

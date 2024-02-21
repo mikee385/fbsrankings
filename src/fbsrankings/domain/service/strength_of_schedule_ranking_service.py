@@ -27,9 +27,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
         self._repository = repository
 
     def calculate_for_ranking(
-        self,
-        season_data: SeasonData,
-        performance_ranking: Ranking[TeamID],
+        self, season_data: SeasonData, performance_ranking: Ranking[TeamID],
     ) -> Ranking[TeamID]:
         team_data: Dict[TeamID, TeamData] = {}
 

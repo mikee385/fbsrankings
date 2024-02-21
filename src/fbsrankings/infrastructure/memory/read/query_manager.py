@@ -66,16 +66,13 @@ class QueryManager(BaseQueryManager):
         self.register_handler(CanceledGamesQuery, CanceledGamesQueryHandler(storage))
         self.register_handler(GameByIDQuery, GameByIDQueryHandler(storage))
         self.register_handler(
-            GameCountBySeasonQuery,
-            GameCountBySeasonQueryHandler(storage),
+            GameCountBySeasonQuery, GameCountBySeasonQueryHandler(storage),
         )
         self.register_handler(
-            GameRankingBySeasonWeekQuery,
-            GameRankingBySeasonWeekQueryHandler(storage),
+            GameRankingBySeasonWeekQuery, GameRankingBySeasonWeekQueryHandler(storage),
         )
         self.register_handler(
-            LatestSeasonWeekQuery,
-            LatestSeasonWeekQueryHandler(storage),
+            LatestSeasonWeekQuery, LatestSeasonWeekQueryHandler(storage),
         )
         self.register_handler(
             PostseasonGameCountBySeasonQuery,
@@ -86,18 +83,14 @@ class QueryManager(BaseQueryManager):
         self.register_handler(SeasonsQuery, SeasonsQueryHandler(storage))
         self.register_handler(TeamByIDQuery, TeamByIDQueryHandler(storage))
         self.register_handler(
-            TeamCountBySeasonQuery,
-            TeamCountBySeasonQueryHandler(storage),
+            TeamCountBySeasonQuery, TeamCountBySeasonQueryHandler(storage),
         )
         self.register_handler(
-            TeamRankingBySeasonWeekQuery,
-            TeamRankingBySeasonWeekQueryHandler(storage),
+            TeamRankingBySeasonWeekQuery, TeamRankingBySeasonWeekQueryHandler(storage),
         )
         self.register_handler(
-            TeamRecordBySeasonWeekQuery,
-            TeamRecordBySeasonWeekQueryHandler(storage),
+            TeamRecordBySeasonWeekQuery, TeamRecordBySeasonWeekQueryHandler(storage),
         )
         self.register_handler(
-            WeekCountBySeasonQuery,
-            WeekCountBySeasonQueryHandler(storage),
+            WeekCountBySeasonQuery, WeekCountBySeasonQueryHandler(storage),
         )
