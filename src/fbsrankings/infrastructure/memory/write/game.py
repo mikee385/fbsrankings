@@ -29,7 +29,11 @@ class GameRepository(BaseRepository):
         return self._to_game(dto) if dto is not None else None
 
     def find(
-        self, season_id: SeasonID, week: int, team1_id: TeamID, team2_id: TeamID,
+        self,
+        season_id: SeasonID,
+        week: int,
+        team1_id: TeamID,
+        team2_id: TeamID,
     ) -> Optional[Game]:
         dto = self._storage.find(season_id.value, week, team1_id.value, team2_id.value)
         return self._to_game(dto) if dto is not None else None

@@ -18,7 +18,10 @@ from fbsrankings.infrastructure.sqlite.storage import SeasonTable
 
 class SeasonRepository(BaseRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
+        self,
+        connection: sqlite3.Connection,
+        cursor: sqlite3.Cursor,
+        bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -43,7 +46,8 @@ class SeasonRepository(BaseRepository):
     def find(self, year: int) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.Year == Parameter("?")).get_sql(), [year],
+            self._query().where(self._table.Year == Parameter("?")).get_sql(),
+            [year],
         )
         row = cursor.fetchone()
         cursor.close()

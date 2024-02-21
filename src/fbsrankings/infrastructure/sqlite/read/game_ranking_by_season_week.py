@@ -33,7 +33,8 @@ class GameRankingBySeasonWeekQueryHandler:
         self._game_table = GameTable().table
 
     def __call__(
-        self, query: GameRankingBySeasonWeekQuery,
+        self,
+        query: GameRankingBySeasonWeekQuery,
     ) -> Optional[GameRankingBySeasonWeekResult]:
         sql_query = (
             Query.from_(self._ranking_table)
@@ -134,6 +135,11 @@ class GameRankingBySeasonWeekQueryHandler:
 
         if row is not None:
             return GameRankingBySeasonWeekResult(
-                UUID(row[0]), row[1], UUID(row[2]), row[3], row[4], values,
+                UUID(row[0]),
+                row[1],
+                UUID(row[2]),
+                row[3],
+                row[4],
+                values,
             )
         return None

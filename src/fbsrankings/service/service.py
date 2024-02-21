@@ -71,7 +71,8 @@ class Service(ContextManager["Service"]):
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
         self._sports_reference = SportsReference(
-            alternate_names, self.validation_service,
+            alternate_names,
+            self.validation_service,
         )
 
         self._command_bus = CommandBus()

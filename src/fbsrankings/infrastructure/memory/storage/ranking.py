@@ -52,7 +52,10 @@ class RankingStorage:
         return self._by_id.get(id_)
 
     def find(
-        self, name: str, season_id: UUID, week: Optional[int],
+        self,
+        name: str,
+        season_id: UUID,
+        week: Optional[int],
     ) -> Optional[RankingDto]:
         key = (name, season_id, week)
         return self._by_key.get(key)

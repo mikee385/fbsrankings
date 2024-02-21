@@ -14,7 +14,9 @@ class GameStrengthRankingService(GameRankingService):
         self._repository = repository
 
     def calculate_for_ranking(
-        self, season_data: SeasonData, performance_ranking: Ranking[TeamID],
+        self,
+        season_data: SeasonData,
+        performance_ranking: Ranking[TeamID],
     ) -> Ranking[GameID]:
         game_data: Dict[GameID, float] = {}
 

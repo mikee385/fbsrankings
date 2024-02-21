@@ -9,7 +9,8 @@ class PostseasonGameCountBySeasonQueryHandler:
         self._storage = storage
 
     def __call__(
-        self, query: PostseasonGameCountBySeasonQuery,
+        self,
+        query: PostseasonGameCountBySeasonQuery,
     ) -> PostseasonGameCountBySeasonResult:
         return PostseasonGameCountBySeasonResult(
             query.season_id,
