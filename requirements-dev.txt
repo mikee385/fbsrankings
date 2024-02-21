@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
--e .
+-e .                    
     # via -r requirements-dev.in
 astroid==2.11.7
     # via pylint
@@ -119,6 +119,7 @@ importlib-metadata==4.2.0
     # via
     #   build
     #   click
+    #   fbsrankings
     #   flake8
     #   flake8-comprehensions
     #   flake8-typing-imports
@@ -133,6 +134,7 @@ importlib-metadata==4.2.0
     #   virtualenv
 importlib-resources==5.2.3
     # via
+    #   fbsrankings
     #   pre-commit
     #   tqdm
     #   virtualenv

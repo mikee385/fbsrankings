@@ -14,10 +14,14 @@ dataclasses==0.8
     #   pydantic
 html5lib==1.1
     # via fbsrankings (setup.py)
-importlib-metadata==4.8.3
-    # via prettytable
-importlib-resources==5.4.0
-    # via tqdm
+importlib-metadata==4.2.0
+    # via
+    #   fbsrankings (setup.py)
+    #   prettytable
+importlib-resources==5.2.3
+    # via
+    #   fbsrankings (setup.py)
+    #   tqdm
 numpy==1.19.5
     # via fbsrankings (setup.py)
 prettytable==2.5.0
