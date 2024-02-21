@@ -9,17 +9,17 @@ from typing_extensions import Protocol
 # Comparison protocols
 # Copied from typeshed
 
-_T_contra = TypeVar("_T_contra", contravariant=True)
+T = TypeVar("T", contravariant=True)
 
 
-class SupportsDunderLT(Protocol[_T_contra]):
-    def __lt__(self, __other: _T_contra) -> bool:
-        pass
+class SupportsDunderLT(Protocol[T]):
+    def __lt__(self, other: T) -> bool:
+        raise NotImplementedError
 
 
-class SupportsDunderGT(Protocol[_T_contra]):
-    def __gt__(self, __other: _T_contra) -> bool:
-        pass
+class SupportsDunderGT(Protocol[T]):
+    def __gt__(self, other: T) -> bool:
+        raise NotImplementedError
 
 
 SupportsRichComparison: TypeAlias = Union[SupportsDunderLT[Any], SupportsDunderGT[Any]]
