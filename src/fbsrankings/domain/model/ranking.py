@@ -1,7 +1,6 @@
 import datetime
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Generic
@@ -25,6 +24,7 @@ from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.event import TeamRankingCalculatedEvent
+from fbsrankings.typing_extensions import SupportsRichComparison
 
 
 T = TypeVar("T", bound=Identifier)
@@ -77,7 +77,7 @@ class RankingValue(Generic[T]):
     def to_values(
         season_data: SeasonData,
         value_map: Dict[T, float],
-        sort_key: Callable[[SeasonData, T, float], Any],
+        sort_key: Callable[[SeasonData, T, float], SupportsRichComparison],
     ) -> List["RankingValue[T]"]:
         sorted_values = sorted(
             value_map.items(),

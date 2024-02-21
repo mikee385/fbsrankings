@@ -27,7 +27,7 @@ def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence
     return file_paths
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def data_path(request: Any) -> Path:
     filename = request.module.__file__
     test_dir = Path(filename).parent.parent
@@ -35,12 +35,12 @@ def data_path(request: Any) -> Path:
     return data_dir
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def test_path(tmpdir: Any) -> Path:
     return Path(str(tmpdir))
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
     src_path = data_path / "test_config.ini"
     dest_path = test_path / "test_config.ini"
@@ -56,7 +56,7 @@ def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
     return dest_path, db_path
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
     src_path = data_path / "test_config.ini"
     dest_path = test_path / "test_config.ini"
@@ -71,7 +71,7 @@ def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
     return dest_path
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def memory_config(data_path: Path, test_path: Path) -> Path:
     src_path = data_path / "test_config.ini"
     dest_path = test_path / "test_config.ini"
@@ -85,7 +85,7 @@ def memory_config(data_path: Path, test_path: Path) -> Path:
     return dest_path
 
 
-@pytest.fixture()  # type: ignore
+@pytest.fixture()
 def test_seasons() -> List[str]:
     return ["2012", "2013"]
 
