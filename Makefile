@@ -18,6 +18,12 @@ init:
     pip install setuptools --upgrade
     pip install wheel --upgrade
 
+init-dev:
+    python -m venv env/dev --clear
+    env\dev\Scripts\activate
+    pip install py-make
+    pymake install-dev
+
 install:
     init
     pip install .
