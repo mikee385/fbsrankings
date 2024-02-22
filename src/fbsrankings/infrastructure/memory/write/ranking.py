@@ -41,7 +41,10 @@ class RankingRepository(Generic[T]):
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[T]]:
         dto = self._storage.find(name, season_id.value, week)
         return self._to_ranking(dto) if dto is not None else None
@@ -81,7 +84,10 @@ class TeamRankingRepository(BaseTeamRankingRepository):
         return self._repository.get(id_)
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[TeamID]]:
         return self._repository.find(name, season_id, week)
 
@@ -106,7 +112,10 @@ class GameRankingRepository(BaseGameRankingRepository):
         return self._repository.get(id_)
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         return self._repository.find(name, season_id, week)
 

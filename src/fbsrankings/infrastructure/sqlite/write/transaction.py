@@ -22,18 +22,26 @@ class Transaction(BaseTransaction):
         self._season = SeasonRepository(self._connection, self._cursor, self._bus)
         self._team = TeamRepository(self._connection, self._cursor, self._bus)
         self._affiliation = AffiliationRepository(
-            self._connection, self._cursor, self._bus,
+            self._connection,
+            self._cursor,
+            self._bus,
         )
         self._game = GameRepository(self._connection, self._cursor, self._bus)
 
         self._team_record = TeamRecordRepository(
-            self._connection, self._cursor, self._bus,
+            self._connection,
+            self._cursor,
+            self._bus,
         )
         self._team_ranking = TeamRankingRepository(
-            self._connection, self._cursor, self._bus,
+            self._connection,
+            self._cursor,
+            self._bus,
         )
         self._game_ranking = GameRankingRepository(
-            self._connection, self._cursor, self._bus,
+            self._connection,
+            self._cursor,
+            self._bus,
         )
 
     @property

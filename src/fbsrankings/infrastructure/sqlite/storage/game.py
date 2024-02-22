@@ -28,7 +28,8 @@ class GameStatusTable:
         for value in GameStatus:
             if value.name not in existing:
                 cursor.execute(
-                    insert_sql, [value.name],
+                    insert_sql,
+                    [value.name],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:

@@ -78,7 +78,10 @@ class RankingRepository(Generic[T]):
         return self._to_ranking(row) if row is not None else None
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[T]]:
         query = self._query().where(
             (self._ranking_table.Name == Parameter("?"))
@@ -95,7 +98,8 @@ class RankingRepository(Generic[T]):
 
         cursor = self._connection.cursor()
         cursor.execute(
-            query.get_sql(), params,
+            query.get_sql(),
+            params,
         )
         row = cursor.fetchone()
         cursor.close()
@@ -153,7 +157,8 @@ class RankingRepository(Generic[T]):
             query = query.where(self._ranking_table.Week.isnull())
 
         self._cursor.execute(
-            query.get_sql(), params,
+            query.get_sql(),
+            params,
         )
         row = self._cursor.fetchone()
         if row is not None:
@@ -218,7 +223,10 @@ class RankingRepository(Generic[T]):
 
 class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
+        self,
+        connection: sqlite3.Connection,
+        cursor: sqlite3.Cursor,
+        bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -241,14 +249,18 @@ class TeamRankingRepository(BaseTeamRankingRepository):
         )
 
         bus.register_handler(
-            TeamRankingCalculatedEvent, self._repository.handle_ranking_calculated,
+            TeamRankingCalculatedEvent,
+            self._repository.handle_ranking_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
         return self._repository.get(id_)
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[TeamID]]:
         return self._repository.find(name, season_id, week)
 
@@ -259,7 +271,10 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
 class GameRankingRepository(BaseGameRankingRepository):
     def __init__(
-        self, connection: sqlite3.Connection, cursor: sqlite3.Cursor, bus: EventBus,
+        self,
+        connection: sqlite3.Connection,
+        cursor: sqlite3.Cursor,
+        bus: EventBus,
     ) -> None:
         super().__init__(bus)
 
@@ -282,14 +297,18 @@ class GameRankingRepository(BaseGameRankingRepository):
         )
 
         bus.register_handler(
-            GameRankingCalculatedEvent, self._repository.handle_ranking_calculated,
+            GameRankingCalculatedEvent,
+            self._repository.handle_ranking_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
         return self._repository.get(id_)
 
     def find(
-        self, name: str, season_id: SeasonID, week: Optional[int],
+        self,
+        name: str,
+        season_id: SeasonID,
+        week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         return self._repository.find(name, season_id, week)
 
