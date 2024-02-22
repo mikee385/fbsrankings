@@ -25,7 +25,7 @@ repos:
     -   id: python-check-blanket-noqa
     -   id: python-use-type-annotations
 -   repo: https://github.com/mgedmin/check-python-versions
-    rev: "0.15.0"
+    rev: "0.19.1"
     hooks:
     -   id: check-python-versions
 -   repo: https://github.com/mgedmin/check-manifest
