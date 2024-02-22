@@ -1,5 +1,5 @@
 """Typing extentions for the fbsrankings package"""
-from .typing_extensions import SupportsRichComparison
+from .typing_helpers import SupportsRichComparison
 
 __all__ = [
     "SupportsRichComparison",

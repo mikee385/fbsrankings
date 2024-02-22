@@ -24,7 +24,7 @@ from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.event import TeamRankingCalculatedEvent
-from fbsrankings.typing_extensions import SupportsRichComparison
+from fbsrankings.typing_helpers import SupportsRichComparison
 
 
 T = TypeVar("T", bound=Identifier)
