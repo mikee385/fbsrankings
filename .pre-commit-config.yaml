@@ -17,6 +17,7 @@ repos:
     -   id: forbid-new-submodules
     -   id: mixed-line-ending
     -   id: name-tests-test
+    -   id: requirements-txt-fixer
     -   id: trailing-whitespace
         exclude: '.bumpversion.cfg'
 -   repo: https://github.com/pre-commit/pygrep-hooks
