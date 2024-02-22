@@ -29,6 +29,7 @@ from .model.team import TeamID
 from .model.team import TeamRepository
 from .service.colley_matrix_ranking_service import ColleyMatrixRankingService
 from .service.game_strength_ranking_service import GameStrengthRankingService
+from .service.import_service import ImportService
 from .service.record_service import TeamRecordService
 from .service.simultaneous_wins_ranking_service import SimultaneousWinsRankingService
 from .service.srs_ranking_service import SRSRankingService
@@ -63,6 +64,7 @@ __all__ = [
     "GameStatus",
     "GameStatusError",
     "GameStrengthRankingService",
+    "ImportService",
     "MultipleValidationError",
     "RaiseBehavior",
     "Ranking",

@@ -745,6 +745,7 @@ class Application:
                     else:
                         print(game.status)
                     print(game.notes)
+                    print(error)
                     print(
                         f"For {error.attribute_name}, expected: {error.expected_value},"
                         f" found: {error.attribute_value}",

@@ -1,23 +1,38 @@
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus
+from fbsrankings.domain import ImportService
+from fbsrankings.domain import ValidationService
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
+from fbsrankings.service.config import Config
 
 
 class ImportSeasonByYearCommandHandler:
     def __init__(
         self,
-        sports_reference: SportsReference,
+        config: Config,
         data_source: TransactionFactory,
         event_bus: EventBus,
+        validation_service: ValidationService,
     ) -> None:
-        self._sports_reference = sports_reference
+        self._config = config
         self._data_source = data_source
         self._event_bus = event_bus
+        self._validation_service = validation_service
 
     def __call__(self, command: ImportSeasonByYearCommand) -> None:
-        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
-            self._sports_reference.import_season(command.year, unit_of_work)
+        alternate_names = self._config.alternate_names
+        if alternate_names is None:
+            alternate_names = {}
 
+        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
+            import_service = ImportService(unit_of_work)
+            sports_reference = SportsReference(
+                alternate_names,
+                import_service,
+                self._validation_service,
+            )
+
+            sports_reference.import_season(command.year)
             unit_of_work.commit()

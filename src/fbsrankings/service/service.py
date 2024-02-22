@@ -21,7 +21,6 @@ from fbsrankings.domain import ValidationService
 from fbsrankings.infrastructure import QueryManagerFactory
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
-from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 from fbsrankings.service.command import CommandManager
 from fbsrankings.service.config import Config
@@ -55,6 +54,7 @@ class DataSource(QueryManagerFactory, TransactionFactory, Protocol, metaclass=AB
 
 class Service(ContextManager["Service"]):
     def __init__(self, config: Config, event_bus: EventBus) -> None:
+        self._config = config
         self._event_bus = event_bus
         self._data_source: DataSource
 
@@ -69,23 +69,15 @@ class Service(ContextManager["Service"]):
         else:
             raise ValueError(f"Unknown storage type: {storage_type}")
 
-        alternate_names = config.alternate_names
-        if alternate_names is None:
-            alternate_names = {}
-
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
-
-        self._sports_reference = SportsReference(
-            alternate_names,
-            self.validation_service,
-        )
 
         self._command_bus = CommandBus()
         self._command_manager = CommandManager(
-            self._sports_reference,
+            self._config,
             self._data_source,
             self._command_bus,
             self._event_bus,
+            self.validation_service,
         )
 
         self._query_bus = QueryBus()

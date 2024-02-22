@@ -14,14 +14,15 @@ from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
 from fbsrankings.common import CommandHandler
 from fbsrankings.common import EventBus
+from fbsrankings.domain import ValidationService
 from fbsrankings.infrastructure import TransactionFactory
-from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.service.command.calculate_rankings_for_season import (
     CalculateRankingsForSeasonCommandHandler,
 )
 from fbsrankings.service.command.import_season_by_year import (
     ImportSeasonByYearCommandHandler,
 )
+from fbsrankings.service.config import Config
 
 C = TypeVar("C", bound=Command)
 
@@ -29,17 +30,23 @@ C = TypeVar("C", bound=Command)
 class CommandManager(ContextManager["CommandManager"]):
     def __init__(
         self,
-        sports_reference: SportsReference,
+        config: Config,
         data_source: TransactionFactory,
         command_bus: CommandBus,
         event_bus: EventBus,
+        validation_service: ValidationService,
     ) -> None:
         self._bus = command_bus
         self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 
         self.register_hander(
             ImportSeasonByYearCommand,
-            ImportSeasonByYearCommandHandler(sports_reference, data_source, event_bus),
+            ImportSeasonByYearCommandHandler(
+                config,
+                data_source,
+                event_bus,
+                validation_service,
+            ),
         )
 
         self.register_hander(
