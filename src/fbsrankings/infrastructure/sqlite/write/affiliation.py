@@ -1,12 +1,16 @@
 import sqlite3
+from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
@@ -19,7 +23,7 @@ from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 
-class AffiliationRepository(BaseRepository):
+class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepository"]):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -33,7 +37,16 @@ class AffiliationRepository(BaseRepository):
 
         self._table = AffiliationTable().table
 
-        bus.register_handler(AffiliationCreatedEvent, self._handle_affiliation_created)
+        self._bus.register_handler(
+            AffiliationCreatedEvent,
+            self._handle_affiliation_created,
+        )
+
+    def close(self) -> None:
+        self._bus.unregister_handler(
+            AffiliationCreatedEvent,
+            self._handle_affiliation_created,
+        )
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
@@ -106,3 +119,15 @@ class AffiliationRepository(BaseRepository):
                 event.subdivision,
             ],
         )
+
+    def __enter__(self) -> "AffiliationRepository":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

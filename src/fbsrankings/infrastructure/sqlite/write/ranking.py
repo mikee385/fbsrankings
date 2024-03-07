@@ -1,9 +1,12 @@
 import sqlite3
+from types import TracebackType
 from typing import Callable
+from typing import ContextManager
 from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 from uuid import UUID
@@ -13,6 +16,7 @@ from pypika import Parameter
 from pypika import Query
 from pypika import Table
 from pypika.queries import QueryBuilder
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -221,7 +225,10 @@ class RankingRepository(Generic[T]):
             )
 
 
-class TeamRankingRepository(BaseTeamRankingRepository):
+class TeamRankingRepository(
+    BaseTeamRankingRepository,
+    ContextManager["TeamRankingRepository"],
+):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -248,7 +255,13 @@ class TeamRankingRepository(BaseTeamRankingRepository):
             self._to_value,
         )
 
-        bus.register_handler(
+        self._bus.register_handler(
+            TeamRankingCalculatedEvent,
+            self._repository.handle_ranking_calculated,
+        )
+
+    def close(self) -> None:
+        self._bus.unregister_handler(
             TeamRankingCalculatedEvent,
             self._repository.handle_ranking_calculated,
         )
@@ -268,8 +281,23 @@ class TeamRankingRepository(BaseTeamRankingRepository):
     def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
+    def __enter__(self) -> "TeamRankingRepository":
+        return self
 
-class GameRankingRepository(BaseGameRankingRepository):
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False
+
+
+class GameRankingRepository(
+    BaseGameRankingRepository,
+    ContextManager["GameRankingRepository"],
+):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -296,7 +324,13 @@ class GameRankingRepository(BaseGameRankingRepository):
             self._to_value,
         )
 
-        bus.register_handler(
+        self._bus.register_handler(
+            GameRankingCalculatedEvent,
+            self._repository.handle_ranking_calculated,
+        )
+
+    def close(self) -> None:
+        self._bus.unregister_handler(
             GameRankingCalculatedEvent,
             self._repository.handle_ranking_calculated,
         )
@@ -315,3 +349,15 @@ class GameRankingRepository(BaseGameRankingRepository):
     @staticmethod
     def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])
+
+    def __enter__(self) -> "GameRankingRepository":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

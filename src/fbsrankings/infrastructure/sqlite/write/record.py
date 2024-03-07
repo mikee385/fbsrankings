@@ -1,13 +1,17 @@
 import sqlite3
+from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import Union
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
@@ -24,7 +28,7 @@ from fbsrankings.infrastructure.sqlite.storage import TeamRecordValueTable
 SqliteParam = Union[None, int, float, str, bytes]
 
 
-class TeamRecordRepository(BaseRepository):
+class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"]):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -39,7 +43,16 @@ class TeamRecordRepository(BaseRepository):
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
 
-        bus.register_handler(TeamRecordCalculatedEvent, self._handle_record_calculated)
+        self._bus.register_handler(
+            TeamRecordCalculatedEvent,
+            self._handle_record_calculated,
+        )
+
+    def close(self) -> None:
+        self._bus.unregister_handler(
+            TeamRecordCalculatedEvent,
+            self._handle_record_calculated,
+        )
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
@@ -172,3 +185,15 @@ class TeamRecordRepository(BaseRepository):
                 insert_sql,
                 [str(event.id_), str(value.team_id), value.wins, value.losses],
             )
+
+    def __enter__(self) -> "TeamRecordRepository":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

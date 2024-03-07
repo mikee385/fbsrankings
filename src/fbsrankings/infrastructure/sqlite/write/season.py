@@ -1,12 +1,16 @@
 import sqlite3
+from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Season
@@ -16,7 +20,7 @@ from fbsrankings.event import SeasonCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import SeasonTable
 
 
-class SeasonRepository(BaseRepository):
+class SeasonRepository(BaseRepository, ContextManager["SeasonRepository"]):
     def __init__(
         self,
         connection: sqlite3.Connection,
@@ -30,7 +34,10 @@ class SeasonRepository(BaseRepository):
 
         self._table = SeasonTable().table
 
-        bus.register_handler(SeasonCreatedEvent, self._handle_season_created)
+        self._bus.register_handler(SeasonCreatedEvent, self._handle_season_created)
+
+    def close(self) -> None:
+        self._bus.unregister_handler(SeasonCreatedEvent, self._handle_season_created)
 
     def get(self, id_: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
@@ -76,3 +83,15 @@ class SeasonRepository(BaseRepository):
             .get_sql(),
             [str(event.id_), event.year],
         )
+
+    def __enter__(self) -> "SeasonRepository":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

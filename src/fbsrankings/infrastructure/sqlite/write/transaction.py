@@ -74,13 +74,22 @@ class Transaction(BaseTransaction):
 
     def commit(self) -> None:
         self._cursor.execute("commit")
-        self._cursor.close()
+        self.close()
 
     def rollback(self) -> None:
         self._cursor.execute("rollback")
-        self._cursor.close()
+        self.close()
 
     def close(self) -> None:
+        self._season.close()
+        self._team.close()
+        self._affiliation.close()
+        self._game.close()
+
+        self._team_record.close()
+        self._team_ranking.close()
+        self._game_ranking.close()
+
         try:
             self._cursor.close()
         except sqlite3.ProgrammingError:

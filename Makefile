@@ -79,6 +79,9 @@ test-coverage:
     coverage run --source=src -m pytest tests
     coverage report
 
+run:
+    python -c "from fbsrankings.__main__ import main; main(['import', '2012', '--drop', '--check', '--trace'])"
+
 clean:
     python -c "import shutil; shutil.rmtree('build', True)"
     python -c "import shutil; shutil.rmtree('dist', True)"

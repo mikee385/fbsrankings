@@ -1,5 +1,10 @@
+from typing import Callable
+from typing import List
+from typing import Type
+from typing import TypeVar
+
+from fbsrankings.common import Event
 from fbsrankings.common import EventBus
-from fbsrankings.common import EventRecorder
 from fbsrankings.infrastructure import Transaction as BaseTransaction
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write.affiliation import AffiliationRepository
@@ -11,9 +16,42 @@ from fbsrankings.infrastructure.memory.write.season import SeasonRepository
 from fbsrankings.infrastructure.memory.write.team import TeamRepository
 
 
+E = TypeVar("E", bound=Event, contravariant=True)
+
+
+EventHandler = Callable[[E], None]
+
+
+class TransactionEventBus(EventBus):
+    def __init__(self, bus: EventBus) -> None:
+        super().__init__()
+
+        self._publish_bus = bus
+        self._commit_bus = EventBus()
+        self._events: List[Event] = []
+
+    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        self._commit_bus.register_handler(type_, handler)
+
+    def publish(self, event: E) -> None:
+        self._events.append(event)
+        self._publish_bus.publish(event)
+
+    def commit(self) -> None:
+        for event in self._events:
+            self._commit_bus.publish(event)
+        self.close()
+
+    def rollback(self) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self._events = []
+
+
 class Transaction(BaseTransaction):
     def __init__(self, storage: Storage, bus: EventBus) -> None:
-        self._bus = EventRecorder(bus)
+        self._bus = TransactionEventBus(bus)
 
         self._season = SeasonRepository(storage.season, self._bus)
         self._team = TeamRepository(storage.team, self._bus)
@@ -53,24 +91,21 @@ class Transaction(BaseTransaction):
         return self._game_ranking
 
     def commit(self) -> None:
-        for event in self._bus.events:
-            handled = False
-
-            handled = self._season.handle(event) or handled
-            handled = self._team.handle(event) or handled
-            handled = self._affiliation.handle(event) or handled
-            handled = self._game.handle(event) or handled
-            handled = self._team_record.handle(event) or handled
-            handled = self._team_ranking.handle(event) or handled
-            handled = self._game_ranking.handle(event) or handled
-
-            if not handled:
-                raise ValueError(f"Unknown event type: {type(event)}")
-
-        self._bus.clear()
+        self._bus.commit()
+        self.close()
 
     def rollback(self) -> None:
-        self._bus.clear()
+        self._bus.rollback()
+        self.close()
 
     def close(self) -> None:
-        self._bus.clear()
+        self._season.close()
+        self._team.close()
+        self._affiliation.close()
+        self._game.close()
+
+        self._team_record.close()
+        self._team_ranking.close()
+        self._game_ranking.close()
+
+        self._bus.close()

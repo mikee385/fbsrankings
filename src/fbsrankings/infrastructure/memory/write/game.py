@@ -1,7 +1,11 @@
+from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
+from typing import Type
 
-from fbsrankings.common import Event
+from typing_extensions import Literal
+
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
 from fbsrankings.domain import GameID
@@ -19,10 +23,32 @@ from fbsrankings.infrastructure.memory.storage import GameDto
 from fbsrankings.infrastructure.memory.storage import GameStorage
 
 
-class GameRepository(BaseRepository):
+class GameRepository(BaseRepository, ContextManager["GameRepository"]):
     def __init__(self, storage: GameStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._storage = storage
+
+        self._bus.register_handler(GameCreatedEvent, self._handle_game_created)
+        self._bus.register_handler(GameRescheduledEvent, self._handle_game_rescheduled)
+        self._bus.register_handler(GameCanceledEvent, self._handle_game_canceled)
+        self._bus.register_handler(GameCompletedEvent, self._handle_game_completed)
+        self._bus.register_handler(
+            GameNotesUpdatedEvent,
+            self._handle_game_notes_updated,
+        )
+
+    def close(self) -> None:
+        self._bus.unregister_handler(GameCreatedEvent, self._handle_game_created)
+        self._bus.unregister_handler(
+            GameRescheduledEvent,
+            self._handle_game_rescheduled,
+        )
+        self._bus.unregister_handler(GameCanceledEvent, self._handle_game_canceled)
+        self._bus.unregister_handler(GameCompletedEvent, self._handle_game_completed)
+        self._bus.unregister_handler(
+            GameNotesUpdatedEvent,
+            self._handle_game_notes_updated,
+        )
 
     def get(self, id_: GameID) -> Optional[Game]:
         dto = self._storage.get(id_.value)
@@ -57,24 +83,6 @@ class GameRepository(BaseRepository):
             GameStatus[dto.status],
             dto.notes,
         )
-
-    def handle(self, event: Event) -> bool:
-        if isinstance(event, GameCreatedEvent):
-            self._handle_game_created(event)
-            return True
-        if isinstance(event, GameRescheduledEvent):
-            self._handle_game_rescheduled(event)
-            return True
-        if isinstance(event, GameCanceledEvent):
-            self._handle_game_canceled(event)
-            return True
-        if isinstance(event, GameCompletedEvent):
-            self._handle_game_completed(event)
-            return True
-        if isinstance(event, GameNotesUpdatedEvent):
-            self._handle_game_notes_updated(event)
-            return True
-        return False
 
     def _handle_game_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(
@@ -115,3 +123,15 @@ class GameRepository(BaseRepository):
         dto = self._storage.get(event.id_)
         if dto is not None:
             dto.notes = event.notes
+
+    def __enter__(self) -> "GameRepository":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

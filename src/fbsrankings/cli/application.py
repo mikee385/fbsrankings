@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from types import TracebackType
-from typing import cast
+from typing import ContextManager
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -14,7 +14,6 @@ from uuid import UUID
 from prettytable import PrettyTable
 from tqdm import tqdm
 from typing_extensions import Literal
-from typing_extensions import Protocol
 
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.spinner import Spinner
@@ -22,7 +21,6 @@ from fbsrankings.command import CalculateRankingsForSeasonCommand
 from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
-from fbsrankings.common import EventRecorder
 from fbsrankings.domain import FBSGameCountValidationError
 from fbsrankings.domain import FCSGameCountValidationError
 from fbsrankings.domain import GameDataValidationError
@@ -35,8 +33,6 @@ from fbsrankings.event import GameCreatedEvent
 from fbsrankings.event import GameNotesUpdatedEvent
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import GameRescheduledEvent
-from fbsrankings.event import SeasonCreatedEvent
-from fbsrankings.event import TeamCreatedEvent
 from fbsrankings.event import TeamRankingCalculatedEvent
 from fbsrankings.event import TeamRecordCalculatedEvent
 from fbsrankings.query import AffiliationCountBySeasonQuery
@@ -64,6 +60,41 @@ from fbsrankings.service import Config
 from fbsrankings.service import Service
 
 
+class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
+    def __init__(self, event_bus: EventBus) -> None:
+        self._event_bus = event_bus
+        self.updates: Dict[UUID, List[int]] = {}
+
+    def __call__(
+        self,
+        event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
+    ) -> None:
+        season = self.updates.get(event.season_id)
+        if season is None:
+            self.updates[event.season_id] = [event.week]
+        elif event.week not in season:
+            season.append(event.week)
+
+    def __enter__(self) -> "GameUpdateTracker":
+        self._event_bus.register_handler(GameCreatedEvent, self)
+        self._event_bus.register_handler(GameCompletedEvent, self)
+        self._event_bus.register_handler(GameCanceledEvent, self)
+
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self._event_bus.unregister_handler(GameCreatedEvent, self)
+        self._event_bus.unregister_handler(GameCompletedEvent, self)
+        self._event_bus.unregister_handler(GameCanceledEvent, self)
+
+        return False
+
+
 class Application:
     def __init__(self, config_location: str) -> None:
         package_dir = Path(__file__).resolve().parent.parent
@@ -77,7 +108,34 @@ class Application:
 
         config = Config.from_ini(config_path)
 
-        self._event_bus = EventRecorder(EventBus())
+        self._event_bus = EventBus()
+
+        self._event_counts_by_season: Dict[UUID, Dict[Type[Event], int]] = {}
+        self._event_bus.register_handler(
+            AffiliationCreatedEvent,
+            self._save_season_event,
+        )
+        self._event_bus.register_handler(GameCreatedEvent, self._save_season_event)
+        self._event_bus.register_handler(GameRescheduledEvent, self._save_season_event)
+        self._event_bus.register_handler(GameCanceledEvent, self._save_season_event)
+        self._event_bus.register_handler(GameCompletedEvent, self._save_season_event)
+        self._event_bus.register_handler(GameNotesUpdatedEvent, self._save_season_event)
+        self._event_bus.register_handler(
+            TeamRecordCalculatedEvent,
+            self._save_season_event,
+        )
+        self._event_bus.register_handler(
+            TeamRankingCalculatedEvent,
+            self._save_season_event,
+        )
+        self._event_bus.register_handler(
+            GameRankingCalculatedEvent,
+            self._save_season_event,
+        )
+
+        self._note_events: List[GameNotesUpdatedEvent] = []
+        self._event_bus.register_handler(GameNotesUpdatedEvent, self._save_notes_event)
+
         self._service = Service(config, self._event_bus)
 
     def import_seasons(self, seasons: Iterable[str], drop: bool, check: bool) -> None:
@@ -89,17 +147,16 @@ class Application:
                 self._service.drop()
             print_err()
 
-        update_tracker = self._UpdateTracker(self._event_bus)
+        with GameUpdateTracker(self._event_bus) as tracker:
+            print_err("Importing season data:")
+            for year in tqdm(years):
+                self._service.send(ImportSeasonByYearCommand(year))
 
-        print_err("Importing season data:")
-        for year in tqdm(years):
-            self._service.send(ImportSeasonByYearCommand(year))
-
-        if update_tracker.updates:
-            print_err()
-            print_err("Calculating rankings:")
-            for season in tqdm(update_tracker.updates):
-                self._service.send(CalculateRankingsForSeasonCommand(season))
+            if tracker.updates:
+                print_err()
+                print_err("Calculating rankings:")
+                for season in tqdm(tracker.updates):
+                    self._service.send(CalculateRankingsForSeasonCommand(season))
 
         if check:
             self._print_check()
@@ -226,6 +283,31 @@ class Application:
         self._service.__exit__(type_, value, traceback)
         return False
 
+    def _save_season_event(
+        self,
+        event: Union[
+            AffiliationCreatedEvent,
+            GameCreatedEvent,
+            GameRescheduledEvent,
+            GameCanceledEvent,
+            GameCompletedEvent,
+            GameNotesUpdatedEvent,
+            TeamRecordCalculatedEvent,
+            TeamRankingCalculatedEvent,
+            GameRankingCalculatedEvent,
+        ],
+    ) -> None:
+        event_type = type(event)
+        season_event_counts = self._event_counts_by_season.setdefault(
+            event.season_id,
+            {},
+        )
+        season_event_counts.setdefault(event_type, 0)
+        season_event_counts[event_type] += 1
+
+    def _save_notes_event(self, event: GameNotesUpdatedEvent) -> None:
+        self._note_events.append(event)
+
     def _print_check(self) -> None:
         limit = 10
 
@@ -270,24 +352,6 @@ class Application:
                 team_ranking,
                 limit,
             )
-
-    class _UpdateTracker:
-        def __init__(self, event_bus: EventBus) -> None:
-            self.updates: Dict[UUID, List[int]] = {}
-
-            event_bus.register_handler(GameCreatedEvent, self)
-            event_bus.register_handler(GameCompletedEvent, self)
-            event_bus.register_handler(GameCanceledEvent, self)
-
-        def __call__(
-            self,
-            event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
-        ) -> None:
-            season = self.updates.get(event.season_id)
-            if season is None:
-                self.updates[event.season_id] = [event.week]
-            elif event.week not in season:
-                season.append(event.week)
 
     @staticmethod
     def _parse_seasons(seasons: Iterable[str]) -> List[int]:
@@ -542,42 +606,11 @@ class Application:
         print(table)
 
     def _print_events(self) -> None:
-        known_events: List[Type[Event]] = [
-            SeasonCreatedEvent,
-            TeamCreatedEvent,
-            AffiliationCreatedEvent,
-            GameCreatedEvent,
-            GameRescheduledEvent,
-            GameCompletedEvent,
-            GameCanceledEvent,
-            GameNotesUpdatedEvent,
-            TeamRecordCalculatedEvent,
-            TeamRankingCalculatedEvent,
-            GameRankingCalculatedEvent,
-        ]
-        events = self._event_bus.events
-
         print()
         print("Events:")
-        if events:
+        if self._event_counts_by_season:
             seasons = self._service.query(SeasonsQuery()).seasons
             season_map = {s.id_: s for s in seasons}
-            event_counts: Dict[int, Dict[Type[Event], int]] = {}
-            other_counts: Dict[Type[Event], int] = {}
-
-            class _SeasonEvent(Protocol):
-                season_id: UUID
-
-            for event in events:
-                event_type = type(event)
-                if event_type not in known_events:
-                    other_counts.setdefault(event_type, 0)
-                    other_counts[event_type] += 1
-                elif hasattr(event, "season_id"):
-                    year = season_map[cast(_SeasonEvent, event).season_id].year
-                    year_counts = event_counts.setdefault(year, {})
-                    year_counts.setdefault(event_type, 0)
-                    year_counts[event_type] += 1
 
             event_table = PrettyTable(
                 field_names=[
@@ -593,7 +626,8 @@ class Application:
                     "GRk",
                 ],
             )
-            for year, counts in event_counts.items():
+            for season, counts in self._event_counts_by_season.items():
+                year = season_map[season].year
                 event_table.add_row(
                     [
                         year,
@@ -610,17 +644,6 @@ class Application:
                 )
             print(event_table)
 
-            if other_counts:
-                other_table = PrettyTable(field_names=["Type", "Count"])
-                other_table.align["Type"] = "l"
-                other_table.align["Count"] = "r"
-
-                for other_type, count in other_counts.items():
-                    other_table.add_row([other_type.__name__, count])
-
-                print()
-                print("Additional Events:")
-                print(other_table)
         else:
             print("None")
 
@@ -639,13 +662,10 @@ class Application:
                 print(game.notes)
 
     def _print_notes(self) -> None:
-        notes_events = [
-            e for e in self._event_bus.events if isinstance(e, GameNotesUpdatedEvent)
-        ]
-        if notes_events:
+        if self._note_events:
             print()
             print("Notes:")
-            for event in notes_events:
+            for event in self._note_events:
                 game = self._service.query(GameByIDQuery(event.id_))
                 if game is not None:
                     print()
