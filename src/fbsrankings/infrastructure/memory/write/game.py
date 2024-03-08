@@ -1,6 +1,5 @@
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Type
 
@@ -63,10 +62,6 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
     ) -> Optional[Game]:
         dto = self._storage.find(season_id.value, week, team1_id.value, team2_id.value)
         return self._to_game(dto) if dto is not None else None
-
-    def for_season(self, season_id: SeasonID) -> List[Game]:
-        dtos = self._storage.for_season(season_id.value)
-        return [self._to_game(dto) for dto in dtos if dto is not None]
 
     def _to_game(self, dto: GameDto) -> Game:
         return Game(

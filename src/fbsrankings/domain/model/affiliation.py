@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -82,8 +81,4 @@ class AffiliationRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def for_season(self, season_id: SeasonID) -> List[Affiliation]:
         raise NotImplementedError

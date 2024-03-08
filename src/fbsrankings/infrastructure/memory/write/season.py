@@ -1,6 +1,5 @@
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Type
 
@@ -32,10 +31,6 @@ class SeasonRepository(BaseRepository, ContextManager["SeasonRepository"]):
     def find(self, year: int) -> Optional[Season]:
         dto = self._storage.find(year)
         return self._to_season(dto) if dto is not None else None
-
-    def all_(self) -> List[Season]:
-        dtos = self._storage.all_()
-        return [self._to_season(dto) for dto in dtos if dto is not None]
 
     def _to_season(self, dto: SeasonDto) -> Season:
         return Season(self._bus, SeasonID(dto.id_), dto.year)

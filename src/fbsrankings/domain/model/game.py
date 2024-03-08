@@ -2,7 +2,6 @@ import datetime
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
-from typing import List
 from typing import Optional
 from uuid import UUID
 from uuid import uuid4
@@ -334,8 +333,4 @@ class GameRepository(metaclass=ABCMeta):
         team1_id: TeamID,
         team2_id: TeamID,
     ) -> Optional[Game]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def for_season(self, season_id: SeasonID) -> List[Game]:
         raise NotImplementedError

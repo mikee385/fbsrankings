@@ -1,10 +1,12 @@
 from typing import Dict
+from uuid import UUID
 
 from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
+from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
 
 
@@ -31,12 +33,12 @@ class StrengthOfScheduleRankingService(TeamRankingService):
         season_data: SeasonData,
         performance_ranking: Ranking[TeamID],
     ) -> Ranking[TeamID]:
-        team_data: Dict[TeamID, TeamData] = {}
+        team_data: Dict[UUID, TeamData] = {}
 
-        performance_map = {r.id_: r for r in performance_ranking.values}
+        performance_map = {r.id_.value: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
-            if game.status != GameStatus.CANCELED:
+            if game.status != GameStatus.CANCELED.name:
                 home_performance = performance_map.get(game.home_team_id)
                 away_performance = performance_map.get(game.away_team_id)
 
@@ -53,12 +55,14 @@ class StrengthOfScheduleRankingService(TeamRankingService):
                         team_data[game.away_team_id] = away_data
                     away_data.add_opponent(home_performance.value)
 
-        result = {id_: data.strength_of_schedule for id_, data in team_data.items()}
+        result = {
+            TeamID(id_): data.strength_of_schedule for id_, data in team_data.items()
+        }
         ranking_values = TeamRankingService._to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Strength of Schedule - Total",
-            season_data.season.id_,
+            SeasonID(season_data.season_id),
             performance_ranking.week,
             ranking_values,
         )

@@ -1,6 +1,5 @@
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Type
 
@@ -41,10 +40,6 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
         dto = self._storage.find(season_id.value, team_id.value)
         return self._to_affiliation(dto) if dto is not None else None
-
-    def for_season(self, season_id: SeasonID) -> List[Affiliation]:
-        dtos = self._storage.for_season(season_id.value)
-        return [self._to_affiliation(dto) for dto in dtos if dto is not None]
 
     def _to_affiliation(self, dto: AffiliationDto) -> Affiliation:
         return Affiliation(

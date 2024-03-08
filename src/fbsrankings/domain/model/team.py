@@ -1,6 +1,5 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -45,8 +44,4 @@ class TeamRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(self, name: str) -> Optional[Team]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def all_(self) -> List[Team]:
         raise NotImplementedError

@@ -1,7 +1,6 @@
 import sqlite3
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
@@ -60,14 +59,6 @@ class SeasonRepository(BaseRepository, ContextManager["SeasonRepository"]):
         cursor.close()
 
         return self._to_season(row) if row is not None else None
-
-    def all_(self) -> List[Season]:
-        cursor = self._connection.cursor()
-        cursor.execute(self._query().get_sql())
-        rows = cursor.fetchall()
-        cursor.close()
-
-        return [self._to_season(row) for row in rows if row is not None]
 
     def _query(self) -> QueryBuilder:
         return Query.from_(self._table).select(self._table.UUID, self._table.Year)

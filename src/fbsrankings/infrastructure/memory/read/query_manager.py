@@ -3,6 +3,9 @@ from fbsrankings.infrastructure import QueryManager as BaseQueryManager
 from fbsrankings.infrastructure.memory.read.affiliation_count_by_season import (
     AffiliationCountBySeasonQueryHandler,
 )
+from fbsrankings.infrastructure.memory.read.affiliations_by_season import (
+    AffiliationsBySeasonQueryHandler,
+)
 from fbsrankings.infrastructure.memory.read.canceled_games import (
     CanceledGamesQueryHandler,
 )
@@ -12,6 +15,9 @@ from fbsrankings.infrastructure.memory.read.game_count_by_season import (
 )
 from fbsrankings.infrastructure.memory.read.game_ranking_by_season_week import (
     GameRankingBySeasonWeekQueryHandler,
+)
+from fbsrankings.infrastructure.memory.read.games_by_season import (
+    GamesBySeasonQueryHandler,
 )
 from fbsrankings.infrastructure.memory.read.latest_season_week import (
     LatestSeasonWeekQueryHandler,
@@ -34,15 +40,20 @@ from fbsrankings.infrastructure.memory.read.team_ranking_by_season_week import (
 from fbsrankings.infrastructure.memory.read.team_record_by_season_week import (
     TeamRecordBySeasonWeekQueryHandler,
 )
+from fbsrankings.infrastructure.memory.read.teams import (
+    TeamsQueryHandler,
+)
 from fbsrankings.infrastructure.memory.read.week_count_by_season import (
     WeekCountBySeasonQueryHandler,
 )
 from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.query import AffiliationCountBySeasonQuery
+from fbsrankings.query import AffiliationsBySeasonQuery
 from fbsrankings.query import CanceledGamesQuery
 from fbsrankings.query import GameByIDQuery
 from fbsrankings.query import GameCountBySeasonQuery
 from fbsrankings.query import GameRankingBySeasonWeekQuery
+from fbsrankings.query import GamesBySeasonQuery
 from fbsrankings.query import LatestSeasonWeekQuery
 from fbsrankings.query import PostseasonGameCountBySeasonQuery
 from fbsrankings.query import SeasonByIDQuery
@@ -52,6 +63,7 @@ from fbsrankings.query import TeamByIDQuery
 from fbsrankings.query import TeamCountBySeasonQuery
 from fbsrankings.query import TeamRankingBySeasonWeekQuery
 from fbsrankings.query import TeamRecordBySeasonWeekQuery
+from fbsrankings.query import TeamsQuery
 from fbsrankings.query import WeekCountBySeasonQuery
 
 
@@ -63,6 +75,10 @@ class QueryManager(BaseQueryManager):
             AffiliationCountBySeasonQuery,
             AffiliationCountBySeasonQueryHandler(storage),
         )
+        self.register_handler(
+            AffiliationsBySeasonQuery,
+            AffiliationsBySeasonQueryHandler(storage),
+        )
         self.register_handler(CanceledGamesQuery, CanceledGamesQueryHandler(storage))
         self.register_handler(GameByIDQuery, GameByIDQueryHandler(storage))
         self.register_handler(
@@ -72,6 +88,10 @@ class QueryManager(BaseQueryManager):
         self.register_handler(
             GameRankingBySeasonWeekQuery,
             GameRankingBySeasonWeekQueryHandler(storage),
+        )
+        self.register_handler(
+            GamesBySeasonQuery,
+            GamesBySeasonQueryHandler(storage),
         )
         self.register_handler(
             LatestSeasonWeekQuery,
@@ -97,6 +117,7 @@ class QueryManager(BaseQueryManager):
             TeamRecordBySeasonWeekQuery,
             TeamRecordBySeasonWeekQueryHandler(storage),
         )
+        self.register_handler(TeamsQuery, TeamsQueryHandler(storage))
         self.register_handler(
             WeekCountBySeasonQuery,
             WeekCountBySeasonQueryHandler(storage),

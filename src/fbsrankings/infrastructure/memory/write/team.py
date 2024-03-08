@@ -1,6 +1,5 @@
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Type
 
@@ -32,10 +31,6 @@ class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
     def find(self, name: str) -> Optional[Team]:
         dto = self._storage.find(name)
         return self._to_team(dto) if dto is not None else None
-
-    def all_(self) -> List[Team]:
-        dtos = self._storage.all_()
-        return [self._to_team(dto) for dto in dtos if dto is not None]
 
     def _to_team(self, dto: TeamDto) -> Team:
         return Team(self._bus, TeamID(dto.id_), dto.name)

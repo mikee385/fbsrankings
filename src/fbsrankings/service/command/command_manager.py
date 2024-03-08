@@ -14,6 +14,7 @@ from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
 from fbsrankings.common import CommandHandler
 from fbsrankings.common import EventBus
+from fbsrankings.common import QueryBus
 from fbsrankings.domain import ValidationService
 from fbsrankings.infrastructure import TransactionFactory
 from fbsrankings.service.command.calculate_rankings_for_season import (
@@ -33,6 +34,7 @@ class CommandManager(ContextManager["CommandManager"]):
         config: Config,
         data_source: TransactionFactory,
         command_bus: CommandBus,
+        query_bus: QueryBus,
         event_bus: EventBus,
         validation_service: ValidationService,
     ) -> None:
@@ -51,7 +53,7 @@ class CommandManager(ContextManager["CommandManager"]):
 
         self.register_hander(
             CalculateRankingsForSeasonCommand,
-            CalculateRankingsForSeasonCommandHandler(data_source, event_bus),
+            CalculateRankingsForSeasonCommandHandler(data_source, query_bus, event_bus),
         )
 
     def register_hander(self, type_: Type[C], handler: CommandHandler[C]) -> None:

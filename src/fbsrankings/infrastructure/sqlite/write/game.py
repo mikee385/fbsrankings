@@ -2,7 +2,6 @@ import sqlite3
 from datetime import datetime
 from types import TracebackType
 from typing import ContextManager
-from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
@@ -112,17 +111,6 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
         cursor.close()
 
         return self._to_game(row) if row is not None else None
-
-    def for_season(self, season_id: SeasonID) -> List[Game]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.SeasonID == Parameter("?")).get_sql(),
-            [str(season_id.value)],
-        )
-        rows = cursor.fetchall()
-        cursor.close()
-
-        return [self._to_game(row) for row in rows if row is not None]
 
     def _query(self) -> QueryBuilder:
         return Query.from_(self._table).select(

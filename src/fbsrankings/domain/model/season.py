@@ -1,7 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -51,8 +50,4 @@ class SeasonRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def find(self, year: int) -> Optional[Season]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def all_(self) -> List[Season]:
         raise NotImplementedError

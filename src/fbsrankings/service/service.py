@@ -71,17 +71,18 @@ class Service(ContextManager["Service"]):
 
         self.validation_service = ValidationService(RaiseBehavior.ON_DEMAND)
 
+        self._query_bus = QueryBus()
+        self._query_manager = self._data_source.query_manager(self._query_bus)
+
         self._command_bus = CommandBus()
         self._command_manager = CommandManager(
             self._config,
             self._data_source,
             self._command_bus,
+            self._query_bus,
             self._event_bus,
             self.validation_service,
         )
-
-        self._query_bus = QueryBus()
-        self._query_manager = self._data_source.query_manager(self._query_bus)
 
     @property
     def errors(self) -> List[ValidationError]:

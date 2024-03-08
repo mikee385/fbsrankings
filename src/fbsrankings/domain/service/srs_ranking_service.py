@@ -1,16 +1,18 @@
 from typing import Dict
 from typing import List
+from uuid import UUID
 
 import numpy
 
 from fbsrankings.domain.model.affiliation import Subdivision
-from fbsrankings.domain.model.game import Game
 from fbsrankings.domain.model.game import GameStatus
 from fbsrankings.domain.model.ranking import Ranking
 from fbsrankings.domain.model.ranking import SeasonData
 from fbsrankings.domain.model.ranking import TeamRankingRepository
 from fbsrankings.domain.model.ranking import TeamRankingService
+from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
+from fbsrankings.query import GameBySeasonResult
 
 
 class TeamData:
@@ -31,27 +33,30 @@ class SRSRankingService(TeamRankingService):
         self._repository = repository
 
     def calculate_for_season(self, season_data: SeasonData) -> List[Ranking[TeamID]]:
-        team_data: Dict[TeamID, TeamData] = {}
+        team_data: Dict[UUID, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
-            if affiliation.subdivision == Subdivision.FBS:
+            if affiliation.subdivision == Subdivision.FBS.name:
                 team_data[affiliation.team_id] = TeamData(len(team_data))
 
         season_is_complete = True
-        games_by_week: Dict[int, List[Game]] = {}
+        games_by_week: Dict[int, List[GameBySeasonResult]] = {}
         for game in season_data.game_map.values():
             winning_data = None
-            if game.winning_team_id is not None:
-                winning_data = team_data.get(game.winning_team_id)
-
             losing_data = None
-            if game.losing_team_id is not None:
-                losing_data = team_data.get(game.losing_team_id)
+
+            if game.home_team_score is not None and game.away_team_score is not None:
+                if game.home_team_score > game.away_team_score:
+                    winning_data = team_data.get(game.home_team_id)
+                    losing_data = team_data.get(game.away_team_id)
+                elif game.away_team_score > game.home_team_score:
+                    winning_data = team_data.get(game.away_team_id)
+                    losing_data = team_data.get(game.home_team_id)
 
             if winning_data is not None and losing_data is not None:
                 week_games = games_by_week.setdefault(game.week, [])
                 week_games.append(game)
 
-            elif game.status == GameStatus.SCHEDULED:
+            elif game.status == GameStatus.SCHEDULED.name:
                 season_is_complete = False
 
         n = len(team_data)
@@ -85,13 +90,13 @@ class SRSRankingService(TeamRankingService):
 
             x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
 
-            result = {id_: x[data.index] for id_, data in team_data.items()}
+            result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
             ranking_values = TeamRankingService._to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
                     SRSRankingService.name,
-                    season_data.season.id_,
+                    SeasonID(season_data.season_id),
                     week,
                     ranking_values,
                 ),
@@ -101,7 +106,7 @@ class SRSRankingService(TeamRankingService):
             rankings.append(
                 self._repository.create(
                     SRSRankingService.name,
-                    season_data.season.id_,
+                    SeasonID(season_data.season_id),
                     None,
                     ranking_values,
                 ),

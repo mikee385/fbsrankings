@@ -10,20 +10,19 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
+from uuid import UUID
 from uuid import uuid4
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
-from fbsrankings.domain.model.affiliation import Affiliation
-from fbsrankings.domain.model.game import Game
 from fbsrankings.domain.model.game import GameID
-from fbsrankings.domain.model.season import Season
 from fbsrankings.domain.model.season import SeasonID
-from fbsrankings.domain.model.team import Team
 from fbsrankings.domain.model.team import TeamID
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.event import TeamRankingCalculatedEvent
+from fbsrankings.query import AffiliationBySeasonResult
+from fbsrankings.query import GameBySeasonResult
 from fbsrankings.typing_helpers import SupportsRichComparison
 
 
@@ -33,13 +32,11 @@ T = TypeVar("T", bound=Identifier)
 class SeasonData:
     def __init__(
         self,
-        season: Season,
-        teams: Iterable[Team],
-        affiliations: Iterable[Affiliation],
-        games: Iterable[Game],
+        season_id: UUID,
+        affiliations: Iterable[AffiliationBySeasonResult],
+        games: Iterable[GameBySeasonResult],
     ) -> None:
-        self.season = season
-        self.team_map = {team.id_: team for team in teams}
+        self.season_id = season_id
         self.affiliation_map = {
             affiliation.team_id: affiliation for affiliation in affiliations
         }
@@ -156,8 +153,8 @@ class TeamRankingService(metaclass=ABCMeta):  # noqa: B024
         team_id: TeamID,
         value: float,
     ) -> Tuple[float, str, str]:
-        team = season_data.team_map[team_id]
-        return (-value, team.name.upper(), str(team_id.value))
+        affiliation = season_data.affiliation_map[team_id.value]
+        return (-value, affiliation.team_name.upper(), str(team_id.value))
 
 
 class TeamRankingRepository(metaclass=ABCMeta):
@@ -220,15 +217,15 @@ class GameRankingService(metaclass=ABCMeta):  # noqa: B024
         game_id: GameID,
         value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
-        game = season_data.game_map[game_id]
-        home_team = season_data.team_map[game.home_team_id]
-        away_team = season_data.team_map[game.away_team_id]
+        game = season_data.game_map[game_id.value]
+        home_affiliation = season_data.affiliation_map[game.home_team_id]
+        away_affiliation = season_data.affiliation_map[game.away_team_id]
 
         return (
             -value,
             game.date,
-            home_team.name.upper(),
-            away_team.name.upper(),
+            home_affiliation.team_name.upper(),
+            away_affiliation.team_name.upper(),
             str(game_id.value),
         )
 
