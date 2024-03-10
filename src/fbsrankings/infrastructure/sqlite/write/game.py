@@ -42,27 +42,18 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
 
         self._table = GameTable().table
 
-        self._bus.register_handler(GameCreatedEvent, self._handle_game_created)
-        self._bus.register_handler(GameRescheduledEvent, self._handle_game_rescheduled)
-        self._bus.register_handler(GameCanceledEvent, self._handle_game_canceled)
-        self._bus.register_handler(GameCompletedEvent, self._handle_game_completed)
-        self._bus.register_handler(
-            GameNotesUpdatedEvent,
-            self._handle_game_notes_updated,
-        )
+        self._bus.register_handler(GameCreatedEvent, self.handle_created)
+        self._bus.register_handler(GameRescheduledEvent, self.handle_rescheduled)
+        self._bus.register_handler(GameCanceledEvent, self.handle_canceled)
+        self._bus.register_handler(GameCompletedEvent, self.handle_completed)
+        self._bus.register_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
 
     def close(self) -> None:
-        self._bus.unregister_handler(GameCreatedEvent, self._handle_game_created)
-        self._bus.unregister_handler(
-            GameRescheduledEvent,
-            self._handle_game_rescheduled,
-        )
-        self._bus.unregister_handler(GameCanceledEvent, self._handle_game_canceled)
-        self._bus.unregister_handler(GameCompletedEvent, self._handle_game_completed)
-        self._bus.unregister_handler(
-            GameNotesUpdatedEvent,
-            self._handle_game_notes_updated,
-        )
+        self._bus.unregister_handler(GameCreatedEvent, self.handle_created)
+        self._bus.unregister_handler(GameRescheduledEvent, self.handle_rescheduled)
+        self._bus.unregister_handler(GameCanceledEvent, self.handle_canceled)
+        self._bus.unregister_handler(GameCompletedEvent, self.handle_completed)
+        self._bus.unregister_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
 
     def get(self, id_: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
@@ -158,7 +149,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             row[10],
         )
 
-    def _handle_game_created(self, event: GameCreatedEvent) -> None:
+    def handle_created(self, event: GameCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
             .columns(
@@ -203,7 +194,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             ],
         )
 
-    def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
+    def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._cursor.execute(
             Query.update(self._table)
             .set(self._table.Week, Parameter("?"))
@@ -213,7 +204,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             [event.week, event.date, str(event.id_)],
         )
 
-    def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
+    def handle_canceled(self, event: GameCanceledEvent) -> None:
         self._cursor.execute(
             Query.update(self._table)
             .set(self._table.Status, Parameter("?"))
@@ -222,7 +213,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             [GameStatus.CANCELED.name, str(event.id_)],
         )
 
-    def _handle_game_completed(self, event: GameCompletedEvent) -> None:
+    def handle_completed(self, event: GameCompletedEvent) -> None:
         self._cursor.execute(
             Query.update(self._table)
             .set(self._table.HomeTeamScore, Parameter("?"))
@@ -238,7 +229,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             ],
         )
 
-    def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
+    def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         self._cursor.execute(
             Query.update(self._table)
             .set(self._table.Notes, Parameter("?"))

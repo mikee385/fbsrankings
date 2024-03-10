@@ -142,7 +142,7 @@ class RankingRepository(Generic[T]):
             values,
         )
 
-    def handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_calculated(self, event: RankingCalculatedEvent) -> None:
         query = (
             Query.from_(self._ranking_table)
             .select(self._ranking_table.UUID)
@@ -257,13 +257,13 @@ class TeamRankingRepository(
 
         self._bus.register_handler(
             TeamRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
+            self._repository.handle_calculated,
         )
 
     def close(self) -> None:
         self._bus.unregister_handler(
             TeamRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
+            self._repository.handle_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
@@ -326,13 +326,13 @@ class GameRankingRepository(
 
         self._bus.register_handler(
             GameRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
+            self._repository.handle_calculated,
         )
 
     def close(self) -> None:
         self._bus.unregister_handler(
             GameRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
+            self._repository.handle_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:

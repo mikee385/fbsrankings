@@ -36,16 +36,10 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
 
         self._table = AffiliationTable().table
 
-        self._bus.register_handler(
-            AffiliationCreatedEvent,
-            self._handle_affiliation_created,
-        )
+        self._bus.register_handler(AffiliationCreatedEvent, self.handle_created)
 
     def close(self) -> None:
-        self._bus.unregister_handler(
-            AffiliationCreatedEvent,
-            self._handle_affiliation_created,
-        )
+        self._bus.unregister_handler(AffiliationCreatedEvent, self.handle_created)
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
@@ -89,7 +83,7 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
             Subdivision[row[3]],
         )
 
-    def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
+    def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
             .columns(

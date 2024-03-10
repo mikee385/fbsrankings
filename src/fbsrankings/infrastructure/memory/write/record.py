@@ -1,9 +1,4 @@
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
@@ -18,21 +13,10 @@ from fbsrankings.infrastructure.memory.storage import TeamRecordStorage
 from fbsrankings.infrastructure.memory.storage import TeamRecordValueDto
 
 
-class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"]):
+class TeamRecordRepository(BaseRepository):
     def __init__(self, storage: TeamRecordStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._storage = storage
-
-        self._bus.register_handler(
-            TeamRecordCalculatedEvent,
-            self._handle_record_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            TeamRecordCalculatedEvent,
-            self._handle_record_calculated,
-        )
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         dto = self._storage.get(id_.value)
@@ -55,7 +39,7 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
     def _to_value(dto: TeamRecordValueDto) -> TeamRecordValue:
         return TeamRecordValue(TeamID(dto.team_id), dto.wins, dto.losses)
 
-    def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
+    def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(
             TeamRecordDto(
                 event.id_,
@@ -67,15 +51,3 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
                 ],
             ),
         )
-
-    def __enter__(self) -> "TeamRecordRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

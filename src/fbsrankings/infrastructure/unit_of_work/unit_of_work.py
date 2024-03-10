@@ -27,12 +27,34 @@ from fbsrankings.event import TeamCreatedEvent
 from fbsrankings.event import TeamRankingCalculatedEvent
 from fbsrankings.event import TeamRecordCalculatedEvent
 from fbsrankings.infrastructure.transaction import TransactionFactory
+from fbsrankings.infrastructure.unit_of_work.affiliation import (
+    AffiliationRepository as UnitOfWorkAffilationRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.game import (
+    GameRepository as UnitOfWorkGameRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.ranking import (
+    GameRankingRepository as UnitOfWorkGameRankingRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.ranking import (
+    TeamRankingRepository as UnitOfWorkTeamRankingRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.record import (
+    TeamRecordRepository as UnitOfWorkTeamRecordRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.season import (
+    SeasonRepository as UnitOfWorkSeasonRepository,
+)
+from fbsrankings.infrastructure.unit_of_work.team import (
+    TeamRepository as UnitOfWorkTeamRepository,
+)
 
 
 class UnitOfWork(ContextManager["UnitOfWork"]):
     def __init__(self, data_source: TransactionFactory, bus: EventBus) -> None:
         self._outer_bus = bus
         self._inner_bus = EventBus()
+
         self._events: List[Event] = []
 
         self._inner_bus.register_handler(SeasonCreatedEvent, self._save_event)
@@ -49,48 +71,64 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
 
         self._transaction = data_source.transaction(self._inner_bus)
 
+        self._season = UnitOfWorkSeasonRepository(self._transaction.season)
+        self._team = UnitOfWorkTeamRepository(self._transaction.team)
+        self._affiliation = UnitOfWorkAffilationRepository(
+            self._transaction.affiliation,
+        )
+        self._game = UnitOfWorkGameRepository(self._transaction.game)
+        self._team_record = UnitOfWorkTeamRecordRepository(
+            self._transaction.team_record,
+        )
+        self._team_ranking = UnitOfWorkTeamRankingRepository(
+            self._transaction.team_ranking,
+        )
+        self._game_ranking = UnitOfWorkGameRankingRepository(
+            self._transaction.game_ranking,
+        )
+
     @property
     def season(self) -> SeasonRepository:
-        return self._transaction.season
+        return self._season
 
     @property
     def team(self) -> TeamRepository:
-        return self._transaction.team
+        return self._team
 
     @property
     def affiliation(self) -> AffiliationRepository:
-        return self._transaction.affiliation
+        return self._affiliation
 
     @property
     def game(self) -> GameRepository:
-        return self._transaction.game
+        return self._game
 
     @property
     def team_record(self) -> TeamRecordRepository:
-        return self._transaction.team_record
+        return self._team_record
 
     @property
     def team_ranking(self) -> TeamRankingRepository:
-        return self._transaction.team_ranking
+        return self._team_ranking
 
     @property
     def game_ranking(self) -> GameRankingRepository:
-        return self._transaction.game_ranking
+        return self._game_ranking
 
     def commit(self) -> None:
         self._transaction.commit()
 
         for event in self._events:
             self._outer_bus.publish(event)
-        self._events.clear()
+        self._events = []
 
     def rollback(self) -> None:
         self._transaction.rollback()
-        self._events.clear()
+        self._events = []
 
     def close(self) -> None:
         self._transaction.close()
-        self._events.clear()
+        self._events = []
 
     def __enter__(self) -> "UnitOfWork":
         self._transaction.__enter__()
@@ -103,7 +141,7 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
         self._transaction.__exit__(type_, value, traceback)
-        self._events.clear()
+        self._events = []
         return False
 
     def _save_event(self, event: Event) -> None:

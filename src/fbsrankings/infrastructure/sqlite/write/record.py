@@ -43,16 +43,10 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
 
-        self._bus.register_handler(
-            TeamRecordCalculatedEvent,
-            self._handle_record_calculated,
-        )
+        self._bus.register_handler(TeamRecordCalculatedEvent, self.handle_calculated)
 
     def close(self) -> None:
-        self._bus.unregister_handler(
-            TeamRecordCalculatedEvent,
-            self._handle_record_calculated,
-        )
+        self._bus.unregister_handler(TeamRecordCalculatedEvent, self.handle_calculated)
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
@@ -123,7 +117,7 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
     def _to_value(row: Tuple[str, str, int, int]) -> TeamRecordValue:
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3])
 
-    def _handle_record_calculated(self, event: TeamRecordCalculatedEvent) -> None:
+    def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = (
             Query.from_(self._record_table)
             .select(self._record_table.UUID)

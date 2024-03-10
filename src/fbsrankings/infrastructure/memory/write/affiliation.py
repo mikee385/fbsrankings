@@ -1,9 +1,4 @@
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
@@ -17,21 +12,10 @@ from fbsrankings.infrastructure.memory.storage import AffiliationDto
 from fbsrankings.infrastructure.memory.storage import AffiliationStorage
 
 
-class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepository"]):
+class AffiliationRepository(BaseRepository):
     def __init__(self, storage: AffiliationStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._storage = storage
-
-        self._bus.register_handler(
-            AffiliationCreatedEvent,
-            self._handle_affiliation_created,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            AffiliationCreatedEvent,
-            self._handle_affiliation_created,
-        )
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         dto = self._storage.get(id_.value)
@@ -50,7 +34,7 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
             Subdivision[dto.subdivision],
         )
 
-    def _handle_affiliation_created(self, event: AffiliationCreatedEvent) -> None:
+    def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(
             AffiliationDto(
                 event.id_,
@@ -59,15 +43,3 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
                 event.subdivision,
             ),
         )
-
-    def __enter__(self) -> "AffiliationRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

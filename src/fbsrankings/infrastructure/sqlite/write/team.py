@@ -33,10 +33,10 @@ class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
 
         self._table = TeamTable().table
 
-        self._bus.register_handler(TeamCreatedEvent, self._handle_team_created)
+        self._bus.register_handler(TeamCreatedEvent, self.handle_created)
 
     def close(self) -> None:
-        self._bus.unregister_handler(TeamCreatedEvent, self._handle_team_created)
+        self._bus.unregister_handler(TeamCreatedEvent, self.handle_created)
 
     def get(self, id_: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
@@ -66,7 +66,7 @@ class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
 
-    def _handle_team_created(self, event: TeamCreatedEvent) -> None:
+    def handle_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
             .columns(self._table.UUID, self._table.Name)

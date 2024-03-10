@@ -33,10 +33,10 @@ class SeasonRepository(BaseRepository, ContextManager["SeasonRepository"]):
 
         self._table = SeasonTable().table
 
-        self._bus.register_handler(SeasonCreatedEvent, self._handle_season_created)
+        self._bus.register_handler(SeasonCreatedEvent, self.handle_created)
 
     def close(self) -> None:
-        self._bus.unregister_handler(SeasonCreatedEvent, self._handle_season_created)
+        self._bus.unregister_handler(SeasonCreatedEvent, self.handle_created)
 
     def get(self, id_: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
@@ -66,7 +66,7 @@ class SeasonRepository(BaseRepository, ContextManager["SeasonRepository"]):
     def _to_season(self, row: Tuple[str, int]) -> Season:
         return Season(self._bus, SeasonID(UUID(row[0])), row[1])
 
-    def _handle_season_created(self, event: SeasonCreatedEvent) -> None:
+    def handle_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
             .columns(self._table.UUID, self._table.Year)

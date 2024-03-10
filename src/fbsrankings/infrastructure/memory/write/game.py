@@ -1,9 +1,4 @@
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
@@ -22,32 +17,10 @@ from fbsrankings.infrastructure.memory.storage import GameDto
 from fbsrankings.infrastructure.memory.storage import GameStorage
 
 
-class GameRepository(BaseRepository, ContextManager["GameRepository"]):
+class GameRepository(BaseRepository):
     def __init__(self, storage: GameStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._storage = storage
-
-        self._bus.register_handler(GameCreatedEvent, self._handle_game_created)
-        self._bus.register_handler(GameRescheduledEvent, self._handle_game_rescheduled)
-        self._bus.register_handler(GameCanceledEvent, self._handle_game_canceled)
-        self._bus.register_handler(GameCompletedEvent, self._handle_game_completed)
-        self._bus.register_handler(
-            GameNotesUpdatedEvent,
-            self._handle_game_notes_updated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(GameCreatedEvent, self._handle_game_created)
-        self._bus.unregister_handler(
-            GameRescheduledEvent,
-            self._handle_game_rescheduled,
-        )
-        self._bus.unregister_handler(GameCanceledEvent, self._handle_game_canceled)
-        self._bus.unregister_handler(GameCompletedEvent, self._handle_game_completed)
-        self._bus.unregister_handler(
-            GameNotesUpdatedEvent,
-            self._handle_game_notes_updated,
-        )
 
     def get(self, id_: GameID) -> Optional[Game]:
         dto = self._storage.get(id_.value)
@@ -79,7 +52,7 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             dto.notes,
         )
 
-    def _handle_game_created(self, event: GameCreatedEvent) -> None:
+    def handle_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(
             GameDto(
                 event.id_,
@@ -96,37 +69,25 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             ),
         )
 
-    def _handle_game_rescheduled(self, event: GameRescheduledEvent) -> None:
+    def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
         dto = self._storage.get(event.id_)
         if dto is not None:
             dto.week = event.week
             dto.date = event.date
 
-    def _handle_game_canceled(self, event: GameCanceledEvent) -> None:
+    def handle_canceled(self, event: GameCanceledEvent) -> None:
         dto = self._storage.get(event.id_)
         if dto is not None:
             dto.status = GameStatus.CANCELED.name
 
-    def _handle_game_completed(self, event: GameCompletedEvent) -> None:
+    def handle_completed(self, event: GameCompletedEvent) -> None:
         dto = self._storage.get(event.id_)
         if dto is not None:
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
             dto.status = GameStatus.COMPLETED.name
 
-    def _handle_game_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
+    def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         dto = self._storage.get(event.id_)
         if dto is not None:
             dto.notes = event.notes
-
-    def __enter__(self) -> "GameRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

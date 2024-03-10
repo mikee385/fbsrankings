@@ -1,9 +1,7 @@
 import datetime
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Dict
 from typing import Optional
-from typing import Tuple
 
 from typing_extensions import Protocol
 
@@ -44,46 +42,21 @@ class RepositoryManager(Protocol, metaclass=ABCMeta):
         raise NotImplementedError
 
 
-_SeasonCache = Dict[int, Season]
-_TeamCache = Dict[str, Team]
-_AffiliationCache = Dict[Tuple[SeasonID, TeamID], Affiliation]
-_GameCache = Dict[Tuple[SeasonID, int, TeamID, TeamID], Game]
-
-
-class _Cache:
-    def __init__(self) -> None:
-        self.season: _SeasonCache = {}
-        self.team: _TeamCache = {}
-        self.affiliation: _AffiliationCache = {}
-        self.game: _GameCache = {}
-
-
 class ImportService:
     def __init__(self, repository: RepositoryManager) -> None:
         self._repository = repository
-        self._cache = _Cache()
 
     def import_season(self, year: int) -> Season:
-        key = year
-
-        season = self._cache.season.get(key)
+        season = self._repository.season.find(year)
         if season is None:
-            season = self._repository.season.find(year)
-            if season is None:
-                season = self._repository.season.create(year)
-            self._cache.season[key] = season
+            season = self._repository.season.create(year)
 
         return season
 
     def import_team(self, name: str) -> Team:
-        key = name
-
-        team = self._cache.team.get(key)
+        team = self._repository.team.find(name)
         if team is None:
-            team = self._repository.team.find(name)
-            if team is None:
-                team = self._repository.team.create(name)
-            self._cache.team[key] = team
+            team = self._repository.team.create(name)
 
         return team
 
@@ -93,18 +66,13 @@ class ImportService:
         team_id: TeamID,
         subdivision: Subdivision,
     ) -> Affiliation:
-        key = (season_id, team_id)
-
-        affiliation = self._cache.affiliation.get(key)
+        affiliation = self._repository.affiliation.find(season_id, team_id)
         if affiliation is None:
-            affiliation = self._repository.affiliation.find(season_id, team_id)
-            if affiliation is None:
-                affiliation = self._repository.affiliation.create(
-                    season_id,
-                    team_id,
-                    subdivision,
-                )
-            self._cache.affiliation[key] = affiliation
+            affiliation = self._repository.affiliation.create(
+                season_id,
+                team_id,
+                subdivision,
+            )
 
         return affiliation
 
@@ -120,30 +88,22 @@ class ImportService:
         away_team_score: Optional[int],
         notes: str,
     ) -> Game:
-        if home_team_id < away_team_id:
-            key = (season_id, week, home_team_id, away_team_id)
-        else:
-            key = (season_id, week, away_team_id, home_team_id)
-
-        game = self._cache.game.get(key)
+        game = self._repository.game.find(
+            season_id,
+            week,
+            home_team_id,
+            away_team_id,
+        )
         if game is None:
-            game = self._repository.game.find(
+            game = self._repository.game.create(
                 season_id,
                 week,
+                date,
+                season_section,
                 home_team_id,
                 away_team_id,
+                notes,
             )
-            if game is None:
-                game = self._repository.game.create(
-                    season_id,
-                    week,
-                    date,
-                    season_section,
-                    home_team_id,
-                    away_team_id,
-                    notes,
-                )
-            self._cache.game[key] = game
 
         if date != game.date:
             game.reschedule(week, date)

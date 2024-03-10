@@ -1,12 +1,7 @@
-from types import TracebackType
 from typing import Callable
-from typing import ContextManager
 from typing import Generic
 from typing import Optional
-from typing import Type
 from typing import TypeVar
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -63,7 +58,7 @@ class RankingRepository(Generic[T]):
             [self._to_value(value) for value in dto.values],
         )
 
-    def handle_ranking_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
                 event.id_,
@@ -78,24 +73,10 @@ class RankingRepository(Generic[T]):
         )
 
 
-class TeamRankingRepository(
-    BaseTeamRankingRepository,
-    ContextManager["TeamRankingRepository"],
-):
+class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._repository = RankingRepository[TeamID](storage, bus, self._to_value)
-
-        self._bus.register_handler(
-            TeamRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            TeamRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
-        )
 
     def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
         return self._repository.get(id_)
@@ -112,37 +93,17 @@ class TeamRankingRepository(
     def _to_value(dto: RankingValueDto) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(dto.id_), dto.order, dto.rank, dto.value)
 
-    def __enter__(self) -> "TeamRankingRepository":
-        return self
-
-    def __exit__(
+    def handle_calculated(
         self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False
+        event: TeamRankingCalculatedEvent,
+    ) -> None:
+        self._repository.handle_calculated(event)
 
 
-class GameRankingRepository(
-    BaseGameRankingRepository,
-    ContextManager["GameRankingRepository"],
-):
+class GameRankingRepository(BaseGameRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
         super().__init__(bus)
         self._repository = RankingRepository[GameID](storage, bus, self._to_value)
-
-        self._bus.register_handler(
-            GameRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            GameRankingCalculatedEvent,
-            self._repository.handle_ranking_calculated,
-        )
 
     def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
         return self._repository.get(id_)
@@ -159,14 +120,8 @@ class GameRankingRepository(
     def _to_value(dto: RankingValueDto) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(dto.id_), dto.order, dto.rank, dto.value)
 
-    def __enter__(self) -> "GameRankingRepository":
-        return self
-
-    def __exit__(
+    def handle_calculated(
         self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False
+        event: GameRankingCalculatedEvent,
+    ) -> None:
+        self._repository.handle_calculated(event)
