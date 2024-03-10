@@ -95,7 +95,7 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
         return False
 
 
-class Application:
+class Application(ContextManager["Application"]):
     def __init__(self, config_location: str) -> None:
         package_dir = Path(__file__).resolve().parent.parent
 

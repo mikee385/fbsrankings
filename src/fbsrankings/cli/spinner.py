@@ -1,6 +1,7 @@
 import threading
 import time
 from types import TracebackType
+from typing import ContextManager
 from typing import Optional
 from typing import Type
 
@@ -8,7 +9,7 @@ from tqdm import tqdm
 from typing_extensions import Literal
 
 
-class Spinner:
+class Spinner(ContextManager["Spinner"]):
     def __init__(self, delay: Optional[float] = None) -> None:
         self._bar = tqdm(
             total=100,

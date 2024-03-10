@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 from types import TracebackType
+from typing import ContextManager
 from typing import Optional
 from typing import Type
 
@@ -15,7 +16,7 @@ from fbsrankings.infrastructure.sqlite.storage import Storage
 from fbsrankings.infrastructure.sqlite.write import Transaction
 
 
-class DataSource(QueryManagerFactory, TransactionFactory):
+class DataSource(QueryManagerFactory, TransactionFactory, ContextManager["DataSource"]):
     def __init__(self, database: str) -> None:
         if database == ":memory:":
             self._database = database

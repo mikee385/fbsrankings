@@ -1,4 +1,5 @@
 from types import TracebackType
+from typing import ContextManager
 from typing import Optional
 from typing import Type
 
@@ -13,7 +14,7 @@ from fbsrankings.infrastructure.memory.storage import Storage
 from fbsrankings.infrastructure.memory.write import Transaction
 
 
-class DataSource(QueryManagerFactory, TransactionFactory):
+class DataSource(QueryManagerFactory, TransactionFactory, ContextManager["DataSource"]):
     def __init__(self) -> None:
         self._storage = Storage()
 
