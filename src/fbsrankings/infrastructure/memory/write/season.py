@@ -2,6 +2,7 @@ from typing import Optional
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Season
+from fbsrankings.domain import SeasonEventHandler as BaseEventHandler
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import SeasonRepository as BaseRepository
 from fbsrankings.event import SeasonCreatedEvent
@@ -24,6 +25,12 @@ class SeasonRepository(BaseRepository):
 
     def _to_season(self, dto: SeasonDto) -> Season:
         return Season(self._bus, SeasonID(dto.id_), dto.year)
+
+
+class SeasonEventHandler(BaseEventHandler):
+    def __init__(self, storage: SeasonStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._storage = storage
 
     def handle_created(self, event: SeasonCreatedEvent) -> None:
         self._storage.add(SeasonDto(event.id_, event.year))

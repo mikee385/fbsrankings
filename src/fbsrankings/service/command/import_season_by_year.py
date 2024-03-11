@@ -2,7 +2,7 @@ from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import EventBus
 from fbsrankings.domain import ImportService
 from fbsrankings.domain import ValidationService
-from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import DataSource
 from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.infrastructure.sportsreference import SportsReference
 from fbsrankings.service.config import Config
@@ -12,7 +12,7 @@ class ImportSeasonByYearCommandHandler:
     def __init__(
         self,
         config: Config,
-        data_source: TransactionFactory,
+        data_source: DataSource,
         event_bus: EventBus,
         validation_service: ValidationService,
     ) -> None:
@@ -33,6 +33,9 @@ class ImportSeasonByYearCommandHandler:
                 import_service,
                 self._validation_service,
             )
-
             sports_reference.import_season(command.year)
-            unit_of_work.commit()
+            try:
+                unit_of_work.commit()
+            except Exception:
+                unit_of_work.rollback()
+                raise

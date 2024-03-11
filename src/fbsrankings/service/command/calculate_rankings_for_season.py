@@ -10,7 +10,7 @@ from fbsrankings.domain import SimultaneousWinsRankingService
 from fbsrankings.domain import SRSRankingService
 from fbsrankings.domain import StrengthOfScheduleRankingService
 from fbsrankings.domain import TeamRecordService
-from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import DataSource
 from fbsrankings.infrastructure import UnitOfWork
 from fbsrankings.query import AffiliationsBySeasonQuery
 from fbsrankings.query import GamesBySeasonQuery
@@ -21,7 +21,7 @@ from fbsrankings.query import SeasonByYearQuery
 class CalculateRankingsForSeasonCommandHandler:
     def __init__(
         self,
-        data_source: TransactionFactory,
+        data_source: DataSource,
         query_bus: QueryBus,
         event_bus: EventBus,
     ) -> None:
@@ -98,4 +98,8 @@ class CalculateRankingsForSeasonCommandHandler:
                     unit_of_work.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
-            unit_of_work.commit()
+            try:
+                unit_of_work.commit()
+            except Exception:
+                unit_of_work.rollback()
+                raise

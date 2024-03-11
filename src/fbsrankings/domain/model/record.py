@@ -1,9 +1,14 @@
 from abc import ABCMeta
 from abc import abstractmethod
+from types import TracebackType
+from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Type
 from uuid import uuid4
+
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -115,3 +120,32 @@ class TeamRecordRepository(metaclass=ABCMeta):
     @abstractmethod
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         raise NotImplementedError
+
+
+class TeamRecordEventHandler(
+    ContextManager["TeamRecordEventHandler"],
+    metaclass=ABCMeta,
+):
+    def __init__(self, bus: EventBus) -> None:
+        self._bus = bus
+
+        self._bus.register_handler(TeamRecordCalculatedEvent, self.handle_calculated)
+
+    def close(self) -> None:
+        self._bus.unregister_handler(TeamRecordCalculatedEvent, self.handle_calculated)
+
+    @abstractmethod
+    def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
+        raise NotImplementedError
+
+    def __enter__(self) -> "TeamRecordEventHandler":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

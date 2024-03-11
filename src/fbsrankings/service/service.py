@@ -1,5 +1,3 @@
-from abc import ABCMeta
-from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
 from typing import List
@@ -8,7 +6,6 @@ from typing import Type
 from typing import TypeVar
 
 from typing_extensions import Literal
-from typing_extensions import Protocol
 
 from fbsrankings.common import Command
 from fbsrankings.common import CommandBus
@@ -18,38 +15,15 @@ from fbsrankings.common import QueryBus
 from fbsrankings.domain import RaiseBehavior
 from fbsrankings.domain import ValidationError
 from fbsrankings.domain import ValidationService
-from fbsrankings.infrastructure import QueryManagerFactory
-from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import DataSource
 from fbsrankings.infrastructure.memory import DataSource as MemoryDataSource
 from fbsrankings.infrastructure.sqlite import DataSource as SqliteDataSource
 from fbsrankings.service.command import CommandManager
 from fbsrankings.service.config import Config
 from fbsrankings.service.config import ConfigStorageType
 
+
 R = TypeVar("R", covariant=True)
-
-
-class DataSource(QueryManagerFactory, TransactionFactory, Protocol, metaclass=ABCMeta):
-    @abstractmethod
-    def drop(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def close(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def __enter__(self) -> "DataSource":
-        raise NotImplementedError
-
-    @abstractmethod
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        raise NotImplementedError
 
 
 class Service(ContextManager["Service"]):

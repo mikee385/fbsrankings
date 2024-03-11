@@ -1,11 +1,6 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from types import TracebackType
-from typing import ContextManager
-from typing import Optional
-from typing import Type
 
-from typing_extensions import Literal
 from typing_extensions import Protocol
 
 from fbsrankings.common import EventBus
@@ -18,7 +13,7 @@ from fbsrankings.domain import TeamRecordRepository
 from fbsrankings.domain import TeamRepository
 
 
-class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
+class Repository(metaclass=ABCMeta):
     @property
     @abstractmethod
     def season(self) -> SeasonRepository:
@@ -54,32 +49,8 @@ class Transaction(ContextManager["Transaction"], metaclass=ABCMeta):
     def game_ranking(self) -> GameRankingRepository:
         raise NotImplementedError
 
+
+class RepositoryFactory(Protocol, metaclass=ABCMeta):
     @abstractmethod
-    def commit(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def rollback(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def close(self) -> None:
-        raise NotImplementedError
-
-    def __enter__(self) -> "Transaction":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False
-
-
-class TransactionFactory(Protocol, metaclass=ABCMeta):
-    @abstractmethod
-    def transaction(self, event_bus: EventBus) -> Transaction:
+    def repository(self, event_bus: EventBus) -> Repository:
         raise NotImplementedError

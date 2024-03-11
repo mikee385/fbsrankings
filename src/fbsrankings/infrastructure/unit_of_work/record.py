@@ -1,36 +1,25 @@
 from typing import List
 from typing import Optional
 
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamRecord
+from fbsrankings.domain import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.domain import TeamRecordID
 from fbsrankings.domain import TeamRecordRepository as BaseRepository
 from fbsrankings.domain import TeamRecordValue
 from fbsrankings.event import TeamRecordCalculatedEvent
-from fbsrankings.infrastructure.memory.storage import (
-    TeamRecordStorage as MemoryStorage,
-)
 from fbsrankings.infrastructure.memory.write import (
     TeamRecordRepository as MemoryRepository,
 )
 
 
 class TeamRecordRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository) -> None:
+    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
         super().__init__(repository._bus)
-        self._cache = MemoryRepository(MemoryStorage(), self._bus)
+        self._cache = cache
         self._repository = repository
-
-        self._bus.register_handler(
-            TeamRecordCalculatedEvent,
-            self._cache.handle_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            TeamRecordCalculatedEvent,
-            self._cache.handle_calculated,
-        )
 
     def create(
         self,
@@ -51,3 +40,12 @@ class TeamRecordRepository(BaseRepository):
         if team_record is None:
             team_record = self._repository.find(season_id, week)
         return team_record
+
+
+class TeamRecordEventHandler(BaseEventHandler):
+    def __init__(self, events: List[Event], bus: EventBus) -> None:
+        super().__init__(bus)
+        self._events = events
+
+    def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
+        self._events.append(event)

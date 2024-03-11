@@ -1,18 +1,15 @@
 import sqlite3
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
+from fbsrankings.domain import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.domain import AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
 from fbsrankings.domain import SeasonID
@@ -22,24 +19,11 @@ from fbsrankings.event import AffiliationCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import AffiliationTable
 
 
-class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepository"]):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class AffiliationRepository(BaseRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
-
         self._connection = connection
-        self._cursor = cursor
-
         self._table = AffiliationTable().table
-
-        self._bus.register_handler(AffiliationCreatedEvent, self.handle_created)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(AffiliationCreatedEvent, self.handle_created)
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
@@ -83,6 +67,13 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
             Subdivision[row[3]],
         )
 
+
+class AffiliationEventHandler(BaseEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._cursor = cursor
+        self._table = AffiliationTable().table
+
     def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
@@ -101,15 +92,3 @@ class AffiliationRepository(BaseRepository, ContextManager["AffiliationRepositor
                 event.subdivision,
             ],
         )
-
-    def __enter__(self) -> "AffiliationRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

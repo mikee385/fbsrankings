@@ -1,12 +1,9 @@
 import sqlite3
-from types import TracebackType
 from typing import Callable
-from typing import ContextManager
 from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from typing import TypeVar
 from typing import Union
 from uuid import UUID
@@ -16,17 +13,18 @@ from pypika import Parameter
 from pypika import Query
 from pypika import Table
 from pypika.queries import QueryBuilder
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
 from fbsrankings.domain import GameID
+from fbsrankings.domain import GameRankingEventHandler as BaseGameRankingEventHandler
 from fbsrankings.domain import GameRankingRepository as BaseGameRankingRepository
 from fbsrankings.domain import Ranking
 from fbsrankings.domain import RankingID
 from fbsrankings.domain import RankingValue
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRankingEventHandler as BaseTeamRankingEventHandler
 from fbsrankings.domain import TeamRankingRepository as BaseTeamRankingRepository
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingCalculatedEvent
@@ -46,9 +44,8 @@ SqliteParam = Union[None, int, float, str, bytes]
 class RankingRepository(Generic[T]):
     def __init__(
         self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
         bus: EventBus,
+        connection: sqlite3.Connection,
         value_table: Table,
         value_columns: List[Field],
         type_: RankingType,
@@ -56,7 +53,6 @@ class RankingRepository(Generic[T]):
     ) -> None:
         self._bus = bus
         self._connection = connection
-        self._cursor = cursor
 
         self._ranking_table = RankingTable().table
         self._value_table = value_table
@@ -142,6 +138,21 @@ class RankingRepository(Generic[T]):
             values,
         )
 
+
+class RankingEventHandler:
+    def __init__(
+        self,
+        cursor: sqlite3.Cursor,
+        value_table: Table,
+        value_columns: List[Field],
+        type_: RankingType,
+    ) -> None:
+        self._cursor = cursor
+        self._ranking_table = RankingTable().table
+        self._value_table = value_table
+        self._value_columns = value_columns
+        self._type = type_
+
     def handle_calculated(self, event: RankingCalculatedEvent) -> None:
         query = (
             Query.from_(self._ranking_table)
@@ -225,16 +236,8 @@ class RankingRepository(Generic[T]):
             )
 
 
-class TeamRankingRepository(
-    BaseTeamRankingRepository,
-    ContextManager["TeamRankingRepository"],
-):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class TeamRankingRepository(BaseTeamRankingRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
 
         value_table = TeamRankingValueTable().table
@@ -246,24 +249,12 @@ class TeamRankingRepository(
             value_table.Value,
         ]
         self._repository = RankingRepository[TeamID](
-            connection,
-            cursor,
             bus,
+            connection,
             value_table,
             value_columns,
             RankingType.TEAM,
             self._to_value,
-        )
-
-        self._bus.register_handler(
-            TeamRankingCalculatedEvent,
-            self._repository.handle_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            TeamRankingCalculatedEvent,
-            self._repository.handle_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
@@ -281,29 +272,32 @@ class TeamRankingRepository(
     def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
-    def __enter__(self) -> "TeamRankingRepository":
-        return self
 
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False
+class TeamRankingEventHandler(BaseTeamRankingEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+
+        value_table = TeamRankingValueTable().table
+        value_columns = [
+            value_table.RankingID,
+            value_table.TeamID,
+            value_table.Ord,
+            value_table.Rank,
+            value_table.Value,
+        ]
+        self._event_handler = RankingEventHandler(
+            cursor,
+            value_table,
+            value_columns,
+            RankingType.TEAM,
+        )
+
+    def handle_calculated(self, event: TeamRankingCalculatedEvent) -> None:
+        self._event_handler.handle_calculated(event)
 
 
-class GameRankingRepository(
-    BaseGameRankingRepository,
-    ContextManager["GameRankingRepository"],
-):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class GameRankingRepository(BaseGameRankingRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
 
         value_table = GameRankingValueTable().table
@@ -315,24 +309,12 @@ class GameRankingRepository(
             value_table.Value,
         ]
         self._repository = RankingRepository[GameID](
-            connection,
-            cursor,
             bus,
+            connection,
             value_table,
             value_columns,
             RankingType.GAME,
             self._to_value,
-        )
-
-        self._bus.register_handler(
-            GameRankingCalculatedEvent,
-            self._repository.handle_calculated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            GameRankingCalculatedEvent,
-            self._repository.handle_calculated,
         )
 
     def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
@@ -350,14 +332,25 @@ class GameRankingRepository(
     def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])
 
-    def __enter__(self) -> "GameRankingRepository":
-        return self
 
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False
+class GameRankingEventHandler(BaseGameRankingEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+
+        value_table = GameRankingValueTable().table
+        value_columns = [
+            value_table.RankingID,
+            value_table.GameID,
+            value_table.Ord,
+            value_table.Rank,
+            value_table.Value,
+        ]
+        self._event_handler = RankingEventHandler(
+            cursor,
+            value_table,
+            value_columns,
+            RankingType.GAME,
+        )
+
+    def handle_calculated(self, event: GameRankingCalculatedEvent) -> None:
+        self._event_handler.handle_calculated(event)

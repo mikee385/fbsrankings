@@ -4,6 +4,7 @@ from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRecord
+from fbsrankings.domain import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.domain import TeamRecordID
 from fbsrankings.domain import TeamRecordRepository as BaseRepository
 from fbsrankings.domain import TeamRecordValue
@@ -38,6 +39,12 @@ class TeamRecordRepository(BaseRepository):
     @staticmethod
     def _to_value(dto: TeamRecordValueDto) -> TeamRecordValue:
         return TeamRecordValue(TeamID(dto.team_id), dto.wins, dto.losses)
+
+
+class TeamRecordEventHandler(BaseEventHandler):
+    def __init__(self, storage: TeamRecordStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._storage = storage
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(

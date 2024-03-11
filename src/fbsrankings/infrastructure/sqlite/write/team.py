@@ -1,42 +1,26 @@
 import sqlite3
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Team
+from fbsrankings.domain import TeamEventHandler as BaseEventHandler
 from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRepository as BaseRepository
 from fbsrankings.event import TeamCreatedEvent
 from fbsrankings.infrastructure.sqlite.storage import TeamTable
 
 
-class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class TeamRepository(BaseRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
-
         self._connection = connection
-        self._cursor = cursor
-
         self._table = TeamTable().table
-
-        self._bus.register_handler(TeamCreatedEvent, self.handle_created)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(TeamCreatedEvent, self.handle_created)
 
     def get(self, id_: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
@@ -66,6 +50,13 @@ class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
 
+
+class TeamEventHandler(BaseEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._cursor = cursor
+        self._table = TeamTable().table
+
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
@@ -74,15 +65,3 @@ class TeamRepository(BaseRepository, ContextManager["TeamRepository"]):
             .get_sql(),
             [str(event.id_), event.name],
         )
-
-    def __enter__(self) -> "TeamRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

@@ -9,15 +9,17 @@ from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import QueryBus
-from fbsrankings.infrastructure import QueryManagerFactory
-from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import DataSource as BaseDataSource
 from fbsrankings.infrastructure.sqlite.read import QueryManager
 from fbsrankings.infrastructure.sqlite.storage import Storage
-from fbsrankings.infrastructure.sqlite.write import Transaction
+from fbsrankings.infrastructure.sqlite.write import EventHandler
+from fbsrankings.infrastructure.sqlite.write import Repository
 
 
-class DataSource(QueryManagerFactory, TransactionFactory, ContextManager["DataSource"]):
+class DataSource(BaseDataSource, ContextManager["DataSource"]):
     def __init__(self, database: str) -> None:
+        super().__init__()
+
         if database == ":memory:":
             self._database = database
         else:
@@ -36,11 +38,14 @@ class DataSource(QueryManagerFactory, TransactionFactory, ContextManager["DataSo
 
         self._storage = Storage(self._connection)
 
+    def repository(self, event_bus: EventBus) -> Repository:
+        return Repository(self._connection, event_bus)
+
+    def event_handler(self, event_bus: EventBus) -> EventHandler:
+        return EventHandler(self._connection, event_bus)
+
     def query_manager(self, query_bus: QueryBus) -> QueryManager:
         return QueryManager(self._connection, query_bus)
-
-    def transaction(self, event_bus: EventBus) -> Transaction:
-        return Transaction(self._connection, event_bus)
 
     def drop(self) -> None:
         self._storage.drop(self._connection)

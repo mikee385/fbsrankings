@@ -1,8 +1,13 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
+from types import TracebackType
+from typing import ContextManager
 from typing import Optional
+from typing import Type
 from uuid import uuid4
+
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -51,3 +56,29 @@ class SeasonRepository(metaclass=ABCMeta):
     @abstractmethod
     def find(self, year: int) -> Optional[Season]:
         raise NotImplementedError
+
+
+class SeasonEventHandler(ContextManager["SeasonEventHandler"], metaclass=ABCMeta):
+    def __init__(self, bus: EventBus) -> None:
+        self._bus = bus
+
+        self._bus.register_handler(SeasonCreatedEvent, self.handle_created)
+
+    def close(self) -> None:
+        self._bus.unregister_handler(SeasonCreatedEvent, self.handle_created)
+
+    @abstractmethod
+    def handle_created(self, event: SeasonCreatedEvent) -> None:
+        raise NotImplementedError
+
+    def __enter__(self) -> "SeasonEventHandler":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

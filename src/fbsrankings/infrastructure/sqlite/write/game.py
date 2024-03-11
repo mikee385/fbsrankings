@@ -1,19 +1,16 @@
 import sqlite3
 from datetime import datetime
-from types import TracebackType
-from typing import ContextManager
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
+from fbsrankings.domain import GameEventHandler as BaseEventHandler
 from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
 from fbsrankings.domain import GameStatus
@@ -28,32 +25,11 @@ from fbsrankings.event import GameRescheduledEvent
 from fbsrankings.infrastructure.sqlite.storage import GameTable
 
 
-class GameRepository(BaseRepository, ContextManager["GameRepository"]):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class GameRepository(BaseRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
-
         self._connection = connection
-        self._cursor = cursor
-
         self._table = GameTable().table
-
-        self._bus.register_handler(GameCreatedEvent, self.handle_created)
-        self._bus.register_handler(GameRescheduledEvent, self.handle_rescheduled)
-        self._bus.register_handler(GameCanceledEvent, self.handle_canceled)
-        self._bus.register_handler(GameCompletedEvent, self.handle_completed)
-        self._bus.register_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(GameCreatedEvent, self.handle_created)
-        self._bus.unregister_handler(GameRescheduledEvent, self.handle_rescheduled)
-        self._bus.unregister_handler(GameCanceledEvent, self.handle_canceled)
-        self._bus.unregister_handler(GameCompletedEvent, self.handle_completed)
-        self._bus.unregister_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
 
     def get(self, id_: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
@@ -149,6 +125,13 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             row[10],
         )
 
+
+class GameEventHandler(BaseEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._cursor = cursor
+        self._table = GameTable().table
+
     def handle_created(self, event: GameCreatedEvent) -> None:
         self._cursor.execute(
             Query.into(self._table)
@@ -237,15 +220,3 @@ class GameRepository(BaseRepository, ContextManager["GameRepository"]):
             .get_sql(),
             [event.notes, str(event.id_)],
         )
-
-    def __enter__(self) -> "GameRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

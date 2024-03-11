@@ -6,12 +6,14 @@ from typing import TypeVar
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
 from fbsrankings.domain import GameID
+from fbsrankings.domain import GameRankingEventHandler as BaseGameRankingEventHandler
 from fbsrankings.domain import GameRankingRepository as BaseGameRankingRepository
 from fbsrankings.domain import Ranking
 from fbsrankings.domain import RankingID
 from fbsrankings.domain import RankingValue
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
+from fbsrankings.domain import TeamRankingEventHandler as BaseTeamRankingEventHandler
 from fbsrankings.domain import TeamRankingRepository as BaseTeamRankingRepository
 from fbsrankings.event import GameRankingCalculatedEvent
 from fbsrankings.event import RankingCalculatedEvent
@@ -58,6 +60,12 @@ class RankingRepository(Generic[T]):
             [self._to_value(value) for value in dto.values],
         )
 
+
+class RankingEventHandler:
+    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+        self._bus = bus
+        self._storage = storage
+
     def handle_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
@@ -93,11 +101,17 @@ class TeamRankingRepository(BaseTeamRankingRepository):
     def _to_value(dto: RankingValueDto) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(dto.id_), dto.order, dto.rank, dto.value)
 
+
+class TeamRankingEventHandler(BaseTeamRankingEventHandler):
+    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._event_handler = RankingEventHandler(storage, bus)
+
     def handle_calculated(
         self,
         event: TeamRankingCalculatedEvent,
     ) -> None:
-        self._repository.handle_calculated(event)
+        self._event_handler.handle_calculated(event)
 
 
 class GameRankingRepository(BaseGameRankingRepository):
@@ -120,8 +134,14 @@ class GameRankingRepository(BaseGameRankingRepository):
     def _to_value(dto: RankingValueDto) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(dto.id_), dto.order, dto.rank, dto.value)
 
+
+class GameRankingEventHandler(BaseGameRankingEventHandler):
+    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._event_handler = RankingEventHandler(storage, bus)
+
     def handle_calculated(
         self,
         event: GameRankingCalculatedEvent,
     ) -> None:
-        self._repository.handle_calculated(event)
+        self._event_handler.handle_calculated(event)

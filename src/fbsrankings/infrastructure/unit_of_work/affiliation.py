@@ -1,33 +1,26 @@
+from typing import List
 from typing import Optional
 
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
+from fbsrankings.domain import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.domain import AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import Subdivision
 from fbsrankings.domain import TeamID
 from fbsrankings.event import AffiliationCreatedEvent
-from fbsrankings.infrastructure.memory.storage import (
-    AffiliationStorage as MemoryStorage,
-)
 from fbsrankings.infrastructure.memory.write import (
     AffiliationRepository as MemoryRepository,
 )
 
 
 class AffiliationRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository) -> None:
+    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
         super().__init__(repository._bus)
-        self._cache = MemoryRepository(MemoryStorage(), self._bus)
+        self._cache = cache
         self._repository = repository
-
-        self._bus.register_handler(AffiliationCreatedEvent, self._cache.handle_created)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(
-            AffiliationCreatedEvent,
-            self._cache.handle_created,
-        )
 
     def create(
         self,
@@ -48,3 +41,12 @@ class AffiliationRepository(BaseRepository):
         if affiliation is None:
             affiliation = self._repository.find(season_id, team_id)
         return affiliation
+
+
+class AffiliationEventHandler(BaseEventHandler):
+    def __init__(self, events: List[Event], bus: EventBus) -> None:
+        super().__init__(bus)
+        self._events = events
+
+    def handle_created(self, event: AffiliationCreatedEvent) -> None:
+        self._events.append(event)

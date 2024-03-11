@@ -16,7 +16,7 @@ from fbsrankings.common import CommandHandler
 from fbsrankings.common import EventBus
 from fbsrankings.common import QueryBus
 from fbsrankings.domain import ValidationService
-from fbsrankings.infrastructure import TransactionFactory
+from fbsrankings.infrastructure import DataSource
 from fbsrankings.service.command.calculate_rankings_for_season import (
     CalculateRankingsForSeasonCommandHandler,
 )
@@ -32,7 +32,7 @@ class CommandManager(ContextManager["CommandManager"]):
     def __init__(
         self,
         config: Config,
-        data_source: TransactionFactory,
+        data_source: DataSource,
         command_bus: CommandBus,
         query_bus: QueryBus,
         event_bus: EventBus,

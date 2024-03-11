@@ -1,7 +1,11 @@
 import datetime
+from typing import List
 from typing import Optional
 
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
+from fbsrankings.domain import GameEventHandler as BaseEventHandler
 from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
 from fbsrankings.domain import SeasonID
@@ -12,41 +16,16 @@ from fbsrankings.event import GameCompletedEvent
 from fbsrankings.event import GameCreatedEvent
 from fbsrankings.event import GameNotesUpdatedEvent
 from fbsrankings.event import GameRescheduledEvent
-from fbsrankings.infrastructure.memory.storage import (
-    GameStorage as MemoryStorage,
-)
 from fbsrankings.infrastructure.memory.write import (
     GameRepository as MemoryRepository,
 )
 
 
 class GameRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository) -> None:
+    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
         super().__init__(repository._bus)
-        self._cache = MemoryRepository(MemoryStorage(), self._bus)
+        self._cache = cache
         self._repository = repository
-
-        self._bus.register_handler(GameCreatedEvent, self._cache.handle_created)
-        self._bus.register_handler(GameRescheduledEvent, self._cache.handle_rescheduled)
-        self._bus.register_handler(GameCanceledEvent, self._cache.handle_canceled)
-        self._bus.register_handler(GameCompletedEvent, self._cache.handle_completed)
-        self._bus.register_handler(
-            GameNotesUpdatedEvent,
-            self._cache.handle_notes_updated,
-        )
-
-    def close(self) -> None:
-        self._bus.unregister_handler(GameCreatedEvent, self._cache.handle_created)
-        self._bus.unregister_handler(
-            GameRescheduledEvent,
-            self._cache.handle_rescheduled,
-        )
-        self._bus.unregister_handler(GameCanceledEvent, self._cache.handle_canceled)
-        self._bus.unregister_handler(GameCompletedEvent, self._cache.handle_completed)
-        self._bus.unregister_handler(
-            GameNotesUpdatedEvent,
-            self._cache.handle_notes_updated,
-        )
 
     def create(
         self,
@@ -85,3 +64,24 @@ class GameRepository(BaseRepository):
         if game is None:
             game = self._repository.find(season_id, week, team1_id, team2_id)
         return game
+
+
+class GameEventHandler(BaseEventHandler):
+    def __init__(self, events: List[Event], bus: EventBus) -> None:
+        super().__init__(bus)
+        self._events = events
+
+    def handle_created(self, event: GameCreatedEvent) -> None:
+        self._events.append(event)
+
+    def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
+        self._events.append(event)
+
+    def handle_canceled(self, event: GameCanceledEvent) -> None:
+        self._events.append(event)
+
+    def handle_completed(self, event: GameCompletedEvent) -> None:
+        self._events.append(event)
+
+    def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
+        self._events.append(event)

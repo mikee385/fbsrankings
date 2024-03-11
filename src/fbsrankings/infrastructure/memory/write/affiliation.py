@@ -2,6 +2,7 @@ from typing import Optional
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Affiliation
+from fbsrankings.domain import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.domain import AffiliationID
 from fbsrankings.domain import AffiliationRepository as BaseRepository
 from fbsrankings.domain import SeasonID
@@ -33,6 +34,12 @@ class AffiliationRepository(BaseRepository):
             TeamID(dto.team_id),
             Subdivision[dto.subdivision],
         )
+
+
+class AffiliationEventHandler(BaseEventHandler):
+    def __init__(self, storage: AffiliationStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._storage = storage
 
     def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(

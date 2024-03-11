@@ -1,22 +1,19 @@
 import sqlite3
-from types import TracebackType
-from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import Type
 from typing import Union
 from uuid import UUID
 
 from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import SeasonID
 from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRecord
+from fbsrankings.domain import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.domain import TeamRecordID
 from fbsrankings.domain import TeamRecordRepository as BaseRepository
 from fbsrankings.domain import TeamRecordValue
@@ -28,25 +25,12 @@ from fbsrankings.infrastructure.sqlite.storage import TeamRecordValueTable
 SqliteParam = Union[None, int, float, str, bytes]
 
 
-class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"]):
-    def __init__(
-        self,
-        connection: sqlite3.Connection,
-        cursor: sqlite3.Cursor,
-        bus: EventBus,
-    ) -> None:
+class TeamRecordRepository(BaseRepository):
+    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
         super().__init__(bus)
-
         self._connection = connection
-        self._cursor = cursor
-
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
-
-        self._bus.register_handler(TeamRecordCalculatedEvent, self.handle_calculated)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(TeamRecordCalculatedEvent, self.handle_calculated)
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
@@ -117,6 +101,14 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
     def _to_value(row: Tuple[str, str, int, int]) -> TeamRecordValue:
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3])
 
+
+class TeamRecordEventHandler(BaseEventHandler):
+    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._cursor = cursor
+        self._record_table = TeamRecordTable().table
+        self._value_table = TeamRecordValueTable().table
+
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = (
             Query.from_(self._record_table)
@@ -179,15 +171,3 @@ class TeamRecordRepository(BaseRepository, ContextManager["TeamRecordRepository"
                 insert_sql,
                 [str(event.id_), str(value.team_id), value.wins, value.losses],
             )
-
-    def __enter__(self) -> "TeamRecordRepository":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

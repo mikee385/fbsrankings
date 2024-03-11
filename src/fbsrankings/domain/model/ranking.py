@@ -1,7 +1,9 @@
 import datetime
 from abc import ABCMeta
 from abc import abstractmethod
+from types import TracebackType
 from typing import Callable
+from typing import ContextManager
 from typing import Dict
 from typing import Generic
 from typing import Iterable
@@ -9,9 +11,12 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from uuid import UUID
 from uuid import uuid4
+
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.common import Identifier
@@ -199,6 +204,35 @@ class TeamRankingRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
 
+class TeamRankingEventHandler(
+    ContextManager["TeamRankingEventHandler"],
+    metaclass=ABCMeta,
+):
+    def __init__(self, bus: EventBus) -> None:
+        self._bus = bus
+
+        self._bus.register_handler(TeamRankingCalculatedEvent, self.handle_calculated)
+
+    def close(self) -> None:
+        self._bus.unregister_handler(TeamRankingCalculatedEvent, self.handle_calculated)
+
+    @abstractmethod
+    def handle_calculated(self, event: TeamRankingCalculatedEvent) -> None:
+        raise NotImplementedError
+
+    def __enter__(self) -> "TeamRankingEventHandler":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False
+
+
 class GameRankingService(metaclass=ABCMeta):  # noqa: B024
     @staticmethod
     def _to_values(
@@ -270,3 +304,32 @@ class GameRankingRepository(metaclass=ABCMeta):
         week: Optional[int],
     ) -> Optional[Ranking[GameID]]:
         raise NotImplementedError
+
+
+class GameRankingEventHandler(
+    ContextManager["GameRankingEventHandler"],
+    metaclass=ABCMeta,
+):
+    def __init__(self, bus: EventBus) -> None:
+        self._bus = bus
+
+        self._bus.register_handler(GameRankingCalculatedEvent, self.handle_calculated)
+
+    def close(self) -> None:
+        self._bus.unregister_handler(GameRankingCalculatedEvent, self.handle_calculated)
+
+    @abstractmethod
+    def handle_calculated(self, event: GameRankingCalculatedEvent) -> None:
+        raise NotImplementedError
+
+    def __enter__(self) -> "GameRankingEventHandler":
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        return False

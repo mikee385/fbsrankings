@@ -2,6 +2,7 @@ from typing import Optional
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Team
+from fbsrankings.domain import TeamEventHandler as BaseEventHandler
 from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRepository as BaseRepository
 from fbsrankings.event import TeamCreatedEvent
@@ -24,6 +25,12 @@ class TeamRepository(BaseRepository):
 
     def _to_team(self, dto: TeamDto) -> Team:
         return Team(self._bus, TeamID(dto.id_), dto.name)
+
+
+class TeamEventHandler(BaseEventHandler):
+    def __init__(self, storage: TeamStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._storage = storage
 
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._storage.add(TeamDto(event.id_, event.name))

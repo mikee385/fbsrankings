@@ -2,6 +2,7 @@ from typing import Optional
 
 from fbsrankings.common import EventBus
 from fbsrankings.domain import Game
+from fbsrankings.domain import GameEventHandler as BaseEventHandler
 from fbsrankings.domain import GameID
 from fbsrankings.domain import GameRepository as BaseRepository
 from fbsrankings.domain import GameStatus
@@ -51,6 +52,12 @@ class GameRepository(BaseRepository):
             GameStatus[dto.status],
             dto.notes,
         )
+
+
+class GameEventHandler(BaseEventHandler):
+    def __init__(self, storage: GameStorage, bus: EventBus) -> None:
+        super().__init__(bus)
+        self._storage = storage
 
     def handle_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(
