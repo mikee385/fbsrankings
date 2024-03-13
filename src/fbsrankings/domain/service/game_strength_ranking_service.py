@@ -11,7 +11,7 @@ from fbsrankings.domain.model.season import SeasonID
 from fbsrankings.domain.model.team import TeamID
 
 
-class GameStrengthRankingService(GameRankingService):
+class GameStrengthRankingService:
     def __init__(self, repository: GameRankingRepository) -> None:
         self._repository = repository
 
@@ -41,7 +41,7 @@ class GameStrengthRankingService(GameRankingService):
                     game_data[game.id_] = game_value
 
         result = {GameID(id_): data for id_, data in game_data.items()}
-        ranking_values = GameRankingService._to_values(season_data, result)
+        ranking_values = GameRankingService.to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Game Strength",

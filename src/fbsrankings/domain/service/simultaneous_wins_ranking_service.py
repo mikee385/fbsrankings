@@ -33,7 +33,7 @@ class TeamData:
         return float(self.win_total) / self.game_total if self.game_total > 0 else 0.0
 
 
-class SimultaneousWinsRankingService(TeamRankingService):
+class SimultaneousWinsRankingService:
     name: str = "Simultaneous Wins"
 
     def __init__(self, repository: TeamRankingRepository) -> None:
@@ -100,7 +100,7 @@ class SimultaneousWinsRankingService(TeamRankingService):
             x = numpy.linalg.solve(a, b)
 
             result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
-            ranking_values = TeamRankingService._to_values(season_data, result)
+            ranking_values = TeamRankingService.to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(

@@ -140,20 +140,20 @@ class Ranking(Generic[T]):
         return self._values
 
 
-class TeamRankingService(metaclass=ABCMeta):  # noqa: B024
+class TeamRankingService:
     @staticmethod
-    def _to_values(
+    def to_values(
         season_data: SeasonData,
         value_map: Dict[TeamID, float],
     ) -> List[RankingValue[TeamID]]:
         return RankingValue.to_values(
             season_data,
             value_map,
-            TeamRankingService._sort_key,
+            TeamRankingService.sort_key,
         )
 
     @staticmethod
-    def _sort_key(
+    def sort_key(
         season_data: SeasonData,
         team_id: TeamID,
         value: float,
@@ -233,20 +233,20 @@ class TeamRankingEventHandler(
         return False
 
 
-class GameRankingService(metaclass=ABCMeta):  # noqa: B024
+class GameRankingService:
     @staticmethod
-    def _to_values(
+    def to_values(
         season_data: SeasonData,
         value_map: Dict[GameID, float],
     ) -> List[RankingValue[GameID]]:
         return RankingValue.to_values(
             season_data,
             value_map,
-            GameRankingService._sort_key,
+            GameRankingService.sort_key,
         )
 
     @staticmethod
-    def _sort_key(
+    def sort_key(
         season_data: SeasonData,
         game_id: GameID,
         value: float,

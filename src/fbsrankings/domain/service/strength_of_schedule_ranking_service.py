@@ -24,7 +24,7 @@ class TeamData:
         return self.opponent_sum / self.game_total if self.game_total > 0 else 0.0
 
 
-class StrengthOfScheduleRankingService(TeamRankingService):
+class StrengthOfScheduleRankingService:
     def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
 
@@ -58,7 +58,7 @@ class StrengthOfScheduleRankingService(TeamRankingService):
         result = {
             TeamID(id_): data.strength_of_schedule for id_, data in team_data.items()
         }
-        ranking_values = TeamRankingService._to_values(season_data, result)
+        ranking_values = TeamRankingService.to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Strength of Schedule - Total",

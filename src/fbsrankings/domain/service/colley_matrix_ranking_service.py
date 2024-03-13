@@ -31,7 +31,7 @@ class TeamData:
         self.loss_total += 1
 
 
-class ColleyMatrixRankingService(TeamRankingService):
+class ColleyMatrixRankingService:
     name: str = "Colley Matrix"
 
     def __init__(self, repository: TeamRankingRepository) -> None:
@@ -99,7 +99,7 @@ class ColleyMatrixRankingService(TeamRankingService):
             x = numpy.linalg.solve(a, b)
 
             result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
-            ranking_values = TeamRankingService._to_values(season_data, result)
+            ranking_values = TeamRankingService.to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(

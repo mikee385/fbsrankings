@@ -26,7 +26,7 @@ class TeamData:
         self.point_margin += point_margin
 
 
-class SRSRankingService(TeamRankingService):
+class SRSRankingService:
     name: str = "SRS"
 
     def __init__(self, repository: TeamRankingRepository) -> None:
@@ -91,7 +91,7 @@ class SRSRankingService(TeamRankingService):
             x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
 
             result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
-            ranking_values = TeamRankingService._to_values(season_data, result)
+            ranking_values = TeamRankingService.to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
