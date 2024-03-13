@@ -1,5 +1,4 @@
 # pylint: disable=redefined-outer-name
-import os
 import shutil
 from configparser import ConfigParser
 from pathlib import Path
@@ -31,8 +30,7 @@ def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence
 def data_path(request: Any) -> Path:
     filename = request.module.__file__
     test_dir = Path(filename).parent.parent
-    data_dir = test_dir / "data"
-    return data_dir
+    return test_dir / "data"
 
 
 @pytest.fixture()
@@ -50,7 +48,7 @@ def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
     parser.read(src_path)
     parser["fbsrankings"]["storage_type"] = "sqlite"
     parser["fbsrankings"]["database"] = str(db_path)
-    with open(dest_path, "w", encoding="utf-8") as dest_file:
+    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
     return dest_path, db_path
@@ -65,7 +63,7 @@ def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
     parser.read(src_path)
     parser["fbsrankings"]["storage_type"] = "sqlite"
     parser["fbsrankings"]["database"] = ":memory:"
-    with open(dest_path, "w", encoding="utf-8") as dest_file:
+    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
     return dest_path
@@ -79,7 +77,7 @@ def memory_config(data_path: Path, test_path: Path) -> Path:
     parser = ConfigParser()
     parser.read(src_path)
     parser["fbsrankings"]["storage_type"] = "memory"
-    with open(dest_path, "w", encoding="utf-8") as dest_file:
+    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
     return dest_path
@@ -97,7 +95,7 @@ def test_main_help(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_help.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -130,7 +128,7 @@ def test_main_missing_command(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_missing_command.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -151,7 +149,7 @@ def test_main_invalid_command(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_invalid_command.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_err = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -173,7 +171,7 @@ def test_main_import_sqlite_file(
     test_seasons: List[str],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, test_db = sqlite_file_config
@@ -197,8 +195,8 @@ def test_main_import_sqlite_file(
     assert "Importing season data:" in captured_err
     assert "Calculating rankings:" in captured_err
 
-    assert os.path.exists(test_db), "Test database is missing"
-    assert os.path.isfile(test_db), "Test database is not a file"
+    assert test_db.exists(), "Test database is missing"
+    assert test_db.is_file(), "Test database is not a file"
 
 
 def test_main_import_sqlite_memory(
@@ -209,7 +207,7 @@ def test_main_import_sqlite_memory(
     test_seasons: List[str],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     with pytest.raises(SystemExit) as exit_result:
@@ -241,7 +239,7 @@ def test_main_import_memory(
     test_seasons: List[str],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     with pytest.raises(SystemExit) as exit_result:
@@ -272,7 +270,7 @@ def test_main_seasons(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_seasons.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -293,7 +291,7 @@ def test_main_latest(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_latest.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -318,7 +316,7 @@ def test_main_latest_rating_srs_top_5(
         test_path,
         ["main_latest_rating_colley_matrix_top_5.txt", "test_data.db"],
     )
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -339,7 +337,7 @@ def test_main_teams(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_teams.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -360,7 +358,7 @@ def test_main_teams_year(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_teams_2012.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -381,7 +379,7 @@ def test_main_teams_week(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_teams_2012w9.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -402,7 +400,7 @@ def test_main_games(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_games.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -423,7 +421,7 @@ def test_main_games_year(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_games_2012.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
@@ -444,7 +442,7 @@ def test_main_games_week(
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(data_path, test_path, ["main_games_2012w9.txt", "test_data.db"])
-    with open(files[0], encoding="utf-8") as expected_file:
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config

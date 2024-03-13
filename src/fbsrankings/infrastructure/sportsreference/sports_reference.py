@@ -63,13 +63,17 @@ class SportsReference:
 
         most_recent_completed_week = 0
         for game in games:
-            if game.status == GameStatus.COMPLETED:
-                if game.week > most_recent_completed_week:
-                    most_recent_completed_week = game.week
+            if (
+                game.status == GameStatus.COMPLETED
+                and game.week > most_recent_completed_week
+            ):
+                most_recent_completed_week = game.week
         for game in games:
-            if game.status == GameStatus.SCHEDULED:
-                if game.week < most_recent_completed_week:
-                    game.cancel()
+            if (
+                game.status == GameStatus.SCHEDULED
+                and game.week < most_recent_completed_week
+            ):
+                game.cancel()
 
         if self._validation_service is not None:
             self._validation_service.validate_season_games(
@@ -95,8 +99,10 @@ class SportsReference:
         for row in team_rows:
             if row[rank_index].isdigit():
                 name = row[name_index].strip()
-                if name.lower() in self._alternate_names:
-                    name = self._alternate_names[name.lower()]
+
+                alternate_name = self._alternate_names.get(name.lower())
+                if alternate_name:
+                    name = alternate_name
 
                 team, affiliation = self._import_team(name, season, Subdivision.FBS)
                 teams.append(team)
@@ -201,8 +207,9 @@ class SportsReference:
                     start = first_team_name.find(")")
                     first_team_name = first_team_name[start + 2 :].strip()
 
-                if first_team_name.lower() in self._alternate_names:
-                    first_team_name = self._alternate_names[first_team_name.lower()]
+                alternate_name = self._alternate_names.get(first_team_name.lower())
+                if alternate_name:
+                    first_team_name = alternate_name
 
                 if first_score_string == "":
                     first_score = None
@@ -213,8 +220,9 @@ class SportsReference:
                     start = second_team_name.find(")")
                     second_team_name = second_team_name[start + 2 :].strip()
 
-                if second_team_name.lower() in self._alternate_names:
-                    second_team_name = self._alternate_names[second_team_name.lower()]
+                alternate_name = self._alternate_names.get(second_team_name.lower())
+                if alternate_name:
+                    second_team_name = alternate_name
 
                 if second_score_string == "":
                     second_score = None

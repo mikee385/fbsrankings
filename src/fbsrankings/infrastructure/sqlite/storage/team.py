@@ -13,8 +13,8 @@ class TeamTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS team "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "Name TEXT NOT NULL UNIQUE);",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "Name TEXT NOT NULL UNIQUE);",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

@@ -241,7 +241,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     try:
         args.func(args)
-    except Exception as error:  # pylint: disable=broad-except
+    except Exception as error:  # pylint: disable=broad-except # noqa: PIE786
         if args.trace:
             raise
         print_err(f"{type(error).__name__}: {str(error)}")

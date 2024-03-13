@@ -53,11 +53,11 @@ class AffiliationTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS affiliation "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
-            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), "
-            + "UNIQUE(SeasonID, TeamID));",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), "
+            "UNIQUE(SeasonID, TeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

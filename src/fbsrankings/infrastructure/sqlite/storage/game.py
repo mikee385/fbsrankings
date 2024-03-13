@@ -53,17 +53,17 @@ class GameTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS game "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
-            + "Week INT NOT NULL, "
-            + "Date DATE NOT NULL, "
-            + "SeasonSection TEXT NOT NULL REFERENCES seasonsection(Name), "
-            + "HomeTeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "AwayTeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "HomeTeamScore INT NULL, "
-            + "AwayTeamScore INT NULL, "
-            + "Status TEXT NOT NULL REFERENCES gamestatus(Name), "
-            + "Notes TEXT NOT NULL, UNIQUE(SeasonID, Week, HomeTeamID, AwayTeamID));",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            "Week INT NOT NULL, "
+            "Date DATE NOT NULL, "
+            "SeasonSection TEXT NOT NULL REFERENCES seasonsection(Name), "
+            "HomeTeamID TEXT NOT NULL REFERENCES team(UUID), "
+            "AwayTeamID TEXT NOT NULL REFERENCES team(UUID), "
+            "HomeTeamScore INT NULL, "
+            "AwayTeamScore INT NULL, "
+            "Status TEXT NOT NULL REFERENCES gamestatus(Name), "
+            "Notes TEXT NOT NULL, UNIQUE(SeasonID, Week, HomeTeamID, AwayTeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

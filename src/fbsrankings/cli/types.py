@@ -1,11 +1,11 @@
 import argparse
-import os
 import re
+from pathlib import Path
 
 
 class FileType:
     def __call__(self, value: str) -> str:
-        if os.path.isfile(value):
+        if Path(value).is_file():
             return value
 
         raise argparse.ArgumentTypeError(f"'{value}' must be a valid file path")

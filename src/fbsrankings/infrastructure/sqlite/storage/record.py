@@ -14,10 +14,10 @@ class TeamRecordTable:
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS teamrecord "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
-            + "Week INT, "
-            + "UNIQUE(SeasonID, Week));",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            "Week INT, "
+            "UNIQUE(SeasonID, Week));",
         )
 
         self.value_table.create(cursor)
@@ -46,11 +46,11 @@ class TeamRecordValueTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS teamrecordvalue "
-            + "(TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID), "
-            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "Wins INT NOT NULL, "
-            + "Losses INT NOT NULL, "
-            + "UNIQUE(TeamRecordID, TeamID));",
+            "(TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID), "
+            "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            "Wins INT NOT NULL, "
+            "Losses INT NOT NULL, "
+            "UNIQUE(TeamRecordID, TeamID));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

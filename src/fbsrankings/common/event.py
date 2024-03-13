@@ -30,9 +30,8 @@ class EventBus:
 
     def unregister_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
         handlers = self._handlers.get(type_)
-        if handlers is not None:
-            if handler in handlers:
-                handlers.remove(handler)
+        if handlers is not None and handler in handlers:
+            handlers.remove(handler)
 
     def publish(self, event: E) -> None:
         handlers = self._handlers.get(type(event))

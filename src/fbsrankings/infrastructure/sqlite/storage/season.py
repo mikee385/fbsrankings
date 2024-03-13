@@ -53,8 +53,8 @@ class SeasonTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS season "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "Year INT  NOT NULL UNIQUE);",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "Year INT  NOT NULL UNIQUE);",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:

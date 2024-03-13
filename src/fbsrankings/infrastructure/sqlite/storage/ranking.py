@@ -59,12 +59,12 @@ class RankingTable:
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS ranking "
-            + "(UUID TEXT NOT NULL UNIQUE, "
-            + "Name TEXT NOT NULL, "
-            + "Type TEXT NOT NULL REFERENCES rankingtype(Name), "
-            + "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
-            + "Week INT, "
-            + "UNIQUE(Name, SeasonID, Week));",
+            "(UUID TEXT NOT NULL UNIQUE, "
+            "Name TEXT NOT NULL, "
+            "Type TEXT NOT NULL REFERENCES rankingtype(Name), "
+            "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
+            "Week INT, "
+            "UNIQUE(Name, SeasonID, Week));",
         )
 
         self.team_value_table.create(cursor)
@@ -96,13 +96,13 @@ class TeamRankingValueTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS teamrankingvalue "
-            + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
-            + "TeamID TEXT NOT NULL REFERENCES team(UUID), "
-            + "Ord INT NOT NULL, "
-            + "Rank INT NOT NULL, "
-            + "Value REAL NOT NULL, "
-            + "UNIQUE(RankingID, TeamID), "
-            + "UNIQUE(RankingID, Ord));",
+            "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
+            "TeamID TEXT NOT NULL REFERENCES team(UUID), "
+            "Ord INT NOT NULL, "
+            "Rank INT NOT NULL, "
+            "Value REAL NOT NULL, "
+            "UNIQUE(RankingID, TeamID), "
+            "UNIQUE(RankingID, Ord));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -126,13 +126,13 @@ class GameRankingValueTable:
     def create(cursor: sqlite3.Cursor) -> None:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS gamerankingvalue "
-            + "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
-            + "GameID TEXT NOT NULL REFERENCES game(UUID), "
-            + "Ord INT NOT NULL, "
-            + "Rank INT NOT NULL, "
-            + "Value REAL NOT NULL, "
-            + "UNIQUE(RankingID, GameID), "
-            + "UNIQUE(RankingID, Ord));",
+            "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
+            "GameID TEXT NOT NULL REFERENCES game(UUID), "
+            "Ord INT NOT NULL, "
+            "Rank INT NOT NULL, "
+            "Value REAL NOT NULL, "
+            "UNIQUE(RankingID, GameID), "
+            "UNIQUE(RankingID, Ord));",
         )
 
     def dump(self, connection: sqlite3.Connection) -> None:
