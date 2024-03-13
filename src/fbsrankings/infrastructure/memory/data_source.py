@@ -14,10 +14,7 @@ from fbsrankings.infrastructure.memory.write import EventHandler
 from fbsrankings.infrastructure.memory.write import Repository
 
 
-class DataSource(
-    BaseDataSource,
-    ContextManager["DataSource"],
-):  # pylint: disable=too-many-ancestors
+class DataSource(BaseDataSource, ContextManager["DataSource"]):
     def __init__(self) -> None:
         super().__init__()
         self._storage = Storage()

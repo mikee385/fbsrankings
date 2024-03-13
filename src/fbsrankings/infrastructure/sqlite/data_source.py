@@ -16,10 +16,7 @@ from fbsrankings.infrastructure.sqlite.write import EventHandler
 from fbsrankings.infrastructure.sqlite.write import Repository
 
 
-class DataSource(
-    BaseDataSource,
-    ContextManager["DataSource"],
-):  # pylint: disable=too-many-ancestors
+class DataSource(BaseDataSource, ContextManager["DataSource"]):
     def __init__(self, database: str) -> None:
         super().__init__()
 

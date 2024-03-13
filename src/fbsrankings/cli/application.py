@@ -534,8 +534,8 @@ class Application(ContextManager["Application"]):
         table.align["Val"] = "c"
         table.align["SOS_#"] = "r"
         table.align["SOS_Val"] = "c"
-        table.float_format["Val"] = ".3"  # pylint: disable=E1137
-        table.float_format["SOS_Val"] = ".3"  # pylint: disable=E1137
+        table.float_format["Val"] = ".3"
+        table.float_format["SOS_Val"] = ".3"
 
         if limit is None:
             values = ranking.values
@@ -577,7 +577,7 @@ class Application(ContextManager["Application"]):
         table.align["Away"] = "l"
         table.align["Score"] = "r"
         table.align["Val"] = "c"
-        table.float_format["Val"] = ".3"  # pylint: disable=E1137
+        table.float_format["Val"] = ".3"
 
         if limit is None:
             values = game_values
