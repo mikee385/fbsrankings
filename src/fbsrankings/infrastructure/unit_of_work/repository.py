@@ -1,3 +1,4 @@
+from fbsrankings.common import EventBus
 from fbsrankings.domain import AffiliationRepository
 from fbsrankings.domain import GameRankingRepository
 from fbsrankings.domain import GameRepository
@@ -31,25 +32,38 @@ from fbsrankings.infrastructure.unit_of_work.team import (
 
 
 class Repository(BaseRepository):
-    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
-        self._season = UnitOfWorkSeasonRepository(repository.season, cache.season)
-        self._team = UnitOfWorkTeamRepository(repository.team, cache.team)
+    def __init__(
+        self,
+        repository: BaseRepository,
+        cache: MemoryRepository,
+        storage_bus: EventBus,
+    ) -> None:
+        self._season = UnitOfWorkSeasonRepository(
+            repository.season,
+            cache.season,
+            storage_bus,
+        )
+        self._team = UnitOfWorkTeamRepository(repository.team, cache.team, storage_bus)
         self._affiliation = UnitOfWorkAffilationRepository(
             repository.affiliation,
             cache.affiliation,
+            storage_bus,
         )
-        self._game = UnitOfWorkGameRepository(repository.game, cache.game)
+        self._game = UnitOfWorkGameRepository(repository.game, cache.game, storage_bus)
         self._team_record = UnitOfWorkTeamRecordRepository(
             repository.team_record,
             cache.team_record,
+            storage_bus,
         )
         self._team_ranking = UnitOfWorkTeamRankingRepository(
             repository.team_ranking,
             cache.team_ranking,
+            storage_bus,
         )
         self._game_ranking = UnitOfWorkGameRankingRepository(
             repository.game_ranking,
             cache.game_ranking,
+            storage_bus,
         )
 
     @property

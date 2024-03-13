@@ -13,17 +13,17 @@ from fbsrankings.infrastructure.unit_of_work.team import TeamEventHandler
 
 
 class EventHandler(BaseEventHandler):
-    def __init__(self, bus: EventBus) -> None:
+    def __init__(self, event_bus: EventBus, cache_bus: EventBus) -> None:
         self.events: List[Event] = []
 
-        self._season = SeasonEventHandler(self.events, bus)
-        self._team = TeamEventHandler(self.events, bus)
-        self._affiliation = AffiliationEventHandler(self.events, bus)
-        self._game = GameEventHandler(self.events, bus)
+        self._season = SeasonEventHandler(self.events, event_bus, cache_bus)
+        self._team = TeamEventHandler(self.events, event_bus, cache_bus)
+        self._affiliation = AffiliationEventHandler(self.events, event_bus, cache_bus)
+        self._game = GameEventHandler(self.events, event_bus, cache_bus)
 
-        self._team_record = TeamRecordEventHandler(self.events, bus)
-        self._team_ranking = TeamRankingEventHandler(self.events, bus)
-        self._game_ranking = GameRankingEventHandler(self.events, bus)
+        self._team_record = TeamRecordEventHandler(self.events, event_bus, cache_bus)
+        self._team_ranking = TeamRankingEventHandler(self.events, event_bus, cache_bus)
+        self._game_ranking = GameRankingEventHandler(self.events, event_bus, cache_bus)
 
     def close(self) -> None:
         self._season.close()

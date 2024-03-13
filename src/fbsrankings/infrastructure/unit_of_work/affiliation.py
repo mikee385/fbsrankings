@@ -17,10 +17,16 @@ from fbsrankings.infrastructure.memory.write import (
 
 
 class AffiliationRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
+    def __init__(
+        self,
+        repository: BaseRepository,
+        cache: MemoryRepository,
+        cache_bus: EventBus,
+    ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(
         self,
@@ -34,19 +40,39 @@ class AffiliationRepository(BaseRepository):
         affiliation = self._cache.get(id_)
         if affiliation is None:
             affiliation = self._repository.get(id_)
+            if affiliation is not None:
+                self._cache_bus.publish(_created_event(affiliation))
         return affiliation
 
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
         affiliation = self._cache.find(season_id, team_id)
         if affiliation is None:
             affiliation = self._repository.find(season_id, team_id)
+            if affiliation is not None:
+                self._cache_bus.publish(_created_event(affiliation))
         return affiliation
 
 
+def _created_event(affiliation: Affiliation) -> AffiliationCreatedEvent:
+    return AffiliationCreatedEvent(
+        affiliation.id_.value,
+        affiliation.season_id.value,
+        affiliation.team_id.value,
+        affiliation.subdivision.name,
+    )
+
+
 class AffiliationEventHandler(BaseEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)

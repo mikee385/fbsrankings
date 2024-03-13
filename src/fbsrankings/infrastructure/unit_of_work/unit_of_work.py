@@ -29,12 +29,17 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
 
         self._data_repository = self._data_source.repository(self._inner_bus)
 
+        self._cache_bus = EventBus()
         self._cache_storage = MemoryStorage()
         self._cache_repository = MemoryRepository(self._cache_storage, self._inner_bus)
-        self._cache_handler = MemoryEventHandler(self._cache_storage, self._inner_bus)
+        self._cache_handler = MemoryEventHandler(self._cache_storage, self._cache_bus)
 
-        self._repository = Repository(self._data_repository, self._cache_repository)
-        self._event_handler = EventHandler(self._inner_bus)
+        self._repository = Repository(
+            self._data_repository,
+            self._cache_repository,
+            self._cache_bus,
+        )
+        self._event_handler = EventHandler(self._inner_bus, self._cache_bus)
 
     @property
     def season(self) -> SeasonRepository:

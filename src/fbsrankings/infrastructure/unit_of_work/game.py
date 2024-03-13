@@ -22,10 +22,16 @@ from fbsrankings.infrastructure.memory.write import (
 
 
 class GameRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
+    def __init__(
+        self,
+        repository: BaseRepository,
+        cache: MemoryRepository,
+        cache_bus: EventBus,
+    ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(
         self,
@@ -51,6 +57,8 @@ class GameRepository(BaseRepository):
         game = self._cache.get(id_)
         if game is None:
             game = self._repository.get(id_)
+            if game is not None:
+                self._cache_bus.publish(_created_event(game))
         return game
 
     def find(
@@ -63,25 +71,51 @@ class GameRepository(BaseRepository):
         game = self._cache.find(season_id, week, team1_id, team2_id)
         if game is None:
             game = self._repository.find(season_id, week, team1_id, team2_id)
+            if game is not None:
+                self._cache_bus.publish(_created_event(game))
         return game
 
 
+def _created_event(game: Game) -> GameCreatedEvent:
+    return GameCreatedEvent(
+        game.id_.value,
+        game.season_id.value,
+        game.week,
+        game.date,
+        game.season_section.name,
+        game.home_team_id.value,
+        game.away_team_id.value,
+        game.notes,
+    )
+
+
 class GameEventHandler(BaseEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_created(self, event: GameCreatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
 
     def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
 
     def handle_completed(self, event: GameCompletedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
 
     def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)

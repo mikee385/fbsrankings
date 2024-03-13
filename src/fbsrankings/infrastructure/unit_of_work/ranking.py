@@ -15,6 +15,7 @@ from fbsrankings.domain import TeamID
 from fbsrankings.domain import TeamRankingEventHandler as BaseTeamEventHandler
 from fbsrankings.domain import TeamRankingRepository as BaseTeamRepository
 from fbsrankings.event import GameRankingCalculatedEvent
+from fbsrankings.event import RankingValue as EventValue
 from fbsrankings.event import TeamRankingCalculatedEvent
 from fbsrankings.infrastructure.memory.write import (
     GameRankingRepository as MemoryGameRepository,
@@ -29,10 +30,12 @@ class TeamRankingRepository(BaseTeamRepository):
         self,
         repository: BaseTeamRepository,
         cache: MemoryTeamRepository,
+        cache_bus: EventBus,
     ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(
         self,
@@ -47,6 +50,8 @@ class TeamRankingRepository(BaseTeamRepository):
         ranking = self._cache.get(id_)
         if ranking is None:
             ranking = self._repository.get(id_)
+            if ranking is not None:
+                self._cache_bus.publish(_team_created_event(ranking))
         return ranking
 
     def find(
@@ -58,16 +63,38 @@ class TeamRankingRepository(BaseTeamRepository):
         ranking = self._cache.find(name, season_id, week)
         if ranking is None:
             ranking = self._repository.find(name, season_id, week)
+            if ranking is not None:
+                self._cache_bus.publish(_team_created_event(ranking))
         return ranking
 
 
+def _team_created_event(ranking: Ranking[TeamID]) -> TeamRankingCalculatedEvent:
+    return TeamRankingCalculatedEvent(
+        ranking.id_.value,
+        ranking.name,
+        ranking.season_id.value,
+        ranking.week,
+        [
+            EventValue(value.id_.value, value.order, value.rank, value.value)
+            for value in ranking.values
+        ],
+    )
+
+
 class TeamRankingEventHandler(BaseTeamEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_calculated(self, event: TeamRankingCalculatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
 
 
 class GameRankingRepository(BaseGameRepository):
@@ -75,10 +102,12 @@ class GameRankingRepository(BaseGameRepository):
         self,
         repository: BaseGameRepository,
         cache: MemoryGameRepository,
+        cache_bus: EventBus,
     ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(
         self,
@@ -93,6 +122,8 @@ class GameRankingRepository(BaseGameRepository):
         ranking = self._cache.get(id_)
         if ranking is None:
             ranking = self._repository.get(id_)
+            if ranking is not None:
+                self._cache_bus.publish(_game_created_event(ranking))
         return ranking
 
     def find(
@@ -104,13 +135,35 @@ class GameRankingRepository(BaseGameRepository):
         ranking = self._cache.find(name, season_id, week)
         if ranking is None:
             ranking = self._repository.find(name, season_id, week)
+            if ranking is not None:
+                self._cache_bus.publish(_game_created_event(ranking))
         return ranking
 
 
+def _game_created_event(ranking: Ranking[GameID]) -> GameRankingCalculatedEvent:
+    return GameRankingCalculatedEvent(
+        ranking.id_.value,
+        ranking.name,
+        ranking.season_id.value,
+        ranking.week,
+        [
+            EventValue(value.id_.value, value.order, value.rank, value.value)
+            for value in ranking.values
+        ],
+    )
+
+
 class GameRankingEventHandler(BaseGameEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_calculated(self, event: GameRankingCalculatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)

@@ -14,10 +14,16 @@ from fbsrankings.infrastructure.memory.write import (
 
 
 class TeamRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
+    def __init__(
+        self,
+        repository: BaseRepository,
+        cache: MemoryRepository,
+        cache_bus: EventBus,
+    ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(self, name: str) -> Team:
         return self._repository.create(name)
@@ -26,19 +32,34 @@ class TeamRepository(BaseRepository):
         team = self._cache.get(id_)
         if team is None:
             team = self._repository.get(id_)
+            if team is not None:
+                self._cache_bus.publish(_created_event(team))
         return team
 
     def find(self, name: str) -> Optional[Team]:
         team = self._cache.find(name)
         if team is None:
             team = self._repository.find(name)
+            if team is not None:
+                self._cache_bus.publish(_created_event(team))
         return team
 
 
+def _created_event(team: Team) -> TeamCreatedEvent:
+    return TeamCreatedEvent(team.id_.value, team.name)
+
+
 class TeamEventHandler(BaseEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)

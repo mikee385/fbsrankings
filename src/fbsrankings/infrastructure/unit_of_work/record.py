@@ -10,16 +10,23 @@ from fbsrankings.domain import TeamRecordID
 from fbsrankings.domain import TeamRecordRepository as BaseRepository
 from fbsrankings.domain import TeamRecordValue
 from fbsrankings.event import TeamRecordCalculatedEvent
+from fbsrankings.event import TeamRecordValue as EventValue
 from fbsrankings.infrastructure.memory.write import (
     TeamRecordRepository as MemoryRepository,
 )
 
 
 class TeamRecordRepository(BaseRepository):
-    def __init__(self, repository: BaseRepository, cache: MemoryRepository) -> None:
+    def __init__(
+        self,
+        repository: BaseRepository,
+        cache: MemoryRepository,
+        cache_bus: EventBus,
+    ) -> None:
         super().__init__(repository._bus)
-        self._cache = cache
         self._repository = repository
+        self._cache = cache
+        self._cache_bus = cache_bus
 
     def create(
         self,
@@ -33,19 +40,48 @@ class TeamRecordRepository(BaseRepository):
         team_record = self._cache.get(id_)
         if team_record is None:
             team_record = self._repository.get(id_)
+            if team_record is not None:
+                self._cache_bus.publish(_created_event(team_record))
         return team_record
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         team_record = self._cache.find(season_id, week)
         if team_record is None:
             team_record = self._repository.find(season_id, week)
+            if team_record is not None:
+                self._cache_bus.publish(_created_event(team_record))
         return team_record
 
 
+def _created_event(record: TeamRecord) -> TeamRecordCalculatedEvent:
+    return TeamRecordCalculatedEvent(
+        record.id_.value,
+        record.season_id.value,
+        record.week,
+        [
+            EventValue(
+                value.team_id.value,
+                value.wins,
+                value.losses,
+                value.games,
+                value.win_percentage,
+            )
+            for value in record.values
+        ],
+    )
+
+
 class TeamRecordEventHandler(BaseEventHandler):
-    def __init__(self, events: List[Event], bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(
+        self,
+        events: List[Event],
+        event_bus: EventBus,
+        cache_bus: EventBus,
+    ) -> None:
+        super().__init__(event_bus)
         self._events = events
+        self._cache_bus = cache_bus
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._events.append(event)
+        self._cache_bus.publish(event)
