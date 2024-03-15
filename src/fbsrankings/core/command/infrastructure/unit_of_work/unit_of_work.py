@@ -78,13 +78,16 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
         self._event_handler.clear()
 
     def close(self) -> None:
-        self._cache_handler.close()
-        self._cache_storage.drop()
-
         self._event_handler.close()
         self._event_handler.clear()
+        self._cache_handler.close()
+        self._cache_storage.drop()
+        self._cache_storage.close()
 
     def __enter__(self) -> "UnitOfWork":
+        self._cache_storage.__enter__()
+        self._cache_handler.__enter__()
+        self._event_handler.__enter__()
         return self
 
     def __exit__(
@@ -94,4 +97,7 @@ class UnitOfWork(ContextManager["UnitOfWork"]):
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
         self.close()
+        self._event_handler.__exit__(type_, value, traceback)
+        self._cache_handler.__exit__(type_, value, traceback)
+        self._cache_storage.__exit__(type_, value, traceback)
         return False

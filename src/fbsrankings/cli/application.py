@@ -69,6 +69,15 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
         self._event_bus = event_bus
         self.updates: Dict[UUID, List[int]] = {}
 
+        self._event_bus.register_handler(GameCreatedEvent, self)
+        self._event_bus.register_handler(GameCompletedEvent, self)
+        self._event_bus.register_handler(GameCanceledEvent, self)
+
+    def close(self) -> None:
+        self._event_bus.unregister_handler(GameCreatedEvent, self)
+        self._event_bus.unregister_handler(GameCompletedEvent, self)
+        self._event_bus.unregister_handler(GameCanceledEvent, self)
+
     def __call__(
         self,
         event: Union[GameCreatedEvent, GameCompletedEvent, GameCanceledEvent],
@@ -80,10 +89,6 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
             season.append(event.week)
 
     def __enter__(self) -> "GameUpdateTracker":
-        self._event_bus.register_handler(GameCreatedEvent, self)
-        self._event_bus.register_handler(GameCompletedEvent, self)
-        self._event_bus.register_handler(GameCanceledEvent, self)
-
         return self
 
     def __exit__(
@@ -92,10 +97,7 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._event_bus.unregister_handler(GameCreatedEvent, self)
-        self._event_bus.unregister_handler(GameCompletedEvent, self)
-        self._event_bus.unregister_handler(GameCanceledEvent, self)
-
+        self.close()
         return False
 
 
