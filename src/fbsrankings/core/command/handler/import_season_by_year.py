@@ -16,24 +16,24 @@ class ImportSeasonByYearCommandHandler:
         config: Config,
         data_source: DataSource,
         event_bus: EventBus,
-        validation_service: ValidationService,
     ) -> None:
         self._config = config
         self._data_source = data_source
         self._event_bus = event_bus
-        self._validation_service = validation_service
 
     def __call__(self, command: ImportSeasonByYearCommand) -> None:
         alternate_names = self._config.alternate_names
         if alternate_names is None:
             alternate_names = {}
 
+        validation_service = ValidationService(self._event_bus)
+
         with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
             import_service = ImportService(unit_of_work)
             sports_reference = SportsReference(
                 alternate_names,
                 import_service,
-                self._validation_service,
+                validation_service,
             )
             sports_reference.import_season(command.year)
             try:

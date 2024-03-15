@@ -11,7 +11,6 @@ from fbsrankings.context import Context
 from fbsrankings.core.command.command.import_season_by_year import (
     ImportSeasonByYearCommand,
 )
-from fbsrankings.core.command.domain.service.validation_service import ValidationService
 from fbsrankings.core.command.handler.import_season_by_year import (
     ImportSeasonByYearCommandHandler,
 )
@@ -23,7 +22,6 @@ class CommandBus(BaseCommandBus, ContextManager["CommandBus"]):
         super().__init__()
         config = context.config
         data_source = DataSource(context)
-        self.validation_service = ValidationService()
 
         self.register_handler(
             ImportSeasonByYearCommand,
@@ -31,7 +29,6 @@ class CommandBus(BaseCommandBus, ContextManager["CommandBus"]):
                 config,
                 data_source,
                 event_bus,
-                self.validation_service,
             ),
         )
 

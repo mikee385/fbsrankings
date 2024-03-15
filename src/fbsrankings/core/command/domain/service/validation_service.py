@@ -1,10 +1,11 @@
 import datetime
-from enum import Enum
 from typing import Iterable
 from typing import List
 from typing import Optional
 from uuid import UUID
 
+from fbsrankings.common import Event
+from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.season import Season
@@ -16,7 +17,7 @@ from fbsrankings.enum import SeasonSection
 from fbsrankings.enum import Subdivision
 
 
-class ValidationError(ValueError):
+class ValidationError(Event, ValueError):
     pass
 
 
@@ -135,22 +136,13 @@ class PostseasonGameCountValidationError(ValidationError):
         self.postseason_game_count = postseason_game_count
 
 
-class RaiseBehavior(Enum):
-    IMMEDIATELY = 0
-    ON_DEMAND = 1
-
-
 class ValidationService:
-    def __init__(
-        self,
-        raise_behavior: RaiseBehavior = RaiseBehavior.IMMEDIATELY,
-    ) -> None:
-        self.raise_behavior = raise_behavior
-        self.errors: List[ValidationError] = []
+    def __init__(self, event_bus: EventBus) -> None:
+        self._event_bus = event_bus
 
     def validate_season_data(self, season: Season, year: int) -> None:
         if season.year != year:
-            self._handle_error(
+            self._event_bus.publish(
                 SeasonDataValidationError(
                     f"Season.year does not match year: {season.year} vs. {year}",
                     season.id_.value,
@@ -162,7 +154,7 @@ class ValidationService:
 
     def validate_team_data(self, team: Team, name: str) -> None:
         if team.name != name:
-            self._handle_error(
+            self._event_bus.publish(
                 TeamDataValidationError(
                     f"Team.name does not match name: {team.name} vs. {name}",
                     team.id_.value,
@@ -180,7 +172,7 @@ class ValidationService:
         subdivision: Subdivision,
     ) -> None:
         if affiliation.season_id != season_id:
-            self._handle_error(
+            self._event_bus.publish(
                 AffiliationDataValidationError(
                     "Affiliation.season_id does not match season_id:"
                     f" {affiliation.season_id} vs. {season_id}",
@@ -191,7 +183,7 @@ class ValidationService:
                 ),
             )
         if affiliation.team_id != team_id:
-            self._handle_error(
+            self._event_bus.publish(
                 AffiliationDataValidationError(
                     "Affiliation.team_id does not match team_id:"
                     f" {affiliation.team_id} vs. {team_id}",
@@ -202,7 +194,7 @@ class ValidationService:
                 ),
             )
         if affiliation.subdivision != subdivision:
-            self._handle_error(
+            self._event_bus.publish(
                 AffiliationDataValidationError(
                     "Affiliation.subdivision does not match subdivision:"
                     f" {affiliation.subdivision} vs. {subdivision}",
@@ -228,7 +220,7 @@ class ValidationService:
         notes: str,
     ) -> None:
         if game.season_id != season_id:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.season_id does not match season_id: {game.season_id} vs."
                     f" {season_id}",
@@ -239,7 +231,7 @@ class ValidationService:
                 ),
             )
         if game.week != week:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.week does not match week: {game.week} vs. {week}",
                     game.id_.value,
@@ -249,7 +241,7 @@ class ValidationService:
                 ),
             )
         if game.date != date:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.date does not match date: {game.date} vs. {date}",
                     game.id_.value,
@@ -259,7 +251,7 @@ class ValidationService:
                 ),
             )
         if game.season_section != season_section:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.season_section does not match season_section:"
                     f" {game.season_section} vs. {season_section}",
@@ -270,7 +262,7 @@ class ValidationService:
                 ),
             )
         if game.home_team_id != home_team_id:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.home_team_id does not match home_team_id:"
                     f" {game.home_team_id} vs. {home_team_id}",
@@ -281,7 +273,7 @@ class ValidationService:
                 ),
             )
         if game.away_team_id != away_team_id:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.away_team_id does not match away_team_id:"
                     f" {game.away_team_id} vs. {away_team_id}",
@@ -292,7 +284,7 @@ class ValidationService:
                 ),
             )
         if game.home_team_score != home_team_score:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.home_team_score does not match home_team_score:"
                     f" {game.home_team_score} vs. {home_team_score}",
@@ -303,7 +295,7 @@ class ValidationService:
                 ),
             )
         if game.away_team_score != away_team_score:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.away_team_score does not match away_team_score:"
                     f" {game.away_team_score} vs. {away_team_score}",
@@ -336,7 +328,7 @@ class ValidationService:
             losing_team_score = None
 
         if game.winning_team_id != winning_team_id:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.winning_team_id does not match winning_team_id:"
                     f" {game.winning_team_id} vs. {winning_team_id}",
@@ -349,7 +341,7 @@ class ValidationService:
                 ),
             )
         if game.losing_team_id != losing_team_id:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.losing_team_id does not match losing_team_id:"
                     f" {game.losing_team_id} vs. {losing_team_id}",
@@ -362,7 +354,7 @@ class ValidationService:
                 ),
             )
         if game.winning_team_score != winning_team_score:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.winning_team_score does not match winning_team_score:"
                     f" {game.winning_team_score} vs. {winning_team_score}",
@@ -373,7 +365,7 @@ class ValidationService:
                 ),
             )
         if game.losing_team_score != losing_team_score:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     "Game.losing_team_score does not match losing_team_score:"
                     f" {game.losing_team_score} vs. {losing_team_score}",
@@ -384,7 +376,7 @@ class ValidationService:
                 ),
             )
         if game.status != status:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.status does not match status: {game.status} vs. {status}",
                     game.id_.value,
@@ -394,7 +386,7 @@ class ValidationService:
                 ),
             )
         if game.notes != notes:
-            self._handle_error(
+            self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.notes does not match notes: {game.notes} vs. {notes}",
                     game.id_.value,
@@ -418,7 +410,7 @@ class ValidationService:
             elif affiliation.subdivision == Subdivision.FCS:
                 fcs_game_counts[affiliation.team_id] = 0
             else:
-                self._handle_error(
+                self._event_bus.publish(
                     AffiliationDataValidationError(
                         f"Unknown subdivision: {affiliation.subdivision}",
                         affiliation.id_.value,
@@ -437,7 +429,7 @@ class ValidationService:
             elif game.home_team_id in fcs_game_counts:
                 fcs_game_counts[game.home_team_id] += 1
             else:
-                self._handle_error(
+                self._event_bus.publish(
                     GameDataValidationError(
                         "Unknown home team",
                         game.id_.value,
@@ -452,7 +444,7 @@ class ValidationService:
             elif game.away_team_id in fcs_game_counts:
                 fcs_game_counts[game.away_team_id] += 1
             else:
-                self._handle_error(
+                self._event_bus.publish(
                     GameDataValidationError(
                         "Unknown away team",
                         game.id_.value,
@@ -469,7 +461,7 @@ class ValidationService:
 
         for team_id, game_count in fbs_game_counts.items():
             if game_count < 10:
-                self._handle_error(
+                self._event_bus.publish(
                     FBSGameCountValidationError(
                         "FBS team has too few games",
                         season_id.value,
@@ -480,7 +472,7 @@ class ValidationService:
 
         for team_id, game_count in fcs_game_counts.items():
             if game_count > 5:
-                self._handle_error(
+                self._event_bus.publish(
                     FCSGameCountValidationError(
                         "FCS team had too many games",
                         season_id.value,
@@ -491,7 +483,7 @@ class ValidationService:
 
         postseason_percentage = float(postseason_game_count) / regular_season_game_count
         if postseason_percentage < 0.03:
-            self._handle_error(
+            self._event_bus.publish(
                 PostseasonGameCountValidationError(
                     "Too few postseason games",
                     season_id.value,
@@ -500,7 +492,7 @@ class ValidationService:
                 ),
             )
         elif postseason_percentage > 0.06:
-            self._handle_error(
+            self._event_bus.publish(
                 PostseasonGameCountValidationError(
                     "Too many postseason games",
                     season_id.value,
@@ -508,19 +500,3 @@ class ValidationService:
                     postseason_game_count,
                 ),
             )
-
-    def raise_errors(self) -> None:
-        if len(self.errors) == 1:
-            error = self.errors[0]
-            self.errors.clear()
-            raise error
-        if len(self.errors) > 1:
-            error = MultipleValidationError(self.errors)
-            self.errors = []
-            raise error
-
-    def _handle_error(self, error: ValidationError) -> None:
-        if self.raise_behavior == RaiseBehavior.IMMEDIATELY:
-            raise error
-        if self.raise_behavior == RaiseBehavior.ON_DEMAND:
-            self.errors.append(error)

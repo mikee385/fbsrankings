@@ -22,6 +22,7 @@ from fbsrankings.common import EventBus
 from fbsrankings.config import Config
 from fbsrankings.context import Context
 from fbsrankings.core.command import AffiliationCreatedEvent
+from fbsrankings.core.command import AffiliationDataValidationError
 from fbsrankings.core.command import CommandBus as CoreCommandBus
 from fbsrankings.core.command import FBSGameCountValidationError
 from fbsrankings.core.command import FCSGameCountValidationError
@@ -32,6 +33,10 @@ from fbsrankings.core.command import GameDataValidationError
 from fbsrankings.core.command import GameNotesUpdatedEvent
 from fbsrankings.core.command import GameRescheduledEvent
 from fbsrankings.core.command import ImportSeasonByYearCommand
+from fbsrankings.core.command import MultipleValidationError
+from fbsrankings.core.command import PostseasonGameCountValidationError
+from fbsrankings.core.command import SeasonDataValidationError
+from fbsrankings.core.command import TeamDataValidationError
 from fbsrankings.core.command import ValidationError
 from fbsrankings.core.query import AffiliationCountBySeasonQuery
 from fbsrankings.core.query import CanceledGamesQuery
@@ -141,6 +146,23 @@ class Application(ContextManager["Application"]):
 
         self._note_events: List[GameNotesUpdatedEvent] = []
         self._event_bus.register_handler(GameNotesUpdatedEvent, self._save_notes_event)
+
+        self._errors: List[ValidationError] = []
+        self._event_bus.register_handler(ValidationError, self._save_error)
+        self._event_bus.register_handler(MultipleValidationError, self._save_error)
+        self._event_bus.register_handler(SeasonDataValidationError, self._save_error)
+        self._event_bus.register_handler(TeamDataValidationError, self._save_error)
+        self._event_bus.register_handler(
+            AffiliationDataValidationError,
+            self._save_error,
+        )
+        self._event_bus.register_handler(GameDataValidationError, self._save_error)
+        self._event_bus.register_handler(FBSGameCountValidationError, self._save_error)
+        self._event_bus.register_handler(FCSGameCountValidationError, self._save_error)
+        self._event_bus.register_handler(
+            PostseasonGameCountValidationError,
+            self._save_error,
+        )
 
         self._context = Context(config)
 
@@ -337,6 +359,9 @@ class Application(ContextManager["Application"]):
 
     def _save_notes_event(self, event: GameNotesUpdatedEvent) -> None:
         self._note_events.append(event)
+
+    def _save_error(self, error: ValidationError) -> None:
+        self._errors.append(error)
 
     def _print_check(self) -> None:
         limit = 10
@@ -724,7 +749,7 @@ class Application(ContextManager["Application"]):
         fcs_team_errors = []
         game_errors = []
         other_errors = []
-        for error in self._core_command.validation_service.errors:
+        for error in self._errors:
             if isinstance(error, FBSGameCountValidationError):
                 fbs_team_errors.append(error)
             elif isinstance(error, FCSGameCountValidationError):
@@ -817,4 +842,11 @@ class Application(ContextManager["Application"]):
                 print(error)
 
     def _raise_errors(self) -> None:
-        self._core_command.validation_service.raise_errors()
+        if len(self._errors) == 1:
+            error = self._errors[0]
+            self._errors.clear()
+            raise error
+        if len(self._errors) > 1:
+            error = MultipleValidationError(self._errors)
+            self._errors = []
+            raise error
