@@ -17,47 +17,51 @@ from typing_extensions import Literal
 
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.spinner import Spinner
-from fbsrankings.command import CalculateRankingsForSeasonCommand
-from fbsrankings.command import ImportSeasonByYearCommand
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
-from fbsrankings.domain import FBSGameCountValidationError
-from fbsrankings.domain import FCSGameCountValidationError
-from fbsrankings.domain import GameDataValidationError
-from fbsrankings.domain import GameStatus
-from fbsrankings.domain import ValidationError
-from fbsrankings.event import AffiliationCreatedEvent
-from fbsrankings.event import GameCanceledEvent
-from fbsrankings.event import GameCompletedEvent
-from fbsrankings.event import GameCreatedEvent
-from fbsrankings.event import GameNotesUpdatedEvent
-from fbsrankings.event import GameRankingCalculatedEvent
-from fbsrankings.event import GameRescheduledEvent
-from fbsrankings.event import TeamRankingCalculatedEvent
-from fbsrankings.event import TeamRecordCalculatedEvent
-from fbsrankings.query import AffiliationCountBySeasonQuery
-from fbsrankings.query import CanceledGamesQuery
-from fbsrankings.query import GameByIDQuery
-from fbsrankings.query import GameCountBySeasonQuery
-from fbsrankings.query import GameRankingBySeasonWeekQuery
-from fbsrankings.query import GameRankingBySeasonWeekResult
-from fbsrankings.query import GameRankingValueBySeasonWeekResult
-from fbsrankings.query import LatestSeasonWeekQuery
-from fbsrankings.query import PostseasonGameCountBySeasonQuery
-from fbsrankings.query import SeasonByIDQuery
-from fbsrankings.query import SeasonByYearQuery
-from fbsrankings.query import SeasonByYearResult
-from fbsrankings.query import SeasonResult
-from fbsrankings.query import SeasonsQuery
-from fbsrankings.query import TeamByIDQuery
-from fbsrankings.query import TeamCountBySeasonQuery
-from fbsrankings.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.query import TeamRankingBySeasonWeekResult
-from fbsrankings.query import TeamRecordBySeasonWeekQuery
-from fbsrankings.query import TeamRecordBySeasonWeekResult
-from fbsrankings.query import WeekCountBySeasonQuery
-from fbsrankings.service import Config
-from fbsrankings.service import Service
+from fbsrankings.config import Config
+from fbsrankings.context import Context
+from fbsrankings.core.command import AffiliationCreatedEvent
+from fbsrankings.core.command import CommandBus as CoreCommandBus
+from fbsrankings.core.command import FBSGameCountValidationError
+from fbsrankings.core.command import FCSGameCountValidationError
+from fbsrankings.core.command import GameCanceledEvent
+from fbsrankings.core.command import GameCompletedEvent
+from fbsrankings.core.command import GameCreatedEvent
+from fbsrankings.core.command import GameDataValidationError
+from fbsrankings.core.command import GameNotesUpdatedEvent
+from fbsrankings.core.command import GameRescheduledEvent
+from fbsrankings.core.command import ImportSeasonByYearCommand
+from fbsrankings.core.command import ValidationError
+from fbsrankings.core.query import AffiliationCountBySeasonQuery
+from fbsrankings.core.query import CanceledGamesQuery
+from fbsrankings.core.query import GameByIDQuery
+from fbsrankings.core.query import GameCountBySeasonQuery
+from fbsrankings.core.query import LatestSeasonWeekQuery
+from fbsrankings.core.query import PostseasonGameCountBySeasonQuery
+from fbsrankings.core.query import QueryBus as CoreQueryBus
+from fbsrankings.core.query import SeasonByIDQuery
+from fbsrankings.core.query import SeasonByYearQuery
+from fbsrankings.core.query import SeasonByYearResult
+from fbsrankings.core.query import SeasonResult
+from fbsrankings.core.query import SeasonsQuery
+from fbsrankings.core.query import TeamByIDQuery
+from fbsrankings.core.query import TeamCountBySeasonQuery
+from fbsrankings.core.query import WeekCountBySeasonQuery
+from fbsrankings.enum import GameStatus
+from fbsrankings.ranking.command import CalculateRankingsForSeasonCommand
+from fbsrankings.ranking.command import CommandBus as RankingCommandBus
+from fbsrankings.ranking.command import GameRankingCalculatedEvent
+from fbsrankings.ranking.command import TeamRankingCalculatedEvent
+from fbsrankings.ranking.command import TeamRecordCalculatedEvent
+from fbsrankings.ranking.query import GameRankingBySeasonWeekQuery
+from fbsrankings.ranking.query import GameRankingBySeasonWeekResult
+from fbsrankings.ranking.query import GameRankingValueBySeasonWeekResult
+from fbsrankings.ranking.query import QueryBus as RankingQueryBus
+from fbsrankings.ranking.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.ranking.query import TeamRankingBySeasonWeekResult
+from fbsrankings.ranking.query import TeamRecordBySeasonWeekQuery
+from fbsrankings.ranking.query import TeamRecordBySeasonWeekResult
 
 
 class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
@@ -102,7 +106,7 @@ class Application(ContextManager["Application"]):
         if config_location is not None:
             config_path = Path(config_location).resolve()
         else:
-            config_path = package_dir / "data" / "fbsrankings.ini"
+            config_path = package_dir / "fbsrankings.ini"
         if not config_path.is_file():
             raise ValueError(f"'{config_path}' must be a valid file path")
 
@@ -136,7 +140,17 @@ class Application(ContextManager["Application"]):
         self._note_events: List[GameNotesUpdatedEvent] = []
         self._event_bus.register_handler(GameNotesUpdatedEvent, self._save_notes_event)
 
-        self._service = Service(config, self._event_bus)
+        self._context = Context(config)
+
+        self._core_command = CoreCommandBus(self._context, self._event_bus)
+        self._core_query = CoreQueryBus(self._context)
+
+        self._ranking_command = RankingCommandBus(
+            self._context,
+            self._core_query,
+            self._event_bus,
+        )
+        self._ranking_query = RankingQueryBus(self._context)
 
     def import_seasons(self, seasons: Iterable[str], drop: bool, check: bool) -> None:
         years = self._parse_seasons(seasons)
@@ -144,19 +158,21 @@ class Application(ContextManager["Application"]):
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._service.drop()
+                self._context.storage.drop()
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:
             print_err("Importing season data:")
             for year in tqdm(years):
-                self._service.send(ImportSeasonByYearCommand(year))
+                self._core_command.send(ImportSeasonByYearCommand(year))
 
             if tracker.updates:
                 print_err()
                 print_err("Calculating rankings:")
                 for season in tqdm(tracker.updates):
-                    self._service.send(CalculateRankingsForSeasonCommand(season))
+                    self._ranking_command.send(
+                        CalculateRankingsForSeasonCommand(season),
+                    )
 
         if check:
             self._print_check()
@@ -175,7 +191,7 @@ class Application(ContextManager["Application"]):
         rating_name = self._parse_rating(rating)
         limit = self._parse_top(top)
 
-        latest_season_week = self._service.query(LatestSeasonWeekQuery())
+        latest_season_week = self._core_query.query(LatestSeasonWeekQuery())
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -227,7 +243,7 @@ class Application(ContextManager["Application"]):
     def print_seasons(self, top: str) -> None:
         limit = self._parse_top(top)
 
-        seasons = self._service.query(SeasonsQuery()).seasons
+        seasons = self._core_query.query(SeasonsQuery()).seasons
         self._print_seasons_table(seasons[:limit])
 
     def print_teams(self, season: str, rating: str, top: str) -> None:
@@ -268,10 +284,18 @@ class Application(ContextManager["Application"]):
         self._print_games_table(game_ranking.values, team_ranking, limit)
 
     def close(self) -> None:
-        self._service.close()
+        self._ranking_query.close()
+        self._ranking_command.close()
+        self._core_query.close()
+        self._core_command.close()
+        self._context.close()
 
     def __enter__(self) -> "Application":
-        self._service.__enter__()
+        self._context.__enter__()
+        self._core_command.__enter__()
+        self._core_query.__enter__()
+        self._ranking_command.__enter__()
+        self._ranking_query.__enter__()
         return self
 
     def __exit__(
@@ -280,7 +304,11 @@ class Application(ContextManager["Application"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self._service.__exit__(type_, value, traceback)
+        self._ranking_query.__exit__(type_, value, traceback)
+        self._ranking_command.__exit__(type_, value, traceback)
+        self._core_query.__exit__(type_, value, traceback)
+        self._core_command.__exit__(type_, value, traceback)
+        self._context.__exit__(type_, value, traceback)
         return False
 
     def _save_season_event(
@@ -311,10 +339,10 @@ class Application(ContextManager["Application"]):
     def _print_check(self) -> None:
         limit = 10
 
-        seasons = self._service.query(SeasonsQuery()).seasons
+        seasons = self._core_query.query(SeasonsQuery()).seasons
         self._print_seasons_table(seasons)
 
-        latest_season_week = self._service.query(LatestSeasonWeekQuery())
+        latest_season_week = self._core_query.query(LatestSeasonWeekQuery())
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -383,7 +411,7 @@ class Application(ContextManager["Application"]):
             year = int(year_week[0])
             week = int(year_week[1])
         elif season_week.casefold() == "latest".casefold():
-            latest_season_week = self._service.query(LatestSeasonWeekQuery())
+            latest_season_week = self._core_query.query(LatestSeasonWeekQuery())
             if latest_season_week is None:
                 raise ValueError("No completed weeks were found")
             year = latest_season_week.year
@@ -417,7 +445,7 @@ class Application(ContextManager["Application"]):
         raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
     def _get_season(self, year: int) -> SeasonByYearResult:
-        season = self._service.query(SeasonByYearQuery(year))
+        season = self._core_query.query(SeasonByYearQuery(year))
         if season is None:
             raise ValueError(f"Season not found for {year}")
         return season
@@ -428,7 +456,9 @@ class Application(ContextManager["Application"]):
         year: int,
         week: Optional[int],
     ) -> TeamRecordBySeasonWeekResult:
-        team_record = self._service.query(TeamRecordBySeasonWeekQuery(season_id, week))
+        team_record = self._ranking_query.query(
+            TeamRecordBySeasonWeekQuery(season_id, week),
+        )
         if team_record is None:
             if week is not None:
                 raise ValueError(f"Team records not found for {year}, Week {week}")
@@ -442,7 +472,7 @@ class Application(ContextManager["Application"]):
         year: int,
         week: Optional[int],
     ) -> TeamRankingBySeasonWeekResult:
-        team_ranking = self._service.query(
+        team_ranking = self._ranking_query.query(
             TeamRankingBySeasonWeekQuery(rating_name, season_id, week),
         )
         if team_ranking is None:
@@ -460,7 +490,7 @@ class Application(ContextManager["Application"]):
         year: int,
         week: Optional[int],
     ) -> GameRankingBySeasonWeekResult:
-        game_ranking = self._service.query(
+        game_ranking = self._ranking_query.query(
             GameRankingBySeasonWeekQuery(rating_name, season_id, week),
         )
         if game_ranking is None:
@@ -477,13 +507,13 @@ class Application(ContextManager["Application"]):
         )
 
         for season in seasons:
-            week_count = self._service.query(WeekCountBySeasonQuery(season.id_))
-            team_count = self._service.query(TeamCountBySeasonQuery(season.id_))
-            affiliation_count = self._service.query(
+            week_count = self._core_query.query(WeekCountBySeasonQuery(season.id_))
+            team_count = self._core_query.query(TeamCountBySeasonQuery(season.id_))
+            affiliation_count = self._core_query.query(
                 AffiliationCountBySeasonQuery(season.id_),
             )
-            game_count = self._service.query(GameCountBySeasonQuery(season.id_))
-            postseason_game_count = self._service.query(
+            game_count = self._core_query.query(GameCountBySeasonQuery(season.id_))
+            postseason_game_count = self._core_query.query(
                 PostseasonGameCountBySeasonQuery(season.id_),
             )
 
@@ -609,7 +639,7 @@ class Application(ContextManager["Application"]):
         print()
         print("Events:")
         if self._event_counts_by_season:
-            seasons = self._service.query(SeasonsQuery()).seasons
+            seasons = self._core_query.query(SeasonsQuery()).seasons
             season_map = {s.id_: s for s in seasons}
 
             event_table = PrettyTable(
@@ -648,7 +678,7 @@ class Application(ContextManager["Application"]):
             print("None")
 
     def _print_canceled_games(self) -> None:
-        canceled_games = self._service.query(CanceledGamesQuery()).games
+        canceled_games = self._core_query.query(CanceledGamesQuery()).games
         if canceled_games:
             print()
             print("Canceled Games:")
@@ -666,7 +696,7 @@ class Application(ContextManager["Application"]):
             print()
             print("Notes:")
             for event in self._note_events:
-                game = self._service.query(GameByIDQuery(event.id_))
+                game = self._core_query.query(GameByIDQuery(event.id_))
                 if game is not None:
                     print()
                     print(f"ID: {game.id_}")
@@ -692,7 +722,7 @@ class Application(ContextManager["Application"]):
         fcs_team_errors = []
         game_errors = []
         other_errors = []
-        for error in self._service.errors:
+        for error in self._core_command.validation_service.errors:
             if isinstance(error, FBSGameCountValidationError):
                 fbs_team_errors.append(error)
             elif isinstance(error, FCSGameCountValidationError):
@@ -716,10 +746,12 @@ class Application(ContextManager["Application"]):
             print("FBS teams with too few games:")
             print()
             for fbs_error in fbs_team_errors:
-                fbs_error_season = self._service.query(
+                fbs_error_season = self._core_query.query(
                     SeasonByIDQuery(fbs_error.season_id),
                 )
-                fbs_error_team = self._service.query(TeamByIDQuery(fbs_error.team_id))
+                fbs_error_team = self._core_query.query(
+                    TeamByIDQuery(fbs_error.team_id),
+                )
                 if fbs_error_season is not None and fbs_error_team is not None:
                     print(
                         f"{fbs_error_season.year} {fbs_error_team.name}:"
@@ -731,10 +763,12 @@ class Application(ContextManager["Application"]):
             print("FCS teams with too many games:")
             print()
             for fcs_error in fcs_team_errors:
-                fcs_error_season = self._service.query(
+                fcs_error_season = self._core_query.query(
                     SeasonByIDQuery(fcs_error.season_id),
                 )
-                fcs_error_team = self._service.query(TeamByIDQuery(fcs_error.team_id))
+                fcs_error_team = self._core_query.query(
+                    TeamByIDQuery(fcs_error.team_id),
+                )
                 if fcs_error_season is not None and fcs_error_team is not None:
                     print(
                         f"{fcs_error_season.year} {fcs_error_team.name}:"
@@ -746,7 +780,7 @@ class Application(ContextManager["Application"]):
             print()
             print("Game Errors:")
             for error in game_errors:
-                game = self._service.query(GameByIDQuery(error.game_id))
+                game = self._core_query.query(GameByIDQuery(error.game_id))
                 if game is not None:
                     print()
                     print(f"ID: {game.id_}")
@@ -781,4 +815,4 @@ class Application(ContextManager["Application"]):
                 print(error)
 
     def _raise_errors(self) -> None:
-        self._service.validation_service.raise_errors()
+        self._core_command.validation_service.raise_errors()

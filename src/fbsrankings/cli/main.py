@@ -186,7 +186,7 @@ def print_teams(args: argparse.Namespace) -> None:
 
 teams_parser.set_defaults(func=print_teams)
 
-# PRINT GAMES--------------------------------
+# GAMES--------------------------------
 
 games_parser = subparsers.add_parser(
     "games",

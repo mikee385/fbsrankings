@@ -10,7 +10,7 @@ from typing import Tuple
 import pytest
 
 from fbsrankings import __version__
-from fbsrankings.cli import main
+from fbsrankings.cli.main import main
 
 
 def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence[Path]:
