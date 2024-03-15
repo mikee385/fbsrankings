@@ -17,6 +17,9 @@ from fbsrankings.core.command.infrastructure.memory.event_handler import (
 from fbsrankings.core.command.infrastructure.memory.repository import (
     Repository as MemoryRepository,
 )
+from fbsrankings.core.command.infrastructure.repository import (
+    Repository as BaseRepository,
+)
 from fbsrankings.core.command.infrastructure.unit_of_work.event_handler import (
     EventHandler,
 )
@@ -24,7 +27,7 @@ from fbsrankings.core.command.infrastructure.unit_of_work.repository import Repo
 from fbsrankings.storage.memory import Storage as MemoryStorage
 
 
-class UnitOfWork(ContextManager["UnitOfWork"]):
+class UnitOfWork(BaseRepository, ContextManager["UnitOfWork"]):
     def __init__(self, data_source: DataSource, bus: EventBus) -> None:
         self._data_source = data_source
         self._outer_bus = bus

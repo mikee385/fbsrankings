@@ -1,49 +1,20 @@
 import datetime
-from abc import ABCMeta
-from abc import abstractmethod
 from typing import Optional
 
-from typing_extensions import Protocol
-
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
-from fbsrankings.core.command.domain.model.affiliation import AffiliationRepository
 from fbsrankings.core.command.domain.model.game import Game
-from fbsrankings.core.command.domain.model.game import GameRepository
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
-from fbsrankings.core.command.domain.model.season import SeasonRepository
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.core.command.domain.model.team import TeamRepository
+from fbsrankings.core.command.infrastructure.repository import Repository
 from fbsrankings.enum import GameStatus
 from fbsrankings.enum import SeasonSection
 from fbsrankings.enum import Subdivision
 
 
-class RepositoryManager(Protocol, metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def season(self) -> SeasonRepository:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def team(self) -> TeamRepository:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def affiliation(self) -> AffiliationRepository:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def game(self) -> GameRepository:
-        raise NotImplementedError
-
-
 class ImportService:
-    def __init__(self, repository: RepositoryManager) -> None:
+    def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
     def import_season(self, year: int) -> Season:
