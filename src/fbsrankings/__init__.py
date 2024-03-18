@@ -3,5 +3,5 @@ Import college football teams and games from sportsreference.com and calculate r
 for the Division I Football Bowl Subdivision (FBS) teams.
 """
 
-__version__ = "10.0.0"
+__version__ = "11.0.0-beta"
 __author__ = "Michael Stephen Pierce"
