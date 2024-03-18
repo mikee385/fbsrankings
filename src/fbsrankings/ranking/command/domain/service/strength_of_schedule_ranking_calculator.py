@@ -6,8 +6,8 @@ from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
-from fbsrankings.ranking.command.domain.model.ranking import TeamRankingService
 
 
 class TeamData:
@@ -24,7 +24,7 @@ class TeamData:
         return self.opponent_sum / self.game_total if self.game_total > 0 else 0.0
 
 
-class StrengthOfScheduleRankingService:
+class StrengthOfScheduleRankingCalculator:
     def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
 
@@ -58,7 +58,7 @@ class StrengthOfScheduleRankingService:
         result = {
             TeamID(id_): data.strength_of_schedule for id_, data in team_data.items()
         }
-        ranking_values = TeamRankingService.to_values(season_data, result)
+        ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Strength of Schedule - Total",

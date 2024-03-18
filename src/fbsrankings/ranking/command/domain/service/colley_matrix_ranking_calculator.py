@@ -11,8 +11,8 @@ from fbsrankings.ranking.command.domain.model.core import Subdivision
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
-from fbsrankings.ranking.command.domain.model.ranking import TeamRankingService
 
 
 class TeamData:
@@ -20,6 +20,7 @@ class TeamData:
         self.index = index
         self.game_total = 0
         self.win_total = 0
+        self.loss_total = 0
 
     def add_win(self) -> None:
         self.game_total += 1
@@ -27,14 +28,11 @@ class TeamData:
 
     def add_loss(self) -> None:
         self.game_total += 1
-
-    @property
-    def win_percentage(self) -> float:
-        return float(self.win_total) / self.game_total if self.game_total > 0 else 0.0
+        self.loss_total += 1
 
 
-class SimultaneousWinsRankingService:
-    name: str = "Simultaneous Wins"
+class ColleyMatrixRankingCalculator:
+    name: str = "Colley Matrix"
 
     def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
@@ -92,19 +90,20 @@ class SimultaneousWinsRankingService:
                     losing_data.add_loss()
 
                     a[winning_data.index, losing_data.index] -= 1.0
+                    a[losing_data.index, winning_data.index] -= 1.0
 
             for data in team_data.values():
-                a[data.index, data.index] = max(data.game_total, 1.0)
-                b[data.index] = data.win_total
+                a[data.index, data.index] = 2.0 + data.game_total
+                b[data.index] = 1 + (data.win_total - data.loss_total) / 2.0
 
             x = numpy.linalg.solve(a, b)
 
             result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
-            ranking_values = TeamRankingService.to_values(season_data, result)
+            ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
-                    SimultaneousWinsRankingService.name,
+                    ColleyMatrixRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     week,
                     ranking_values,
@@ -114,7 +113,7 @@ class SimultaneousWinsRankingService:
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SimultaneousWinsRankingService.name,
+                    ColleyMatrixRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     None,
                     ranking_values,

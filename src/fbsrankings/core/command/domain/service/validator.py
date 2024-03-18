@@ -136,7 +136,7 @@ class PostseasonGameCountValidationError(ValidationError):
         self.postseason_game_count = postseason_game_count
 
 
-class ValidationService:
+class Validator:
     def __init__(self, event_bus: EventBus) -> None:
         self._event_bus = event_bus
 

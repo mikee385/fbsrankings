@@ -12,8 +12,8 @@ from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.team import Team
-from fbsrankings.core.command.domain.service.import_service import ImportService
-from fbsrankings.core.command.domain.service.validation_service import ValidationService
+from fbsrankings.core.command.domain.service.importer import Importer
+from fbsrankings.core.command.domain.service.validator import Validator
 from fbsrankings.enum import GameStatus
 from fbsrankings.enum import SeasonSection
 from fbsrankings.enum import Subdivision
@@ -23,8 +23,8 @@ class SportsReference:
     def __init__(
         self,
         alternate_names: Dict[str, str],
-        import_service: ImportService,
-        validation_service: ValidationService,
+        importer: Importer,
+        validator: Validator,
     ) -> None:
         if alternate_names is not None:
             self._alternate_names = {
@@ -33,8 +33,8 @@ class SportsReference:
         else:
             self._alternate_names = {}
 
-        self._import_service = import_service
-        self._validation_service = validation_service
+        self._importer = importer
+        self._validator = validator
 
     def import_season(self, year: int) -> None:
         team_url = f"https://www.sports-reference.com/cfb/years/{year}-standings.html"
@@ -53,10 +53,10 @@ class SportsReference:
             game_soup = BeautifulSoup(game_html, "html5lib")
         game_rows = _html_iter(game_soup)
 
-        season = self._import_service.import_season(year)
+        season = self._importer.import_season(year)
 
-        if self._validation_service is not None:
-            self._validation_service.validate_season_data(season, year)
+        if self._validator is not None:
+            self._validator.validate_season_data(season, year)
 
         _, fbs_affiliations = self._import_team_rows(season, team_rows)
         games, fcs_affiliations = self._import_game_rows(season, game_rows)
@@ -75,8 +75,8 @@ class SportsReference:
             ):
                 game.cancel()
 
-        if self._validation_service is not None:
-            self._validation_service.validate_season_games(
+        if self._validator is not None:
+            self._validator.validate_season_games(
                 season.id_,
                 fbs_affiliations + fcs_affiliations,
                 games,
@@ -108,9 +108,9 @@ class SportsReference:
                 teams.append(team)
                 fbs_affiliations.append(affiliation)
 
-                if self._validation_service is not None:
-                    self._validation_service.validate_team_data(team, name)
-                    self._validation_service.validate_affiliation_data(
+                if self._validator is not None:
+                    self._validator.validate_team_data(team, name)
+                    self._validator.validate_affiliation_data(
                         affiliation,
                         season.id_,
                         team.id_,
@@ -125,22 +125,22 @@ class SportsReference:
         season: Season,
         subdivision: Subdivision,
     ) -> Tuple[Team, Affiliation]:
-        team = self._import_service.import_team(name)
+        team = self._importer.import_team(name)
 
-        if self._validation_service is not None:
-            self._validation_service.validate_team_data(
+        if self._validator is not None:
+            self._validator.validate_team_data(
                 team,
                 name,
             )
 
-        affiliation = self._import_service.import_affiliation(
+        affiliation = self._importer.import_affiliation(
             season.id_,
             team.id_,
             subdivision,
         )
 
-        if self._validation_service is not None:
-            self._validation_service.validate_affiliation_data(
+        if self._validator is not None:
+            self._validator.validate_affiliation_data(
                 affiliation,
                 season.id_,
                 team.id_,
@@ -275,7 +275,7 @@ class SportsReference:
                 else:
                     season_section = SeasonSection.REGULAR_SEASON
 
-                game = self._import_service.import_game(
+                game = self._importer.import_game(
                     season.id_,
                     week,
                     date,
@@ -288,8 +288,8 @@ class SportsReference:
                 )
                 games.append(game)
 
-                if self._validation_service is not None:
-                    self._validation_service.validate_game_data(
+                if self._validator is not None:
+                    self._validator.validate_game_data(
                         game,
                         season.id_,
                         week,

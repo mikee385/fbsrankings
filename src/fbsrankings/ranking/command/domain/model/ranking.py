@@ -140,7 +140,7 @@ class Ranking(Generic[T]):
         return self._values
 
 
-class TeamRankingService:
+class TeamRankingCalculator:
     @staticmethod
     def to_values(
         season_data: SeasonData,
@@ -149,7 +149,7 @@ class TeamRankingService:
         return RankingValue.to_values(
             season_data,
             value_map,
-            TeamRankingService.sort_key,
+            TeamRankingCalculator.sort_key,
         )
 
     @staticmethod
@@ -233,7 +233,7 @@ class TeamRankingEventHandler(
         return False
 
 
-class GameRankingService:
+class GameRankingCalculator:
     @staticmethod
     def to_values(
         season_data: SeasonData,
@@ -242,7 +242,7 @@ class GameRankingService:
         return RankingValue.to_values(
             season_data,
             value_map,
-            GameRankingService.sort_key,
+            GameRankingCalculator.sort_key,
         )
 
     @staticmethod

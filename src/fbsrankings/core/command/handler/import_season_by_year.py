@@ -3,8 +3,8 @@ from fbsrankings.config import Config
 from fbsrankings.core.command.command.import_season_by_year import (
     ImportSeasonByYearCommand,
 )
-from fbsrankings.core.command.domain.service.import_service import ImportService
-from fbsrankings.core.command.domain.service.validation_service import ValidationService
+from fbsrankings.core.command.domain.service.importer import Importer
+from fbsrankings.core.command.domain.service.validator import Validator
 from fbsrankings.core.command.infrastructure.data_source import DataSource
 from fbsrankings.core.command.infrastructure.sports_reference import SportsReference
 from fbsrankings.core.command.infrastructure.unit_of_work.unit_of_work import UnitOfWork
@@ -26,14 +26,14 @@ class ImportSeasonByYearCommandHandler:
         if alternate_names is None:
             alternate_names = {}
 
-        validation_service = ValidationService(self._event_bus)
+        validator = Validator(self._event_bus)
 
         with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
-            import_service = ImportService(unit_of_work)
+            importer = Importer(unit_of_work)
             sports_reference = SportsReference(
                 alternate_names,
-                import_service,
-                validation_service,
+                importer,
+                validator,
             )
             sports_reference.import_season(command.year)
             try:

@@ -19,7 +19,7 @@ class TeamData:
         self.losses = 0
 
 
-class TeamRecordService:
+class TeamRecordCalculator:
     def __init__(self, repository: TeamRecordRepository) -> None:
         self._repository = repository
 

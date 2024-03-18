@@ -13,7 +13,7 @@ from fbsrankings.enum import SeasonSection
 from fbsrankings.enum import Subdivision
 
 
-class ImportService:
+class Importer:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 

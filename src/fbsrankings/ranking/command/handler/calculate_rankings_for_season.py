@@ -10,21 +10,23 @@ from fbsrankings.ranking.command.command.calculate_rankings_for_season import (
     CalculateRankingsForSeasonCommand,
 )
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
-from fbsrankings.ranking.command.domain.service.colley_matrix_ranking_service import (
-    ColleyMatrixRankingService,
+from fbsrankings.ranking.command.domain.service.colley_matrix_ranking_calculator import (
+    ColleyMatrixRankingCalculator,
 )
-from fbsrankings.ranking.command.domain.service.game_strength_ranking_service import (
-    GameStrengthRankingService,
+from fbsrankings.ranking.command.domain.service.game_strength_ranking_calculator import (
+    GameStrengthRankingCalculator,
 )
-from fbsrankings.ranking.command.domain.service.record_service import TeamRecordService
-from fbsrankings.ranking.command.domain.service.simultaneous_wins_ranking_service import (
-    SimultaneousWinsRankingService,
+from fbsrankings.ranking.command.domain.service.record_calculator import (
+    TeamRecordCalculator,
 )
-from fbsrankings.ranking.command.domain.service.srs_ranking_service import (
-    SRSRankingService,
+from fbsrankings.ranking.command.domain.service.simultaneous_wins_ranking_calculator import (
+    SimultaneousWinsRankingCalculator,
 )
-from fbsrankings.ranking.command.domain.service.strength_of_schedule_ranking_service import (
-    StrengthOfScheduleRankingService,
+from fbsrankings.ranking.command.domain.service.srs_ranking_calculator import (
+    SRSRankingCalculator,
+)
+from fbsrankings.ranking.command.domain.service.strength_of_schedule_ranking_calculator import (
+    StrengthOfScheduleRankingCalculator,
 )
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
 from fbsrankings.ranking.command.infrastructure.unit_of_work.unit_of_work import (
@@ -75,40 +77,40 @@ class CalculateRankingsForSeasonCommandHandler:
 
             season_data = SeasonData(season_id, affiliations, games)
 
-            TeamRecordService(unit_of_work.team_record).calculate_for_season(
+            TeamRecordCalculator(unit_of_work.team_record).calculate_for_season(
                 season_data,
             )
 
-            srs_rankings = SRSRankingService(
+            srs_rankings = SRSRankingCalculator(
                 unit_of_work.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in srs_rankings:
-                StrengthOfScheduleRankingService(
+                StrengthOfScheduleRankingCalculator(
                     unit_of_work.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
-                GameStrengthRankingService(
+                GameStrengthRankingCalculator(
                     unit_of_work.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
-            cm_rankings = ColleyMatrixRankingService(
+            cm_rankings = ColleyMatrixRankingCalculator(
                 unit_of_work.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in cm_rankings:
-                StrengthOfScheduleRankingService(
+                StrengthOfScheduleRankingCalculator(
                     unit_of_work.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
-                GameStrengthRankingService(
+                GameStrengthRankingCalculator(
                     unit_of_work.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
-            sw_rankings = SimultaneousWinsRankingService(
+            sw_rankings = SimultaneousWinsRankingCalculator(
                 unit_of_work.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in sw_rankings:
-                StrengthOfScheduleRankingService(
+                StrengthOfScheduleRankingCalculator(
                     unit_of_work.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
-                GameStrengthRankingService(
+                GameStrengthRankingCalculator(
                     unit_of_work.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 

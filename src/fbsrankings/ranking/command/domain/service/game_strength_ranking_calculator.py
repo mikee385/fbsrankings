@@ -5,13 +5,13 @@ from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import GameStatus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
+from fbsrankings.ranking.command.domain.model.ranking import GameRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import GameRankingRepository
-from fbsrankings.ranking.command.domain.model.ranking import GameRankingService
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 
 
-class GameStrengthRankingService:
+class GameStrengthRankingCalculator:
     def __init__(self, repository: GameRankingRepository) -> None:
         self._repository = repository
 
@@ -41,7 +41,7 @@ class GameStrengthRankingService:
                     game_data[game.id_] = game_value
 
         result = {GameID(id_): data for id_, data in game_data.items()}
-        ranking_values = GameRankingService.to_values(season_data, result)
+        ranking_values = GameRankingCalculator.to_values(season_data, result)
 
         return self._repository.create(
             performance_ranking.name + " - Game Strength",

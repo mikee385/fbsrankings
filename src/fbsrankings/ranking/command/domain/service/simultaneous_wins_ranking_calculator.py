@@ -11,23 +11,30 @@ from fbsrankings.ranking.command.domain.model.core import Subdivision
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
-from fbsrankings.ranking.command.domain.model.ranking import TeamRankingService
 
 
 class TeamData:
     def __init__(self, index: int) -> None:
         self.index = index
         self.game_total = 0
-        self.point_margin = 0
+        self.win_total = 0
 
-    def add_game(self, point_margin: int) -> None:
+    def add_win(self) -> None:
         self.game_total += 1
-        self.point_margin += point_margin
+        self.win_total += 1
+
+    def add_loss(self) -> None:
+        self.game_total += 1
+
+    @property
+    def win_percentage(self) -> float:
+        return float(self.win_total) / self.game_total if self.game_total > 0 else 0.0
 
 
-class SRSRankingService:
-    name: str = "SRS"
+class SimultaneousWinsRankingCalculator:
+    name: str = "Simultaneous Wins"
 
     def __init__(self, repository: TeamRankingRepository) -> None:
         self._repository = repository
@@ -60,42 +67,44 @@ class SRSRankingService:
                 season_is_complete = False
 
         n = len(team_data)
-        a = numpy.zeros((n + 1, n))
-        b = numpy.zeros(n + 1)
+        a = numpy.zeros((n, n))
+        b = numpy.zeros(n)
 
         rankings = []
         for week in sorted(games_by_week.keys()):
             for game in games_by_week[week]:
+                winning_data = None
+                losing_data = None
+
                 if (
                     game.home_team_score is not None
                     and game.away_team_score is not None
                 ):
-                    home_data = team_data[game.home_team_id]
-                    away_data = team_data[game.away_team_id]
+                    if game.home_team_score > game.away_team_score:
+                        winning_data = team_data.get(game.home_team_id)
+                        losing_data = team_data.get(game.away_team_id)
+                    elif game.away_team_score > game.home_team_score:
+                        winning_data = team_data.get(game.away_team_id)
+                        losing_data = team_data.get(game.home_team_id)
 
-                    home_margin = self._adjust_margin(
-                        game.home_team_score - game.away_team_score,
-                    )
-                    home_data.add_game(home_margin)
-                    away_data.add_game(-home_margin)
+                if winning_data is not None and losing_data is not None:
+                    winning_data.add_win()
+                    losing_data.add_loss()
 
-                    a[home_data.index, away_data.index] -= 1.0
-                    a[away_data.index, home_data.index] -= 1.0
+                    a[winning_data.index, losing_data.index] -= 1.0
 
             for data in team_data.values():
-                a[data.index, data.index] = data.game_total
-                b[data.index] = data.point_margin
-                a[n, data.index] = 1.0
-            b[n] = 0.0
+                a[data.index, data.index] = max(data.game_total, 1.0)
+                b[data.index] = data.win_total
 
-            x = numpy.linalg.lstsq(a, b, rcond=-1)[0]
+            x = numpy.linalg.solve(a, b)
 
             result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
-            ranking_values = TeamRankingService.to_values(season_data, result)
+            ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name,
+                    SimultaneousWinsRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     week,
                     ranking_values,
@@ -105,7 +114,7 @@ class SRSRankingService:
         if season_is_complete:
             rankings.append(
                 self._repository.create(
-                    SRSRankingService.name,
+                    SimultaneousWinsRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     None,
                     ranking_values,
@@ -113,15 +122,3 @@ class SRSRankingService:
             )
 
         return rankings
-
-    @staticmethod
-    def _adjust_margin(margin: int) -> int:
-        if margin > 24:
-            return 24
-        if margin < -24:
-            return -24
-        if 0 < margin < 7:
-            return 7
-        if 0 > margin > -7:
-            return -7
-        return margin
