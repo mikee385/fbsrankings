@@ -28,7 +28,7 @@ class TeamRepository(BaseRepository):
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
+            [str(id_)],
         )
         row = cursor.fetchone()
         cursor.close()

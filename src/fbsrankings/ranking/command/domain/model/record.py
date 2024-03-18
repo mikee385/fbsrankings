@@ -3,23 +3,23 @@ from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
 from typing import List
+from typing import NewType
 from typing import Optional
 from typing import Sequence
 from typing import Type
+from uuid import UUID
 from uuid import uuid4
 
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
 from fbsrankings.ranking.command.event.record import TeamRecordValue as EventValue
 
 
-class TeamRecordID(Identifier):
-    pass
+TeamRecordID = NewType("TeamRecordID", UUID)
 
 
 class TeamRecordValue:
@@ -95,12 +95,12 @@ class TeamRecordRepository(metaclass=ABCMeta):
         record = TeamRecord(self._bus, id_, season_id, week, values)
         self._bus.publish(
             TeamRecordCalculatedEvent(
-                record.id_.value,
-                record.season_id.value,
+                record.id_,
+                record.season_id,
                 record.week,
                 [
                     EventValue(
-                        value.team_id.value,
+                        value.team_id,
                         value.wins,
                         value.losses,
                         value.games,

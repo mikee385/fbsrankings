@@ -2,19 +2,19 @@ from abc import ABCMeta
 from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
+from typing import NewType
 from typing import Optional
 from typing import Type
+from uuid import UUID
 from uuid import uuid4
 
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.core.command.event.team import TeamCreatedEvent
 
 
-class TeamID(Identifier):
-    pass
+TeamID = NewType("TeamID", UUID)
 
 
 class Team:
@@ -39,7 +39,7 @@ class TeamRepository(metaclass=ABCMeta):
     def create(self, name: str) -> Team:
         id_ = TeamID(uuid4())
         team = Team(self._bus, id_, name)
-        self._bus.publish(TeamCreatedEvent(team.id_.value, team.name))
+        self._bus.publish(TeamCreatedEvent(team.id_, team.name))
 
         return team
 

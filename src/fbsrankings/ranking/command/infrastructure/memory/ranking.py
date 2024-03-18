@@ -2,9 +2,9 @@ from typing import Callable
 from typing import Generic
 from typing import Optional
 from typing import TypeVar
+from uuid import UUID
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -31,7 +31,7 @@ from fbsrankings.storage.memory import RankingStorage
 from fbsrankings.storage.memory import RankingValueDto
 
 
-T = TypeVar("T", bound=Identifier)
+T = TypeVar("T", bound=UUID)
 
 
 class RankingRepository(Generic[T]):
@@ -46,7 +46,7 @@ class RankingRepository(Generic[T]):
         self._to_value = to_value
 
     def get(self, id_: RankingID) -> Optional[Ranking[T]]:
-        dto = self._storage.get(id_.value)
+        dto = self._storage.get(id_)
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
@@ -55,7 +55,7 @@ class RankingRepository(Generic[T]):
         season_id: SeasonID,
         week: Optional[int],
     ) -> Optional[Ranking[T]]:
-        dto = self._storage.find(name, season_id.value, week)
+        dto = self._storage.find(name, season_id, week)
         return self._to_ranking(dto) if dto is not None else None
 
     def _to_ranking(self, dto: RankingDto) -> Ranking[T]:

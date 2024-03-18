@@ -8,6 +8,7 @@ from typing import Dict
 from typing import Generic
 from typing import Iterable
 from typing import List
+from typing import NewType
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -19,7 +20,6 @@ from uuid import uuid4
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.common import SupportsRichComparison
 from fbsrankings.core.query import AffiliationBySeasonResult
 from fbsrankings.core.query import GameBySeasonResult
@@ -31,7 +31,7 @@ from fbsrankings.ranking.command.event.ranking import RankingValue as EventValue
 from fbsrankings.ranking.command.event.ranking import TeamRankingCalculatedEvent
 
 
-T = TypeVar("T", bound=Identifier)
+T = TypeVar("T", bound=UUID)
 
 
 class SeasonData:
@@ -48,8 +48,7 @@ class SeasonData:
         self.game_map = {game.id_: game for game in games}
 
 
-class RankingID(Identifier):
-    pass
+RankingID = NewType("RankingID", UUID)
 
 
 class RankingValue(Generic[T]):
@@ -158,8 +157,8 @@ class TeamRankingCalculator:
         team_id: TeamID,
         value: float,
     ) -> Tuple[float, str, str]:
-        affiliation = season_data.affiliation_map[team_id.value]
-        return (-value, affiliation.team_name.upper(), str(team_id.value))
+        affiliation = season_data.affiliation_map[team_id]
+        return (-value, affiliation.team_name.upper(), str(team_id))
 
 
 class TeamRankingRepository(metaclass=ABCMeta):
@@ -177,12 +176,12 @@ class TeamRankingRepository(metaclass=ABCMeta):
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
-                ranking.id_.value,
+                ranking.id_,
                 ranking.name,
-                ranking.season_id.value,
+                ranking.season_id,
                 ranking.week,
                 [
-                    EventValue(value.id_.value, value.order, value.rank, value.value)
+                    EventValue(value.id_, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -251,7 +250,7 @@ class GameRankingCalculator:
         game_id: GameID,
         value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
-        game = season_data.game_map[game_id.value]
+        game = season_data.game_map[game_id]
         home_affiliation = season_data.affiliation_map[game.home_team_id]
         away_affiliation = season_data.affiliation_map[game.away_team_id]
 
@@ -260,7 +259,7 @@ class GameRankingCalculator:
             game.date,
             home_affiliation.team_name.upper(),
             away_affiliation.team_name.upper(),
-            str(game_id.value),
+            str(game_id),
         )
 
 
@@ -279,12 +278,12 @@ class GameRankingRepository(metaclass=ABCMeta):
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
-                ranking.id_.value,
+                ranking.id_,
                 ranking.name,
-                ranking.season_id.value,
+                ranking.season_id,
                 ranking.week,
                 [
-                    EventValue(value.id_.value, value.order, value.rank, value.value)
+                    EventValue(value.id_, value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),

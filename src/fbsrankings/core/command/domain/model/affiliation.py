@@ -2,22 +2,22 @@ from abc import ABCMeta
 from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
+from typing import NewType
 from typing import Optional
 from typing import Type
+from uuid import UUID
 from uuid import uuid4
 
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
 from fbsrankings.enum import Subdivision
 
 
-class AffiliationID(Identifier):
-    pass
+AffiliationID = NewType("AffiliationID", UUID)
 
 
 class Affiliation:
@@ -66,9 +66,9 @@ class AffiliationRepository(metaclass=ABCMeta):
         affiliation = Affiliation(self._bus, id_, season_id, team_id, subdivision)
         self._bus.publish(
             AffiliationCreatedEvent(
-                affiliation.id_.value,
-                affiliation.season_id.value,
-                affiliation.team_id.value,
+                affiliation.id_,
+                affiliation.season_id,
+                affiliation.team_id,
                 affiliation.subdivision.name,
             ),
         )

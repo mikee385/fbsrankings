@@ -50,7 +50,7 @@ class SeasonRepository(BaseRepository):
 
 
 def _created_event(season: Season) -> SeasonCreatedEvent:
-    return SeasonCreatedEvent(season.id_.value, season.year)
+    return SeasonCreatedEvent(season.id_, season.year)
 
 
 class SeasonEventHandler(BaseEventHandler):

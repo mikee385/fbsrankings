@@ -80,13 +80,13 @@ class GameRepository(BaseRepository):
 
 def _created_event(game: Game) -> GameCreatedEvent:
     return GameCreatedEvent(
-        game.id_.value,
-        game.season_id.value,
+        game.id_,
+        game.season_id,
         game.week,
         game.date,
         game.season_section.name,
-        game.home_team_id.value,
-        game.away_team_id.value,
+        game.home_team_id,
+        game.away_team_id,
         game.notes,
     )
 

@@ -37,7 +37,7 @@ class GameRepository(BaseRepository):
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
+            [str(id_)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -68,12 +68,12 @@ class GameRepository(BaseRepository):
             )
             .get_sql(),
             [
-                str(season_id.value),
+                str(season_id),
                 week,
-                str(team1_id.value),
-                str(team2_id.value),
-                str(team1_id.value),
-                str(team2_id.value),
+                str(team1_id),
+                str(team2_id),
+                str(team1_id),
+                str(team2_id),
             ],
         )
         row = cursor.fetchone()

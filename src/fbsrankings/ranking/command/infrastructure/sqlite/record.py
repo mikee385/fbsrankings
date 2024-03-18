@@ -40,7 +40,7 @@ class TeamRecordRepository(BaseRepository):
         cursor = self._connection.cursor()
         cursor.execute(
             self._query().where(self._record_table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
+            [str(id_)],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -49,7 +49,7 @@ class TeamRecordRepository(BaseRepository):
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         query = self._query().where(self._record_table.SeasonID == Parameter("?"))
-        params: List[SqliteParam] = [str(season_id.value)]
+        params: List[SqliteParam] = [str(season_id)]
 
         if week is not None:
             query = query.where(self._record_table.Week == Parameter("?"))

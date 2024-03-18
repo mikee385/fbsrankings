@@ -26,7 +26,7 @@ class GameRepository(BaseRepository):
         self._storage = storage
 
     def get(self, id_: GameID) -> Optional[Game]:
-        dto = self._storage.get(id_.value)
+        dto = self._storage.get(id_)
         return self._to_game(dto) if dto is not None else None
 
     def find(
@@ -36,7 +36,7 @@ class GameRepository(BaseRepository):
         team1_id: TeamID,
         team2_id: TeamID,
     ) -> Optional[Game]:
-        dto = self._storage.find(season_id.value, week, team1_id.value, team2_id.value)
+        dto = self._storage.find(season_id, week, team1_id, team2_id)
         return self._to_game(dto) if dto is not None else None
 
     def _to_game(self, dto: GameDto) -> Game:

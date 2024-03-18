@@ -15,7 +15,6 @@ from pypika import Table
 from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -43,7 +42,7 @@ from fbsrankings.storage.sqlite import RankingType
 from fbsrankings.storage.sqlite import TeamRankingValueTable
 
 
-T = TypeVar("T", bound=Identifier)
+T = TypeVar("T", bound=UUID)
 
 
 SqliteParam = Union[None, int, float, str, bytes]
@@ -78,7 +77,7 @@ class RankingRepository(Generic[T]):
                 & (self._ranking_table.Type == Parameter("?")),
             )
             .get_sql(),
-            [str(id_.value), self._type.name],
+            [str(id_), self._type.name],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -96,7 +95,7 @@ class RankingRepository(Generic[T]):
             & (self._ranking_table.Type == Parameter("?"))
             & (self._ranking_table.SeasonID == Parameter("?")),
         )
-        params: List[SqliteParam] = [name, self._type.name, str(season_id.value)]
+        params: List[SqliteParam] = [name, self._type.name, str(season_id)]
 
         if week is not None:
             query = query.where(self._ranking_table.Week == Parameter("?"))

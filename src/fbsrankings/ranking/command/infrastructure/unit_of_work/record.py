@@ -59,12 +59,12 @@ class TeamRecordRepository(BaseRepository):
 
 def _created_event(record: TeamRecord) -> TeamRecordCalculatedEvent:
     return TeamRecordCalculatedEvent(
-        record.id_.value,
-        record.season_id.value,
+        record.id_,
+        record.season_id,
         record.week,
         [
             EventValue(
-                value.team_id.value,
+                value.team_id,
                 value.wins,
                 value.losses,
                 value.games,

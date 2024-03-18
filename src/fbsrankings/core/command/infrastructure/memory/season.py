@@ -20,7 +20,7 @@ class SeasonRepository(BaseRepository):
         self._storage = storage
 
     def get(self, id_: SeasonID) -> Optional[Season]:
-        dto = self._storage.get(id_.value)
+        dto = self._storage.get(id_)
         return self._to_season(dto) if dto is not None else None
 
     def find(self, year: int) -> Optional[Season]:

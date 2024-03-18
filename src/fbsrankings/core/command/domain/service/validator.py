@@ -145,7 +145,7 @@ class Validator:
             self._event_bus.publish(
                 SeasonDataValidationError(
                     f"Season.year does not match year: {season.year} vs. {year}",
-                    season.id_.value,
+                    season.id_,
                     "year",
                     season.year,
                     year,
@@ -157,7 +157,7 @@ class Validator:
             self._event_bus.publish(
                 TeamDataValidationError(
                     f"Team.name does not match name: {team.name} vs. {name}",
-                    team.id_.value,
+                    team.id_,
                     "name",
                     team.name,
                     name,
@@ -176,10 +176,10 @@ class Validator:
                 AffiliationDataValidationError(
                     "Affiliation.season_id does not match season_id:"
                     f" {affiliation.season_id} vs. {season_id}",
-                    affiliation.id_.value,
+                    affiliation.id_,
                     "season_id",
-                    affiliation.season_id.value,
-                    season_id.value,
+                    affiliation.season_id,
+                    season_id,
                 ),
             )
         if affiliation.team_id != team_id:
@@ -187,10 +187,10 @@ class Validator:
                 AffiliationDataValidationError(
                     "Affiliation.team_id does not match team_id:"
                     f" {affiliation.team_id} vs. {team_id}",
-                    affiliation.id_.value,
+                    affiliation.id_,
                     "team_id",
-                    affiliation.team_id.value,
-                    team_id.value,
+                    affiliation.team_id,
+                    team_id,
                 ),
             )
         if affiliation.subdivision != subdivision:
@@ -198,7 +198,7 @@ class Validator:
                 AffiliationDataValidationError(
                     "Affiliation.subdivision does not match subdivision:"
                     f" {affiliation.subdivision} vs. {subdivision}",
-                    affiliation.id_.value,
+                    affiliation.id_,
                     "subdivision",
                     affiliation.subdivision.name,
                     subdivision.name,
@@ -224,17 +224,17 @@ class Validator:
                 GameDataValidationError(
                     f"Game.season_id does not match season_id: {game.season_id} vs."
                     f" {season_id}",
-                    game.id_.value,
+                    game.id_,
                     "season_id",
-                    game.season_id.value,
-                    season_id.value,
+                    game.season_id,
+                    season_id,
                 ),
             )
         if game.week != week:
             self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.week does not match week: {game.week} vs. {week}",
-                    game.id_.value,
+                    game.id_,
                     "week",
                     game.week,
                     week,
@@ -244,7 +244,7 @@ class Validator:
             self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.date does not match date: {game.date} vs. {date}",
-                    game.id_.value,
+                    game.id_,
                     "date",
                     game.date,
                     date,
@@ -255,7 +255,7 @@ class Validator:
                 GameDataValidationError(
                     "Game.season_section does not match season_section:"
                     f" {game.season_section} vs. {season_section}",
-                    game.id_.value,
+                    game.id_,
                     "season_section",
                     game.season_section.name,
                     season_section.name,
@@ -266,10 +266,10 @@ class Validator:
                 GameDataValidationError(
                     "Game.home_team_id does not match home_team_id:"
                     f" {game.home_team_id} vs. {home_team_id}",
-                    game.id_.value,
+                    game.id_,
                     "home_team_id",
-                    game.home_team_id.value,
-                    home_team_id.value,
+                    game.home_team_id,
+                    home_team_id,
                 ),
             )
         if game.away_team_id != away_team_id:
@@ -277,10 +277,10 @@ class Validator:
                 GameDataValidationError(
                     "Game.away_team_id does not match away_team_id:"
                     f" {game.away_team_id} vs. {away_team_id}",
-                    game.id_.value,
+                    game.id_,
                     "away_team_id",
-                    game.away_team_id.value,
-                    away_team_id.value,
+                    game.away_team_id,
+                    away_team_id,
                 ),
             )
         if game.home_team_score != home_team_score:
@@ -288,7 +288,7 @@ class Validator:
                 GameDataValidationError(
                     "Game.home_team_score does not match home_team_score:"
                     f" {game.home_team_score} vs. {home_team_score}",
-                    game.id_.value,
+                    game.id_,
                     "home_team_score",
                     game.home_team_score,
                     home_team_score,
@@ -299,7 +299,7 @@ class Validator:
                 GameDataValidationError(
                     "Game.away_team_score does not match away_team_score:"
                     f" {game.away_team_score} vs. {away_team_score}",
-                    game.id_.value,
+                    game.id_,
                     "away_team_score",
                     game.away_team_score,
                     away_team_score,
@@ -332,12 +332,10 @@ class Validator:
                 GameDataValidationError(
                     "Game.winning_team_id does not match winning_team_id:"
                     f" {game.winning_team_id} vs. {winning_team_id}",
-                    game.id_.value,
+                    game.id_,
                     "winning_team_id",
-                    game.winning_team_id.value
-                    if game.winning_team_id is not None
-                    else None,
-                    winning_team_id.value if winning_team_id is not None else None,
+                    game.winning_team_id,
+                    winning_team_id,
                 ),
             )
         if game.losing_team_id != losing_team_id:
@@ -345,12 +343,10 @@ class Validator:
                 GameDataValidationError(
                     "Game.losing_team_id does not match losing_team_id:"
                     f" {game.losing_team_id} vs. {losing_team_id}",
-                    game.id_.value,
+                    game.id_,
                     "losing_team_id",
-                    game.losing_team_id.value
-                    if game.losing_team_id is not None
-                    else None,
-                    losing_team_id.value if losing_team_id is not None else None,
+                    game.losing_team_id,
+                    losing_team_id,
                 ),
             )
         if game.winning_team_score != winning_team_score:
@@ -358,7 +354,7 @@ class Validator:
                 GameDataValidationError(
                     "Game.winning_team_score does not match winning_team_score:"
                     f" {game.winning_team_score} vs. {winning_team_score}",
-                    game.id_.value,
+                    game.id_,
                     "winning_team_score",
                     game.winning_team_score,
                     winning_team_score,
@@ -369,7 +365,7 @@ class Validator:
                 GameDataValidationError(
                     "Game.losing_team_score does not match losing_team_score:"
                     f" {game.losing_team_score} vs. {losing_team_score}",
-                    game.id_.value,
+                    game.id_,
                     "losing_team_score",
                     game.losing_team_score,
                     losing_team_score,
@@ -379,7 +375,7 @@ class Validator:
             self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.status does not match status: {game.status} vs. {status}",
-                    game.id_.value,
+                    game.id_,
                     "status",
                     game.status.name,
                     status.name,
@@ -389,7 +385,7 @@ class Validator:
             self._event_bus.publish(
                 GameDataValidationError(
                     f"Game.notes does not match notes: {game.notes} vs. {notes}",
-                    game.id_.value,
+                    game.id_,
                     "notes",
                     game.notes,
                     notes,
@@ -413,7 +409,7 @@ class Validator:
                 self._event_bus.publish(
                     AffiliationDataValidationError(
                         f"Unknown subdivision: {affiliation.subdivision}",
-                        affiliation.id_.value,
+                        affiliation.id_,
                         "subdivision",
                         affiliation.subdivision.name,
                         None,
@@ -432,9 +428,9 @@ class Validator:
                 self._event_bus.publish(
                     GameDataValidationError(
                         "Unknown home team",
-                        game.id_.value,
+                        game.id_,
                         "home_team_id",
-                        game.home_team_id.value,
+                        game.home_team_id,
                         None,
                     ),
                 )
@@ -447,9 +443,9 @@ class Validator:
                 self._event_bus.publish(
                     GameDataValidationError(
                         "Unknown away team",
-                        game.id_.value,
+                        game.id_,
                         "away_team",
-                        game.away_team_id.value,
+                        game.away_team_id,
                         None,
                     ),
                 )
@@ -464,8 +460,8 @@ class Validator:
                 self._event_bus.publish(
                     FBSGameCountValidationError(
                         "FBS team has too few games",
-                        season_id.value,
-                        team_id.value,
+                        season_id,
+                        team_id,
                         game_count,
                     ),
                 )
@@ -475,8 +471,8 @@ class Validator:
                 self._event_bus.publish(
                     FCSGameCountValidationError(
                         "FCS team had too many games",
-                        season_id.value,
-                        team_id.value,
+                        season_id,
+                        team_id,
                         game_count,
                     ),
                 )
@@ -486,7 +482,7 @@ class Validator:
             self._event_bus.publish(
                 PostseasonGameCountValidationError(
                     "Too few postseason games",
-                    season_id.value,
+                    season_id,
                     regular_season_game_count,
                     postseason_game_count,
                 ),
@@ -495,7 +491,7 @@ class Validator:
             self._event_bus.publish(
                 PostseasonGameCountValidationError(
                     "Too many postseason games",
-                    season_id.value,
+                    season_id,
                     regular_season_game_count,
                     postseason_game_count,
                 ),

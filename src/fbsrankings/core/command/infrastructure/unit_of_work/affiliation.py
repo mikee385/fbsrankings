@@ -59,9 +59,9 @@ class AffiliationRepository(BaseRepository):
 
 def _created_event(affiliation: Affiliation) -> AffiliationCreatedEvent:
     return AffiliationCreatedEvent(
-        affiliation.id_.value,
-        affiliation.season_id.value,
-        affiliation.team_id.value,
+        affiliation.id_,
+        affiliation.season_id,
+        affiliation.team_id,
         affiliation.subdivision.name,
     )
 

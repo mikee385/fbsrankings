@@ -1,6 +1,6 @@
 from enum import Enum
-
-from fbsrankings.common import Identifier
+from typing import NewType
+from uuid import UUID
 
 
 class SeasonSection(Enum):
@@ -8,12 +8,10 @@ class SeasonSection(Enum):
     POSTSEASON = 2
 
 
-class SeasonID(Identifier):
-    pass
+SeasonID = NewType("SeasonID", UUID)
 
 
-class TeamID(Identifier):
-    pass
+TeamID = NewType("TeamID", UUID)
 
 
 class Subdivision(Enum):
@@ -27,5 +25,4 @@ class GameStatus(Enum):
     CANCELED = 2
 
 
-class GameID(Identifier):
-    pass
+GameID = NewType("GameID", UUID)

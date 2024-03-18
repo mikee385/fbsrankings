@@ -23,11 +23,11 @@ class AffiliationRepository(BaseRepository):
         self._storage = storage
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
-        dto = self._storage.get(id_.value)
+        dto = self._storage.get(id_)
         return self._to_affiliation(dto) if dto is not None else None
 
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
-        dto = self._storage.find(season_id.value, team_id.value)
+        dto = self._storage.find(season_id, team_id)
         return self._to_affiliation(dto) if dto is not None else None
 
     def _to_affiliation(self, dto: AffiliationDto) -> Affiliation:

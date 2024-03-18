@@ -18,7 +18,7 @@ class TeamRepository(BaseRepository):
         self._storage = storage
 
     def get(self, id_: TeamID) -> Optional[Team]:
-        dto = self._storage.get(id_.value)
+        dto = self._storage.get(id_)
         return self._to_team(dto) if dto is not None else None
 
     def find(self, name: str) -> Optional[Team]:

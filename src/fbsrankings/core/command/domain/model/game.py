@@ -3,6 +3,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
+from typing import NewType
 from typing import Optional
 from typing import Type
 from uuid import UUID
@@ -11,7 +12,6 @@ from uuid import uuid4
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.game import GameCanceledEvent
@@ -23,8 +23,7 @@ from fbsrankings.enum import GameStatus
 from fbsrankings.enum import SeasonSection
 
 
-class GameID(Identifier):
-    pass
+GameID = NewType("GameID", UUID)
 
 
 class GameStatusError(Exception):
@@ -156,7 +155,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be rescheduled if it is still scheduled",
-                self.id_.value,
+                self.id_,
                 self.status.name,
             )
 
@@ -168,15 +167,15 @@ class Game:
 
         self._bus.publish(
             GameRescheduledEvent(
-                self.id_.value,
-                self.season_id.value,
+                self.id_,
+                self.season_id,
                 old_week,
                 old_date,
                 week,
                 date,
                 self.season_section.name,
-                self.home_team_id.value,
-                self.away_team_id.value,
+                self.home_team_id,
+                self.away_team_id,
                 self.notes,
             ),
         )
@@ -185,7 +184,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be canceled if it is still scheduled",
-                self.id_.value,
+                self.id_,
                 self.status.name,
             )
 
@@ -193,13 +192,13 @@ class Game:
 
         self._bus.publish(
             GameCanceledEvent(
-                self.id_.value,
-                self.season_id.value,
+                self.id_,
+                self.season_id,
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id.value,
-                self.away_team_id.value,
+                self.home_team_id,
+                self.away_team_id,
                 self.notes,
             ),
         )
@@ -208,7 +207,7 @@ class Game:
         if self.status != GameStatus.SCHEDULED:
             raise GameStatusError(
                 "Game can only be completed if it is still scheduled",
-                self.id_.value,
+                self.id_,
                 self.status.name,
             )
 
@@ -224,13 +223,13 @@ class Game:
 
         self._bus.publish(
             GameCompletedEvent(
-                self.id_.value,
-                self.season_id.value,
+                self.id_,
+                self.season_id,
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id.value,
-                self.away_team_id.value,
+                self.home_team_id,
+                self.away_team_id,
                 home_team_score,
                 away_team_score,
                 self.notes,
@@ -263,13 +262,13 @@ class Game:
 
         self._bus.publish(
             GameNotesUpdatedEvent(
-                self.id_.value,
-                self.season_id.value,
+                self.id_,
+                self.season_id,
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id.value,
-                self.away_team_id.value,
+                self.home_team_id,
+                self.away_team_id,
                 old_notes,
                 notes,
             ),
@@ -307,13 +306,13 @@ class GameRepository(metaclass=ABCMeta):
         )
         self._bus.publish(
             GameCreatedEvent(
-                game.id_.value,
-                game.season_id.value,
+                game.id_,
+                game.season_id,
                 game.week,
                 game.date,
                 game.season_section.name,
-                game.home_team_id.value,
-                game.away_team_id.value,
+                game.home_team_id,
+                game.away_team_id,
                 game.notes,
             ),
         )

@@ -5,7 +5,6 @@ from .command import CommandHandler
 from .event import Event
 from .event import EventBus
 from .event import EventHandler
-from .identifier import Identifier
 from .query import Query
 from .query import QueryBus
 from .query import QueryHandler
@@ -18,7 +17,6 @@ __all__ = [
     "Event",
     "EventBus",
     "EventHandler",
-    "Identifier",
     "Query",
     "QueryBus",
     "QueryHandler",

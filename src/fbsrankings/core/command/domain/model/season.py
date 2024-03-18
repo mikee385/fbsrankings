@@ -2,19 +2,19 @@ from abc import ABCMeta
 from abc import abstractmethod
 from types import TracebackType
 from typing import ContextManager
+from typing import NewType
 from typing import Optional
 from typing import Type
+from uuid import UUID
 from uuid import uuid4
 
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.common import Identifier
 from fbsrankings.core.command.event.season import SeasonCreatedEvent
 
 
-class SeasonID(Identifier):
-    pass
+SeasonID = NewType("SeasonID", UUID)
 
 
 class Season:
@@ -39,7 +39,7 @@ class SeasonRepository(metaclass=ABCMeta):
     def create(self, year: int) -> Season:
         id_ = SeasonID(uuid4())
         season = Season(self._bus, id_, year)
-        self._bus.publish(SeasonCreatedEvent(season.id_.value, season.year))
+        self._bus.publish(SeasonCreatedEvent(season.id_, season.year))
 
         return season
 
