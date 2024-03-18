@@ -16,9 +16,9 @@ from fbsrankings.storage.sqlite import Storage
 
 class Repository(BaseRepository):
     def __init__(self, storage: Storage, bus: EventBus) -> None:
-        self._team_record = TeamRecordRepository(storage.connection, bus)
-        self._team_ranking = TeamRankingRepository(storage.connection, bus)
-        self._game_ranking = GameRankingRepository(storage.connection, bus)
+        self._team_record = TeamRecordRepository(storage, bus)
+        self._team_ranking = TeamRankingRepository(storage, bus)
+        self._game_ranking = GameRankingRepository(storage, bus)
 
     @property
     def team_record(self) -> TeamRecordRepository:

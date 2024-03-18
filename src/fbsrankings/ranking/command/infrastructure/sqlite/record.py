@@ -22,6 +22,7 @@ from fbsrankings.ranking.command.domain.model.record import (
 )
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
 from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
+from fbsrankings.storage.sqlite import Storage
 from fbsrankings.storage.sqlite import TeamRecordTable
 from fbsrankings.storage.sqlite import TeamRecordValueTable
 
@@ -30,9 +31,9 @@ SqliteParam = Union[None, int, float, str, bytes]
 
 
 class TeamRecordRepository(BaseRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
-        self._connection = connection
+        self._connection = storage.connection
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
 

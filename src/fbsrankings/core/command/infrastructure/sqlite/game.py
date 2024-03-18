@@ -25,22 +25,29 @@ from fbsrankings.core.command.event.game import GameRescheduledEvent
 from fbsrankings.enum import GameStatus
 from fbsrankings.enum import SeasonSection
 from fbsrankings.storage.sqlite import GameTable
+from fbsrankings.storage.sqlite import Storage
 
 
 class GameRepository(BaseRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
-        self._connection = connection
+        self._cache = storage.cache
+        self._connection = storage.connection
         self._table = GameTable().table
 
     def get(self, id_: GameID) -> Optional[Game]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+        key = f"game:{id_}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+                [str(id_.value)],
+            )
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_game(row) if row is not None else None
 
@@ -51,33 +58,38 @@ class GameRepository(BaseRepository):
         team1_id: TeamID,
         team2_id: TeamID,
     ) -> Optional[Game]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query()
-            .where(self._table.SeasonID == Parameter("?"))
-            .where(self._table.Week == Parameter("?"))
-            .where(
-                (
-                    (self._table.HomeTeamID == Parameter("?"))
-                    & (self._table.AwayTeamID == Parameter("?"))
+        key = f"game:{season_id}:{week}:{team1_id}:{team2_id}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query()
+                .where(self._table.SeasonID == Parameter("?"))
+                .where(self._table.Week == Parameter("?"))
+                .where(
+                    (
+                        (self._table.HomeTeamID == Parameter("?"))
+                        & (self._table.AwayTeamID == Parameter("?"))
+                    )
+                    | (
+                        (self._table.AwayTeamID == Parameter("?"))
+                        & (self._table.HomeTeamID == Parameter("?"))
+                    ),
                 )
-                | (
-                    (self._table.AwayTeamID == Parameter("?"))
-                    & (self._table.HomeTeamID == Parameter("?"))
-                ),
+                .get_sql(),
+                [
+                    str(season_id.value),
+                    week,
+                    str(team1_id.value),
+                    str(team2_id.value),
+                    str(team1_id.value),
+                    str(team2_id.value),
+                ],
             )
-            .get_sql(),
-            [
-                str(season_id.value),
-                week,
-                str(team1_id.value),
-                str(team2_id.value),
-                str(team1_id.value),
-                str(team2_id.value),
-            ],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_game(row) if row is not None else None
 

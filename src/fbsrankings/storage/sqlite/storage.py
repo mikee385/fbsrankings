@@ -1,10 +1,12 @@
 import sqlite3
 from pathlib import Path
 from types import TracebackType
+from typing import Any
 from typing import ContextManager
 from typing import Optional
 from typing import Type
 
+from cachetools import TTLCache
 from typing_extensions import Literal
 
 from fbsrankings.storage.sqlite.affiliation import AffiliationTable
@@ -21,6 +23,11 @@ from fbsrankings.storage.sqlite.team import TeamTable
 
 class Storage(ContextManager["Storage"]):
     def __init__(self, database: str) -> None:
+        self.cache = TTLCache[str, Any](  # pylint: disable=unsubscriptable-object
+            maxsize=16384,
+            ttl=60,
+        )
+
         if database == ":memory:":
             self._database = database
         else:

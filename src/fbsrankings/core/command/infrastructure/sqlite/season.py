@@ -18,33 +18,45 @@ from fbsrankings.core.command.domain.model.season import (
 )
 from fbsrankings.core.command.event.season import SeasonCreatedEvent
 from fbsrankings.storage.sqlite import SeasonTable
+from fbsrankings.storage.sqlite import Storage
 
 
 class SeasonRepository(BaseRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
-        self._connection = connection
+        self._cache = storage.cache
+        self._connection = storage.connection
         self._table = SeasonTable().table
 
     def get(self, id_: SeasonID) -> Optional[Season]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+        key = f"season:{id_}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+                [str(id_.value)],
+            )
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_season(row) if row is not None else None
 
     def find(self, year: int) -> Optional[Season]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.Year == Parameter("?")).get_sql(),
-            [year],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+        key = f"season:{year}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query().where(self._table.Year == Parameter("?")).get_sql(),
+                [year],
+            )
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_season(row) if row is not None else None
 

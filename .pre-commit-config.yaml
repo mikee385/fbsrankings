@@ -95,6 +95,7 @@ repos:
         additional_dependencies:
         -   pydantic
         -   pytest
+        -   types-cachetools
         -   types-dataclasses
         -   types-setuptools
         args: [--strict]

@@ -15,34 +15,46 @@ from fbsrankings.core.command.domain.model.team import (
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
 from fbsrankings.core.command.event.team import TeamCreatedEvent
+from fbsrankings.storage.sqlite import Storage
 from fbsrankings.storage.sqlite import TeamTable
 
 
 class TeamRepository(BaseRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
-        self._connection = connection
+        self._cache = storage.cache
+        self._connection = storage.connection
         self._table = TeamTable().table
 
     def get(self, id_: TeamID) -> Optional[Team]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
-            [str(id_.value)],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+        key = f"team:{id_}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+                [str(id_.value)],
+            )
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_team(row) if row is not None else None
 
     def find(self, name: str) -> Optional[Team]:
-        cursor = self._connection.cursor()
-        cursor.execute(
-            self._query().where(self._table.Name == Parameter("?")).get_sql(),
-            [name],
-        )
-        row = cursor.fetchone()
-        cursor.close()
+        key = f"team:{name}"
+        row = self._cache.get(key)
+        if row is None:
+            cursor = self._connection.cursor()
+            cursor.execute(
+                self._query().where(self._table.Name == Parameter("?")).get_sql(),
+                [name],
+            )
+            row = cursor.fetchone()
+            cursor.close()
+        if row is not None:
+            self._cache[key] = row
 
         return self._to_team(row) if row is not None else None
 

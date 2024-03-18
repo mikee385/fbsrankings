@@ -6,6 +6,8 @@
 #
 beautifulsoup4==4.12.3
     # via fbsrankings (setup.py)
+cachetools==4.2.4
+    # via fbsrankings (setup.py)
 colorama==0.4.5
     # via tqdm
 dataclasses==0.8

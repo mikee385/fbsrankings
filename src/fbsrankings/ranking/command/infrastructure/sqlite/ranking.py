@@ -40,6 +40,7 @@ from fbsrankings.ranking.command.event.ranking import TeamRankingCalculatedEvent
 from fbsrankings.storage.sqlite import GameRankingValueTable
 from fbsrankings.storage.sqlite import RankingTable
 from fbsrankings.storage.sqlite import RankingType
+from fbsrankings.storage.sqlite import Storage
 from fbsrankings.storage.sqlite import TeamRankingValueTable
 
 
@@ -53,14 +54,14 @@ class RankingRepository(Generic[T]):
     def __init__(
         self,
         bus: EventBus,
-        connection: sqlite3.Connection,
+        storage: Storage,
         value_table: Table,
         value_columns: List[Field],
         type_: RankingType,
         to_value: Callable[[Tuple[str, str, int, int, float]], RankingValue[T]],
     ) -> None:
         self._bus = bus
-        self._connection = connection
+        self._connection = storage.connection
 
         self._ranking_table = RankingTable().table
         self._value_table = value_table
@@ -245,7 +246,7 @@ class RankingEventHandler:
 
 
 class TeamRankingRepository(BaseTeamRankingRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
 
         value_table = TeamRankingValueTable().table
@@ -258,7 +259,7 @@ class TeamRankingRepository(BaseTeamRankingRepository):
         ]
         self._repository = RankingRepository[TeamID](
             bus,
-            connection,
+            storage,
             value_table,
             value_columns,
             RankingType.TEAM,
@@ -305,7 +306,7 @@ class TeamRankingEventHandler(BaseTeamRankingEventHandler):
 
 
 class GameRankingRepository(BaseGameRankingRepository):
-    def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
+    def __init__(self, storage: Storage, bus: EventBus) -> None:
         super().__init__(bus)
 
         value_table = GameRankingValueTable().table
@@ -318,7 +319,7 @@ class GameRankingRepository(BaseGameRankingRepository):
         ]
         self._repository = RankingRepository[GameID](
             bus,
-            connection,
+            storage,
             value_table,
             value_columns,
             RankingType.GAME,
