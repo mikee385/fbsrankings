@@ -232,7 +232,7 @@ pep8-naming==0.13.1
     # via fbsrankings
 pip-tools==6.4.0
     # via fbsrankings
-pkginfo==1.9.6
+pkginfo==1.10.0
     # via twine
 platformdirs==2.4.0
     # via
@@ -263,7 +263,7 @@ pygments==2.14.0
     #   readme-renderer
 pylint==2.13.9
     # via fbsrankings
-pyparsing==3.1.1
+pyparsing==3.1.2
     # via packaging
 pypika==0.48.9
     # via fbsrankings
@@ -327,9 +327,17 @@ typed-ast==1.5.5
     #   mypy
 typeguard==2.13.3
     # via fbsrankings
+types-beautifulsoup4==4.12.0.6
+    # via fbsrankings
 types-dataclasses==0.6.6
     # via fbsrankings
+types-html5lib==1.1.11.15
+    # via types-beautifulsoup4
+types-prettytable==3.4.2.6
+    # via fbsrankings
 types-setuptools==68.2.0.0
+    # via fbsrankings
+types-tqdm==4.66.0.2
     # via fbsrankings
 typing-extensions==4.1.1
     # via
