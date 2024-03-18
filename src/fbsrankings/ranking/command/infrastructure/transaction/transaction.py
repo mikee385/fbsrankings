@@ -6,28 +6,26 @@ from typing import Type
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.core.command.domain.model.affiliation import AffiliationRepository
-from fbsrankings.core.command.domain.model.game import GameRepository
-from fbsrankings.core.command.domain.model.season import SeasonRepository
-from fbsrankings.core.command.domain.model.team import TeamRepository
-from fbsrankings.core.command.infrastructure.data_source import DataSource
-from fbsrankings.core.command.infrastructure.memory.event_handler import (
+from fbsrankings.ranking.command.domain.model.ranking import GameRankingRepository
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
+from fbsrankings.ranking.command.domain.model.record import TeamRecordRepository
+from fbsrankings.ranking.command.infrastructure.data_source import DataSource
+from fbsrankings.ranking.command.infrastructure.memory.event_handler import (
     EventHandler as MemoryEventHandler,
 )
-from fbsrankings.core.command.infrastructure.memory.repository import (
+from fbsrankings.ranking.command.infrastructure.memory.repository import (
     Repository as MemoryRepository,
 )
-from fbsrankings.core.command.infrastructure.repository import (
-    Repository as BaseRepository,
-)
-from fbsrankings.core.command.infrastructure.unit_of_work.event_handler import (
+from fbsrankings.ranking.command.infrastructure.transaction.event_handler import (
     EventHandler,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.repository import Repository
+from fbsrankings.ranking.command.infrastructure.transaction.repository import (
+    Repository,
+)
 from fbsrankings.storage.memory import Storage as MemoryStorage
 
 
-class UnitOfWork(BaseRepository, ContextManager["UnitOfWork"]):
+class Transaction(ContextManager["Transaction"]):
     def __init__(self, data_source: DataSource, bus: EventBus) -> None:
         self._data_source = data_source
         self._outer_bus = bus
@@ -48,20 +46,16 @@ class UnitOfWork(BaseRepository, ContextManager["UnitOfWork"]):
         self._event_handler = EventHandler(self._inner_bus, self._cache_bus)
 
     @property
-    def season(self) -> SeasonRepository:
-        return self._repository.season
+    def team_record(self) -> TeamRecordRepository:
+        return self._repository.team_record
 
     @property
-    def team(self) -> TeamRepository:
-        return self._repository.team
+    def team_ranking(self) -> TeamRankingRepository:
+        return self._repository.team_ranking
 
     @property
-    def affiliation(self) -> AffiliationRepository:
-        return self._repository.affiliation
-
-    @property
-    def game(self) -> GameRepository:
-        return self._repository.game
+    def game_ranking(self) -> GameRankingRepository:
+        return self._repository.game_ranking
 
     def commit(self) -> None:
         storage_bus = EventBus()
@@ -81,16 +75,13 @@ class UnitOfWork(BaseRepository, ContextManager["UnitOfWork"]):
         self._event_handler.clear()
 
     def close(self) -> None:
-        self._event_handler.close()
-        self._event_handler.clear()
         self._cache_handler.close()
         self._cache_storage.drop()
-        self._cache_storage.close()
 
-    def __enter__(self) -> "UnitOfWork":
-        self._cache_storage.__enter__()
-        self._cache_handler.__enter__()
-        self._event_handler.__enter__()
+        self._event_handler.close()
+        self._event_handler.clear()
+
+    def __enter__(self) -> "Transaction":
         return self
 
     def __exit__(
@@ -100,7 +91,4 @@ class UnitOfWork(BaseRepository, ContextManager["UnitOfWork"]):
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
         self.close()
-        self._event_handler.__exit__(type_, value, traceback)
-        self._cache_handler.__exit__(type_, value, traceback)
-        self._cache_storage.__exit__(type_, value, traceback)
         return False

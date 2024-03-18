@@ -8,14 +8,14 @@ from fbsrankings.ranking.command.infrastructure.memory.repository import (
 from fbsrankings.ranking.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.ranking import (
-    GameRankingRepository as UnitOfWorkGameRankingRepository,
+from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
+    GameRankingRepository as TransactionGameRankingRepository,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.ranking import (
-    TeamRankingRepository as UnitOfWorkTeamRankingRepository,
+from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
+    TeamRankingRepository as TransactionTeamRankingRepository,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.record import (
-    TeamRecordRepository as UnitOfWorkTeamRecordRepository,
+from fbsrankings.ranking.command.infrastructure.transaction.record import (
+    TeamRecordRepository as TransactionTeamRecordRepository,
 )
 
 
@@ -26,17 +26,17 @@ class Repository(BaseRepository):
         cache: MemoryRepository,
         storage_bus: EventBus,
     ) -> None:
-        self._team_record = UnitOfWorkTeamRecordRepository(
+        self._team_record = TransactionTeamRecordRepository(
             repository.team_record,
             cache.team_record,
             storage_bus,
         )
-        self._team_ranking = UnitOfWorkTeamRankingRepository(
+        self._team_ranking = TransactionTeamRankingRepository(
             repository.team_ranking,
             cache.team_ranking,
             storage_bus,
         )
-        self._game_ranking = UnitOfWorkGameRankingRepository(
+        self._game_ranking = TransactionGameRankingRepository(
             repository.game_ranking,
             cache.game_ranking,
             storage_bus,

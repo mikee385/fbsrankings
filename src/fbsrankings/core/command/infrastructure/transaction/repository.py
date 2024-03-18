@@ -9,17 +9,17 @@ from fbsrankings.core.command.infrastructure.memory.repository import (
 from fbsrankings.core.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.affiliation import (
-    AffiliationRepository as UnitOfWorkAffilationRepository,
+from fbsrankings.core.command.infrastructure.transaction.affiliation import (
+    AffiliationRepository as TransactionAffilationRepository,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.game import (
-    GameRepository as UnitOfWorkGameRepository,
+from fbsrankings.core.command.infrastructure.transaction.game import (
+    GameRepository as TransactionGameRepository,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.season import (
-    SeasonRepository as UnitOfWorkSeasonRepository,
+from fbsrankings.core.command.infrastructure.transaction.season import (
+    SeasonRepository as TransactionSeasonRepository,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.team import (
-    TeamRepository as UnitOfWorkTeamRepository,
+from fbsrankings.core.command.infrastructure.transaction.team import (
+    TeamRepository as TransactionTeamRepository,
 )
 
 
@@ -30,18 +30,18 @@ class Repository(BaseRepository):
         cache: MemoryRepository,
         storage_bus: EventBus,
     ) -> None:
-        self._season = UnitOfWorkSeasonRepository(
+        self._season = TransactionSeasonRepository(
             repository.season,
             cache.season,
             storage_bus,
         )
-        self._team = UnitOfWorkTeamRepository(repository.team, cache.team, storage_bus)
-        self._affiliation = UnitOfWorkAffilationRepository(
+        self._team = TransactionTeamRepository(repository.team, cache.team, storage_bus)
+        self._affiliation = TransactionAffilationRepository(
             repository.affiliation,
             cache.affiliation,
             storage_bus,
         )
-        self._game = UnitOfWorkGameRepository(repository.game, cache.game, storage_bus)
+        self._game = TransactionGameRepository(repository.game, cache.game, storage_bus)
 
     @property
     def season(self) -> SeasonRepository:

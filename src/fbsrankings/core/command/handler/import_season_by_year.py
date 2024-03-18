@@ -7,7 +7,7 @@ from fbsrankings.core.command.domain.service.importer import Importer
 from fbsrankings.core.command.domain.service.validator import Validator
 from fbsrankings.core.command.infrastructure.data_source import DataSource
 from fbsrankings.core.command.infrastructure.sports_reference import SportsReference
-from fbsrankings.core.command.infrastructure.unit_of_work.unit_of_work import UnitOfWork
+from fbsrankings.core.command.infrastructure.transaction.transaction import Transaction
 
 
 class ImportSeasonByYearCommandHandler:
@@ -28,8 +28,8 @@ class ImportSeasonByYearCommandHandler:
 
         validator = Validator(self._event_bus)
 
-        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
-            importer = Importer(unit_of_work)
+        with Transaction(self._data_source, self._event_bus) as transaction:
+            importer = Importer(transaction)
             sports_reference = SportsReference(
                 alternate_names,
                 importer,
@@ -37,7 +37,7 @@ class ImportSeasonByYearCommandHandler:
             )
             sports_reference.import_season(command.year)
             try:
-                unit_of_work.commit()
+                transaction.commit()
             except Exception:
-                unit_of_work.rollback()
+                transaction.rollback()
                 raise

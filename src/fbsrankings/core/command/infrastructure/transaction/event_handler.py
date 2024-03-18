@@ -5,14 +5,14 @@ from fbsrankings.common import EventBus
 from fbsrankings.core.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.affiliation import (
+from fbsrankings.core.command.infrastructure.transaction.affiliation import (
     AffiliationEventHandler,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.game import GameEventHandler
-from fbsrankings.core.command.infrastructure.unit_of_work.season import (
+from fbsrankings.core.command.infrastructure.transaction.game import GameEventHandler
+from fbsrankings.core.command.infrastructure.transaction.season import (
     SeasonEventHandler,
 )
-from fbsrankings.core.command.infrastructure.unit_of_work.team import TeamEventHandler
+from fbsrankings.core.command.infrastructure.transaction.team import TeamEventHandler
 
 
 class EventHandler(BaseEventHandler):

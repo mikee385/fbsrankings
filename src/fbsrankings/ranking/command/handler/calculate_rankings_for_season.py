@@ -29,8 +29,8 @@ from fbsrankings.ranking.command.domain.service.strength_of_schedule_ranking_cal
     StrengthOfScheduleRankingCalculator,
 )
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
-from fbsrankings.ranking.command.infrastructure.unit_of_work.unit_of_work import (
-    UnitOfWork,
+from fbsrankings.ranking.command.infrastructure.transaction.transaction import (
+    Transaction,
 )
 
 
@@ -46,7 +46,7 @@ class CalculateRankingsForSeasonCommandHandler:
         self._event_bus = event_bus
 
     def __call__(self, command: CalculateRankingsForSeasonCommand) -> None:
-        with UnitOfWork(self._data_source, self._event_bus) as unit_of_work:
+        with Transaction(self._data_source, self._event_bus) as transaction:
             if isinstance(command.season_id_or_year, UUID):
                 season_by_id = self._query_bus.query(
                     SeasonByIDQuery(command.season_id_or_year),
@@ -77,45 +77,45 @@ class CalculateRankingsForSeasonCommandHandler:
 
             season_data = SeasonData(season_id, affiliations, games)
 
-            TeamRecordCalculator(unit_of_work.team_record).calculate_for_season(
+            TeamRecordCalculator(transaction.team_record).calculate_for_season(
                 season_data,
             )
 
             srs_rankings = SRSRankingCalculator(
-                unit_of_work.team_ranking,
+                transaction.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in srs_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    unit_of_work.team_ranking,
+                    transaction.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    unit_of_work.game_ranking,
+                    transaction.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             cm_rankings = ColleyMatrixRankingCalculator(
-                unit_of_work.team_ranking,
+                transaction.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in cm_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    unit_of_work.team_ranking,
+                    transaction.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    unit_of_work.game_ranking,
+                    transaction.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             sw_rankings = SimultaneousWinsRankingCalculator(
-                unit_of_work.team_ranking,
+                transaction.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in sw_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    unit_of_work.team_ranking,
+                    transaction.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    unit_of_work.game_ranking,
+                    transaction.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             try:
-                unit_of_work.commit()
+                transaction.commit()
             except Exception:
-                unit_of_work.rollback()
+                transaction.rollback()
                 raise

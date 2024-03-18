@@ -5,13 +5,13 @@ from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.ranking import (
+from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
     GameRankingEventHandler,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.ranking import (
+from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
     TeamRankingEventHandler,
 )
-from fbsrankings.ranking.command.infrastructure.unit_of_work.record import (
+from fbsrankings.ranking.command.infrastructure.transaction.record import (
     TeamRecordEventHandler,
 )
 
