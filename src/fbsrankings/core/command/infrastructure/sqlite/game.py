@@ -168,7 +168,7 @@ class GameEventHandler(BaseEventHandler):
                 str(event.id_),
                 str(event.season_id),
                 event.week,
-                event.date,
+                event.date.strftime("%Y-%m-%d"),
                 event.season_section,
                 str(event.home_team_id),
                 str(event.away_team_id),
@@ -186,7 +186,7 @@ class GameEventHandler(BaseEventHandler):
             .set(self._table.Date, Parameter("?"))
             .where(self._table.UUID == Parameter("?"))
             .get_sql(),
-            [event.week, event.date, str(event.id_)],
+            [event.week, event.date.strftime("%Y-%m-%d"), str(event.id_)],
         )
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:

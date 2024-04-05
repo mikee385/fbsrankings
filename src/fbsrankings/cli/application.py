@@ -167,7 +167,7 @@ class Application(ContextManager["Application"]):
         self._context = Context(config)
 
         self._core_command = CoreCommandBus(self._context, self._event_bus)
-        self._core_query = CoreQueryBus(self._context)
+        self._core_query = CoreQueryBus(self._context, self._event_bus)
 
         self._ranking_command = RankingCommandBus(
             self._context,
@@ -182,7 +182,8 @@ class Application(ContextManager["Application"]):
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._context.storage.drop()
+                self._context.command_storage.drop()
+                self._context.query_storage.drop()
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:

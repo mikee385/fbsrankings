@@ -7,32 +7,49 @@ from typing import Union
 from typing_extensions import Literal
 
 from fbsrankings.config import Config
-from fbsrankings.config import ConfigStorageType
+from fbsrankings.config import ConfigCommandStorageType
+from fbsrankings.config import ConfigQueryStorageType
 from fbsrankings.storage.memory.storage import Storage as MemoryStorage
 from fbsrankings.storage.sqlite.storage import Storage as SqliteStorage
+from fbsrankings.storage.tinydb.storage import Storage as TinyDbStorage
 
 
 class Context(ContextManager["Context"]):
     def __init__(self, config: Config) -> None:
         self.config = config
-        self.storage: Union[MemoryStorage, SqliteStorage]
+        self.command_storage: Union[MemoryStorage, SqliteStorage]
+        self.query_storage: Union[MemoryStorage, SqliteStorage, TinyDbStorage]
 
-        storage_type = config.storage_type
-        if storage_type == ConfigStorageType.MEMORY:
-            self.storage = MemoryStorage()
+        if config.command_storage_type == ConfigCommandStorageType.MEMORY:
+            self.command_storage = MemoryStorage()
 
-        elif storage_type == ConfigStorageType.SQLITE:
-            database = config.database
-            self.storage = SqliteStorage(str(database))
+        elif config.command_storage_type == ConfigCommandStorageType.SQLITE:
+            self.command_storage = SqliteStorage(str(config.command_storage_file))
 
         else:
-            raise ValueError(f"Unknown storage type: {storage_type}")
+            raise ValueError(
+                f"Unknown command storage type: {config.command_storage_type}",
+            )
+
+        if config.query_storage_type.name == config.command_storage_type.name:
+            self.query_storage = self.command_storage
+
+        elif config.query_storage_type == ConfigQueryStorageType.TINYDB:
+            self.query_storage = TinyDbStorage(str(config.query_storage_file))
+
+        else:
+            raise ValueError(
+                "Query storage type must either be equal to command storage type "
+                f"or 'tinydb': {config.query_storage_type}",
+            )
 
     def close(self) -> None:
-        self.storage.close()
+        self.query_storage.close()
+        self.command_storage.close()
 
     def __enter__(self) -> "Context":
-        self.storage.__enter__()
+        self.command_storage.__enter__()
+        self.query_storage.__enter__()
         return self
 
     def __exit__(
@@ -41,5 +58,6 @@ class Context(ContextManager["Context"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
-        self.storage.__exit__(type_, value, traceback)
+        self.query_storage.__exit__(type_, value, traceback)
+        self.command_storage.__exit__(type_, value, traceback)
         return False

@@ -6,8 +6,9 @@ from typing import Union
 
 from typing_extensions import Literal
 
+from fbsrankings.common import EventBus
 from fbsrankings.common import QueryBus as BaseQueryBus
-from fbsrankings.config import ConfigStorageType
+from fbsrankings.config import ConfigQueryStorageType
 from fbsrankings.context import Context
 from fbsrankings.core.query.infrastructure.memory.query_manager import (
     QueryManager as MemoryQueryManager,
@@ -15,34 +16,54 @@ from fbsrankings.core.query.infrastructure.memory.query_manager import (
 from fbsrankings.core.query.infrastructure.sqlite.query_manager import (
     QueryManager as SqliteQueryManager,
 )
+from fbsrankings.core.query.infrastructure.tinydb.query_manager import (
+    QueryManager as TinyDbQueryManager,
+)
 from fbsrankings.storage.memory import Storage as MemoryStorage
 from fbsrankings.storage.sqlite import Storage as SqliteStorage
+from fbsrankings.storage.tinydb import Storage as TinyDbStorage
 
 
 class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
-    def __init__(self, context: Context) -> None:
+    def __init__(self, context: Context, event_bus: EventBus) -> None:
         super().__init__()
-        self._query_manager: Union[MemoryQueryManager, SqliteQueryManager]
+        self._query_manager: Union[
+            MemoryQueryManager,
+            SqliteQueryManager,
+            TinyDbQueryManager,
+        ]
 
-        storage_type = context.config.storage_type
-        if storage_type == ConfigStorageType.MEMORY:
-            if not isinstance(context.storage, MemoryStorage):
+        storage_type = context.config.query_storage_type
+        if storage_type == ConfigQueryStorageType.MEMORY:
+            if not isinstance(context.query_storage, MemoryStorage):
                 raise ValueError(
-                    f"For storage type, expected: {MemoryStorage}, "
-                    f"found: {type(context.storage)}",
+                    "For query storage type, expected: MemoryStorage, "
+                    f"found: {type(context.query_storage)}",
                 )
-            self._query_manager = MemoryQueryManager(context.storage, self)
+            self._query_manager = MemoryQueryManager(context.query_storage, self)
 
-        elif storage_type == ConfigStorageType.SQLITE:
-            if not isinstance(context.storage, SqliteStorage):
+        elif storage_type == ConfigQueryStorageType.SQLITE:
+            if not isinstance(context.query_storage, SqliteStorage):
                 raise ValueError(
-                    f"For storage type, expected: {SqliteStorage}, "
-                    f"found: {type(context.storage)}",
+                    "For query storage type, expected: SqliteStorage, "
+                    f"found: {type(context.query_storage)}",
                 )
-            self._query_manager = SqliteQueryManager(context.storage, self)
+            self._query_manager = SqliteQueryManager(context.query_storage, self)
+
+        elif storage_type == ConfigQueryStorageType.TINYDB:
+            if not isinstance(context.query_storage, TinyDbStorage):
+                raise ValueError(
+                    "For query storage type, expected: TinyDbStorage, "
+                    f"found: {type(context.query_storage)}",
+                )
+            self._query_manager = TinyDbQueryManager(
+                context.query_storage,
+                self,
+                event_bus,
+            )
 
         else:
-            raise ValueError(f"Unknown storage type: {storage_type}")
+            raise ValueError(f"Unknown query storage type: {storage_type}")
 
     def close(self) -> None:
         self._query_manager.close()

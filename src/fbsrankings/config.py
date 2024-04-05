@@ -10,14 +10,24 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 
-class ConfigStorageType(str, Enum):
-    SQLITE = "sqlite"
+class ConfigCommandStorageType(str, Enum):
     MEMORY = "memory"
+    SQLITE = "sqlite"
+
+
+class ConfigQueryStorageType(str, Enum):
+    MEMORY = "memory"
+    SQLITE = "sqlite"
+    TINYDB = "tinydb"
 
 
 class Config(BaseModel):
-    storage_type: ConfigStorageType
-    database: Optional[Union[Path, Literal[":memory:"]]]
+    command_storage_type: ConfigCommandStorageType
+    command_storage_file: Optional[Union[Path, Literal[":memory:"]]]
+
+    query_storage_type: ConfigQueryStorageType
+    query_storage_file: Optional[Union[Path, Literal[":memory:"]]]
+
     alternate_names: Optional[Dict[str, str]]
 
     @staticmethod

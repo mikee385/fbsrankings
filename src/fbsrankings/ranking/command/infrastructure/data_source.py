@@ -1,7 +1,7 @@
 from typing import Union
 
 from fbsrankings.common import EventBus
-from fbsrankings.config import ConfigStorageType
+from fbsrankings.config import ConfigCommandStorageType
 from fbsrankings.context import Context
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandler
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandlerFactory
@@ -21,25 +21,25 @@ class DataSource(RepositoryFactory, EventHandlerFactory):
     def __init__(self, context: Context) -> None:
         self._data_source: Union[MemoryDataSource, SqliteDataSource]
 
-        storage_type = context.config.storage_type
-        if storage_type == ConfigStorageType.MEMORY:
-            if not isinstance(context.storage, MemoryStorage):
+        storage_type = context.config.command_storage_type
+        if storage_type == ConfigCommandStorageType.MEMORY:
+            if not isinstance(context.command_storage, MemoryStorage):
                 raise ValueError(
-                    f"For storage type, expected: {MemoryStorage}, "
-                    f"found: {type(context.storage)}",
+                    f"For command storage type, expected: {MemoryStorage}, "
+                    f"found: {type(context.command_storage)}",
                 )
-            self._data_source = MemoryDataSource(context.storage)
+            self._data_source = MemoryDataSource(context.command_storage)
 
-        elif storage_type == ConfigStorageType.SQLITE:
-            if not isinstance(context.storage, SqliteStorage):
+        elif storage_type == ConfigCommandStorageType.SQLITE:
+            if not isinstance(context.command_storage, SqliteStorage):
                 raise ValueError(
-                    f"For storage type, expected: {SqliteStorage}, "
-                    f"found: {type(context.storage)}",
+                    f"For command storage type, expected: {SqliteStorage}, "
+                    f"found: {type(context.command_storage)}",
                 )
-            self._data_source = SqliteDataSource(context.storage)
+            self._data_source = SqliteDataSource(context.command_storage)
 
         else:
-            raise ValueError(f"Unknown storage type: {storage_type}")
+            raise ValueError(f"Unknown command storage type: {storage_type}")
 
     def repository(self, event_bus: EventBus) -> Repository:
         return self._data_source.repository(event_bus)

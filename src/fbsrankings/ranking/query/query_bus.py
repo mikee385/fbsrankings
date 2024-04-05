@@ -7,7 +7,7 @@ from typing import Union
 from typing_extensions import Literal
 
 from fbsrankings.common import QueryBus as BaseQueryBus
-from fbsrankings.config import ConfigStorageType
+from fbsrankings.config import ConfigCommandStorageType
 from fbsrankings.context import Context
 from fbsrankings.ranking.query.infrastructure.memory.query_manager import (
     QueryManager as MemoryQueryManager,
@@ -24,25 +24,25 @@ class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
         super().__init__()
         self._query_manager: Union[MemoryQueryManager, SqliteQueryManager]
 
-        storage_type = context.config.storage_type
-        if storage_type == ConfigStorageType.MEMORY:
-            if not isinstance(context.storage, MemoryStorage):
+        storage_type = context.config.command_storage_type
+        if storage_type == ConfigCommandStorageType.MEMORY:
+            if not isinstance(context.command_storage, MemoryStorage):
                 raise ValueError(
-                    f"For storage type, expected: {MemoryStorage}, "
-                    f"found: {type(context.storage)}",
+                    "For query storage type, expected: MemoryStorage, "
+                    f"found: {type(context.command_storage)}",
                 )
-            self._query_manager = MemoryQueryManager(context.storage, self)
+            self._query_manager = MemoryQueryManager(context.command_storage, self)
 
-        elif storage_type == ConfigStorageType.SQLITE:
-            if not isinstance(context.storage, SqliteStorage):
+        elif storage_type == ConfigCommandStorageType.SQLITE:
+            if not isinstance(context.command_storage, SqliteStorage):
                 raise ValueError(
-                    f"For storage type, expected: {SqliteStorage}, "
-                    f"found: {type(context.storage)}",
+                    "For query storage type, expected: SqliteStorage, "
+                    f"found: {type(context.command_storage)}",
                 )
-            self._query_manager = SqliteQueryManager(context.storage, self)
+            self._query_manager = SqliteQueryManager(context.command_storage, self)
 
         else:
-            raise ValueError(f"Unknown storage type: {storage_type}")
+            raise ValueError(f"Unknown query storage type: {storage_type}")
 
     def close(self) -> None:
         self._query_manager.close()
