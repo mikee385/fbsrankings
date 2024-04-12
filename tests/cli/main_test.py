@@ -463,11 +463,7 @@ def test_main_seasons_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_seasons.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_seasons.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -509,11 +505,7 @@ def test_main_latest_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_latest.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_latest.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -562,11 +554,7 @@ def test_main_latest_rating_srs_top_5_tinydb(
     files = _copy_files(
         data_path,
         test_path,
-        [
-            "main_latest_rating_colley_matrix_top_5.txt",
-            "test_data.db",
-            "test_data.json",
-        ],
+        ["main_latest_rating_colley_matrix_top_5.txt", "test_data.json"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
@@ -609,11 +597,7 @@ def test_main_teams_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_teams.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_teams.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -655,11 +639,7 @@ def test_main_teams_year_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_teams_2012.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_teams_2012.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -704,7 +684,7 @@ def test_main_teams_week_tinydb(
     files = _copy_files(
         data_path,
         test_path,
-        ["main_teams_2012w9.txt", "test_data.db", "test_data.json"],
+        ["main_teams_2012w9.txt", "test_data.json"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
@@ -747,11 +727,7 @@ def test_main_games_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_games.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_games.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -793,11 +769,7 @@ def test_main_games_year_tinydb(
     test_path: Path,
     sqlite_file_tinydb_config: Tuple[Path, Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_games_2012.txt", "test_data.db", "test_data.json"],
-    )
+    files = _copy_files(data_path, test_path, ["main_games_2012.txt", "test_data.json"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -842,7 +814,7 @@ def test_main_games_week_tinydb(
     files = _copy_files(
         data_path,
         test_path,
-        ["main_games_2012w9.txt", "test_data.db", "test_data.json"],
+        ["main_games_2012w9.txt", "test_data.json"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()

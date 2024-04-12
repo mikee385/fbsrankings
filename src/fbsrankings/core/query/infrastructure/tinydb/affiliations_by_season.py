@@ -42,7 +42,7 @@ class AffiliationsBySeasonQueryProjection:
         if existing_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Home Team {event.team_id} was not found for affiliation {event.id_}",
+                f"Team {event.team_id} was not found for affiliation {event.id_}",
             )
 
         existing = table.get(

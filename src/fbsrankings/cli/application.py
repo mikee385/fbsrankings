@@ -174,7 +174,7 @@ class Application(ContextManager["Application"]):
             self._core_query,
             self._event_bus,
         )
-        self._ranking_query = RankingQueryBus(self._context)
+        self._ranking_query = RankingQueryBus(self._context, self._event_bus)
 
     def import_seasons(self, seasons: Iterable[str], drop: bool, check: bool) -> None:
         years = self._parse_seasons(seasons)
