@@ -9,20 +9,20 @@ from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.team import Team
-from fbsrankings.core.command.domain.model.team import (
-    TeamEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
 from fbsrankings.core.command.event.team import TeamCreatedEvent
+from fbsrankings.core.command.event.team import (
+    TeamEventHandler as BaseEventHandler,
+)
 from fbsrankings.storage.sqlite import TeamTable
 
 
 class TeamRepository(BaseRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
         self._connection = connection
         self._table = TeamTable().table
+        self._bus = bus
 
     def get(self, id_: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
@@ -54,8 +54,7 @@ class TeamRepository(BaseRepository):
 
 
 class TeamEventHandler(BaseEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         self._cursor = cursor
         self._table = TeamTable().table
 

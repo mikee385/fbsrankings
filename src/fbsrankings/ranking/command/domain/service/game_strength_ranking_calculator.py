@@ -6,14 +6,14 @@ from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import GameRankingCalculator
-from fbsrankings.ranking.command.domain.model.ranking import GameRankingRepository
+from fbsrankings.ranking.command.domain.model.ranking import GameRankingFactory
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 
 
 class GameStrengthRankingCalculator:
-    def __init__(self, repository: GameRankingRepository) -> None:
-        self._repository = repository
+    def __init__(self, factory: GameRankingFactory) -> None:
+        self._factory = factory
 
     def calculate_for_ranking(
         self,
@@ -43,7 +43,7 @@ class GameStrengthRankingCalculator:
         result = {GameID(id_): data for id_, data in game_data.items()}
         ranking_values = GameRankingCalculator.to_values(season_data, result)
 
-        return self._repository.create(
+        return self._factory.create(
             performance_ranking.name + " - Game Strength",
             SeasonID(season_data.season_id),
             performance_ranking.week,

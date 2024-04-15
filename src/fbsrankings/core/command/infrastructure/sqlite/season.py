@@ -9,22 +9,22 @@ from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import Season
-from fbsrankings.core.command.domain.model.season import (
-    SeasonEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.season import (
     SeasonRepository as BaseRepository,
 )
 from fbsrankings.core.command.event.season import SeasonCreatedEvent
+from fbsrankings.core.command.event.season import (
+    SeasonEventHandler as BaseEventHandler,
+)
 from fbsrankings.storage.sqlite import SeasonTable
 
 
 class SeasonRepository(BaseRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
         self._connection = connection
         self._table = SeasonTable().table
+        self._bus = bus
 
     def get(self, id_: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
@@ -56,8 +56,7 @@ class SeasonRepository(BaseRepository):
 
 
 class SeasonEventHandler(BaseEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         self._cursor = cursor
         self._table = SeasonTable().table
 

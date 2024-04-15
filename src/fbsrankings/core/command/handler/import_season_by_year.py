@@ -29,7 +29,7 @@ class ImportSeasonByYearCommandHandler:
         validator = Validator(self._event_bus)
 
         with Transaction(self._data_source, self._event_bus) as transaction:
-            importer = Importer(transaction)
+            importer = Importer(transaction.factory, transaction.repository)
             sports_reference = SportsReference(
                 alternate_names,
                 importer,

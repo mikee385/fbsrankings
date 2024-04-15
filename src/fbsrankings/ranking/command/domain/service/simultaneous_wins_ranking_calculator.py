@@ -12,7 +12,7 @@ from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
-from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingFactory
 
 
 class TeamData:
@@ -36,8 +36,8 @@ class TeamData:
 class SimultaneousWinsRankingCalculator:
     name: str = "Simultaneous Wins"
 
-    def __init__(self, repository: TeamRankingRepository) -> None:
-        self._repository = repository
+    def __init__(self, factory: TeamRankingFactory) -> None:
+        self._factory = factory
 
     def calculate_for_season(self, season_data: SeasonData) -> List[Ranking[TeamID]]:
         team_data: Dict[UUID, TeamData] = {}
@@ -103,7 +103,7 @@ class SimultaneousWinsRankingCalculator:
             ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
             rankings.append(
-                self._repository.create(
+                self._factory.create(
                     SimultaneousWinsRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     week,
@@ -113,7 +113,7 @@ class SimultaneousWinsRankingCalculator:
 
         if season_is_complete:
             rankings.append(
-                self._repository.create(
+                self._factory.create(
                     SimultaneousWinsRankingCalculator.name,
                     SeasonID(season_data.season_id),
                     None,

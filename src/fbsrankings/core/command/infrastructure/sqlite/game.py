@@ -10,9 +10,6 @@ from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.game import Game
-from fbsrankings.core.command.domain.model.game import (
-    GameEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.game import GameID
 from fbsrankings.core.command.domain.model.game import GameRepository as BaseRepository
 from fbsrankings.core.command.domain.model.season import SeasonID
@@ -20,6 +17,9 @@ from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.game import GameCanceledEvent
 from fbsrankings.core.command.event.game import GameCompletedEvent
 from fbsrankings.core.command.event.game import GameCreatedEvent
+from fbsrankings.core.command.event.game import (
+    GameEventHandler as BaseEventHandler,
+)
 from fbsrankings.core.command.event.game import GameNotesUpdatedEvent
 from fbsrankings.core.command.event.game import GameRescheduledEvent
 from fbsrankings.enum import GameStatus
@@ -29,9 +29,9 @@ from fbsrankings.storage.sqlite import GameTable
 
 class GameRepository(BaseRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
         self._connection = connection
         self._table = GameTable().table
+        self._bus = bus
 
     def get(self, id_: GameID) -> Optional[Game]:
         cursor = self._connection.cursor()
@@ -129,8 +129,7 @@ class GameRepository(BaseRepository):
 
 
 class GameEventHandler(BaseEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         self._cursor = cursor
         self._table = GameTable().table
 

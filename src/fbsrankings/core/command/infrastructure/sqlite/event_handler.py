@@ -1,6 +1,17 @@
 import sqlite3
+from types import TracebackType
+from typing import Optional
+from typing import Type
+
+from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
+from fbsrankings.core.command.event.affiliation import (
+    AffiliationEventManager,
+)
+from fbsrankings.core.command.event.game import GameEventManager
+from fbsrankings.core.command.event.season import SeasonEventManager
+from fbsrankings.core.command.event.team import TeamEventManager
 from fbsrankings.core.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -18,10 +29,13 @@ class EventHandler(BaseEventHandler):
         self._cursor = storage.connection.cursor()
         self._cursor.execute("begin")
 
-        self._season = SeasonEventHandler(self._cursor, bus)
-        self._team = TeamEventHandler(self._cursor, bus)
-        self._affiliation = AffiliationEventHandler(self._cursor, bus)
-        self._game = GameEventHandler(self._cursor, bus)
+        self._season = SeasonEventManager(SeasonEventHandler(self._cursor), bus)
+        self._team = TeamEventManager(TeamEventHandler(self._cursor), bus)
+        self._affiliation = AffiliationEventManager(
+            AffiliationEventHandler(self._cursor),
+            bus,
+        )
+        self._game = GameEventManager(GameEventHandler(self._cursor), bus)
 
     def close(self) -> None:
         self._season.close()
@@ -34,3 +48,23 @@ class EventHandler(BaseEventHandler):
             self._cursor.close()
         except sqlite3.ProgrammingError:
             pass
+
+    def __enter__(self) -> "EventHandler":
+        self._season.__enter__()
+        self._team.__enter__()
+        self._affiliation.__enter__()
+        self._game.__enter__()
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        self._game.__exit__(type_, value, traceback)
+        self._affiliation.__exit__(type_, value, traceback)
+        self._team.__exit__(type_, value, traceback)
+        self._season.__exit__(type_, value, traceback)
+        return False

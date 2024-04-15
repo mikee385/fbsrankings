@@ -1,7 +1,15 @@
+from types import TracebackType
 from typing import List
+from typing import Optional
+from typing import Type
+
+from typing_extensions import Literal
 
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
+from fbsrankings.ranking.command.event.ranking import GameRankingEventManager
+from fbsrankings.ranking.command.event.ranking import TeamRankingEventManager
+from fbsrankings.ranking.command.event.record import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -20,9 +28,18 @@ class EventHandler(BaseEventHandler):
     def __init__(self, event_bus: EventBus, cache_bus: EventBus) -> None:
         self.events: List[Event] = []
 
-        self._team_record = TeamRecordEventHandler(self.events, event_bus, cache_bus)
-        self._team_ranking = TeamRankingEventHandler(self.events, event_bus, cache_bus)
-        self._game_ranking = GameRankingEventHandler(self.events, event_bus, cache_bus)
+        self._team_record = TeamRecordEventManager(
+            TeamRecordEventHandler(self.events, cache_bus),
+            event_bus,
+        )
+        self._team_ranking = TeamRankingEventManager(
+            TeamRankingEventHandler(self.events, cache_bus),
+            event_bus,
+        )
+        self._game_ranking = GameRankingEventManager(
+            GameRankingEventHandler(self.events, cache_bus),
+            event_bus,
+        )
 
     def close(self) -> None:
         self._team_record.close()
@@ -33,3 +50,21 @@ class EventHandler(BaseEventHandler):
 
     def clear(self) -> None:
         self.events.clear()
+
+    def __enter__(self) -> "EventHandler":
+        self._team_record.__enter__()
+        self._team_ranking.__enter__()
+        self._game_ranking.__enter__()
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self.close()
+        self._game_ranking.__exit__(type_, value, traceback)
+        self._team_ranking.__exit__(type_, value, traceback)
+        self._team_record.__exit__(type_, value, traceback)
+        return False

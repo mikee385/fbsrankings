@@ -4,14 +4,14 @@ from typing import Optional
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import Season
-from fbsrankings.core.command.domain.model.season import (
-    SeasonEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.season import (
     SeasonRepository as BaseRepository,
 )
 from fbsrankings.core.command.event.season import SeasonCreatedEvent
+from fbsrankings.core.command.event.season import (
+    SeasonEventHandler as BaseEventHandler,
+)
 from fbsrankings.core.command.infrastructure.memory.season import (
     SeasonRepository as MemoryRepository,
 )
@@ -24,13 +24,9 @@ class SeasonRepository(BaseRepository):
         cache: MemoryRepository,
         cache_bus: EventBus,
     ) -> None:
-        super().__init__(repository._bus)
         self._repository = repository
         self._cache = cache
         self._cache_bus = cache_bus
-
-    def create(self, year: int) -> Season:
-        return self._repository.create(year)
 
     def get(self, id_: SeasonID) -> Optional[Season]:
         season = self._cache.get(id_)
@@ -57,10 +53,8 @@ class SeasonEventHandler(BaseEventHandler):
     def __init__(
         self,
         events: List[Event],
-        event_bus: EventBus,
         cache_bus: EventBus,
     ) -> None:
-        super().__init__(event_bus)
         self._events = events
         self._cache_bus = cache_bus
 

@@ -1,15 +1,10 @@
 import datetime
 from abc import ABCMeta
 from abc import abstractmethod
-from types import TracebackType
-from typing import ContextManager
 from typing import NewType
 from typing import Optional
-from typing import Type
 from uuid import UUID
 from uuid import uuid4
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
@@ -275,7 +270,7 @@ class Game:
         )
 
 
-class GameRepository(metaclass=ABCMeta):
+class GameFactory:
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -319,6 +314,8 @@ class GameRepository(metaclass=ABCMeta):
 
         return game
 
+
+class GameRepository(metaclass=ABCMeta):
     @abstractmethod
     def get(self, id_: GameID) -> Optional[Game]:
         raise NotImplementedError
@@ -332,53 +329,3 @@ class GameRepository(metaclass=ABCMeta):
         team2_id: TeamID,
     ) -> Optional[Game]:
         raise NotImplementedError
-
-
-class GameEventHandler(ContextManager["GameEventHandler"], metaclass=ABCMeta):
-    def __init__(self, bus: EventBus) -> None:
-        self._bus = bus
-
-        self._bus.register_handler(GameCreatedEvent, self.handle_created)
-        self._bus.register_handler(GameRescheduledEvent, self.handle_rescheduled)
-        self._bus.register_handler(GameCanceledEvent, self.handle_canceled)
-        self._bus.register_handler(GameCompletedEvent, self.handle_completed)
-        self._bus.register_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(GameCreatedEvent, self.handle_created)
-        self._bus.unregister_handler(GameRescheduledEvent, self.handle_rescheduled)
-        self._bus.unregister_handler(GameCanceledEvent, self.handle_canceled)
-        self._bus.unregister_handler(GameCompletedEvent, self.handle_completed)
-        self._bus.unregister_handler(GameNotesUpdatedEvent, self.handle_notes_updated)
-
-    @abstractmethod
-    def handle_created(self, event: GameCreatedEvent) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def handle_canceled(self, event: GameCanceledEvent) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def handle_completed(self, event: GameCompletedEvent) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
-        raise NotImplementedError
-
-    def __enter__(self) -> "GameEventHandler":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

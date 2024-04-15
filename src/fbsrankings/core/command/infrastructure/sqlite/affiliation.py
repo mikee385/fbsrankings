@@ -9,9 +9,6 @@ from pypika.queries import QueryBuilder
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
-from fbsrankings.core.command.domain.model.affiliation import (
-    AffiliationEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
     AffiliationRepository as BaseRepository,
@@ -19,15 +16,18 @@ from fbsrankings.core.command.domain.model.affiliation import (
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
+from fbsrankings.core.command.event.affiliation import (
+    AffiliationEventHandler as BaseEventHandler,
+)
 from fbsrankings.enum import Subdivision
 from fbsrankings.storage.sqlite import AffiliationTable
 
 
 class AffiliationRepository(BaseRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
         self._connection = connection
         self._table = AffiliationTable().table
+        self._bus = bus
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
@@ -73,8 +73,7 @@ class AffiliationRepository(BaseRepository):
 
 
 class AffiliationEventHandler(BaseEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         self._cursor = cursor
         self._table = AffiliationTable().table
 

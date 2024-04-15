@@ -19,23 +19,23 @@ from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import (
-    GameRankingEventHandler as BaseGameRankingEventHandler,
-)
-from fbsrankings.ranking.command.domain.model.ranking import (
     GameRankingRepository as BaseGameRankingRepository,
 )
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import RankingID
 from fbsrankings.ranking.command.domain.model.ranking import RankingValue
 from fbsrankings.ranking.command.domain.model.ranking import (
-    TeamRankingEventHandler as BaseTeamRankingEventHandler,
-)
-from fbsrankings.ranking.command.domain.model.ranking import (
     TeamRankingRepository as BaseTeamRankingRepository,
 )
 from fbsrankings.ranking.command.event.ranking import GameRankingCalculatedEvent
+from fbsrankings.ranking.command.event.ranking import (
+    GameRankingEventHandler as BaseGameRankingEventHandler,
+)
 from fbsrankings.ranking.command.event.ranking import RankingCalculatedEvent
 from fbsrankings.ranking.command.event.ranking import TeamRankingCalculatedEvent
+from fbsrankings.ranking.command.event.ranking import (
+    TeamRankingEventHandler as BaseTeamRankingEventHandler,
+)
 from fbsrankings.storage.sqlite import GameRankingValueTable
 from fbsrankings.storage.sqlite import RankingTable
 from fbsrankings.storage.sqlite import RankingType
@@ -245,8 +245,6 @@ class RankingEventHandler:
 
 class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
-
         value_table = TeamRankingValueTable().table
         value_columns = [
             value_table.RankingID,
@@ -281,9 +279,7 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
 
 class TeamRankingEventHandler(BaseTeamRankingEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
-
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         value_table = TeamRankingValueTable().table
         value_columns = [
             value_table.RankingID,
@@ -305,8 +301,6 @@ class TeamRankingEventHandler(BaseTeamRankingEventHandler):
 
 class GameRankingRepository(BaseGameRankingRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
-
         value_table = GameRankingValueTable().table
         value_columns = [
             value_table.RankingID,
@@ -341,9 +335,7 @@ class GameRankingRepository(BaseGameRankingRepository):
 
 
 class GameRankingEventHandler(BaseGameRankingEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
-
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         value_table = GameRankingValueTable().table
         value_columns = [
             value_table.RankingID,

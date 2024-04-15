@@ -77,41 +77,41 @@ class CalculateRankingsForSeasonCommandHandler:
 
             season_data = SeasonData(season_id, affiliations, games)
 
-            TeamRecordCalculator(transaction.team_record).calculate_for_season(
+            TeamRecordCalculator(transaction.factory.team_record).calculate_for_season(
                 season_data,
             )
 
             srs_rankings = SRSRankingCalculator(
-                transaction.team_ranking,
+                transaction.factory.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in srs_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    transaction.team_ranking,
+                    transaction.factory.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    transaction.game_ranking,
+                    transaction.factory.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             cm_rankings = ColleyMatrixRankingCalculator(
-                transaction.team_ranking,
+                transaction.factory.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in cm_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    transaction.team_ranking,
+                    transaction.factory.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    transaction.game_ranking,
+                    transaction.factory.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             sw_rankings = SimultaneousWinsRankingCalculator(
-                transaction.team_ranking,
+                transaction.factory.team_ranking,
             ).calculate_for_season(season_data)
             for ranking in sw_rankings:
                 StrengthOfScheduleRankingCalculator(
-                    transaction.team_ranking,
+                    transaction.factory.team_ranking,
                 ).calculate_for_ranking(season_data, ranking)
                 GameStrengthRankingCalculator(
-                    transaction.game_ranking,
+                    transaction.factory.game_ranking,
                 ).calculate_for_ranking(season_data, ranking)
 
             try:

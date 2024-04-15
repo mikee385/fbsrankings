@@ -5,15 +5,14 @@ from fbsrankings.common import Event
 from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
-from fbsrankings.ranking.command.domain.model.record import (
-    TeamRecordEventHandler as BaseEventHandler,
-)
 from fbsrankings.ranking.command.domain.model.record import TeamRecordID
 from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
-from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
 from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
+from fbsrankings.ranking.command.event.record import (
+    TeamRecordEventHandler as BaseEventHandler,
+)
 from fbsrankings.ranking.command.event.record import TeamRecordValue as EventValue
 from fbsrankings.ranking.command.infrastructure.memory.record import (
     TeamRecordRepository as MemoryRepository,
@@ -27,18 +26,9 @@ class TeamRecordRepository(BaseRepository):
         cache: MemoryRepository,
         cache_bus: EventBus,
     ) -> None:
-        super().__init__(repository._bus)
         self._repository = repository
         self._cache = cache
         self._cache_bus = cache_bus
-
-    def create(
-        self,
-        season_id: SeasonID,
-        week: Optional[int],
-        values: List[TeamRecordValue],
-    ) -> TeamRecord:
-        return self._repository.create(season_id, week, values)
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         team_record = self._cache.get(id_)
@@ -79,10 +69,8 @@ class TeamRecordEventHandler(BaseEventHandler):
     def __init__(
         self,
         events: List[Event],
-        event_bus: EventBus,
         cache_bus: EventBus,
     ) -> None:
-        super().__init__(event_bus)
         self._events = events
         self._cache_bus = cache_bus
 

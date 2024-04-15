@@ -1,14 +1,9 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from types import TracebackType
-from typing import ContextManager
 from typing import NewType
 from typing import Optional
-from typing import Type
 from uuid import UUID
 from uuid import uuid4
-
-from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
@@ -52,7 +47,7 @@ class Affiliation:
         return self._subdivision
 
 
-class AffiliationRepository(metaclass=ABCMeta):
+class AffiliationFactory:
     def __init__(self, bus: EventBus) -> None:
         self._bus = bus
 
@@ -75,6 +70,8 @@ class AffiliationRepository(metaclass=ABCMeta):
 
         return affiliation
 
+
+class AffiliationRepository(metaclass=ABCMeta):
     @abstractmethod
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         raise NotImplementedError
@@ -82,32 +79,3 @@ class AffiliationRepository(metaclass=ABCMeta):
     @abstractmethod
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
         raise NotImplementedError
-
-
-class AffiliationEventHandler(
-    ContextManager["AffiliationEventHandler"],
-    metaclass=ABCMeta,
-):
-    def __init__(self, bus: EventBus) -> None:
-        self._bus = bus
-
-        self._bus.register_handler(AffiliationCreatedEvent, self.handle_created)
-
-    def close(self) -> None:
-        self._bus.unregister_handler(AffiliationCreatedEvent, self.handle_created)
-
-    @abstractmethod
-    def handle_created(self, event: AffiliationCreatedEvent) -> None:
-        raise NotImplementedError
-
-    def __enter__(self) -> "AffiliationEventHandler":
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self.close()
-        return False

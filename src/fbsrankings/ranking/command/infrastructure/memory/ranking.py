@@ -9,23 +9,23 @@ from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import (
-    GameRankingEventHandler as BaseGameRankingEventHandler,
-)
-from fbsrankings.ranking.command.domain.model.ranking import (
     GameRankingRepository as BaseGameRankingRepository,
 )
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import RankingID
 from fbsrankings.ranking.command.domain.model.ranking import RankingValue
 from fbsrankings.ranking.command.domain.model.ranking import (
-    TeamRankingEventHandler as BaseTeamRankingEventHandler,
-)
-from fbsrankings.ranking.command.domain.model.ranking import (
     TeamRankingRepository as BaseTeamRankingRepository,
 )
 from fbsrankings.ranking.command.event.ranking import GameRankingCalculatedEvent
+from fbsrankings.ranking.command.event.ranking import (
+    GameRankingEventHandler as BaseGameRankingEventHandler,
+)
 from fbsrankings.ranking.command.event.ranking import RankingCalculatedEvent
 from fbsrankings.ranking.command.event.ranking import TeamRankingCalculatedEvent
+from fbsrankings.ranking.command.event.ranking import (
+    TeamRankingEventHandler as BaseTeamRankingEventHandler,
+)
 from fbsrankings.storage.memory import RankingDto
 from fbsrankings.storage.memory import RankingStorage
 from fbsrankings.storage.memory import RankingValueDto
@@ -70,8 +70,7 @@ class RankingRepository(Generic[T]):
 
 
 class RankingEventHandler:
-    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        self._bus = bus
+    def __init__(self, storage: RankingStorage) -> None:
         self._storage = storage
 
     def handle_calculated(self, event: RankingCalculatedEvent) -> None:
@@ -91,7 +90,6 @@ class RankingEventHandler:
 
 class TeamRankingRepository(BaseTeamRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        super().__init__(bus)
         self._repository = RankingRepository[TeamID](storage, bus, self._to_value)
 
     def get(self, id_: RankingID) -> Optional[Ranking[TeamID]]:
@@ -111,9 +109,8 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
 
 class TeamRankingEventHandler(BaseTeamRankingEventHandler):
-    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        super().__init__(bus)
-        self._event_handler = RankingEventHandler(storage, bus)
+    def __init__(self, storage: RankingStorage) -> None:
+        self._event_handler = RankingEventHandler(storage)
 
     def handle_calculated(
         self,
@@ -124,7 +121,6 @@ class TeamRankingEventHandler(BaseTeamRankingEventHandler):
 
 class GameRankingRepository(BaseGameRankingRepository):
     def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        super().__init__(bus)
         self._repository = RankingRepository[GameID](storage, bus, self._to_value)
 
     def get(self, id_: RankingID) -> Optional[Ranking[GameID]]:
@@ -144,9 +140,8 @@ class GameRankingRepository(BaseGameRankingRepository):
 
 
 class GameRankingEventHandler(BaseGameRankingEventHandler):
-    def __init__(self, storage: RankingStorage, bus: EventBus) -> None:
-        super().__init__(bus)
-        self._event_handler = RankingEventHandler(storage, bus)
+    def __init__(self, storage: RankingStorage) -> None:
+        self._event_handler = RankingEventHandler(storage)
 
     def handle_calculated(
         self,

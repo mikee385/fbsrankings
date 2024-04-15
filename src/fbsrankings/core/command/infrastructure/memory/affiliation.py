@@ -2,9 +2,6 @@ from typing import Optional
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
-from fbsrankings.core.command.domain.model.affiliation import (
-    AffiliationEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
     AffiliationRepository as BaseRepository,
@@ -12,6 +9,9 @@ from fbsrankings.core.command.domain.model.affiliation import (
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
+from fbsrankings.core.command.event.affiliation import (
+    AffiliationEventHandler as BaseEventHandler,
+)
 from fbsrankings.enum import Subdivision
 from fbsrankings.storage.memory import AffiliationDto
 from fbsrankings.storage.memory import AffiliationStorage
@@ -19,8 +19,8 @@ from fbsrankings.storage.memory import AffiliationStorage
 
 class AffiliationRepository(BaseRepository):
     def __init__(self, storage: AffiliationStorage, bus: EventBus) -> None:
-        super().__init__(bus)
         self._storage = storage
+        self._bus = bus
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         dto = self._storage.get(id_)
@@ -41,8 +41,7 @@ class AffiliationRepository(BaseRepository):
 
 
 class AffiliationEventHandler(BaseEventHandler):
-    def __init__(self, storage: AffiliationStorage, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, storage: AffiliationStorage) -> None:
         self._storage = storage
 
     def handle_created(self, event: AffiliationCreatedEvent) -> None:

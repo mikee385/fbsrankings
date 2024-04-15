@@ -7,7 +7,7 @@ from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
-from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
+from fbsrankings.ranking.command.domain.model.ranking import TeamRankingFactory
 
 
 class TeamData:
@@ -25,8 +25,8 @@ class TeamData:
 
 
 class StrengthOfScheduleRankingCalculator:
-    def __init__(self, repository: TeamRankingRepository) -> None:
-        self._repository = repository
+    def __init__(self, factory: TeamRankingFactory) -> None:
+        self._factory = factory
 
     def calculate_for_ranking(
         self,
@@ -60,7 +60,7 @@ class StrengthOfScheduleRankingCalculator:
         }
         ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
-        return self._repository.create(
+        return self._factory.create(
             performance_ranking.name + " - Strength of Schedule - Total",
             SeasonID(season_data.season_id),
             performance_ranking.week,

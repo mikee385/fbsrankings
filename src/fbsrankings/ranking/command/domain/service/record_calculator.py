@@ -9,7 +9,7 @@ from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
-from fbsrankings.ranking.command.domain.model.record import TeamRecordRepository
+from fbsrankings.ranking.command.domain.model.record import TeamRecordFactory
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
 
 
@@ -20,8 +20,8 @@ class TeamData:
 
 
 class TeamRecordCalculator:
-    def __init__(self, repository: TeamRecordRepository) -> None:
-        self._repository = repository
+    def __init__(self, factory: TeamRecordFactory) -> None:
+        self._factory = factory
 
     def calculate_for_season(self, season_data: SeasonData) -> List[TeamRecord]:
         team_data: Dict[UUID, TeamData] = {}
@@ -77,7 +77,7 @@ class TeamRecordCalculator:
             ]
 
             records.append(
-                self._repository.create(
+                self._factory.create(
                     SeasonID(season_data.season_id),
                     week,
                     record_values,
@@ -86,7 +86,7 @@ class TeamRecordCalculator:
 
         if season_is_complete:
             records.append(
-                self._repository.create(
+                self._factory.create(
                     SeasonID(season_data.season_id),
                     None,
                     record_values,

@@ -6,10 +6,7 @@ from typing import Type
 from typing_extensions import Literal
 
 from fbsrankings.common import EventBus
-from fbsrankings.core.command.domain.model.affiliation import AffiliationRepository
-from fbsrankings.core.command.domain.model.game import GameRepository
-from fbsrankings.core.command.domain.model.season import SeasonRepository
-from fbsrankings.core.command.domain.model.team import TeamRepository
+from fbsrankings.core.command.domain.model.factory import Factory
 from fbsrankings.core.command.infrastructure.data_source import DataSource
 from fbsrankings.core.command.infrastructure.memory.event_handler import (
     EventHandler as MemoryEventHandler,
@@ -17,22 +14,23 @@ from fbsrankings.core.command.infrastructure.memory.event_handler import (
 from fbsrankings.core.command.infrastructure.memory.repository import (
     Repository as MemoryRepository,
 )
-from fbsrankings.core.command.infrastructure.repository import (
-    Repository as BaseRepository,
-)
+from fbsrankings.core.command.infrastructure.repository import Repository
 from fbsrankings.core.command.infrastructure.transaction.event_handler import (
-    EventHandler,
+    EventHandler as TransactionEventHandler,
 )
-from fbsrankings.core.command.infrastructure.transaction.repository import Repository
+from fbsrankings.core.command.infrastructure.transaction.repository import (
+    Repository as TransactionRepository,
+)
 from fbsrankings.storage.memory import Storage as MemoryStorage
 
 
-class Transaction(BaseRepository, ContextManager["Transaction"]):
+class Transaction(ContextManager["Transaction"]):
     def __init__(self, data_source: DataSource, bus: EventBus) -> None:
         self._data_source = data_source
         self._outer_bus = bus
         self._inner_bus = EventBus()
 
+        self._factory = Factory(self._inner_bus)
         self._data_repository = self._data_source.repository(self._inner_bus)
 
         self._cache_bus = EventBus()
@@ -40,28 +38,20 @@ class Transaction(BaseRepository, ContextManager["Transaction"]):
         self._cache_repository = MemoryRepository(self._cache_storage, self._inner_bus)
         self._cache_handler = MemoryEventHandler(self._cache_storage, self._cache_bus)
 
-        self._repository = Repository(
+        self._repository = TransactionRepository(
             self._data_repository,
             self._cache_repository,
             self._cache_bus,
         )
-        self._event_handler = EventHandler(self._inner_bus, self._cache_bus)
+        self._event_handler = TransactionEventHandler(self._inner_bus, self._cache_bus)
 
     @property
-    def season(self) -> SeasonRepository:
-        return self._repository.season
+    def factory(self) -> Factory:
+        return self._factory
 
     @property
-    def team(self) -> TeamRepository:
-        return self._repository.team
-
-    @property
-    def affiliation(self) -> AffiliationRepository:
-        return self._repository.affiliation
-
-    @property
-    def game(self) -> GameRepository:
-        return self._repository.game
+    def repository(self) -> Repository:
+        return self._repository
 
     def commit(self) -> None:
         storage_bus = EventBus()

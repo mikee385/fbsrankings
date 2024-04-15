@@ -13,15 +13,15 @@ from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
-from fbsrankings.ranking.command.domain.model.record import (
-    TeamRecordEventHandler as BaseEventHandler,
-)
 from fbsrankings.ranking.command.domain.model.record import TeamRecordID
 from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
 from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
+from fbsrankings.ranking.command.event.record import (
+    TeamRecordEventHandler as BaseEventHandler,
+)
 from fbsrankings.storage.sqlite import TeamRecordTable
 from fbsrankings.storage.sqlite import TeamRecordValueTable
 
@@ -31,10 +31,10 @@ SqliteParam = Union[None, int, float, str, bytes]
 
 class TeamRecordRepository(BaseRepository):
     def __init__(self, connection: sqlite3.Connection, bus: EventBus) -> None:
-        super().__init__(bus)
         self._connection = connection
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
+        self._bus = bus
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
@@ -107,8 +107,7 @@ class TeamRecordRepository(BaseRepository):
 
 
 class TeamRecordEventHandler(BaseEventHandler):
-    def __init__(self, cursor: sqlite3.Cursor, bus: EventBus) -> None:
-        super().__init__(bus)
+    def __init__(self, cursor: sqlite3.Cursor) -> None:
         self._cursor = cursor
         self._record_table = TeamRecordTable().table
         self._value_table = TeamRecordValueTable().table
