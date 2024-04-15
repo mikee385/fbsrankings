@@ -15,6 +15,7 @@ from .storage import Storage
 from .team import TeamDto
 from .team import TeamStorage
 
+
 __all__ = [
     "AffiliationDto",
     "AffiliationStorage",

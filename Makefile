@@ -57,6 +57,7 @@ f.close(); "
     pip-sync requirements-dev.txt
 
 check:
+    isort src tests setup.py
     black src tests setup.py
     flake8 src tests setup.py
     mypy src tests setup.py

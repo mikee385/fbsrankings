@@ -11,6 +11,7 @@ from .season import SeasonTable
 from .storage import Storage
 from .team import TeamTable
 
+
 __all__ = [
     "AffiliationTable",
     "GameRankingValueTable",

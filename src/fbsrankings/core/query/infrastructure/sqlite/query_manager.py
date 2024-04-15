@@ -39,9 +39,7 @@ from fbsrankings.core.query.infrastructure.sqlite.team_by_id import TeamByIDQuer
 from fbsrankings.core.query.infrastructure.sqlite.team_count_by_season import (
     TeamCountBySeasonQueryHandler,
 )
-from fbsrankings.core.query.infrastructure.sqlite.teams import (
-    TeamsQueryHandler,
-)
+from fbsrankings.core.query.infrastructure.sqlite.teams import TeamsQueryHandler
 from fbsrankings.core.query.infrastructure.sqlite.week_count_by_season import (
     WeekCountBySeasonQueryHandler,
 )

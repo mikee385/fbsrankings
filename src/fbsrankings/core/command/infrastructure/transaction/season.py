@@ -9,9 +9,7 @@ from fbsrankings.core.command.domain.model.season import (
     SeasonRepository as BaseRepository,
 )
 from fbsrankings.core.command.event.season import SeasonCreatedEvent
-from fbsrankings.core.command.event.season import (
-    SeasonEventHandler as BaseEventHandler,
-)
+from fbsrankings.core.command.event.season import SeasonEventHandler as BaseEventHandler
 from fbsrankings.core.command.infrastructure.memory.season import (
     SeasonRepository as MemoryRepository,
 )

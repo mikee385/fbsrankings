@@ -12,9 +12,7 @@ from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
 from fbsrankings.core.command.event.team import TeamCreatedEvent
-from fbsrankings.core.command.event.team import (
-    TeamEventHandler as BaseEventHandler,
-)
+from fbsrankings.core.command.event.team import TeamEventHandler as BaseEventHandler
 from fbsrankings.storage.sqlite import TeamTable
 
 

@@ -11,9 +11,7 @@ from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.game import GameCanceledEvent
 from fbsrankings.core.command.event.game import GameCompletedEvent
 from fbsrankings.core.command.event.game import GameCreatedEvent
-from fbsrankings.core.command.event.game import (
-    GameEventHandler as BaseEventHandler,
-)
+from fbsrankings.core.command.event.game import GameEventHandler as BaseEventHandler
 from fbsrankings.core.command.event.game import GameNotesUpdatedEvent
 from fbsrankings.core.command.event.game import GameRescheduledEvent
 from fbsrankings.core.command.infrastructure.memory.game import (

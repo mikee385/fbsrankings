@@ -10,6 +10,7 @@ from .query.team_record_by_season_week import TeamRecordBySeasonWeekResult
 from .query.team_record_by_season_week import TeamRecordValueBySeasonWeekResult
 from .query_bus import QueryBus
 
+
 __all__ = [
     "GameRankingBySeasonWeekQuery",
     "GameRankingBySeasonWeekResult",

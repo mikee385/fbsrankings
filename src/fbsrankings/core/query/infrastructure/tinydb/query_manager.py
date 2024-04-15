@@ -65,12 +65,8 @@ from fbsrankings.core.query.infrastructure.tinydb.team_count_by_season import (
 from fbsrankings.core.query.infrastructure.tinydb.team_count_by_season import (
     TeamCountBySeasonQueryProjection,
 )
-from fbsrankings.core.query.infrastructure.tinydb.teams import (
-    TeamsQueryHandler,
-)
-from fbsrankings.core.query.infrastructure.tinydb.teams import (
-    TeamsQueryProjection,
-)
+from fbsrankings.core.query.infrastructure.tinydb.teams import TeamsQueryHandler
+from fbsrankings.core.query.infrastructure.tinydb.teams import TeamsQueryProjection
 from fbsrankings.core.query.infrastructure.tinydb.week_count_by_season import (
     WeekCountBySeasonQueryHandler,
 )

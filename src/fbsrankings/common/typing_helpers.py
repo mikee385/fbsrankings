@@ -8,6 +8,7 @@ from typing import Union
 
 from typing_extensions import Protocol
 
+
 # Comparison protocols
 
 _T_contra = TypeVar("_T_contra", contravariant=True)

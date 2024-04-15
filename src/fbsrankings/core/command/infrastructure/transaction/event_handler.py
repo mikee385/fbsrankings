@@ -7,9 +7,7 @@ from typing_extensions import Literal
 
 from fbsrankings.common import Event
 from fbsrankings.common import EventBus
-from fbsrankings.core.command.event.affiliation import (
-    AffiliationEventManager,
-)
+from fbsrankings.core.command.event.affiliation import AffiliationEventManager
 from fbsrankings.core.command.event.game import GameEventManager
 from fbsrankings.core.command.event.season import SeasonEventManager
 from fbsrankings.core.command.event.team import TeamEventManager

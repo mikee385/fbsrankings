@@ -10,6 +10,7 @@ from .query import QueryBus
 from .query import QueryHandler
 from .typing_helpers import SupportsRichComparison
 
+
 __all__ = [
     "Command",
     "CommandBus",

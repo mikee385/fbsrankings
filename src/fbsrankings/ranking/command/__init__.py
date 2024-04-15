@@ -7,6 +7,7 @@ from .event.ranking import TeamRankingCalculatedEvent
 from .event.record import TeamRecordCalculatedEvent
 from .event.record import TeamRecordValue
 
+
 __all__ = [
     "CalculateRankingsForSeasonCommand",
     "CommandBus",

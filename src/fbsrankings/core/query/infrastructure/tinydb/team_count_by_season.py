@@ -5,12 +5,8 @@ from tinydb import Query
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command import AffiliationCreatedEvent
-from fbsrankings.core.query.query.team_count_by_season import (
-    TeamCountBySeasonQuery,
-)
-from fbsrankings.core.query.query.team_count_by_season import (
-    TeamCountBySeasonResult,
-)
+from fbsrankings.core.query.query.team_count_by_season import TeamCountBySeasonQuery
+from fbsrankings.core.query.query.team_count_by_season import TeamCountBySeasonResult
 from fbsrankings.storage.tinydb import Storage
 
 

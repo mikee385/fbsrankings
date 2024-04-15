@@ -5,12 +5,8 @@ from tinydb import Query
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command import GameCreatedEvent
-from fbsrankings.core.query.query.game_count_by_season import (
-    GameCountBySeasonQuery,
-)
-from fbsrankings.core.query.query.game_count_by_season import (
-    GameCountBySeasonResult,
-)
+from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonQuery
+from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonResult
 from fbsrankings.storage.tinydb import Storage
 
 

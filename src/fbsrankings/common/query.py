@@ -7,6 +7,7 @@ from typing import Generic
 from typing import Type
 from typing import TypeVar
 
+
 R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
 

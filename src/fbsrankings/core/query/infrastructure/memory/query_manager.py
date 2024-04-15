@@ -39,9 +39,7 @@ from fbsrankings.core.query.infrastructure.memory.team_by_id import TeamByIDQuer
 from fbsrankings.core.query.infrastructure.memory.team_count_by_season import (
     TeamCountBySeasonQueryHandler,
 )
-from fbsrankings.core.query.infrastructure.memory.teams import (
-    TeamsQueryHandler,
-)
+from fbsrankings.core.query.infrastructure.memory.teams import TeamsQueryHandler
 from fbsrankings.core.query.infrastructure.memory.week_count_by_season import (
     WeekCountBySeasonQueryHandler,
 )
