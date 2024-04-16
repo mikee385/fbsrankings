@@ -31,6 +31,8 @@ class AffiliationsBySeasonQueryProjection:
 
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -39,6 +41,8 @@ class AffiliationsBySeasonQueryProjection:
 
         team_table = self._connection.table("teams")
         existing_team = team_table.get(Query().id_ == str(event.team_id))
+        if isinstance(existing_team, list):
+            existing_team = existing_team[0]
         if existing_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -49,6 +53,8 @@ class AffiliationsBySeasonQueryProjection:
             (Query().season_id == str(event.season_id))
             & (Query().team_id == str(event.team_id)),
         )
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is None:
             table.insert(
                 {

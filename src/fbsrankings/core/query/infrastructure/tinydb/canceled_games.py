@@ -35,6 +35,8 @@ class CanceledGamesQueryProjection:
 
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -43,12 +45,16 @@ class CanceledGamesQueryProjection:
 
         team_table = self._connection.table("teams")
         existing_home_team = team_table.get(Query().id_ == str(event.home_team_id))
+        if isinstance(existing_home_team, list):
+            existing_home_team = existing_home_team[0]
         if existing_home_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Home Team {event.home_team_id} was not found for game {event.id_}",
             )
         existing_away_team = team_table.get(Query().id_ == str(event.away_team_id))
+        if isinstance(existing_away_team, list):
+            existing_away_team = existing_away_team[0]
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -68,6 +74,8 @@ class CanceledGamesQueryProjection:
             & (Query().team1_id == team1_id)
             & (Query().team2_id == team2_id),
         )
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is None:
             table.insert(
                 {

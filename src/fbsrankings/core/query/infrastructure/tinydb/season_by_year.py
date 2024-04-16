@@ -16,6 +16,8 @@ class SeasonByYearQueryHandler:
         table = self._connection.table("seasons")
 
         item = table.get(Query().year == query.year)
+        if isinstance(item, list):
+            item = item[0]
 
         return (
             SeasonByYearResult(UUID(item["id_"]), item["year"])

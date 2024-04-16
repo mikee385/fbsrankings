@@ -17,6 +17,8 @@ class GameByIDQueryHandler:
         table = self._connection.table("games")
 
         item = table.get(Query().id_ == str(query.id_))
+        if isinstance(item, list):
+            item = item[0]
 
         return (
             GameByIDResult(

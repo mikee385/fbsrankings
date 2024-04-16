@@ -33,6 +33,8 @@ class GameRankingBySeasonWeekQueryProjection:
 
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -43,6 +45,8 @@ class GameRankingBySeasonWeekQueryProjection:
         values = []
         for value in event.values:
             existing_game = game_table.get(Query().id_ == str(value.id_))
+            if isinstance(existing_game, list):
+                existing_game = existing_game[0]
             if existing_game is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
@@ -75,6 +79,8 @@ class GameRankingBySeasonWeekQueryProjection:
             & (Query().season_id == str(event.season_id))
             & (Query().week == event.week),
         )
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is None:
             table.insert(
                 {
@@ -110,6 +116,8 @@ class GameRankingBySeasonWeekQueryHandler:
             & (Query().season_id == str(query.season_id))
             & (Query().week == query.week),
         )
+        if isinstance(item, list):
+            item = item[0]
         return (
             GameRankingBySeasonWeekResult(
                 UUID(item["id_"]),

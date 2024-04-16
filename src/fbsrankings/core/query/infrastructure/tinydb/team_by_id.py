@@ -16,6 +16,8 @@ class TeamByIDQueryHandler:
         table = self._connection.table("teams")
 
         item = table.get(Query().id_ == str(query.id_))
+        if isinstance(item, list):
+            item = item[0]
 
         return (
             TeamByIDResult(UUID(item["id_"]), item["name"])

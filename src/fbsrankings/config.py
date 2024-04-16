@@ -23,10 +23,10 @@ class ConfigQueryStorageType(str, Enum):
 
 class Config(BaseModel):
     command_storage_type: ConfigCommandStorageType
-    command_storage_file: Optional[Union[Path, Literal[":memory:"]]]
+    command_storage_file: Optional[Union[Path, Literal[":memory:"]]] = None
 
     query_storage_type: ConfigQueryStorageType
-    query_storage_file: Optional[Union[Path, Literal[":memory:"]]]
+    query_storage_file: Optional[Union[Path, Literal[":memory:"]]] = None
 
     alternate_names: Optional[Dict[str, str]]
 

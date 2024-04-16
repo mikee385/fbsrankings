@@ -36,6 +36,8 @@ class LatestSeasonWeekQueryProjection:
     def project_created(self, event: GameCreatedEvent) -> None:
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -44,6 +46,8 @@ class LatestSeasonWeekQueryProjection:
 
         season_count_table = self._connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
+        if isinstance(season_count, list):
+            season_count = season_count[0]
         if season_count is not None:
             season_count_table.update(
                 {"scheduled_count": season_count["scheduled_count"] + 1},
@@ -64,6 +68,8 @@ class LatestSeasonWeekQueryProjection:
         week_count = week_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
+        if isinstance(week_count, list):
+            week_count = week_count[0]
         if week_count is not None:
             week_table.update(
                 {"scheduled_count": week_count["scheduled_count"] + 1},
@@ -86,6 +92,8 @@ class LatestSeasonWeekQueryProjection:
     def project_canceled(self, event: GameCanceledEvent) -> None:
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -94,6 +102,8 @@ class LatestSeasonWeekQueryProjection:
 
         season_count_table = self._connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
+        if isinstance(season_count, list):
+            season_count = season_count[0]
         if season_count is not None:
             season_count_table.update(
                 {"canceled_count": season_count["canceled_count"] + 1},
@@ -114,6 +124,8 @@ class LatestSeasonWeekQueryProjection:
         week_count = week_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
+        if isinstance(week_count, list):
+            week_count = week_count[0]
         if week_count is not None:
             week_table.update(
                 {"canceled_count": week_count["canceled_count"] + 1},
@@ -136,6 +148,8 @@ class LatestSeasonWeekQueryProjection:
     def project_completed(self, event: GameCompletedEvent) -> None:
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -144,6 +158,8 @@ class LatestSeasonWeekQueryProjection:
 
         season_count_table = self._connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
+        if isinstance(season_count, list):
+            season_count = season_count[0]
         if season_count is not None:
             season_count_table.update(
                 {"completed_count": season_count["completed_count"] + 1},
@@ -164,6 +180,8 @@ class LatestSeasonWeekQueryProjection:
         week_count = week_count_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
+        if isinstance(week_count, list):
+            week_count = week_count[0]
         if week_count is not None:
             week_count_table.update(
                 {"completed_count": week_count["completed_count"] + 1},
@@ -186,6 +204,8 @@ class LatestSeasonWeekQueryProjection:
     def project_rescheduled(self, event: GameRescheduledEvent) -> None:
         season_table = self._connection.table("seasons")
         existing_season = season_table.get(Query().id_ == str(event.season_id))
+        if isinstance(existing_season, list):
+            existing_season = existing_season[0]
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -198,6 +218,8 @@ class LatestSeasonWeekQueryProjection:
             (Query().season_id == str(event.season_id))
             & (Query().week == event.old_week),
         )
+        if isinstance(old_week_count, list):
+            old_week_count = old_week_count[0]
         if old_week_count is not None:
             week_count_table.update(
                 {"scheduled_count": old_week_count["scheduled_count"] - 1},
@@ -207,6 +229,8 @@ class LatestSeasonWeekQueryProjection:
         new_week_count = week_count_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
+        if isinstance(new_week_count, list):
+            new_week_count = new_week_count[0]
         if new_week_count is not None:
             week_count_table.update(
                 {"scheduled_count": new_week_count["scheduled_count"] + 1},
@@ -300,6 +324,8 @@ class LatestSeasonWeekQueryHandler:
                         existing_season = season_table.get(
                             Query().id_ == week["season_id"],
                         )
+                        if isinstance(existing_season, list):
+                            existing_season = existing_season[0]
                         if existing_season is None:
                             raise RuntimeError(
                                 "Query database is out of sync with master database. "

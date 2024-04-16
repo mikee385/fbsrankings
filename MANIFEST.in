@@ -4,9 +4,7 @@ include .pre-commit-config.yaml
 include LICENSE
 include Makefile
 include README.md
-include requirements.txt
-include requirements-dev.in
-include requirements-dev.txt
+include requirements/*
 include src/fbsrankings/py.typed
 include src/fbsrankings/fbsrankings.ini
 recursive-include tests *.py

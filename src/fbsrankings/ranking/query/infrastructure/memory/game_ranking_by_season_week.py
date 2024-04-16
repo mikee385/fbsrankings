@@ -28,7 +28,6 @@ class GameRankingBySeasonWeekQueryHandler:
         if ranking is not None:
             season = self._storage.season.get(ranking.season_id)
             if season is not None:
-
                 values = []
                 for value in ranking.values:
                     game = self._storage.game.get(value.id_)

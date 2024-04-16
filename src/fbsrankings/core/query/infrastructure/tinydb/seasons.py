@@ -24,6 +24,8 @@ class SeasonsQueryProjection:
         table = self._connection.table("seasons")
 
         existing = table.get(Query().year == event.year)
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is None:
             table.insert({"id_": str(event.id_), "year": event.year})
 

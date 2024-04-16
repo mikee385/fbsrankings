@@ -24,6 +24,8 @@ class TeamsQueryProjection:
         table = self._connection.table("teams")
 
         existing = table.get(Query().name == event.name)
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is None:
             table.insert({"id_": str(event.id_), "name": event.name})
 

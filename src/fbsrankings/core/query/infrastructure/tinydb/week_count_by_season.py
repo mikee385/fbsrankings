@@ -24,6 +24,8 @@ class WeekCountBySeasonQueryProjection:
         table = self._connection.table("week_count_by_season")
 
         existing = table.get(Query().season_id == str(event.season_id))
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is not None:
             if event.week > existing["count"]:
                 table.update({"count": event.week}, doc_ids=[existing.doc_id])
@@ -47,6 +49,8 @@ class WeekCountBySeasonQueryHandler:
         table = self._connection.table("week_count_by_season")
 
         item = table.get(Query().season_id == str(query.season_id))
+        if isinstance(item, list):
+            item = item[0]
 
         return (
             WeekCountBySeasonResult(UUID(item["season_id"]), item["count"])

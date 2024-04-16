@@ -134,7 +134,7 @@ class Ranking(Generic[T]):
         return self._values
 
 
-class TeamRankingCalculator:
+class TeamRankingCalculator:  # noqa: PIE798
     @staticmethod
     def to_values(
         season_data: SeasonData,
@@ -200,7 +200,7 @@ class TeamRankingRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class GameRankingCalculator:
+class GameRankingCalculator:  # noqa: PIE798
     @staticmethod
     def to_values(
         season_data: SeasonData,

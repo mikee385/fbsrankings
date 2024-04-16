@@ -1,3 +1,5 @@
+python_version = Python36
+
 .PHONY:
     init
     install
@@ -19,10 +21,12 @@ init:
     pip install wheel --upgrade
 
 init-dev:
-    python -m venv env/dev --clear
-    env\dev\Scripts\activate
+    python -m venv env/$(python_version)/dev --clear
+    env\$(python_version)\dev\Scripts\activate
     pip install py-make
-    pymake install-dev
+    pip install pip-tools
+    pip install sort-requirements
+    pymake upgrade
 
 install:
     init
@@ -32,29 +36,25 @@ install-test:
     init
     pip install .[test]
 
-install-dev:
-    init
-    pip install -r requirements-dev.txt
-
 upgrade:
     init
-    pip-compile --output-file=requirements.txt setup.py --upgrade
-    sort-requirements requirements.txt
+    pip-compile --output-file=requirements/$(python_version).txt setup.py --upgrade
+    sort-requirements requirements/$(python_version).txt
     python -c "f = open('requirements-dev.in', 'w'); f.write('-e .[dev]'); f.close()"
-    pip-compile --output-file=requirements-dev.txt requirements-dev.in --upgrade
+    pip-compile --output-file=requirements/$(python_version)-dev.txt requirements-dev.in --upgrade
     python -c "import os; os.remove('requirements-dev.in')"
     python -c "\
 import re; \
 p = re.compile('file://[^\r\n]+fbsrankings'); \
-filename = 'requirements-dev.txt'; \
+filename = 'requirements/$(python_version)-dev.txt'; \
 f = open(filename); \
 file_text = p.sub('.                    ', f.read()); \
 f.close(); \
 f = open(filename, 'w'); \
 f.write(file_text); \
 f.close(); "
-    sort-requirements requirements-dev.txt
-    pip-sync requirements-dev.txt
+    sort-requirements requirements/$(python_version)-dev.txt
+    pip-sync requirements/$(python_version)-dev.txt
 
 check:
     isort src tests setup.py
@@ -87,7 +87,7 @@ clean:
     python -c "import shutil; shutil.rmtree('build', True)"
     python -c "import shutil; shutil.rmtree('dist', True)"
     python -c "import shutil; shutil.rmtree('src/fbsrankings.egg-info', True)"
-    python -m venv env/install --clear
+    python -m venv env/$(python_version)/install --clear
 
 build:
     clean

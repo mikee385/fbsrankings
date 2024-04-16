@@ -24,6 +24,8 @@ class GameCountBySeasonQueryProjection:
         table = self._connection.table("game_count_by_season")
 
         existing = table.get(Query().season_id == str(event.season_id))
+        if isinstance(existing, list):
+            existing = existing[0]
         if existing is not None:
             table.update({"count": existing["count"] + 1}, doc_ids=[existing.doc_id])
         else:
@@ -46,6 +48,8 @@ class GameCountBySeasonQueryHandler:
         table = self._connection.table("game_count_by_season")
 
         item = table.get(Query().season_id == str(query.season_id))
+        if isinstance(item, list):
+            item = item[0]
 
         return (
             GameCountBySeasonResult(UUID(item["season_id"]), item["count"])
