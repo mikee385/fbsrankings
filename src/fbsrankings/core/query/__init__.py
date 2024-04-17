@@ -1,4 +1,5 @@
 """Query classes for the core module of the fbsrankings package"""
+
 from .query.affiliation_count_by_season import AffiliationCountBySeasonQuery
 from .query.affiliation_count_by_season import AffiliationCountBySeasonResult
 from .query.affiliations_by_season import AffiliationBySeasonResult

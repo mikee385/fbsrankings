@@ -1,4 +1,5 @@
 """TinyDB storage classes for the fbsrankings package"""
+
 from .storage import Storage
 
 

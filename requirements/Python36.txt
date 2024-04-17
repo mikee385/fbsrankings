@@ -8,17 +8,17 @@ beautifulsoup4==4.12.3
     # via fbsrankings (setup.py)
 colorama==0.4.5
     # via tqdm
-dataclasses==0.7 ; python_version < "3.7"
+dataclasses==0.7 ; python_version >= "3.6" and python_version < "3.7"
     # via
     #   fbsrankings (setup.py)
     #   pydantic
 html5lib==1.1
     # via fbsrankings (setup.py)
-importlib-metadata==4.2.0 ; python_version < "3.7"
+importlib-metadata==4.2.0 ; python_version >= "3.6" and python_version < "3.8"
     # via
     #   fbsrankings (setup.py)
     #   prettytable
-importlib-resources==5.2.3 ; python_version < "3.7"
+importlib-resources==5.2.3 ; python_version >= "3.6" and python_version < "3.7"
     # via
     #   fbsrankings (setup.py)
     #   tqdm

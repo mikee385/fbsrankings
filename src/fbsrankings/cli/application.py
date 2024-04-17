@@ -653,10 +653,12 @@ class Application(ContextManager["Application"]):
                     game.home_team_name,
                     away_team.rank,
                     game.away_team_name,
-                    f"{game.home_team_score}-{game.away_team_score}"
-                    if game.home_team_score is not None
-                    and game.away_team_score is not None
-                    else "",
+                    (
+                        f"{game.home_team_score}-{game.away_team_score}"
+                        if game.home_team_score is not None
+                        and game.away_team_score is not None
+                        else ""
+                    ),
                     game.value,
                 ],
             )

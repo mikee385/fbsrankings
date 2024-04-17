@@ -1,4 +1,5 @@
 """Common classes and utilities for commands, queries, and events"""
+
 from .command import Command
 from .command import CommandBus
 from .command import CommandHandler

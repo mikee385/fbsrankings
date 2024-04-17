@@ -16,12 +16,12 @@ _T_contra = TypeVar("_T_contra", contravariant=True)
 
 class SupportsDunderLT(Protocol[_T_contra]):
     def __lt__(self, _: _T_contra) -> bool:
-        ...
+        raise NotImplementedError
 
 
 class SupportsDunderGT(Protocol[_T_contra]):
     def __gt__(self, _: _T_contra) -> bool:
-        ...
+        raise NotImplementedError
 
 
 SupportsRichComparison = Union[SupportsDunderLT[Any], SupportsDunderGT[Any]]

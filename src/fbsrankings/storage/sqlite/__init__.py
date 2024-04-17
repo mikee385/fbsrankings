@@ -1,4 +1,5 @@
 """Sqlite storage classes for the fbsrankings package"""
+
 from .affiliation import AffiliationTable
 from .game import GameTable
 from .ranking import GameRankingValueTable

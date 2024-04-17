@@ -1,4 +1,5 @@
 """Memory storage classes for the fbsrankings package"""
+
 from .affiliation import AffiliationDto
 from .affiliation import AffiliationStorage
 from .game import GameDto

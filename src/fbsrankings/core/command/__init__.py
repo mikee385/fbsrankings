@@ -1,4 +1,5 @@
 """Command classes for the core module of the fbsrankings package"""
+
 from .command.import_season_by_year import ImportSeasonByYearCommand
 from .command_bus import CommandBus
 from .domain.service.validator import AffiliationDataValidationError

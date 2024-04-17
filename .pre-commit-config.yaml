@@ -94,7 +94,7 @@ repos:
     -   id: mypy
         additional_dependencies:
         -   pydantic<=1.9.2
-        -   pytest
+        -   pytest<=7.4.4
         -   tinydb
         -   types-beautifulsoup4
         -   types-dataclasses

@@ -1,4 +1,5 @@
 """Query classes for the ranking module of the fbsrankings package"""
+
 from .query.game_ranking_by_season_week import GameRankingBySeasonWeekQuery
 from .query.game_ranking_by_season_week import GameRankingBySeasonWeekResult
 from .query.game_ranking_by_season_week import GameRankingValueBySeasonWeekResult

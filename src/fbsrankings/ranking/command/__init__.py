@@ -1,4 +1,5 @@
 """Command classes for the ranking module of the fbsrankings package"""
+
 from .command.calculate_rankings_for_season import CalculateRankingsForSeasonCommand
 from .command_bus import CommandBus
 from .event.ranking import GameRankingCalculatedEvent
