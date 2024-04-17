@@ -23,7 +23,7 @@ bandit==1.7.8
     # via fbsrankings
 beautifulsoup4==4.12.3
     # via fbsrankings
-black==24.4.0
+black==24.3.0
     # via fbsrankings
 build==1.2.1
     # via

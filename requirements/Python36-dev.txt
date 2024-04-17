@@ -22,7 +22,7 @@ bandit==1.7.1
     # via fbsrankings
 beautifulsoup4==4.12.3
     # via fbsrankings
-black==22.8.0
+black==24.3.0
     # via fbsrankings
 bleach==4.1.0
     # via readme-renderer
