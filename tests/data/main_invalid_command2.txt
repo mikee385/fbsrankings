@@ -1,0 +1,1 @@
+invalid choice: 'invalid' (choose from 'import', 'latest', 'seasons', 'teams', 'games')

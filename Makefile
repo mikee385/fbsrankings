@@ -1,4 +1,4 @@
-python_version = Python38
+python_version = Python36
 
 .PHONY:
     init

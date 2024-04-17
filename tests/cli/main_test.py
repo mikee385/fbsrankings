@@ -210,9 +210,17 @@ def test_main_invalid_command(
     test_path: Path,
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_invalid_command.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_err = expected_file.read()
+    files = _copy_files(
+        data_path,
+        test_path,
+        ["main_invalid_command1.txt", "main_invalid_command2.txt"],
+    )
+    with files[0].open(mode="r", encoding="utf-8") as expected_file1, files[1].open(
+        mode="r",
+        encoding="utf-8",
+    ) as expected_file2:
+        expected_err1 = expected_file1.read().strip()
+        expected_err2 = expected_file2.read().strip()
 
     test_config, _ = sqlite_file_config
     with pytest.raises(SystemExit) as exit_result:
@@ -222,7 +230,8 @@ def test_main_invalid_command(
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == ""
-    assert captured_err == expected_err
+    assert expected_err1 in captured_err
+    assert expected_err2 in captured_err
 
 
 def test_main_import_sqlite_file(
