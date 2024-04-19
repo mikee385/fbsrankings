@@ -39,21 +39,10 @@ upgrade:
     init
     pip-compile --output-file=requirements/$(python_version).txt setup.py --upgrade
     sort-requirements requirements/$(python_version).txt
-    python -c "f = open('requirements-dev.in', 'w'); f.write('-e .[dev]'); f.close()"
-    pip-compile --output-file=requirements/$(python_version)-dev.txt requirements-dev.in --upgrade
-    python -c "import os; os.remove('requirements-dev.in')"
-    python -c "\
-import re; \
-p = re.compile('file://[^\r\n]+fbsrankings'); \
-filename = 'requirements/$(python_version)-dev.txt'; \
-f = open(filename); \
-file_text = p.sub('.                    ', f.read()); \
-f.close(); \
-f = open(filename, 'w'); \
-f.write(file_text); \
-f.close(); "
+    pip-compile --extra=dev --output-file=requirements/$(python_version)-dev.txt setup.py --upgrade
     sort-requirements requirements/$(python_version)-dev.txt
     pip-sync requirements/$(python_version)-dev.txt
+    pip install -e .
 
 check:
     isort src tests setup.py
