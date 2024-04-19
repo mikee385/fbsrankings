@@ -12,7 +12,7 @@ from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
 from fbsrankings.core.command.event.affiliation import (
     AffiliationEventHandler as BaseEventHandler,
 )
-from fbsrankings.enum import Subdivision
+from fbsrankings.enums import Subdivision
 from fbsrankings.storage.memory import AffiliationDto
 from fbsrankings.storage.memory import AffiliationStorage
 

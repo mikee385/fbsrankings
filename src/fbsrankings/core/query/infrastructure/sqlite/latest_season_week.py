@@ -10,7 +10,7 @@ from pypika.functions import Sum
 
 from fbsrankings.core.query.query.latest_season_week import LatestSeasonWeekQuery
 from fbsrankings.core.query.query.latest_season_week import LatestSeasonWeekResult
-from fbsrankings.enum import GameStatus
+from fbsrankings.enums import GameStatus
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 

@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 import shutil
+import sys
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,21 @@ def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence
     for file in files:
         src_path = src_dir / file
         dest_path = dest_dir / file
+
+        max_version = (3, 12)
+        min_version = (3, 6)
+        if sys.version_info > max_version:
+            current_version = max_version
+        elif sys.version_info < min_version:
+            current_version = min_version
+        else:
+            current_version = (sys.version_info.major, sys.version_info.minor)
+
+        for minor in range(current_version[1], min_version[1] - 1, -1):
+            version_path = src_dir / f"Python{current_version[0]}{minor}" / file
+            if version_path.exists():
+                src_path = version_path
+                break
 
         shutil.copyfile(src_path, dest_path)
         file_paths.append(dest_path)
@@ -210,17 +226,9 @@ def test_main_invalid_command(
     test_path: Path,
     sqlite_file_config: Tuple[Path, Path],
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_invalid_command1.txt", "main_invalid_command2.txt"],
-    )
-    with files[0].open(mode="r", encoding="utf-8") as expected_file1, files[1].open(
-        mode="r",
-        encoding="utf-8",
-    ) as expected_file2:
-        expected_err1 = expected_file1.read().strip()
-        expected_err2 = expected_file2.read().strip()
+    files = _copy_files(data_path, test_path, ["main_invalid_command.txt"])
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
+        expected_err = expected_file.read()
 
     test_config, _ = sqlite_file_config
     with pytest.raises(SystemExit) as exit_result:
@@ -230,8 +238,7 @@ def test_main_invalid_command(
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == ""
-    assert expected_err1 in captured_err
-    assert expected_err2 in captured_err
+    assert expected_err == captured_err
 
 
 def test_main_import_sqlite_file(

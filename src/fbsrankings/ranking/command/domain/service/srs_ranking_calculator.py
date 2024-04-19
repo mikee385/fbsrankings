@@ -5,8 +5,8 @@ from uuid import UUID
 import numpy
 
 from fbsrankings.core.query import GameBySeasonResult
-from fbsrankings.enum import GameStatus
-from fbsrankings.enum import Subdivision
+from fbsrankings.enums import GameStatus
+from fbsrankings.enums import Subdivision
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking

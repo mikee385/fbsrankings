@@ -11,7 +11,7 @@ from fbsrankings.core.query.query.postseason_game_count_by_season import (
 from fbsrankings.core.query.query.postseason_game_count_by_season import (
     PostseasonGameCountBySeasonResult,
 )
-from fbsrankings.enum import SeasonSection
+from fbsrankings.enums import SeasonSection
 from fbsrankings.storage.tinydb import Storage
 
 

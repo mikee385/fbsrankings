@@ -5,11 +5,11 @@ from typing import Sequence
 
 from fbsrankings import __version__
 from fbsrankings.cli.application import Application
+from fbsrankings.cli.arg_types import FileType
+from fbsrankings.cli.arg_types import NumberOrAllType
+from fbsrankings.cli.arg_types import SeasonRangeType
+from fbsrankings.cli.arg_types import SeasonWeekType
 from fbsrankings.cli.error import print_err
-from fbsrankings.cli.types import FileType
-from fbsrankings.cli.types import NumberOrAllType
-from fbsrankings.cli.types import SeasonRangeType
-from fbsrankings.cli.types import SeasonWeekType
 
 
 # COMMON-------------------------------------

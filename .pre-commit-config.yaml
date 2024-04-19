@@ -93,12 +93,12 @@ repos:
     hooks:
     -   id: mypy
         additional_dependencies:
-        -   pydantic<=1.9.2
-        -   pytest<=7.4.4
+        -   pydantic<2.0.0
+        -   pytest<8.0.0
         -   tinydb
         -   types-beautifulsoup4
         -   types-dataclasses
         -   types-prettytable
-        -   types-setuptools
+        -   types-setuptools<69.0.0.0
         -   types-tqdm
         args: [--strict]

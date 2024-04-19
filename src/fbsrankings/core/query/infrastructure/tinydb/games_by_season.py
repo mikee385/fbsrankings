@@ -12,7 +12,7 @@ from fbsrankings.core.command import GameRescheduledEvent
 from fbsrankings.core.query.query.games_by_season import GameBySeasonResult
 from fbsrankings.core.query.query.games_by_season import GamesBySeasonQuery
 from fbsrankings.core.query.query.games_by_season import GamesBySeasonResult
-from fbsrankings.enum import GameStatus
+from fbsrankings.enums import GameStatus
 from fbsrankings.storage.tinydb import Storage
 
 

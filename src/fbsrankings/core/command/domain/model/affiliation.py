@@ -9,7 +9,7 @@ from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
-from fbsrankings.enum import Subdivision
+from fbsrankings.enums import Subdivision
 
 
 AffiliationID = NewType("AffiliationID", UUID)

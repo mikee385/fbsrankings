@@ -12,9 +12,9 @@ from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.enum import GameStatus
-from fbsrankings.enum import SeasonSection
-from fbsrankings.enum import Subdivision
+from fbsrankings.enums import GameStatus
+from fbsrankings.enums import SeasonSection
+from fbsrankings.enums import Subdivision
 
 
 class ValidationError(Event, ValueError):

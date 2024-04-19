@@ -11,7 +11,7 @@ from fbsrankings.core.query.query.affiliation_count_by_season import (
 from fbsrankings.core.query.query.affiliation_count_by_season import (
     AffiliationCountBySeasonResult,
 )
-from fbsrankings.enum import Subdivision
+from fbsrankings.enums import Subdivision
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

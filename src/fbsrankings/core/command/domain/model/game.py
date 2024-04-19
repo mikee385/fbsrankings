@@ -14,8 +14,8 @@ from fbsrankings.core.command.event.game import GameCompletedEvent
 from fbsrankings.core.command.event.game import GameCreatedEvent
 from fbsrankings.core.command.event.game import GameNotesUpdatedEvent
 from fbsrankings.core.command.event.game import GameRescheduledEvent
-from fbsrankings.enum import GameStatus
-from fbsrankings.enum import SeasonSection
+from fbsrankings.enums import GameStatus
+from fbsrankings.enums import SeasonSection
 
 
 GameID = NewType("GameID", UUID)

@@ -1,7 +1,7 @@
 from typing import Dict
 from uuid import UUID
 
-from fbsrankings.enum import GameStatus
+from fbsrankings.enums import GameStatus
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID

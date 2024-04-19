@@ -8,7 +8,7 @@ from pypika import Query
 from fbsrankings.core.query.query.canceled_games import CanceledGameResult
 from fbsrankings.core.query.query.canceled_games import CanceledGamesQuery
 from fbsrankings.core.query.query.canceled_games import CanceledGamesResult
-from fbsrankings.enum import GameStatus
+from fbsrankings.enums import GameStatus
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

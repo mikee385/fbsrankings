@@ -53,7 +53,7 @@ from fbsrankings.core.query import SeasonsQuery
 from fbsrankings.core.query import TeamByIDQuery
 from fbsrankings.core.query import TeamCountBySeasonQuery
 from fbsrankings.core.query import WeekCountBySeasonQuery
-from fbsrankings.enum import GameStatus
+from fbsrankings.enums import GameStatus
 from fbsrankings.ranking.command import CalculateRankingsForSeasonCommand
 from fbsrankings.ranking.command import CommandBus as RankingCommandBus
 from fbsrankings.ranking.command import GameRankingCalculatedEvent

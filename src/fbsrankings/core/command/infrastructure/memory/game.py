@@ -12,8 +12,8 @@ from fbsrankings.core.command.event.game import GameCreatedEvent
 from fbsrankings.core.command.event.game import GameEventHandler as BaseEventHandler
 from fbsrankings.core.command.event.game import GameNotesUpdatedEvent
 from fbsrankings.core.command.event.game import GameRescheduledEvent
-from fbsrankings.enum import GameStatus
-from fbsrankings.enum import SeasonSection
+from fbsrankings.enums import GameStatus
+from fbsrankings.enums import SeasonSection
 from fbsrankings.storage.memory import GameDto
 from fbsrankings.storage.memory import GameStorage
 
