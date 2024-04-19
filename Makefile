@@ -1,4 +1,4 @@
-python_version = Python310
+python_version = Python36
 
 .PHONY:
     init
@@ -23,10 +23,9 @@ init:
 init-dev:
     python -m venv env/$(python_version)/dev --clear
     env\$(python_version)\dev\Scripts\activate
-    pip install py-make
-    pip install pip-tools
-    pip install sort-requirements
-    pymake upgrade
+    python -m pip install pip --upgrade
+    pip install setuptools wheel py-make pip-tools sort-requirements --upgrade
+    upgrade
 
 install:
     init
