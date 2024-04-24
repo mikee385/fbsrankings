@@ -2,15 +2,17 @@ python_version = Python36
 
 .PHONY:
     init
+    init-dev
     install
     install-test
-    install-dev
     upgrade
     check
     pre-commit
     test
     test-types
     test-coverage
+    run
+    profile
     clean
     build
     upload
@@ -70,6 +72,10 @@ test-coverage:
 
 run:
     fbsrankings import 2012-2013 --drop --check --trace
+
+profile:
+    python -c "import cProfile; from fbsrankings.cli.main import main; cProfile.run(\"main(['import', '2012-2013', '--drop', '--check'])\", \".profiling\")"
+    python -c "import pstats; stats = pstats.Stats('.profiling').sort_stats('cumtime'); stats.print_stats()"
 
 clean:
     python -c "import shutil; shutil.rmtree('build', True)"
