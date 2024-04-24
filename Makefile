@@ -69,7 +69,7 @@ test-coverage:
     coverage report
 
 run:
-    python -c "from fbsrankings.__main__ import main; main(['import', '2012-2013', '--drop', '--check', '--trace'])"
+    fbsrankings import 2012-2013 --drop --check --trace
 
 clean:
     python -c "import shutil; shutil.rmtree('build', True)"
