@@ -71,7 +71,7 @@ class GamesBySeasonQueryProjection:
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Home Team {event.away_team_id} was not found for game {event.id_}",
+                f"Away Team {event.away_team_id} was not found for game {event.id_}",
             )
 
         if event.home_team_id < event.away_team_id:
