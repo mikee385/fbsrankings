@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from tinydb import Query
+from tinydb.table import Document
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command import GameCanceledEvent
@@ -18,7 +19,7 @@ from fbsrankings.storage.tinydb import Storage
 
 class GamesBySeasonQueryProjection:
     def __init__(self, storage: Storage, event_bus: EventBus) -> None:
-        self._connection = storage.connection
+        self._storage = storage
         self._event_bus = event_bus
 
         self._event_bus.register_handler(GameCreatedEvent, self.project_created)
@@ -44,82 +45,73 @@ class GamesBySeasonQueryProjection:
         )
 
     def project_created(self, event: GameCreatedEvent) -> None:
-        table = self._connection.table("games")
-
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found for game {event.id_}",
             )
 
-        team_table = self._connection.table("teams")
-        existing_home_team = team_table.get(Query().id_ == str(event.home_team_id))
-        if isinstance(existing_home_team, list):
-            existing_home_team = existing_home_team[0]
+        existing_home_team = self._storage.cache_team_by_id.get(str(event.home_team_id))
         if existing_home_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Home Team {event.home_team_id} was not found for game {event.id_}",
             )
-        existing_away_team = team_table.get(Query().id_ == str(event.away_team_id))
-        if isinstance(existing_away_team, list):
-            existing_away_team = existing_away_team[0]
+
+        existing_away_team = self._storage.cache_team_by_id.get(str(event.away_team_id))
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Away Team {event.away_team_id} was not found for game {event.id_}",
             )
 
-        if event.home_team_id < event.away_team_id:
-            team1_id = event.home_team_id
-            team2_id = event.away_team_id
-        else:
-            team1_id = event.away_team_id
-            team2_id = event.home_team_id
+        item = {
+            "id_": str(event.id_),
+            "season_id": str(event.season_id),
+            "year": existing_season["year"],
+            "week": event.week,
+            "date": event.date.strftime("%Y-%m-%d"),
+            "season_section": event.season_section,
+            "home_team_id": str(event.home_team_id),
+            "home_team_name": existing_home_team["name"],
+            "away_team_id": str(event.away_team_id),
+            "away_team_name": existing_away_team["name"],
+            "home_team_score": None,
+            "away_team_score": None,
+            "status": GameStatus.SCHEDULED.name,
+            "notes": event.notes,
+        }
 
-        existing = table.get(
-            (Query().season_id == str(event.season_id))
-            & (Query().week == event.week)
-            & (Query().team1_id == str(team1_id))
-            & (Query().team2_id == str(team2_id)),
-        )
-        if isinstance(existing, list):
-            existing = existing[0]
-        if existing is None:
-            table.insert(
-                {
-                    "id_": str(event.id_),
-                    "season_id": str(event.season_id),
-                    "year": existing_season["year"],
-                    "week": event.week,
-                    "date": event.date.strftime("%Y-%m-%d"),
-                    "season_section": event.season_section,
-                    "home_team_id": str(event.home_team_id),
-                    "home_team_name": existing_home_team["name"],
-                    "away_team_id": str(event.away_team_id),
-                    "away_team_name": existing_away_team["name"],
-                    "home_team_score": None,
-                    "away_team_score": None,
-                    "status": GameStatus.SCHEDULED.name,
-                    "notes": event.notes,
-                },
-            )
-
-        elif existing["id_"] != str(event.id_):
+        existing_by_id = self._storage.cache_game_by_id.get(str(event.id_))
+        if existing_by_id is not None and (
+            existing_by_id["season_id"] != item["season_id"]
+            or existing_by_id["week"] != item["week"]
+            or existing_by_id["home_team_id"] != item["home_team_id"]
+            or existing_by_id["away_team_id"] != item["away_team_id"]
+        ):
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"ID for game does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"Data for game {event.id_} does not match: "
+                f"{existing_by_id['season_id']} vs. {item['season_id']}, ",
+                f"{existing_by_id['week']} vs. {item['week']}, ",
+                f"{existing_by_id['home_team_id']} vs. {item['home_team_id']}, ",
+                f"{existing_by_id['away_team_id']} vs. {item['away_team_id']}",
             )
 
-    def project_canceled(self, event: GameCanceledEvent) -> None:
-        table = self._connection.table("games")
+        doc_id = self._storage.connection.table("games").insert(item)
+        document = Document(item, doc_id)
+        self._storage.cache_game_by_id[str(event.id_)] = document
 
-        existing = table.update(
+    def project_canceled(self, event: GameCanceledEvent) -> None:
+        existing_by_id = self._storage.cache_game_by_id.get(str(event.id_))
+        if existing_by_id is None:
+            raise RuntimeError(
+                "Query database is out of sync with master database. "
+                f"Game {event.id_} was not found",
+            )
+
+        existing = self._storage.connection.table("games").update(
             {"status": GameStatus.CANCELED.name},
             Query().id_ == str(event.id_),
         )
@@ -130,10 +122,17 @@ class GamesBySeasonQueryProjection:
                 f"Game {event.id_} was not found",
             )
 
-    def project_completed(self, event: GameCompletedEvent) -> None:
-        table = self._connection.table("games")
+        existing_by_id["status"] = GameStatus.CANCELED.name
 
-        existing = table.update(
+    def project_completed(self, event: GameCompletedEvent) -> None:
+        existing_by_id = self._storage.cache_game_by_id.get(str(event.id_))
+        if existing_by_id is None:
+            raise RuntimeError(
+                "Query database is out of sync with master database. "
+                f"Game {event.id_} was not found",
+            )
+
+        existing = self._storage.connection.table("games").update(
             {
                 "home_team_score": event.home_team_score,
                 "away_team_score": event.away_team_score,
@@ -148,10 +147,19 @@ class GamesBySeasonQueryProjection:
                 f"Game {event.id_} was not found",
             )
 
-    def project_rescheduled(self, event: GameRescheduledEvent) -> None:
-        table = self._connection.table("games")
+        existing_by_id["home_team_score"] = event.home_team_score
+        existing_by_id["away_team_score"] = event.away_team_score
+        existing_by_id["status"] = GameStatus.COMPLETED.name
 
-        existing = table.update(
+    def project_rescheduled(self, event: GameRescheduledEvent) -> None:
+        existing_by_id = self._storage.cache_game_by_id.get(str(event.id_))
+        if existing_by_id is None:
+            raise RuntimeError(
+                "Query database is out of sync with master database. "
+                f"Game {event.id_} was not found",
+            )
+
+        existing = self._storage.connection.table("games").update(
             {"week": event.week, "date": event.date.strftime("%Y-%m-%d")},
             Query().id_ == str(event.id_),
         )
@@ -162,10 +170,21 @@ class GamesBySeasonQueryProjection:
                 f"Game {event.id_} was not found",
             )
 
-    def project_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
-        table = self._connection.table("games")
+        existing_by_id["week"] = event.week
+        existing_by_id["date"] = event.date.strftime("%Y-%m-%d")
 
-        existing = table.update({"notes": event.notes}, Query().id_ == str(event.id_))
+    def project_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
+        existing_by_id = self._storage.cache_game_by_id.get(str(event.id_))
+        if existing_by_id is None:
+            raise RuntimeError(
+                "Query database is out of sync with master database. "
+                f"Game {event.id_} was not found",
+            )
+
+        existing = self._storage.connection.table("games").update(
+            {"notes": event.notes},
+            Query().id_ == str(event.id_),
+        )
 
         if len(existing) == 0:
             raise RuntimeError(
@@ -173,32 +192,33 @@ class GamesBySeasonQueryProjection:
                 f"Game {event.id_} was not found",
             )
 
+        existing_by_id["notes"] = event.notes
+
 
 class GamesBySeasonQueryHandler:
     def __init__(self, storage: Storage) -> None:
-        self._connection = storage.connection
+        self._storage = storage
 
     def __call__(self, query: GamesBySeasonQuery) -> GamesBySeasonResult:
-        table = self._connection.table("games")
-
-        items = [
-            GameBySeasonResult(
-                UUID(item["id_"]),
-                UUID(item["season_id"]),
-                item["year"],
-                item["week"],
-                datetime.strptime(item["date"], "%Y-%m-%d").date(),
-                item["season_section"],
-                UUID(item["home_team_id"]),
-                item["home_team_name"],
-                UUID(item["away_team_id"]),
-                item["away_team_name"],
-                item["home_team_score"],
-                item["away_team_score"],
-                item["status"],
-                item["notes"],
-            )
-            for item in table.search(Query().season_id == str(query.season_id))
-        ]
-
-        return GamesBySeasonResult(items)
+        return GamesBySeasonResult(
+            [
+                GameBySeasonResult(
+                    UUID(item["id_"]),
+                    UUID(item["season_id"]),
+                    item["year"],
+                    item["week"],
+                    datetime.strptime(item["date"], "%Y-%m-%d").date(),
+                    item["season_section"],
+                    UUID(item["home_team_id"]),
+                    item["home_team_name"],
+                    UUID(item["away_team_id"]),
+                    item["away_team_name"],
+                    item["home_team_score"],
+                    item["away_team_score"],
+                    item["status"],
+                    item["notes"],
+                )
+                for item in self._storage.cache_game_by_id.values()
+                if item["season_id"] == str(query.season_id)
+            ],
+        )

@@ -14,7 +14,7 @@ from fbsrankings.storage.tinydb import Storage
 
 class CanceledGamesQueryProjection:
     def __init__(self, storage: Storage, event_bus: EventBus) -> None:
-        self._connection = storage.connection
+        self._storage = storage
         self._event_bus = event_bus
 
         self._event_bus.register_handler(GameCanceledEvent, self.project_canceled)
@@ -31,30 +31,22 @@ class CanceledGamesQueryProjection:
         )
 
     def project_canceled(self, event: GameCanceledEvent) -> None:
-        table = self._connection.table("canceled_games")
+        table = self._storage.connection.table("canceled_games")
 
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found for game {event.id_}",
             )
 
-        team_table = self._connection.table("teams")
-        existing_home_team = team_table.get(Query().id_ == str(event.home_team_id))
-        if isinstance(existing_home_team, list):
-            existing_home_team = existing_home_team[0]
+        existing_home_team = self._storage.cache_team_by_id.get(str(event.home_team_id))
         if existing_home_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Home Team {event.home_team_id} was not found for game {event.id_}",
             )
-        existing_away_team = team_table.get(Query().id_ == str(event.away_team_id))
-        if isinstance(existing_away_team, list):
-            existing_away_team = existing_away_team[0]
+        existing_away_team = self._storage.cache_team_by_id.get(str(event.away_team_id))
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -101,7 +93,7 @@ class CanceledGamesQueryProjection:
             )
 
     def project_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
-        table = self._connection.table("games")
+        table = self._storage.connection.table("canceled_games")
 
         existing = table.update({"notes": event.notes}, Query().id_ == str(event.id_))
 

@@ -2,8 +2,6 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from tinydb import Query
-
 from fbsrankings.core.query.query.game_by_id import GameByIDQuery
 from fbsrankings.core.query.query.game_by_id import GameByIDResult
 from fbsrankings.storage.tinydb import Storage
@@ -11,14 +9,10 @@ from fbsrankings.storage.tinydb import Storage
 
 class GameByIDQueryHandler:
     def __init__(self, storage: Storage) -> None:
-        self._connection = storage.connection
+        self._storage = storage
 
     def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
-        table = self._connection.table("games")
-
-        item = table.get(Query().id_ == str(query.id_))
-        if isinstance(item, list):
-            item = item[0]
+        item = self._storage.cache_game_by_id.get(str(query.id_))
 
         return (
             GameByIDResult(

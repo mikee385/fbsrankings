@@ -19,7 +19,7 @@ from fbsrankings.storage.tinydb import Storage
 
 class TeamRankingBySeasonWeekQueryProjection:
     def __init__(self, storage: Storage, event_bus: EventBus) -> None:
-        self._connection = storage.connection
+        self._storage = storage
         self._event_bus = event_bus
 
         self._event_bus.register_handler(TeamRankingCalculatedEvent, self.project)
@@ -28,24 +28,18 @@ class TeamRankingBySeasonWeekQueryProjection:
         self._event_bus.unregister_handler(TeamRankingCalculatedEvent, self.project)
 
     def project(self, event: TeamRankingCalculatedEvent) -> None:
-        table = self._connection.table("team_ranking_by_season_week")
+        table = self._storage.connection.table("team_ranking_by_season_week")
 
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found",
             )
 
-        team_table = self._connection.table("teams")
         values = []
         for value in event.values:
-            existing_team = team_table.get(Query().id_ == str(value.id_))
-            if isinstance(existing_team, list):
-                existing_team = existing_team[0]
+            existing_team = self._storage.cache_team_by_id.get(str(value.id_))
             if existing_team is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "

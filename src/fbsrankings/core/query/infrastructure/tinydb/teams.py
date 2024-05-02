@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from tinydb import Query
+from tinydb.table import Document
 
 from fbsrankings.common import EventBus
 from fbsrankings.core.command import TeamCreatedEvent
@@ -12,7 +12,7 @@ from fbsrankings.storage.tinydb import Storage
 
 class TeamsQueryProjection:
     def __init__(self, storage: Storage, event_bus: EventBus) -> None:
-        self._connection = storage.connection
+        self._storage = storage
         self._event_bus = event_bus
 
         self._event_bus.register_handler(TeamCreatedEvent, self.project)
@@ -21,29 +21,38 @@ class TeamsQueryProjection:
         self._event_bus.unregister_handler(TeamCreatedEvent, self.project)
 
     def project(self, event: TeamCreatedEvent) -> None:
-        table = self._connection.table("teams")
+        item = {"id_": str(event.id_), "name": event.name}
 
-        existing = table.get(Query().name == event.name)
-        if isinstance(existing, list):
-            existing = existing[0]
-        if existing is None:
-            table.insert({"id_": str(event.id_), "name": event.name})
+        existing_by_id = self._storage.cache_team_by_id.get(str(event.id_))
+        if existing_by_id is not None and existing_by_id["name"] != item["name"]:
+            raise RuntimeError(
+                "Query database is out of sync with master database. "
+                f"Name for team {event.id_} does not match: "
+                f"{existing_by_id['name']} vs. {item['name']}",
+            )
 
-        elif existing["id_"] != str(event.id_):
+        existing_by_name = self._storage.cache_team_by_name.get(event.name)
+        if existing_by_name is not None and existing_by_name["id_"] != item["id_"]:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for team {event.name} does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"{existing_by_name['id_']} vs. {item['id_']}",
             )
+
+        doc_id = self._storage.connection.table("teams").insert(item)
+        document = Document(item, doc_id)
+        self._storage.cache_team_by_id[str(event.id_)] = document
+        self._storage.cache_team_by_name[event.name] = document
 
 
 class TeamsQueryHandler:
     def __init__(self, storage: Storage) -> None:
-        self._connection = storage.connection
+        self._storage = storage
 
     def __call__(self, query: TeamsQuery) -> TeamsResult:
-        table = self._connection.table("teams")
-
-        items = [TeamResult(UUID(item["id_"]), item["name"]) for item in table.all()]
-
-        return TeamsResult(items)
+        return TeamsResult(
+            [
+                TeamResult(UUID(item["id_"]), item["name"])
+                for item in self._storage.cache_team_by_id.values()
+            ],
+        )

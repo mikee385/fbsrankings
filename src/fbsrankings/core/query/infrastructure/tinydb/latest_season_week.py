@@ -16,7 +16,7 @@ from fbsrankings.storage.tinydb import Storage
 
 class LatestSeasonWeekQueryProjection:
     def __init__(self, storage: Storage, event_bus: EventBus) -> None:
-        self._connection = storage.connection
+        self._storage = storage
         self._event_bus = event_bus
 
         self._event_bus.register_handler(GameCreatedEvent, self.project_created)
@@ -34,17 +34,14 @@ class LatestSeasonWeekQueryProjection:
         )
 
     def project_created(self, event: GameCreatedEvent) -> None:
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found",
             )
 
-        season_count_table = self._connection.table("game_status_season_count")
+        season_count_table = self._storage.connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
         if isinstance(season_count, list):
             season_count = season_count[0]
@@ -64,7 +61,7 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        week_table = self._connection.table("game_status_week_count")
+        week_table = self._storage.connection.table("game_status_week_count")
         week_count = week_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
@@ -87,20 +84,17 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        self._connection.drop_table("latest_season_week")
+        self._storage.connection.drop_table("latest_season_week")
 
     def project_canceled(self, event: GameCanceledEvent) -> None:
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found",
             )
 
-        season_count_table = self._connection.table("game_status_season_count")
+        season_count_table = self._storage.connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
         if isinstance(season_count, list):
             season_count = season_count[0]
@@ -120,7 +114,7 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        week_table = self._connection.table("game_status_week_count")
+        week_table = self._storage.connection.table("game_status_week_count")
         week_count = week_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
@@ -143,20 +137,17 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        self._connection.drop_table("latest_season_week")
+        self._storage.connection.drop_table("latest_season_week")
 
     def project_completed(self, event: GameCompletedEvent) -> None:
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found",
             )
 
-        season_count_table = self._connection.table("game_status_season_count")
+        season_count_table = self._storage.connection.table("game_status_season_count")
         season_count = season_count_table.get(Query().season_id == str(event.season_id))
         if isinstance(season_count, list):
             season_count = season_count[0]
@@ -176,7 +167,7 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        week_count_table = self._connection.table("game_status_week_count")
+        week_count_table = self._storage.connection.table("game_status_week_count")
         week_count = week_count_table.get(
             (Query().season_id == str(event.season_id)) & (Query().week == event.week),
         )
@@ -199,20 +190,17 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        self._connection.drop_table("latest_season_week")
+        self._storage.connection.drop_table("latest_season_week")
 
     def project_rescheduled(self, event: GameRescheduledEvent) -> None:
-        season_table = self._connection.table("seasons")
-        existing_season = season_table.get(Query().id_ == str(event.season_id))
-        if isinstance(existing_season, list):
-            existing_season = existing_season[0]
+        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found",
             )
 
-        week_count_table = self._connection.table("game_status_week_count")
+        week_count_table = self._storage.connection.table("game_status_week_count")
 
         old_week_count = week_count_table.get(
             (Query().season_id == str(event.season_id))
@@ -248,18 +236,18 @@ class LatestSeasonWeekQueryProjection:
                 },
             )
 
-        self._connection.drop_table("latest_season_week")
+        self._storage.connection.drop_table("latest_season_week")
 
 
 class LatestSeasonWeekQueryHandler:
     def __init__(self, storage: Storage) -> None:
-        self._connection = storage.connection
+        self._storage = storage
 
     def __call__(
         self,
         query: LatestSeasonWeekQuery,
     ) -> Optional[LatestSeasonWeekResult]:
-        table = self._connection.table("latest_season_week")
+        table = self._storage.connection.table("latest_season_week")
 
         items = table.all()
         if len(items) > 0:
@@ -270,7 +258,7 @@ class LatestSeasonWeekQueryHandler:
                 item["week"],
             )
 
-        season_count_table = self._connection.table("game_status_season_count")
+        season_count_table = self._storage.connection.table("game_status_season_count")
         season_counts = season_count_table.all()
         for season in sorted(
             season_counts,
@@ -298,7 +286,7 @@ class LatestSeasonWeekQueryHandler:
                 )
 
             if season["completed_count"] > 0:
-                week_table = self._connection.table("game_status_week_count")
+                week_table = self._storage.connection.table("game_status_week_count")
                 week_counts = week_table.search(
                     Query().season_id == season["season_id"],
                 )
@@ -320,12 +308,9 @@ class LatestSeasonWeekQueryHandler:
                         week["scheduled_count"]
                         <= week["completed_count"] + week["canceled_count"]
                     ):
-                        season_table = self._connection.table("seasons")
-                        existing_season = season_table.get(
-                            Query().id_ == week["season_id"],
+                        existing_season = self._storage.cache_season_by_id.get(
+                            week["season_id"],
                         )
-                        if isinstance(existing_season, list):
-                            existing_season = existing_season[0]
                         if existing_season is None:
                             raise RuntimeError(
                                 "Query database is out of sync with master database. "
