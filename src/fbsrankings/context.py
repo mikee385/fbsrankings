@@ -24,7 +24,7 @@ class Context(ContextManager["Context"]):
             self.command_storage = MemoryStorage()
 
         elif config.command_storage_type == ConfigCommandStorageType.SQLITE:
-            self.command_storage = SqliteStorage(str(config.command_storage_file))
+            self.command_storage = SqliteStorage(config.command_storage_file)
 
         else:
             raise ValueError(
@@ -35,7 +35,7 @@ class Context(ContextManager["Context"]):
             self.query_storage = self.command_storage
 
         elif config.query_storage_type == ConfigQueryStorageType.TINYDB:
-            self.query_storage = TinyDbStorage(str(config.query_storage_file))
+            self.query_storage = TinyDbStorage(config.query_storage_file)
 
         else:
             raise ValueError(

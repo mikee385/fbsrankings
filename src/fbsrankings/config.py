@@ -21,14 +21,17 @@ class ConfigQueryStorageType(str, Enum):
     TINYDB = "tinydb"
 
 
+ConfigStorageFile = Optional[Union[Path, Literal[":memory:"]]]
+
+
 class Config(BaseModel):
     command_storage_type: ConfigCommandStorageType
-    command_storage_file: Optional[Union[Path, Literal[":memory:"]]] = None
+    command_storage_file: ConfigStorageFile = None
 
     query_storage_type: ConfigQueryStorageType
-    query_storage_file: Optional[Union[Path, Literal[":memory:"]]] = None
+    query_storage_file: ConfigStorageFile = None
 
-    alternate_names: Optional[Dict[str, str]]
+    alternate_names: Optional[Dict[str, str]] = None
 
     @staticmethod
     def from_ini(file_path: Path) -> "Config":

@@ -168,5 +168,5 @@ cython_debug/
 .pypirc
 
 # Project output
-src/fbsrankings.db
-src/fbsrankings.json
+**/fbsrankings.db
+**/fbsrankings.json
