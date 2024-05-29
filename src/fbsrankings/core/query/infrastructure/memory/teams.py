@@ -1,6 +1,6 @@
-from fbsrankings.core.query.query.teams import TeamResult
-from fbsrankings.core.query.query.teams import TeamsQuery
-from fbsrankings.core.query.query.teams import TeamsResult
+from fbsrankings.shared.query import TeamResult
+from fbsrankings.shared.query import TeamsQuery
+from fbsrankings.shared.query import TeamsResult
 from fbsrankings.storage.memory import Storage
 
 

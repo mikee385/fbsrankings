@@ -4,8 +4,8 @@ from pypika import Parameter
 from pypika import Query
 from pypika.functions import Max
 
-from fbsrankings.core.query.query.week_count_by_season import WeekCountBySeasonQuery
-from fbsrankings.core.query.query.week_count_by_season import WeekCountBySeasonResult
+from fbsrankings.shared.query import WeekCountBySeasonQuery
+from fbsrankings.shared.query import WeekCountBySeasonResult
 from fbsrankings.storage.sqlite import GameTable
 
 

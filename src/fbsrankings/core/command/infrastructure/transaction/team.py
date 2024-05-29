@@ -1,16 +1,16 @@
 from typing import List
 from typing import Optional
 
-from fbsrankings.common import Event
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
-from fbsrankings.core.command.event.team import TeamCreatedEvent
-from fbsrankings.core.command.event.team import TeamEventHandler as BaseEventHandler
 from fbsrankings.core.command.infrastructure.memory.team import (
     TeamRepository as MemoryRepository,
 )
+from fbsrankings.shared.event import TeamCreatedEvent
+from fbsrankings.shared.event import TeamEventHandler as BaseEventHandler
+from fbsrankings.shared.messaging import Event
+from fbsrankings.shared.messaging import EventBus
 
 
 class TeamRepository(BaseRepository):

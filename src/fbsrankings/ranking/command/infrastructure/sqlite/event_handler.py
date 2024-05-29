@@ -5,10 +5,6 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.common import EventBus
-from fbsrankings.ranking.command.event.ranking import GameRankingEventManager
-from fbsrankings.ranking.command.event.ranking import TeamRankingEventManager
-from fbsrankings.ranking.command.event.record import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -21,6 +17,10 @@ from fbsrankings.ranking.command.infrastructure.sqlite.ranking import (
 from fbsrankings.ranking.command.infrastructure.sqlite.record import (
     TeamRecordEventHandler,
 )
+from fbsrankings.shared.event import GameRankingEventManager
+from fbsrankings.shared.event import TeamRankingEventManager
+from fbsrankings.shared.event import TeamRecordEventManager
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import Storage
 
 

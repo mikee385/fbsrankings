@@ -1,12 +1,6 @@
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationBySeasonResult,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonQuery,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonResult,
-)
+from fbsrankings.shared.query import AffiliationBySeasonResult
+from fbsrankings.shared.query import AffiliationsBySeasonQuery
+from fbsrankings.shared.query import AffiliationsBySeasonResult
 from fbsrankings.storage.memory import Storage
 
 

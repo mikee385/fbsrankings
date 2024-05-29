@@ -4,8 +4,8 @@ from pypika import Parameter
 from pypika import Query
 from pypika.functions import Count
 
-from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonQuery
-from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonResult
+from fbsrankings.shared.query import GameCountBySeasonQuery
+from fbsrankings.shared.query import GameCountBySeasonResult
 from fbsrankings.storage.sqlite import GameTable
 
 

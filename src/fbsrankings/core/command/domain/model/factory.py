@@ -1,8 +1,8 @@
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import AffiliationFactory
 from fbsrankings.core.command.domain.model.game import GameFactory
 from fbsrankings.core.command.domain.model.season import SeasonFactory
 from fbsrankings.core.command.domain.model.team import TeamFactory
+from fbsrankings.shared.messaging import EventBus
 
 
 class Factory:

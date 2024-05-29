@@ -6,8 +6,8 @@ from uuid import UUID
 from pypika import Parameter
 from pypika import Query
 
-from fbsrankings.core.query.query.game_by_id import GameByIDQuery
-from fbsrankings.core.query.query.game_by_id import GameByIDResult
+from fbsrankings.shared.query import GameByIDQuery
+from fbsrankings.shared.query import GameByIDResult
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

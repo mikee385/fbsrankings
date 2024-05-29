@@ -1,14 +1,8 @@
 from typing import Optional
 
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordBySeasonWeekQuery,
-)
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordBySeasonWeekResult,
-)
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordValueBySeasonWeekResult,
-)
+from fbsrankings.shared.query import TeamRecordBySeasonWeekQuery
+from fbsrankings.shared.query import TeamRecordBySeasonWeekResult
+from fbsrankings.shared.query import TeamRecordValueBySeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
 

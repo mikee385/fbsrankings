@@ -1,7 +1,7 @@
-from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.ranking import GameRankingFactory
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingFactory
 from fbsrankings.ranking.command.domain.model.record import TeamRecordFactory
+from fbsrankings.shared.messaging import EventBus
 
 
 class Factory:

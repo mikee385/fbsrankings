@@ -5,8 +5,8 @@ from uuid import UUID
 from pypika import Parameter
 from pypika import Query
 
-from fbsrankings.core.query.query.team_by_id import TeamByIDQuery
-from fbsrankings.core.query.query.team_by_id import TeamByIDResult
+from fbsrankings.shared.query import TeamByIDQuery
+from fbsrankings.shared.query import TeamByIDResult
 from fbsrankings.storage.sqlite import TeamTable
 
 

@@ -1,22 +1,20 @@
 from typing import List
 from typing import Optional
 
-from fbsrankings.common import Event
-from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
 from fbsrankings.ranking.command.domain.model.record import TeamRecordID
 from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
-from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
-from fbsrankings.ranking.command.event.record import (
-    TeamRecordEventHandler as BaseEventHandler,
-)
-from fbsrankings.ranking.command.event.record import TeamRecordValue as EventValue
 from fbsrankings.ranking.command.infrastructure.memory.record import (
     TeamRecordRepository as MemoryRepository,
 )
+from fbsrankings.shared.event import TeamRecordCalculatedEvent
+from fbsrankings.shared.event import TeamRecordEventHandler as BaseEventHandler
+from fbsrankings.shared.event import TeamRecordValue as EventValue
+from fbsrankings.shared.messaging import Event
+from fbsrankings.shared.messaging import EventBus
 
 
 class TeamRecordRepository(BaseRepository):

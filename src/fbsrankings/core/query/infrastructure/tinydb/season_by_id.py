@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.core.query.query.season_by_id import SeasonByIDQuery
-from fbsrankings.core.query.query.season_by_id import SeasonByIDResult
+from fbsrankings.shared.query import SeasonByIDQuery
+from fbsrankings.shared.query import SeasonByIDResult
 from fbsrankings.storage.tinydb import Storage
 
 

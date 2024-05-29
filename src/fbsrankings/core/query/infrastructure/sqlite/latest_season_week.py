@@ -8,9 +8,9 @@ from pypika import Parameter
 from pypika import Query
 from pypika.functions import Sum
 
-from fbsrankings.core.query.query.latest_season_week import LatestSeasonWeekQuery
-from fbsrankings.core.query.query.latest_season_week import LatestSeasonWeekResult
-from fbsrankings.enums import GameStatus
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.query import LatestSeasonWeekQuery
+from fbsrankings.shared.query import LatestSeasonWeekResult
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 

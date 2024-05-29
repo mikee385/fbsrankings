@@ -9,9 +9,9 @@ from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.infrastructure.repository import Repository
-from fbsrankings.enums import GameStatus
-from fbsrankings.enums import SeasonSection
-from fbsrankings.enums import Subdivision
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.enums import SeasonSection
+from fbsrankings.shared.enums import Subdivision
 
 
 class Importer:

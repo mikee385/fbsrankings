@@ -1,6 +1,6 @@
-from fbsrankings.core.query.query.games_by_season import GameBySeasonResult
-from fbsrankings.core.query.query.games_by_season import GamesBySeasonQuery
-from fbsrankings.core.query.query.games_by_season import GamesBySeasonResult
+from fbsrankings.shared.query import GameBySeasonResult
+from fbsrankings.shared.query import GamesBySeasonQuery
+from fbsrankings.shared.query import GamesBySeasonResult
 from fbsrankings.storage.memory import Storage
 
 

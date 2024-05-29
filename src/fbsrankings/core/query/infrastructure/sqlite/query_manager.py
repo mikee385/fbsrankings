@@ -5,7 +5,6 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.common import QueryBus
 from fbsrankings.core.query.infrastructure.sqlite.affiliation_count_by_season import (
     AffiliationCountBySeasonQueryHandler,
 )
@@ -43,27 +42,22 @@ from fbsrankings.core.query.infrastructure.sqlite.teams import TeamsQueryHandler
 from fbsrankings.core.query.infrastructure.sqlite.week_count_by_season import (
     WeekCountBySeasonQueryHandler,
 )
-from fbsrankings.core.query.query.affiliation_count_by_season import (
-    AffiliationCountBySeasonQuery,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonQuery,
-)
-from fbsrankings.core.query.query.canceled_games import CanceledGamesQuery
-from fbsrankings.core.query.query.game_by_id import GameByIDQuery
-from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonQuery
-from fbsrankings.core.query.query.games_by_season import GamesBySeasonQuery
-from fbsrankings.core.query.query.latest_season_week import LatestSeasonWeekQuery
-from fbsrankings.core.query.query.postseason_game_count_by_season import (
-    PostseasonGameCountBySeasonQuery,
-)
-from fbsrankings.core.query.query.season_by_id import SeasonByIDQuery
-from fbsrankings.core.query.query.season_by_year import SeasonByYearQuery
-from fbsrankings.core.query.query.seasons import SeasonsQuery
-from fbsrankings.core.query.query.team_by_id import TeamByIDQuery
-from fbsrankings.core.query.query.team_count_by_season import TeamCountBySeasonQuery
-from fbsrankings.core.query.query.teams import TeamsQuery
-from fbsrankings.core.query.query.week_count_by_season import WeekCountBySeasonQuery
+from fbsrankings.shared.messaging import QueryBus
+from fbsrankings.shared.query import AffiliationCountBySeasonQuery
+from fbsrankings.shared.query import AffiliationsBySeasonQuery
+from fbsrankings.shared.query import CanceledGamesQuery
+from fbsrankings.shared.query import GameByIDQuery
+from fbsrankings.shared.query import GameCountBySeasonQuery
+from fbsrankings.shared.query import GamesBySeasonQuery
+from fbsrankings.shared.query import LatestSeasonWeekQuery
+from fbsrankings.shared.query import PostseasonGameCountBySeasonQuery
+from fbsrankings.shared.query import SeasonByIDQuery
+from fbsrankings.shared.query import SeasonByYearQuery
+from fbsrankings.shared.query import SeasonsQuery
+from fbsrankings.shared.query import TeamByIDQuery
+from fbsrankings.shared.query import TeamCountBySeasonQuery
+from fbsrankings.shared.query import TeamsQuery
+from fbsrankings.shared.query import WeekCountBySeasonQuery
 from fbsrankings.storage.sqlite import Storage
 
 

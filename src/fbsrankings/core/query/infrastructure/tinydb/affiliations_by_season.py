@@ -2,17 +2,11 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command import AffiliationCreatedEvent
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationBySeasonResult,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonQuery,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonResult,
-)
+from fbsrankings.shared.event import AffiliationCreatedEvent
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.query import AffiliationBySeasonResult
+from fbsrankings.shared.query import AffiliationsBySeasonQuery
+from fbsrankings.shared.query import AffiliationsBySeasonResult
 from fbsrankings.storage.tinydb import Storage
 
 

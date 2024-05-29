@@ -1,14 +1,8 @@
 from typing import Optional
 
-from fbsrankings.ranking.query.query.game_ranking_by_season_week import (
-    GameRankingBySeasonWeekQuery,
-)
-from fbsrankings.ranking.query.query.game_ranking_by_season_week import (
-    GameRankingBySeasonWeekResult,
-)
-from fbsrankings.ranking.query.query.game_ranking_by_season_week import (
-    GameRankingValueBySeasonWeekResult,
-)
+from fbsrankings.shared.query import GameRankingBySeasonWeekQuery
+from fbsrankings.shared.query import GameRankingBySeasonWeekResult
+from fbsrankings.shared.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
 

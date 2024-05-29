@@ -4,15 +4,15 @@ from uuid import UUID
 
 import numpy
 
-from fbsrankings.core.query import GameBySeasonResult
-from fbsrankings.enums import GameStatus
-from fbsrankings.enums import Subdivision
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingFactory
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.query import GameBySeasonResult
 
 
 class TeamData:

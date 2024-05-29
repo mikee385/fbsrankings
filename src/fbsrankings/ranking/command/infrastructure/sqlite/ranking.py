@@ -14,7 +14,6 @@ from pypika import Query
 from pypika import Table
 from pypika.queries import QueryBuilder
 
-from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -27,15 +26,16 @@ from fbsrankings.ranking.command.domain.model.ranking import RankingValue
 from fbsrankings.ranking.command.domain.model.ranking import (
     TeamRankingRepository as BaseTeamRankingRepository,
 )
-from fbsrankings.ranking.command.event.ranking import GameRankingCalculatedEvent
-from fbsrankings.ranking.command.event.ranking import (
+from fbsrankings.shared.event import GameRankingCalculatedEvent
+from fbsrankings.shared.event import (
     GameRankingEventHandler as BaseGameRankingEventHandler,
 )
-from fbsrankings.ranking.command.event.ranking import RankingCalculatedEvent
-from fbsrankings.ranking.command.event.ranking import TeamRankingCalculatedEvent
-from fbsrankings.ranking.command.event.ranking import (
+from fbsrankings.shared.event import RankingCalculatedEvent
+from fbsrankings.shared.event import TeamRankingCalculatedEvent
+from fbsrankings.shared.event import (
     TeamRankingEventHandler as BaseTeamRankingEventHandler,
 )
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import GameRankingValueTable
 from fbsrankings.storage.sqlite import RankingTable
 from fbsrankings.storage.sqlite import RankingType

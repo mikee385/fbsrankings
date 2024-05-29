@@ -1,8 +1,8 @@
-from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandlerFactory
 from fbsrankings.ranking.command.infrastructure.memory.event_handler import EventHandler
 from fbsrankings.ranking.command.infrastructure.memory.repository import Repository
 from fbsrankings.ranking.command.infrastructure.repository import RepositoryFactory
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage
 
 

@@ -5,7 +5,7 @@ from pypika import Query
 from pypika import Table
 from pypika.pseudocolumns import RowID
 
-from fbsrankings.enums import Subdivision
+from fbsrankings.shared.enums import Subdivision
 
 
 class SubdivisionTable:

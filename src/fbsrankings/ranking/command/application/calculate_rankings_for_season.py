@@ -1,0 +1,119 @@
+from uuid import UUID
+
+from fbsrankings.ranking.command.domain.model.ranking import SeasonData
+from fbsrankings.ranking.command.domain.service.colley_matrix_ranking_calculator import (
+    ColleyMatrixRankingCalculator,
+)
+from fbsrankings.ranking.command.domain.service.game_strength_ranking_calculator import (
+    GameStrengthRankingCalculator,
+)
+from fbsrankings.ranking.command.domain.service.record_calculator import (
+    TeamRecordCalculator,
+)
+from fbsrankings.ranking.command.domain.service.simultaneous_wins_ranking_calculator import (
+    SimultaneousWinsRankingCalculator,
+)
+from fbsrankings.ranking.command.domain.service.srs_ranking_calculator import (
+    SRSRankingCalculator,
+)
+from fbsrankings.ranking.command.domain.service.strength_of_schedule_ranking_calculator import (
+    StrengthOfScheduleRankingCalculator,
+)
+from fbsrankings.ranking.command.infrastructure.data_source import DataSource
+from fbsrankings.ranking.command.infrastructure.transaction.transaction import (
+    Transaction,
+)
+from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.messaging import QueryBus
+from fbsrankings.shared.query import AffiliationsBySeasonQuery
+from fbsrankings.shared.query import GamesBySeasonQuery
+from fbsrankings.shared.query import SeasonByIDQuery
+from fbsrankings.shared.query import SeasonByYearQuery
+
+
+class CalculateRankingsForSeasonCommandHandler:
+    def __init__(
+        self,
+        data_source: DataSource,
+        query_bus: QueryBus,
+        event_bus: EventBus,
+    ) -> None:
+        self._data_source = data_source
+        self._query_bus = query_bus
+        self._event_bus = event_bus
+
+    def __call__(self, command: CalculateRankingsForSeasonCommand) -> None:
+        with Transaction(self._data_source, self._event_bus) as transaction:
+            if isinstance(command.season_id_or_year, UUID):
+                season_by_id = self._query_bus.query(
+                    SeasonByIDQuery(command.season_id_or_year),
+                )
+                if season_by_id is None:
+                    raise ValueError(
+                        f"Season not found for {command.season_id_or_year}",
+                    )
+                season_id = season_by_id.id_
+
+            elif isinstance(command.season_id_or_year, int):
+                season_by_year = self._query_bus.query(
+                    SeasonByYearQuery(command.season_id_or_year),
+                )
+                if season_by_year is None:
+                    raise ValueError(
+                        f"Season not found for {command.season_id_or_year}",
+                    )
+                season_id = season_by_year.id_
+
+            else:
+                raise TypeError("season_id_or_year must be of type UUID or int")
+
+            affiliations = self._query_bus.query(
+                AffiliationsBySeasonQuery(season_id),
+            ).affiliations
+            games = self._query_bus.query(GamesBySeasonQuery(season_id)).games
+
+            season_data = SeasonData(season_id, affiliations, games)
+
+            TeamRecordCalculator(transaction.factory.team_record).calculate_for_season(
+                season_data,
+            )
+
+            srs_rankings = SRSRankingCalculator(
+                transaction.factory.team_ranking,
+            ).calculate_for_season(season_data)
+            for ranking in srs_rankings:
+                StrengthOfScheduleRankingCalculator(
+                    transaction.factory.team_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+                GameStrengthRankingCalculator(
+                    transaction.factory.game_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+
+            cm_rankings = ColleyMatrixRankingCalculator(
+                transaction.factory.team_ranking,
+            ).calculate_for_season(season_data)
+            for ranking in cm_rankings:
+                StrengthOfScheduleRankingCalculator(
+                    transaction.factory.team_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+                GameStrengthRankingCalculator(
+                    transaction.factory.game_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+
+            sw_rankings = SimultaneousWinsRankingCalculator(
+                transaction.factory.team_ranking,
+            ).calculate_for_season(season_data)
+            for ranking in sw_rankings:
+                StrengthOfScheduleRankingCalculator(
+                    transaction.factory.team_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+                GameStrengthRankingCalculator(
+                    transaction.factory.game_ranking,
+                ).calculate_for_ranking(season_data, ranking)
+
+            try:
+                transaction.commit()
+            except Exception:
+                transaction.rollback()
+                raise

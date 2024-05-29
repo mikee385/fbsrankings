@@ -7,12 +7,12 @@ from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
 
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
-from fbsrankings.core.command.event.team import TeamCreatedEvent
-from fbsrankings.core.command.event.team import TeamEventHandler as BaseEventHandler
+from fbsrankings.shared.event import TeamCreatedEvent
+from fbsrankings.shared.event import TeamEventHandler as BaseEventHandler
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import TeamTable
 
 

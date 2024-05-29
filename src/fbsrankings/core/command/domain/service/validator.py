@@ -1,139 +1,24 @@
 import datetime
 from typing import Iterable
-from typing import List
 from typing import Optional
-from uuid import UUID
 
-from fbsrankings.common import Event
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.enums import GameStatus
-from fbsrankings.enums import SeasonSection
-from fbsrankings.enums import Subdivision
-
-
-class ValidationError(Event, ValueError):
-    pass
-
-
-class MultipleValidationError(ValidationError):
-    def __init__(self, errors: List[ValidationError]) -> None:
-        super().__init__(
-            "Multiple validation errors have occurred. See the errors property for"
-            " more details.",
-        )
-        self.errors = errors
-
-
-class SeasonDataValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        attribute_name: str,
-        attribute_value: object,
-        expected_value: object,
-    ) -> None:
-        super().__init__(message)
-        self.season_id = season_id
-        self.attribute_name = attribute_name
-        self.attribute_value = attribute_value
-        self.expected_value = expected_value
-
-
-class TeamDataValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        team_id: UUID,
-        attribute_name: str,
-        attribute_value: object,
-        expected_value: object,
-    ) -> None:
-        super().__init__(message)
-        self.team_id = team_id
-        self.attribute_name = attribute_name
-        self.attribute_value = attribute_value
-        self.expected_value = expected_value
-
-
-class AffiliationDataValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        affiliation_id: UUID,
-        attribute_name: str,
-        attribute_value: object,
-        expected_value: object,
-    ) -> None:
-        super().__init__(message)
-        self.affiliation_id = affiliation_id
-        self.attribute_name = attribute_name
-        self.attribute_value = attribute_value
-        self.expected_value = expected_value
-
-
-class GameDataValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        game_id: UUID,
-        attribute_name: str,
-        attribute_value: object,
-        expected_value: object,
-    ) -> None:
-        super().__init__(message)
-        self.game_id = game_id
-        self.attribute_name = attribute_name
-        self.attribute_value = attribute_value
-        self.expected_value = expected_value
-
-
-class FBSGameCountValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        team_id: UUID,
-        game_count: int,
-    ) -> None:
-        super().__init__(message)
-        self.season_id = season_id
-        self.team_id = team_id
-        self.game_count = game_count
-
-
-class FCSGameCountValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        team_id: UUID,
-        game_count: int,
-    ) -> None:
-        super().__init__(message)
-        self.season_id = season_id
-        self.team_id = team_id
-        self.game_count = game_count
-
-
-class PostseasonGameCountValidationError(ValidationError):
-    def __init__(
-        self,
-        message: str,
-        season_id: UUID,
-        regular_season_game_count: int,
-        postseason_game_count: int,
-    ) -> None:
-        super().__init__(message)
-        self.season_id = season_id
-        self.regular_season_game_count = regular_season_game_count
-        self.postseason_game_count = postseason_game_count
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.enums import SeasonSection
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.error import AffiliationDataValidationError
+from fbsrankings.shared.error import FBSGameCountValidationError
+from fbsrankings.shared.error import FCSGameCountValidationError
+from fbsrankings.shared.error import GameDataValidationError
+from fbsrankings.shared.error import PostseasonGameCountValidationError
+from fbsrankings.shared.error import SeasonDataValidationError
+from fbsrankings.shared.error import TeamDataValidationError
+from fbsrankings.shared.messaging import EventBus
 
 
 class Validator:

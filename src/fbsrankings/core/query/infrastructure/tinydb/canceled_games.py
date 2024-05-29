@@ -3,12 +3,12 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command import GameCanceledEvent
-from fbsrankings.core.command import GameNotesUpdatedEvent
-from fbsrankings.core.query.query.canceled_games import CanceledGameResult
-from fbsrankings.core.query.query.canceled_games import CanceledGamesQuery
-from fbsrankings.core.query.query.canceled_games import CanceledGamesResult
+from fbsrankings.shared.event import GameCanceledEvent
+from fbsrankings.shared.event import GameNotesUpdatedEvent
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.query import CanceledGameResult
+from fbsrankings.shared.query import CanceledGamesQuery
+from fbsrankings.shared.query import CanceledGamesResult
 from fbsrankings.storage.tinydb import Storage
 
 

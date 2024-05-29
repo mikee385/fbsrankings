@@ -7,15 +7,9 @@ from uuid import UUID
 from pypika import Parameter
 from pypika import Query
 
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordBySeasonWeekQuery,
-)
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordBySeasonWeekResult,
-)
-from fbsrankings.ranking.query.query.team_record_by_season_week import (
-    TeamRecordValueBySeasonWeekResult,
-)
+from fbsrankings.shared.query import TeamRecordBySeasonWeekQuery
+from fbsrankings.shared.query import TeamRecordBySeasonWeekResult
+from fbsrankings.shared.query import TeamRecordValueBySeasonWeekResult
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamRecordTable
 from fbsrankings.storage.sqlite import TeamRecordValueTable

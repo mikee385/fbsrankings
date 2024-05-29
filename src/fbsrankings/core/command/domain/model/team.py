@@ -5,8 +5,8 @@ from typing import Optional
 from uuid import UUID
 from uuid import uuid4
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command.event.team import TeamCreatedEvent
+from fbsrankings.shared.event import TeamCreatedEvent
+from fbsrankings.shared.messaging import EventBus
 
 
 TeamID = NewType("TeamID", UUID)

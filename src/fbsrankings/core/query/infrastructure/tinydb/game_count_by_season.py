@@ -3,10 +3,10 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command import GameCreatedEvent
-from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonQuery
-from fbsrankings.core.query.query.game_count_by_season import GameCountBySeasonResult
+from fbsrankings.shared.event import GameCreatedEvent
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.query import GameCountBySeasonQuery
+from fbsrankings.shared.query import GameCountBySeasonResult
 from fbsrankings.storage.tinydb import Storage
 
 

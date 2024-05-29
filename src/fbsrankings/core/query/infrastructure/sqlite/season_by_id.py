@@ -5,8 +5,8 @@ from uuid import UUID
 from pypika import Parameter
 from pypika import Query
 
-from fbsrankings.core.query.query.season_by_id import SeasonByIDQuery
-from fbsrankings.core.query.query.season_by_id import SeasonByIDResult
+from fbsrankings.shared.query import SeasonByIDQuery
+from fbsrankings.shared.query import SeasonByIDResult
 from fbsrankings.storage.sqlite import SeasonTable
 
 

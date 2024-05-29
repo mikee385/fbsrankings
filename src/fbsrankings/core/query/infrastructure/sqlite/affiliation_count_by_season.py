@@ -5,13 +5,9 @@ from pypika import Parameter
 from pypika import Query
 from pypika.functions import Sum
 
-from fbsrankings.core.query.query.affiliation_count_by_season import (
-    AffiliationCountBySeasonQuery,
-)
-from fbsrankings.core.query.query.affiliation_count_by_season import (
-    AffiliationCountBySeasonResult,
-)
-from fbsrankings.enums import Subdivision
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.query import AffiliationCountBySeasonQuery
+from fbsrankings.shared.query import AffiliationCountBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

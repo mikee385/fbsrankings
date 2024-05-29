@@ -4,8 +4,8 @@ from pypika import Parameter
 from pypika import Query
 from pypika.functions import Count
 
-from fbsrankings.core.query.query.team_count_by_season import TeamCountBySeasonQuery
-from fbsrankings.core.query.query.team_count_by_season import TeamCountBySeasonResult
+from fbsrankings.shared.query import TeamCountBySeasonQuery
+from fbsrankings.shared.query import TeamCountBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

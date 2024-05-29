@@ -1,7 +1,7 @@
-from fbsrankings.core.query.query.canceled_games import CanceledGameResult
-from fbsrankings.core.query.query.canceled_games import CanceledGamesQuery
-from fbsrankings.core.query.query.canceled_games import CanceledGamesResult
-from fbsrankings.enums import GameStatus
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.query import CanceledGameResult
+from fbsrankings.shared.query import CanceledGamesQuery
+from fbsrankings.shared.query import CanceledGamesResult
 from fbsrankings.storage.memory import Storage
 
 

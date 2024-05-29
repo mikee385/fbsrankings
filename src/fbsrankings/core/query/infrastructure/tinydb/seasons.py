@@ -2,11 +2,11 @@ from uuid import UUID
 
 from tinydb.table import Document
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command import SeasonCreatedEvent
-from fbsrankings.core.query.query.seasons import SeasonResult
-from fbsrankings.core.query.query.seasons import SeasonsQuery
-from fbsrankings.core.query.query.seasons import SeasonsResult
+from fbsrankings.shared.event import SeasonCreatedEvent
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.query import SeasonResult
+from fbsrankings.shared.query import SeasonsQuery
+from fbsrankings.shared.query import SeasonsResult
 from fbsrankings.storage.tinydb import Storage
 
 

@@ -11,7 +11,7 @@ from tinydb.storages import JSONStorage
 from tinydb.table import Document
 from typing_extensions import Literal
 
-from fbsrankings.config import ConfigStorageFile
+from fbsrankings.shared.config import ConfigStorageFile
 
 
 class Storage(ContextManager["Storage"]):

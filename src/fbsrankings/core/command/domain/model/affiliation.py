@@ -5,11 +5,11 @@ from typing import Optional
 from uuid import UUID
 from uuid import uuid4
 
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
-from fbsrankings.enums import Subdivision
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.event import AffiliationCreatedEvent
+from fbsrankings.shared.messaging import EventBus
 
 
 AffiliationID = NewType("AffiliationID", UUID)

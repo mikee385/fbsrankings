@@ -7,11 +7,11 @@ from typing import Sequence
 from uuid import UUID
 from uuid import uuid4
 
-from fbsrankings.common import EventBus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
-from fbsrankings.ranking.command.event.record import TeamRecordCalculatedEvent
-from fbsrankings.ranking.command.event.record import TeamRecordValue as EventValue
+from fbsrankings.shared.event import TeamRecordCalculatedEvent
+from fbsrankings.shared.event import TeamRecordValue as EventValue
+from fbsrankings.shared.messaging import EventBus
 
 
 TeamRecordID = NewType("TeamRecordID", UUID)

@@ -4,15 +4,9 @@ from uuid import UUID
 from pypika import Parameter
 from pypika import Query
 
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationBySeasonResult,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonQuery,
-)
-from fbsrankings.core.query.query.affiliations_by_season import (
-    AffiliationsBySeasonResult,
-)
+from fbsrankings.shared.query import AffiliationBySeasonResult
+from fbsrankings.shared.query import AffiliationsBySeasonQuery
+from fbsrankings.shared.query import AffiliationsBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

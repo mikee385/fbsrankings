@@ -2,15 +2,15 @@ from typing import Dict
 from typing import List
 from uuid import UUID
 
-from fbsrankings.core.query import GameBySeasonResult
-from fbsrankings.enums import GameStatus
-from fbsrankings.enums import Subdivision
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
 from fbsrankings.ranking.command.domain.model.record import TeamRecordFactory
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
+from fbsrankings.shared.enums import GameStatus
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.query import GameBySeasonResult
 
 
 class TeamData:

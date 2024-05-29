@@ -7,7 +7,6 @@ from pypika import Parameter
 from pypika import Query
 from pypika.queries import QueryBuilder
 
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
@@ -15,11 +14,10 @@ from fbsrankings.core.command.domain.model.affiliation import (
 )
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
-from fbsrankings.core.command.event.affiliation import (
-    AffiliationEventHandler as BaseEventHandler,
-)
-from fbsrankings.enums import Subdivision
+from fbsrankings.shared.enums import Subdivision
+from fbsrankings.shared.event import AffiliationCreatedEvent
+from fbsrankings.shared.event import AffiliationEventHandler as BaseEventHandler
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

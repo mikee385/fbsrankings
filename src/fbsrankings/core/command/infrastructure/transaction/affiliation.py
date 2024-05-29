@@ -1,8 +1,6 @@
 from typing import List
 from typing import Optional
 
-from fbsrankings.common import Event
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
@@ -10,13 +8,13 @@ from fbsrankings.core.command.domain.model.affiliation import (
 )
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.core.command.event.affiliation import AffiliationCreatedEvent
-from fbsrankings.core.command.event.affiliation import (
-    AffiliationEventHandler as BaseEventHandler,
-)
 from fbsrankings.core.command.infrastructure.memory.affiliation import (
     AffiliationRepository as MemoryRepository,
 )
+from fbsrankings.shared.event import AffiliationCreatedEvent
+from fbsrankings.shared.event import AffiliationEventHandler as BaseEventHandler
+from fbsrankings.shared.messaging import Event
+from fbsrankings.shared.messaging import EventBus
 
 
 class AffiliationRepository(BaseRepository):

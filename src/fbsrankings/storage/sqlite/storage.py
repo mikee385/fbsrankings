@@ -7,7 +7,7 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.config import ConfigStorageFile
+from fbsrankings.shared.config import ConfigStorageFile
 from fbsrankings.storage.sqlite.affiliation import AffiliationTable
 from fbsrankings.storage.sqlite.affiliation import SubdivisionTable
 from fbsrankings.storage.sqlite.game import GameStatusTable

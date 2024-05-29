@@ -4,11 +4,6 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.common import EventBus
-from fbsrankings.core.command.event.affiliation import AffiliationEventManager
-from fbsrankings.core.command.event.game import GameEventManager
-from fbsrankings.core.command.event.season import SeasonEventManager
-from fbsrankings.core.command.event.team import TeamEventManager
 from fbsrankings.core.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -18,6 +13,11 @@ from fbsrankings.core.command.infrastructure.memory.affiliation import (
 from fbsrankings.core.command.infrastructure.memory.game import GameEventHandler
 from fbsrankings.core.command.infrastructure.memory.season import SeasonEventHandler
 from fbsrankings.core.command.infrastructure.memory.team import TeamEventHandler
+from fbsrankings.shared.event import AffiliationEventManager
+from fbsrankings.shared.event import GameEventManager
+from fbsrankings.shared.event import SeasonEventManager
+from fbsrankings.shared.event import TeamEventManager
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage
 
 

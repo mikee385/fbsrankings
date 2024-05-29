@@ -1,4 +1,3 @@
-from fbsrankings.common import EventBus
 from fbsrankings.core.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
@@ -8,6 +7,7 @@ from fbsrankings.core.command.infrastructure.sqlite.affiliation import (
 from fbsrankings.core.command.infrastructure.sqlite.game import GameRepository
 from fbsrankings.core.command.infrastructure.sqlite.season import SeasonRepository
 from fbsrankings.core.command.infrastructure.sqlite.team import TeamRepository
+from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import Storage
 
 
