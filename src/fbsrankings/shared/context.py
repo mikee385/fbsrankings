@@ -43,6 +43,10 @@ class Context(ContextManager["Context"]):
                 f"or 'tinydb': {config.query_storage_type}",
             )
 
+    def drop_storage(self) -> None:
+        self.command_storage.drop()
+        self.query_storage.drop()
+
     def close(self) -> None:
         self.query_storage.close()
         self.command_storage.close()

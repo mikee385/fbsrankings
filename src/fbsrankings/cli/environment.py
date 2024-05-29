@@ -1,0 +1,95 @@
+from pathlib import Path
+from types import TracebackType
+from typing import ContextManager
+from typing import Optional
+from typing import Type
+
+from typing_extensions import Literal
+
+from fbsrankings.core.command import Service as CoreCommandService
+from fbsrankings.core.query import Service as CoreQueryService
+from fbsrankings.ranking.command import Service as RankingCommandService
+from fbsrankings.ranking.query import Service as RankingQueryService
+from fbsrankings.shared.config import Config
+from fbsrankings.shared.context import Context
+from fbsrankings.shared.messaging import CommandBus
+from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.messaging import QueryBus
+
+
+class Environment(ContextManager["Environment"]):
+    def __init__(self, config_location: str) -> None:
+        package_dir = Path(__file__).resolve().parent.parent
+
+        if config_location is not None:
+            config_path = Path(config_location).resolve()
+        else:
+            config_path = package_dir / "fbsrankings.ini"
+        if not config_path.is_file():
+            raise ValueError(f"'{config_path}' must be a valid file path")
+
+        config = Config.from_ini(config_path)
+        self.context = Context(config)
+
+        self.command_bus = CommandBus()
+        self.query_bus = QueryBus()
+        self.event_bus = EventBus()
+
+        self._core_command = CoreCommandService(
+            self.context,
+            self.command_bus,
+            self.event_bus,
+        )
+        self._core_query = CoreQueryService(
+            self.context,
+            self.query_bus,
+            self.event_bus,
+        )
+
+        self._ranking_command = RankingCommandService(
+            self.context,
+            self.command_bus,
+            self.query_bus,
+            self.event_bus,
+        )
+        self._ranking_query = RankingQueryService(
+            self.context,
+            self.query_bus,
+            self.event_bus,
+        )
+
+    def close(self) -> None:
+        self._ranking_query.close()
+        self._ranking_command.close()
+
+        self._core_query.close()
+        self._core_command.close()
+
+        self.context.close()
+
+    def __enter__(self) -> "Environment":
+        self.context.__enter__()
+
+        self._core_command.__enter__()
+        self._core_query.__enter__()
+
+        self._ranking_command.__enter__()
+        self._ranking_query.__enter__()
+
+        return self
+
+    def __exit__(
+        self,
+        type_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Literal[False]:
+        self._ranking_query.__exit__(type_, value, traceback)
+        self._ranking_command.__exit__(type_, value, traceback)
+
+        self._core_query.__exit__(type_, value, traceback)
+        self._core_command.__exit__(type_, value, traceback)
+
+        self.context.__exit__(type_, value, traceback)
+
+        return False

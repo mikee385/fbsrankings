@@ -1,5 +1,4 @@
 import re
-from pathlib import Path
 from types import TracebackType
 from typing import ContextManager
 from typing import Dict
@@ -17,13 +16,8 @@ from typing_extensions import Literal
 
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.spinner import Spinner
-from fbsrankings.core.command import Service as CoreCommandService
-from fbsrankings.core.query import Service as CoreQueryService
-from fbsrankings.ranking.command import Service as RankingCommandService
-from fbsrankings.ranking.query import Service as RankingQueryService
 from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
 from fbsrankings.shared.command import ImportSeasonByYearCommand
-from fbsrankings.shared.config import Config
 from fbsrankings.shared.context import Context
 from fbsrankings.shared.enums import GameStatus
 from fbsrankings.shared.error import AffiliationDataValidationError
@@ -108,22 +102,18 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
         return False
 
 
-class Application(ContextManager["Application"]):
-    def __init__(self, config_location: str) -> None:
-        package_dir = Path(__file__).resolve().parent.parent
-
-        if config_location is not None:
-            config_path = Path(config_location).resolve()
-        else:
-            config_path = package_dir / "fbsrankings.ini"
-        if not config_path.is_file():
-            raise ValueError(f"'{config_path}' must be a valid file path")
-
-        config = Config.from_ini(config_path)
-
-        self._command_bus = CommandBus()
-        self._query_bus = QueryBus()
-        self._event_bus = EventBus()
+class Application:
+    def __init__(
+        self,
+        context: Context,
+        command_bus: CommandBus,
+        query_bus: QueryBus,
+        event_bus: EventBus,
+    ) -> None:
+        self._context = context
+        self._command_bus = command_bus
+        self._query_bus = query_bus
+        self._event_bus = event_bus
 
         self._event_counts_by_season: Dict[UUID, Dict[Type[Event], int]] = {}
         self._event_bus.register_handler(
@@ -168,39 +158,13 @@ class Application(ContextManager["Application"]):
             self._save_error,
         )
 
-        self._context = Context(config)
-
-        self._core_command = CoreCommandService(
-            self._context,
-            self._command_bus,
-            self._event_bus,
-        )
-        self._core_query = CoreQueryService(
-            self._context,
-            self._query_bus,
-            self._event_bus,
-        )
-
-        self._ranking_command = RankingCommandService(
-            self._context,
-            self._command_bus,
-            self._query_bus,
-            self._event_bus,
-        )
-        self._ranking_query = RankingQueryService(
-            self._context,
-            self._query_bus,
-            self._event_bus,
-        )
-
     def import_seasons(self, seasons: Iterable[str], drop: bool, check: bool) -> None:
         years = self._parse_seasons(seasons)
 
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._context.command_storage.drop()
-                self._context.query_storage.drop()
+                self._context.drop_storage()
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:
@@ -324,34 +288,6 @@ class Application(ContextManager["Application"]):
 
         self._print_table_title(year, week, "Season Games", team_ranking.name)
         self._print_games_table(game_ranking.values, team_ranking, limit)
-
-    def close(self) -> None:
-        self._ranking_query.close()
-        self._ranking_command.close()
-        self._core_query.close()
-        self._core_command.close()
-        self._context.close()
-
-    def __enter__(self) -> "Application":
-        self._context.__enter__()
-        self._core_command.__enter__()
-        self._core_query.__enter__()
-        self._ranking_command.__enter__()
-        self._ranking_query.__enter__()
-        return self
-
-    def __exit__(
-        self,
-        type_: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Literal[False]:
-        self._ranking_query.__exit__(type_, value, traceback)
-        self._ranking_command.__exit__(type_, value, traceback)
-        self._core_query.__exit__(type_, value, traceback)
-        self._core_command.__exit__(type_, value, traceback)
-        self._context.__exit__(type_, value, traceback)
-        return False
 
     def _save_season_event(
         self,
