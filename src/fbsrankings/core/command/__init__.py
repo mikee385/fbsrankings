@@ -1,8 +1,8 @@
 """Command classes for the core module of the fbsrankings package"""
 
-from .application.command_bus import CommandBus
+from .application.service import Service
 
 
 __all__ = [
-    "CommandBus",
+    "Service",
 ]

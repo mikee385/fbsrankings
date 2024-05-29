@@ -18,15 +18,19 @@ from fbsrankings.ranking.query.infrastructure.tinydb.query_manager import (
 from fbsrankings.shared.config import ConfigQueryStorageType
 from fbsrankings.shared.context import Context
 from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus as BaseQueryBus
+from fbsrankings.shared.messaging import QueryBus
 from fbsrankings.storage.memory import Storage as MemoryStorage
 from fbsrankings.storage.sqlite import Storage as SqliteStorage
 from fbsrankings.storage.tinydb import Storage as TinyDbStorage
 
 
-class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
-    def __init__(self, context: Context, event_bus: EventBus) -> None:
-        super().__init__()
+class Service(ContextManager["Service"]):
+    def __init__(
+        self,
+        context: Context,
+        query_bus: QueryBus,
+        event_bus: EventBus,
+    ) -> None:
         self._query_manager: Union[
             MemoryQueryManager,
             SqliteQueryManager,
@@ -40,7 +44,7 @@ class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
                     "For query storage type, expected: MemoryStorage, "
                     f"found: {type(context.query_storage)}",
                 )
-            self._query_manager = MemoryQueryManager(context.query_storage, self)
+            self._query_manager = MemoryQueryManager(context.query_storage, query_bus)
 
         elif storage_type == ConfigQueryStorageType.SQLITE:
             if not isinstance(context.query_storage, SqliteStorage):
@@ -48,7 +52,7 @@ class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
                     "For query storage type, expected: SqliteStorage, "
                     f"found: {type(context.query_storage)}",
                 )
-            self._query_manager = SqliteQueryManager(context.query_storage, self)
+            self._query_manager = SqliteQueryManager(context.query_storage, query_bus)
 
         elif storage_type == ConfigQueryStorageType.TINYDB:
             if not isinstance(context.query_storage, TinyDbStorage):
@@ -58,7 +62,7 @@ class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
                 )
             self._query_manager = TinyDbQueryManager(
                 context.query_storage,
-                self,
+                query_bus,
                 event_bus,
             )
 
@@ -68,7 +72,7 @@ class QueryBus(BaseQueryBus, ContextManager["QueryBus"]):
     def close(self) -> None:
         self._query_manager.close()
 
-    def __enter__(self) -> "QueryBus":
+    def __enter__(self) -> "Service":
         self._query_manager.__enter__()
         return self
 

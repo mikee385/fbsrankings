@@ -11,34 +11,36 @@ from fbsrankings.ranking.command.application.calculate_rankings_for_season impor
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
 from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
 from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import CommandBus as BaseCommandBus
+from fbsrankings.shared.messaging import CommandBus
 from fbsrankings.shared.messaging import EventBus
 from fbsrankings.shared.messaging import QueryBus
 
 
-class CommandBus(BaseCommandBus, ContextManager["CommandBus"]):
+class Service(ContextManager["Service"]):
     def __init__(
         self,
         context: Context,
-        core_query_bus: QueryBus,
+        command_bus: CommandBus,
+        query_bus: QueryBus,
         event_bus: EventBus,
     ) -> None:
         super().__init__()
         data_source = DataSource(context)
 
-        self.register_handler(
+        self._command_bus = command_bus
+        self._command_bus.register_handler(
             CalculateRankingsForSeasonCommand,
             CalculateRankingsForSeasonCommandHandler(
                 data_source,
-                core_query_bus,
+                query_bus,
                 event_bus,
             ),
         )
 
     def close(self) -> None:
-        self.unregister_handler(CalculateRankingsForSeasonCommand)
+        self._command_bus.unregister_handler(CalculateRankingsForSeasonCommand)
 
-    def __enter__(self) -> "CommandBus":
+    def __enter__(self) -> "Service":
         return self
 
     def __exit__(

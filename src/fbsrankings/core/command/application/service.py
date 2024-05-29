@@ -11,17 +11,22 @@ from fbsrankings.core.command.application.import_season_by_year import (
 from fbsrankings.core.command.infrastructure.data_source import DataSource
 from fbsrankings.shared.command import ImportSeasonByYearCommand
 from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import CommandBus as BaseCommandBus
+from fbsrankings.shared.messaging import CommandBus
 from fbsrankings.shared.messaging import EventBus
 
 
-class CommandBus(BaseCommandBus, ContextManager["CommandBus"]):
-    def __init__(self, context: Context, event_bus: EventBus) -> None:
-        super().__init__()
+class Service(ContextManager["Service"]):
+    def __init__(
+        self,
+        context: Context,
+        command_bus: CommandBus,
+        event_bus: EventBus,
+    ) -> None:
         config = context.config
         data_source = DataSource(context)
 
-        self.register_handler(
+        self._command_bus = command_bus
+        self._command_bus.register_handler(
             ImportSeasonByYearCommand,
             ImportSeasonByYearCommandHandler(
                 config,
@@ -31,9 +36,9 @@ class CommandBus(BaseCommandBus, ContextManager["CommandBus"]):
         )
 
     def close(self) -> None:
-        self.unregister_handler(ImportSeasonByYearCommand)
+        self._command_bus.unregister_handler(ImportSeasonByYearCommand)
 
-    def __enter__(self) -> "CommandBus":
+    def __enter__(self) -> "Service":
         return self
 
     def __exit__(
