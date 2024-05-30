@@ -177,10 +177,8 @@ def test_main_help(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["--help", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["--help", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -189,10 +187,8 @@ def test_main_help(
 
 def test_main_version(capsys: Any, sqlite_file_config: Tuple[Path, Path]) -> None:
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["--version", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["--version", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == f"{__version__}\n"
@@ -210,10 +206,8 @@ def test_main_missing_command(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main([f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main([f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -231,10 +225,8 @@ def test_main_invalid_command(
         expected_err = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["invalid", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 2
+    exit_result = main(["invalid", f"--config={test_config}"])
+    assert exit_result == 2
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == ""
@@ -253,19 +245,17 @@ def test_main_import_sqlite_file(
         expected_out = expected_file.read()
 
     test_config, test_db = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={test_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={test_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -289,19 +279,17 @@ def test_main_import_sqlite_file_tinydb(
         expected_out = expected_file.read()
 
     test_config, test_sqlite, test_tinydb = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={test_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={test_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -327,19 +315,17 @@ def test_main_import_sqlite_memory(
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={sqlite_memory_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={sqlite_memory_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -360,19 +346,17 @@ def test_main_import_sqlite_memory_tinydb(
         expected_out = expected_file.read()
 
     test_config, test_tinydb = sqlite_memory_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={test_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={test_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -395,19 +379,17 @@ def test_main_import_memory(
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={memory_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={memory_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -428,19 +410,17 @@ def test_main_import_memory_tinydb(
         expected_out = expected_file.read()
 
     test_config, test_tinydb = memory_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(
-            [
-                "import",
-                *test_seasons,
-                "--drop",
-                "--check",
-                f"--config={test_config}",
-                "--trace",
-            ],
-        )
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={test_config}",
+            "--trace",
+        ],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -463,10 +443,8 @@ def test_main_seasons_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["seasons", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["seasons", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -484,10 +462,8 @@ def test_main_seasons_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["seasons", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["seasons", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -505,10 +481,8 @@ def test_main_latest_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["latest", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["latest", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -526,10 +500,8 @@ def test_main_latest_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["latest", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["latest", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -551,10 +523,10 @@ def test_main_latest_rating_srs_top_5_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        ["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -576,10 +548,10 @@ def test_main_latest_rating_srs_top_5_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(
+        ["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"],
+    )
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -597,10 +569,8 @@ def test_main_teams_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -618,10 +588,8 @@ def test_main_teams_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -639,10 +607,8 @@ def test_main_teams_year_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", "2012", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", "2012", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -660,10 +626,8 @@ def test_main_teams_year_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", "2012", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", "2012", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -681,10 +645,8 @@ def test_main_teams_week_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", "2012w9", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", "2012w9", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -706,10 +668,8 @@ def test_main_teams_week_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["teams", "2012w9", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["teams", "2012w9", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -727,10 +687,8 @@ def test_main_games_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -748,10 +706,8 @@ def test_main_games_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -769,10 +725,8 @@ def test_main_games_year_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", "2012", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", "2012", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -790,10 +744,8 @@ def test_main_games_year_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", "2012", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", "2012", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -811,10 +763,8 @@ def test_main_games_week_sqlite(
         expected_out = expected_file.read()
 
     test_config, _ = sqlite_file_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", "2012w9", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", "2012w9", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out
@@ -836,10 +786,8 @@ def test_main_games_week_tinydb(
         expected_out = expected_file.read()
 
     test_config, _, _ = sqlite_file_tinydb_config
-    with pytest.raises(SystemExit) as exit_result:
-        main(["games", "2012w9", f"--config={test_config}"])
-    assert exit_result.type == SystemExit
-    assert exit_result.value.code == 0
+    exit_result = main(["games", "2012w9", f"--config={test_config}"])
+    assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
     assert captured_out == expected_out

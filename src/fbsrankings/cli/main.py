@@ -1,5 +1,4 @@
 import argparse
-import sys
 from typing import Optional
 from typing import Sequence
 
@@ -240,10 +239,14 @@ games_parser.set_defaults(func=print_games)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
-    args = main_parser.parse_args(argv)
+    try:
+        args = main_parser.parse_args(argv)
+    except SystemExit as result:
+        return result.code
+
     if not hasattr(args, "func"):
         main_parser.print_help()
-        sys.exit(0)
+        return 0
 
     try:
         args.func(args)
@@ -251,10 +254,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if args.trace:
             raise
         print_err(f"{type(error).__name__}: {str(error)}")
-        sys.exit(1)
+        return 1
 
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    main()
+    return 0
