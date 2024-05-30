@@ -78,12 +78,7 @@ import_parser.add_argument(
 
 def import_seasons(args: argparse.Namespace) -> None:
     with Environment(args.config) as env:
-        application = Application(
-            env.context,
-            env.command_bus,
-            env.query_bus,
-            env.event_bus,
-        )
+        application = Application(env.command_bus, env.query_bus, env.event_bus)
         application.import_seasons(args.seasons, args.drop, args.check)
 
 
@@ -119,12 +114,7 @@ latest_parser.add_argument(
 
 def print_latest(args: argparse.Namespace) -> None:
     with Environment(args.config) as env:
-        application = Application(
-            env.context,
-            env.command_bus,
-            env.query_bus,
-            env.event_bus,
-        )
+        application = Application(env.command_bus, env.query_bus, env.event_bus)
         application.print_latest(args.rating, args.top)
 
 
@@ -150,12 +140,7 @@ seasons_parser.add_argument(
 
 def print_seasons(args: argparse.Namespace) -> None:
     with Environment(args.config) as env:
-        application = Application(
-            env.context,
-            env.command_bus,
-            env.query_bus,
-            env.event_bus,
-        )
+        application = Application(env.command_bus, env.query_bus, env.event_bus)
         application.print_seasons(args.top)
 
 
@@ -200,12 +185,7 @@ teams_parser.add_argument(
 
 def print_teams(args: argparse.Namespace) -> None:
     with Environment(args.config) as env:
-        application = Application(
-            env.context,
-            env.command_bus,
-            env.query_bus,
-            env.event_bus,
-        )
+        application = Application(env.command_bus, env.query_bus, env.event_bus)
         application.print_teams(args.season, args.rating, args.top)
 
 
@@ -250,12 +230,7 @@ games_parser.add_argument(
 
 def print_games(args: argparse.Namespace) -> None:
     with Environment(args.config) as env:
-        application = Application(
-            env.context,
-            env.command_bus,
-            env.query_bus,
-            env.event_bus,
-        )
+        application = Application(env.command_bus, env.query_bus, env.event_bus)
         application.print_games(args.season, args.rating, args.top)
 
 

@@ -17,8 +17,8 @@ from typing_extensions import Literal
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.spinner import Spinner
 from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
+from fbsrankings.shared.command import DropStorageCommand
 from fbsrankings.shared.command import ImportSeasonByYearCommand
-from fbsrankings.shared.context import Context
 from fbsrankings.shared.enums import GameStatus
 from fbsrankings.shared.error import AffiliationDataValidationError
 from fbsrankings.shared.error import FBSGameCountValidationError
@@ -105,12 +105,10 @@ class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
 class Application:
     def __init__(
         self,
-        context: Context,
         command_bus: CommandBus,
         query_bus: QueryBus,
         event_bus: EventBus,
     ) -> None:
-        self._context = context
         self._command_bus = command_bus
         self._query_bus = query_bus
         self._event_bus = event_bus
@@ -164,7 +162,7 @@ class Application:
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._context.drop_storage()
+                self._command_bus.send(DropStorageCommand())
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:

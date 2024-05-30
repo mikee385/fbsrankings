@@ -10,6 +10,7 @@ from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
+from fbsrankings.shared.command import DropStorageCommand
 from fbsrankings.shared.config import Config
 from fbsrankings.shared.context import Context
 from fbsrankings.shared.messaging import CommandBus
@@ -35,6 +36,8 @@ class Environment(ContextManager["Environment"]):
         self.query_bus = QueryBus()
         self.event_bus = EventBus()
 
+        self.command_bus.register_handler(DropStorageCommand, self._drop_storage)
+
         self._core_command = CoreCommandService(
             self.context,
             self.command_bus,
@@ -58,6 +61,9 @@ class Environment(ContextManager["Environment"]):
             self.event_bus,
         )
 
+    def _drop_storage(self, _: DropStorageCommand) -> None:
+        self.context.drop_storage()
+
     def close(self) -> None:
         self._ranking_query.close()
         self._ranking_command.close()
@@ -65,6 +71,7 @@ class Environment(ContextManager["Environment"]):
         self._core_query.close()
         self._core_command.close()
 
+        self.command_bus.unregister_handler(DropStorageCommand)
         self.context.close()
 
     def __enter__(self) -> "Environment":
@@ -90,6 +97,7 @@ class Environment(ContextManager["Environment"]):
         self._core_query.__exit__(type_, value, traceback)
         self._core_command.__exit__(type_, value, traceback)
 
+        self.command_bus.unregister_handler(DropStorageCommand)
         self.context.__exit__(type_, value, traceback)
 
         return False
