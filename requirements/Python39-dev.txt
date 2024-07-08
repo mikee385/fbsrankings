@@ -241,8 +241,6 @@ pygments==2.17.2
     #   rich
 pylint==3.1.0
     # via fbsrankings (setup.py)
-pypika==0.48.9
-    # via fbsrankings (setup.py)
 pyproject-hooks==1.0.0
     # via
     #   build

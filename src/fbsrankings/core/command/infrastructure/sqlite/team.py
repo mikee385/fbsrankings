@@ -3,10 +3,6 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-from pypika.queries import QueryBuilder
-
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
@@ -25,7 +21,7 @@ class TeamRepository(BaseRepository):
     def get(self, id_: TeamID) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+            self._query() + " WHERE UUID = ?;",
             [str(id_)],
         )
         row = cursor.fetchone()
@@ -36,7 +32,7 @@ class TeamRepository(BaseRepository):
     def find(self, name: str) -> Optional[Team]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.Name == Parameter("?")).get_sql(),
+            self._query() + " WHERE Name = ?;",
             [name],
         )
         row = cursor.fetchone()
@@ -44,8 +40,11 @@ class TeamRepository(BaseRepository):
 
         return self._to_team(row) if row is not None else None
 
-    def _query(self) -> QueryBuilder:
-        return Query.from_(self._table).select(self._table.UUID, self._table.Name)
+    def _query(self) -> str:
+        return (
+            "SELECT UUID, Name "
+            f"FROM {self._table}"
+        )
 
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
@@ -58,9 +57,7 @@ class TeamEventHandler(BaseEventHandler):
 
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
-            Query.into(self._table)
-            .columns(self._table.UUID, self._table.Name)
-            .insert(Parameter("?"), Parameter("?"))
-            .get_sql(),
+            f"INSERT INTO {self._table} " "(UUID, Name) "
+            "VALUES (?,?);",
             [str(event.id_), event.name],
         )

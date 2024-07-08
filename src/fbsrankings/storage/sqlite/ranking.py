@@ -1,11 +1,6 @@
 import sqlite3
 from enum import Enum
 
-from pypika import Parameter
-from pypika import Query
-from pypika import Table
-from pypika.pseudocolumns import RowID
-
 
 class RankingType(Enum):
     TEAM = 0
@@ -14,21 +9,17 @@ class RankingType(Enum):
 
 class RankingTypeTable:
     def __init__(self) -> None:
-        self.table = Table("rankingtype")
+        self.table = "rankingtype"
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS rankingtype (Name TEXT NOT NULL UNIQUE);",
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
+            "(Name TEXT NOT NULL UNIQUE);",
         )
 
-        cursor.execute(Query.from_(self.table).select(self.table.Name).get_sql())
+        cursor.execute(f"SELECT Name FROM {self.table};")
         existing = [row[0] for row in cursor.fetchall()]
-        insert_sql = (
-            Query.into(self.table)
-            .columns(self.table.Name)
-            .insert(Parameter("?"))
-            .get_sql()
-        )
+        insert_sql = f"INSERT INTO {self.table} (Name) VALUES (?);"
         for value in RankingType:
             if value.name not in existing:
                 cursor.execute(
@@ -39,26 +30,25 @@ class RankingTypeTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Ranking Types:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID, * FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    @staticmethod
-    def drop(cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS rankingtype;")
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")
 
 
 class RankingTable:
     def __init__(self) -> None:
-        self.table = Table("ranking")
+        self.table = "ranking"
 
         self.team_value_table = TeamRankingValueTable()
         self.game_value_table = GameRankingValueTable()
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS ranking "
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
             "(UUID TEXT NOT NULL UNIQUE, "
             "Name TEXT NOT NULL, "
             "Type TEXT NOT NULL REFERENCES rankingtype(Name), "
@@ -73,7 +63,7 @@ class RankingTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Rankings:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID,* FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -85,17 +75,16 @@ class RankingTable:
         self.game_value_table.drop(cursor)
         self.team_value_table.drop(cursor)
 
-        cursor.execute("DROP TABLE IF EXISTS ranking;")
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")
 
 
 class TeamRankingValueTable:
     def __init__(self) -> None:
-        self.table = Table("teamrankingvalue")
+        self.table = "teamrankingvalue"
 
-    @staticmethod
-    def create(cursor: sqlite3.Cursor) -> None:
+    def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS teamrankingvalue "
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
             "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
             "TeamID TEXT NOT NULL REFERENCES team(UUID), "
             "Ord INT NOT NULL, "
@@ -108,24 +97,22 @@ class TeamRankingValueTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Ranking Values:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID,* FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    @staticmethod
-    def drop(cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS teamrankingvalue;")
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")
 
 
 class GameRankingValueTable:
     def __init__(self) -> None:
-        self.table = Table("gamerankingvalue")
+        self.table = "gamerankingvalue"
 
-    @staticmethod
-    def create(cursor: sqlite3.Cursor) -> None:
+    def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS gamerankingvalue "
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
             "(RankingID TEXT NOT NULL REFERENCES ranking(UUID), "
             "GameID TEXT NOT NULL REFERENCES game(UUID), "
             "Ord INT NOT NULL, "
@@ -138,11 +125,10 @@ class GameRankingValueTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Game Ranking Values:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID,* FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    @staticmethod
-    def drop(cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS gamerankingvalue;")
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")

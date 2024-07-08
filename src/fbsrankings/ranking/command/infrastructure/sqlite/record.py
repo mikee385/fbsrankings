@@ -5,10 +5,6 @@ from typing import Tuple
 from typing import Union
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-from pypika.queries import QueryBuilder
-
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
@@ -37,7 +33,7 @@ class TeamRecordRepository(BaseRepository):
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._record_table.UUID == Parameter("?")).get_sql(),
+            self._query() + " WHERE UUID = ?;",
             [str(id_)],
         )
         row = cursor.fetchone()
@@ -46,44 +42,38 @@ class TeamRecordRepository(BaseRepository):
         return self._to_record(row) if row is not None else None
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
-        query = self._query().where(self._record_table.SeasonID == Parameter("?"))
+        query = self._query() + " WHERE SeasonID = ?"
         params: List[SqliteParam] = [str(season_id)]
 
         if week is not None:
-            query = query.where(self._record_table.Week == Parameter("?"))
+            query += " AND Week = ?;"
             params.append(week)
         else:
-            query = query.where(self._record_table.Week.isnull())
+            query += " AND Week IS NULL;"
 
         cursor = self._connection.cursor()
-        cursor.execute(
-            query.get_sql(),
-            params,
-        )
+        cursor.execute(query, params)
         row = cursor.fetchone()
         cursor.close()
 
         return self._to_record(row) if row is not None else None
 
-    def _query(self) -> QueryBuilder:
-        return Query.from_(self._record_table).select(
-            self._record_table.UUID,
-            self._record_table.SeasonID,
-            self._record_table.Week,
+    def _query(self) -> str:
+        return (
+            "SELECT UUID, SeasonID, Week "
+            "FROM {self._record_table}"
         )
 
     def _to_record(self, row: Tuple[str, str, Optional[int]]) -> TeamRecord:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._value_table)
-            .select(
-                self._value_table.TeamRecordID,
-                self._value_table.TeamID,
-                self._value_table.Wins,
-                self._value_table.Losses,
-            )
-            .where(self._value_table.TeamRecordID == Parameter("?"))
-            .get_sql(),
+            "SELECT "
+            "TeamRecordID, "
+            "TeamID, "
+            "Wins, "
+            "Losses "
+            f"FROM {self._value_table} "
+            "WHERE TeamRecordID = ?;",
             [row[0]],
         )
         rows = cursor.fetchall()
@@ -112,60 +102,42 @@ class TeamRecordEventHandler(BaseEventHandler):
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = (
-            Query.from_(self._record_table)
-            .select(self._record_table.UUID)
-            .where(self._record_table.SeasonID == Parameter("?"))
+            "SELECT UUID "
+            f"FROM {self._record_table} "
+            "WHERE SeasonID = ?"
         )
         params: List[SqliteParam] = [str(event.season_id)]
 
         if event.week is not None:
-            query = query.where(self._record_table.Week == Parameter("?"))
+            query += " AND Week = ?;"
             params.append(event.week)
         else:
-            query = query.where(self._record_table.Week.isnull())
+            query += " AND Week IS NULL;"
 
-        self._cursor.execute(
-            query.get_sql(),
-            params,
-        )
+        self._cursor.execute(query, params)
         row = self._cursor.fetchone()
         if row is not None:
             self._cursor.execute(
-                Query.from_(self._value_table)
-                .delete()
-                .where(self._value_table.TeamRecordID == Parameter("?"))
-                .get_sql(),
+                f"DELETE FROM {self._value_table} "
+                "WHERE TeamRecordID = ?;",
                 [row[0]],
             )
             self._cursor.execute(
-                Query.from_(self._record_table)
-                .delete()
-                .where(self._record_table.UUID == Parameter("?"))
-                .get_sql(),
+                f"DELETE FROM {self._record_table} "
+                "WHERE UUID = ?;",
                 [row[0]],
             )
 
         self._cursor.execute(
-            Query.into(self._record_table)
-            .columns(
-                self._record_table.UUID,
-                self._record_table.SeasonID,
-                self._record_table.Week,
-            )
-            .insert(Parameter("?"), Parameter("?"), Parameter("?"))
-            .get_sql(),
+            f"INSERT INTO {self._record_table} "
+            "(UUID, SeasonID, Week) "
+            "VALUES (?,?,?);",
             [str(event.id_), str(event.season_id), event.week],
         )
         insert_sql = (
-            Query.into(self._value_table)
-            .columns(
-                self._value_table.TeamRecordID,
-                self._value_table.TeamID,
-                self._value_table.Wins,
-                self._value_table.Losses,
-            )
-            .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
-            .get_sql()
+            f"INSERT INTO {self._value_table} "
+            "(TeamRecordID, TeamID, Wins, Losses) "
+            "VALUES (?,?,?,?);"
         )
         for value in event.values:
             self._cursor.execute(

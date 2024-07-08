@@ -25,8 +25,6 @@ pydantic==2.5.3
     # via fbsrankings (setup.py)
 pydantic-core==2.14.6
     # via pydantic
-pypika==0.48.9
-    # via fbsrankings (setup.py)
 six==1.16.0
     # via html5lib
 soupsieve==2.4.1

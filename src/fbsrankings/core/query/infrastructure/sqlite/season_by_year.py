@@ -2,9 +2,6 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-
 from fbsrankings.shared.query import SeasonByYearQuery
 from fbsrankings.shared.query import SeasonByYearResult
 from fbsrankings.storage.sqlite import SeasonTable
@@ -19,10 +16,9 @@ class SeasonByYearQueryHandler:
     def __call__(self, query: SeasonByYearQuery) -> Optional[SeasonByYearResult]:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(self._table.UUID, self._table.Year)
-            .where(self._table.Year == Parameter("?"))
-            .get_sql(),
+            "SELECT UUID, Year "
+            f"FROM {self._table} "
+            "WHERE Year = ?;",
             [str(query.year)],
         )
         row = cursor.fetchone()

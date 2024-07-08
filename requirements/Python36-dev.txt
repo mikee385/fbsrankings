@@ -262,8 +262,6 @@ pylint==2.13.9
     # via fbsrankings (setup.py)
 pyparsing==3.1.2
     # via packaging
-pypika==0.48.9
-    # via fbsrankings (setup.py)
 pyroma==4.0 ; python_version >= "3.6" and python_version < "3.7"
     # via fbsrankings (setup.py)
 pytest==7.0.1

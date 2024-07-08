@@ -1,19 +1,15 @@
 import sqlite3
 
-from pypika import Query
-from pypika import Table
-from pypika.pseudocolumns import RowID
-
 
 class TeamRecordTable:
     def __init__(self) -> None:
-        self.table = Table("teamrecord")
+        self.table = "teamrecord"
 
         self.value_table = TeamRecordValueTable()
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS teamrecord "
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
             "(UUID TEXT NOT NULL UNIQUE, "
             "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
             "Week INT, "
@@ -25,7 +21,7 @@ class TeamRecordTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Records:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID,* FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
@@ -35,17 +31,16 @@ class TeamRecordTable:
     def drop(self, cursor: sqlite3.Cursor) -> None:
         self.value_table.drop(cursor)
 
-        cursor.execute("DROP TABLE IF EXISTS teamrecord;")
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")
 
 
 class TeamRecordValueTable:
     def __init__(self) -> None:
-        self.table = Table("teamrecordvalue")
+        self.table = "teamrecordvalue"
 
-    @staticmethod
-    def create(cursor: sqlite3.Cursor) -> None:
+    def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS teamrecordvalue "
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
             "(TeamRecordID TEXT NOT NULL REFERENCES teamrecord(UUID), "
             "TeamID TEXT NOT NULL REFERENCES team(UUID), "
             "Wins INT NOT NULL, "
@@ -56,11 +51,10 @@ class TeamRecordValueTable:
     def dump(self, connection: sqlite3.Connection) -> None:
         print("Team Record Values:")
         cursor = connection.cursor()
-        cursor.execute(Query.from_(self.table).select(RowID, self.table.star).get_sql())
+        cursor.execute(f"SELECT ROWID,* FROM {self.table};")
         for row in cursor.fetchall():
             print("(" + ", ".join(str(item) for item in row) + ")")
         cursor.close()
 
-    @staticmethod
-    def drop(cursor: sqlite3.Cursor) -> None:
-        cursor.execute("DROP TABLE IF EXISTS teamrecordvalue;")
+    def drop(self, cursor: sqlite3.Cursor) -> None:
+        cursor.execute(f"DROP TABLE IF EXISTS {self.table};")

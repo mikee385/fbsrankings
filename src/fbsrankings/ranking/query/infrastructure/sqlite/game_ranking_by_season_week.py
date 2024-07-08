@@ -5,9 +5,6 @@ from typing import Optional
 from typing import Union
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-
 from fbsrankings.shared.query import GameRankingBySeasonWeekQuery
 from fbsrankings.shared.query import GameRankingBySeasonWeekResult
 from fbsrankings.shared.query import GameRankingValueBySeasonWeekResult
@@ -37,21 +34,18 @@ class GameRankingBySeasonWeekQueryHandler:
         query: GameRankingBySeasonWeekQuery,
     ) -> Optional[GameRankingBySeasonWeekResult]:
         sql_query = (
-            Query.from_(self._ranking_table)
-            .select(
-                self._ranking_table.UUID,
-                self._ranking_table.Name,
-                self._ranking_table.SeasonID,
-                self._season_table.Year,
-                self._ranking_table.Week,
-            )
-            .inner_join(self._season_table)
-            .on(self._season_table.UUID == self._ranking_table.SeasonID)
-            .where(
-                (self._ranking_table.Name == Parameter("?"))
-                & (self._ranking_table.Type == Parameter("?"))
-                & (self._ranking_table.SeasonID == Parameter("?")),
-            )
+            "SELECT "
+            f"{self._ranking_table}.UUID, "
+            f"{self._ranking_table}.Name, "
+            f"{self._ranking_table}.SeasonID, "
+            f"{self._season_table}.Year, "
+            f"{self._ranking_table}.Week "
+            f"FROM {self._ranking_table} "
+            f"JOIN {self._season_table} "
+            f"ON {self._season_table}.UUID = {self._ranking_table}.SeasonID "
+            f"WHERE {self._ranking_table}.Name = ? "
+            f"AND {self._ranking_table}.Type = ? "
+            f"AND {self._ranking_table}.SeasonID = ?"
         )
 
         params: List[SqliteParam] = [
@@ -61,51 +55,45 @@ class GameRankingBySeasonWeekQueryHandler:
         ]
 
         if query.week is not None:
-            sql_query = sql_query.where(self._ranking_table.Week == Parameter("?"))
+            sql_query += f" AND {self._ranking_table}.Week = ?;"
             params.append(query.week)
         else:
-            sql_query = sql_query.where(self._ranking_table.Week.isnull())
-
+            sql_query += f" AND {self._ranking_table}.Week IS NULL;"
         cursor = self._connection.cursor()
-        cursor.execute(sql_query.get_sql(), params)
+        cursor.execute(sql_query, params)
         row = cursor.fetchone()
 
         values = []
         if row is not None:
-            home_team_table = self._team_table.as_("home_team")
-            away_team_table = self._team_table.as_("away_team")
-
             cursor.execute(
-                Query.from_(self._value_table)
-                .select(
-                    self._value_table.GameID,
-                    self._game_table.SeasonID,
-                    self._season_table.Year,
-                    self._game_table.Week,
-                    self._game_table.Date,
-                    self._game_table.SeasonSection,
-                    self._game_table.HomeTeamID,
-                    home_team_table.Name,
-                    self._game_table.AwayTeamID,
-                    away_team_table.name,
-                    self._game_table.HomeTeamScore,
-                    self._game_table.AwayTeamScore,
-                    self._game_table.Status,
-                    self._game_table.Notes,
-                    self._value_table.Ord,
-                    self._value_table.Rank,
-                    self._value_table.Value,
-                )
-                .inner_join(self._game_table)
-                .on(self._game_table.UUID == self._value_table.GameID)
-                .inner_join(self._season_table)
-                .on(self._season_table.UUID == self._game_table.SeasonID)
-                .inner_join(home_team_table)
-                .on(home_team_table.UUID == self._game_table.HomeTeamID)
-                .inner_join(away_team_table)
-                .on(away_team_table.UUID == self._game_table.AwayTeamID)
-                .where(self._value_table.RankingID == Parameter("?"))
-                .get_sql(),
+                "SELECT "
+                f"{self._value_table}.GameID, "
+                f"{self._game_table}.SeasonID, "
+                f"{self._season_table}.Year, "
+                f"{self._game_table}.Week, "
+                f"{self._game_table}.Date, "
+                f"{self._game_table}.SeasonSection, "
+                f"{self._game_table}.HomeTeamID, "
+                "home_team.Name, "
+                f"{self._game_table}.AwayTeamID, "
+                "away_team.Name, "
+                f"{self._game_table}.HomeTeamScore, "
+                f"{self._game_table}.AwayTeamScore, "
+                f"{self._game_table}.Status, "
+                f"{self._game_table}.Notes, "
+                f"{self._value_table}.Ord, "
+                f"{self._value_table}.Rank, "
+                f"{self._value_table}.Value "
+                f"FROM {self._value_table} "
+                f"JOIN {self._game_table} "
+                f"ON {self._game_table}.UUID = {self._value_table}.GameID "
+                f"JOIN {self._season_table} "
+                f"ON {self._season_table}.UUID = {self._game_table}.SeasonID "
+                f"JOIN {self._team_table} home_team "
+                f"ON home_team.UUID = {self._game_table}.HomeTeamID "
+                f"JOIN {self._team_table} away_team "
+                f"ON away_team.UUID = {self._game_table}.AwayTeamID "
+                f"WHERE {self._value_table}.RankingID = ?;",
                 [row[0]],
             )
             values = [

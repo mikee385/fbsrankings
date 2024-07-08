@@ -3,10 +3,6 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-from pypika.queries import QueryBuilder
-
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.season import (
@@ -27,7 +23,7 @@ class SeasonRepository(BaseRepository):
     def get(self, id_: SeasonID) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+            self._query() + " WHERE UUID = ?;",
             [str(id_)],
         )
         row = cursor.fetchone()
@@ -38,7 +34,7 @@ class SeasonRepository(BaseRepository):
     def find(self, year: int) -> Optional[Season]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.Year == Parameter("?")).get_sql(),
+            self._query() + " WHERE Year = ?;",
             [year],
         )
         row = cursor.fetchone()
@@ -46,8 +42,11 @@ class SeasonRepository(BaseRepository):
 
         return self._to_season(row) if row is not None else None
 
-    def _query(self) -> QueryBuilder:
-        return Query.from_(self._table).select(self._table.UUID, self._table.Year)
+    def _query(self) -> str:
+        return (
+            "SELECT UUID, Year "
+            f"FROM {self._table}"
+        )
 
     def _to_season(self, row: Tuple[str, int]) -> Season:
         return Season(self._bus, SeasonID(UUID(row[0])), row[1])
@@ -60,9 +59,9 @@ class SeasonEventHandler(BaseEventHandler):
 
     def handle_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
-            Query.into(self._table)
-            .columns(self._table.UUID, self._table.Year)
-            .insert(Parameter("?"), Parameter("?"))
-            .get_sql(),
+            f"INSERT INTO {self._table} "
+            "(UUID, Year) "
+            "VALUES (?,?);",
             [str(event.id_), event.year],
         )
+

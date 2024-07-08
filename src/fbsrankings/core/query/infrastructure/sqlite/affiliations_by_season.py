@@ -1,9 +1,6 @@
 import sqlite3
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-
 from fbsrankings.shared.query import AffiliationBySeasonResult
 from fbsrankings.shared.query import AffiliationsBySeasonQuery
 from fbsrankings.shared.query import AffiliationsBySeasonResult
@@ -23,21 +20,19 @@ class AffiliationsBySeasonQueryHandler:
     def __call__(self, query: AffiliationsBySeasonQuery) -> AffiliationsBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._affiliation_table)
-            .select(
-                self._affiliation_table.UUID,
-                self._affiliation_table.SeasonID,
-                self._season_table.Year,
-                self._affiliation_table.TeamID,
-                self._team_table.Name,
-                self._affiliation_table.Subdivision,
-            )
-            .inner_join(self._season_table)
-            .on(self._season_table.UUID == self._affiliation_table.SeasonID)
-            .inner_join(self._team_table)
-            .on(self._team_table.UUID == self._affiliation_table.TeamID)
-            .where(self._affiliation_table.SeasonID == Parameter("?"))
-            .get_sql(),
+            "SELECT "
+            f"{self._affiliation_table}.UUID, "
+            f"{self._affiliation_table}.SeasonID, "
+            f"{self._season_table}.Year, "
+            f"{self._affiliation_table}.TeamID, "
+            f"{self._team_table}.Name, "
+            f"{self._affiliation_table}.Subdivision "
+            f"FROM {self._affiliation_table} "
+            f"JOIN {self._season_table} "
+            f"ON {self._season_table}.UUID = {self._affiliation_table}.SeasonID "
+            f"JOIN {self._team_table} "
+            f"ON {self._team_table}.UUID = {self._affiliation_table}.TeamID "
+            f"WHERE {self._affiliation_table}.SeasonID = ?;",
             [str(query.season_id)],
         )
         items = [

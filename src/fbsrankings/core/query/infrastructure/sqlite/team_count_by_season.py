@@ -1,9 +1,5 @@
 import sqlite3
 
-from pypika import Parameter
-from pypika import Query
-from pypika.functions import Count
-
 from fbsrankings.shared.query import TeamCountBySeasonQuery
 from fbsrankings.shared.query import TeamCountBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
@@ -18,10 +14,9 @@ class TeamCountBySeasonQueryHandler:
     def __call__(self, query: TeamCountBySeasonQuery) -> TeamCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(Count(self._table.star))
-            .where(self._table.SeasonID == Parameter("?"))
-            .get_sql(),
+            "SELECT COUNT(*) "
+            f"FROM {self._table} "
+            "WHERE SeasonID = ?;",
             [str(query.season_id)],
         )
         row = cursor.fetchone()

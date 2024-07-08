@@ -3,10 +3,6 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-from pypika.queries import QueryBuilder
-
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
@@ -30,7 +26,7 @@ class AffiliationRepository(BaseRepository):
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query().where(self._table.UUID == Parameter("?")).get_sql(),
+            self._query() + " WHERE UUID = ?;",
             [str(id_)],
         )
         row = cursor.fetchone()
@@ -41,10 +37,7 @@ class AffiliationRepository(BaseRepository):
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
         cursor = self._connection.cursor()
         cursor.execute(
-            self._query()
-            .where(self._table.SeasonID == Parameter("?"))
-            .where(self._table.TeamID == Parameter("?"))
-            .get_sql(),
+            self._query() + " WHERE SeasonID = ? AND TeamID = ?;",
             [str(season_id), str(team_id)],
         )
         row = cursor.fetchone()
@@ -52,12 +45,14 @@ class AffiliationRepository(BaseRepository):
 
         return self._to_affiliation(row) if row is not None else None
 
-    def _query(self) -> QueryBuilder:
-        return Query.from_(self._table).select(
-            self._table.UUID,
-            self._table.SeasonID,
-            self._table.TeamID,
-            self._table.Subdivision,
+    def _query(self) -> str:
+        return (
+            "SELECT "
+            "UUID, "
+            "SeasonID, "
+            "TeamID, "
+            "Subdivision "
+            f"FROM {self._table}"
         )
 
     def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Affiliation:
@@ -77,15 +72,9 @@ class AffiliationEventHandler(BaseEventHandler):
 
     def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._cursor.execute(
-            Query.into(self._table)
-            .columns(
-                self._table.UUID,
-                self._table.SeasonID,
-                self._table.TeamID,
-                self._table.Subdivision,
-            )
-            .insert(Parameter("?"), Parameter("?"), Parameter("?"), Parameter("?"))
-            .get_sql(),
+            f"INSERT INTO {self._table} "
+            "(UUID, SeasonID, TeamID, Subdivision) "
+            "VALUES (?,?,?,?);",
             [
                 str(event.id_),
                 str(event.season_id),

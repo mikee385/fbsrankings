@@ -2,12 +2,6 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from pypika import Case
-from pypika import Order
-from pypika import Parameter
-from pypika import Query
-from pypika.functions import Sum
-
 from fbsrankings.shared.enums import GameStatus
 from fbsrankings.shared.query import LatestSeasonWeekQuery
 from fbsrankings.shared.query import LatestSeasonWeekResult
@@ -26,36 +20,28 @@ class LatestSeasonWeekQueryHandler:
         self,
         query: LatestSeasonWeekQuery,
     ) -> Optional[LatestSeasonWeekResult]:
-        season_subquery = (
-            Query.from_(self._game_table)
-            .select(
-                self._game_table.SeasonID,
-                self._season_table.Year,
-                Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
-                ).as_("GamesCompleted"),
-                Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
-                ).as_("GamesScheduled"),
-            )
-            .inner_join(self._season_table)
-            .on(self._season_table.UUID == self._game_table.SeasonID)
-            .groupby(self._game_table.SeasonID, self._season_table.Year)
-            .as_("season")
-        )
-
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(season_subquery)
-            .select(
-                season_subquery.SeasonID,
-                season_subquery.Year,
-                season_subquery.GamesScheduled,
-            )
-            .where(season_subquery.GamesCompleted > 0)
-            .orderby(season_subquery.Year, order=Order.desc)
-            .limit(1)
-            .get_sql(),
+            "SELECT "
+            "season.SeasonID, "
+            "season.Year, "
+            "season.GamesScheduled "
+            "FROM ("
+            "SELECT "
+            f"{self._game_table}.SeasonID, "
+            f"{self._season_table}.Year, "
+            f"SUM(CASE WHEN {self._game_table}.Status = ? THEN 1 ELSE 0 END) GamesCompleted, "
+            f"SUM(CASE WHEN {self._game_table}.Status = ? THEN 1 ELSE 0 END) GamesScheduled "
+            f"FROM {self._game_table} "
+            f"JOIN {self._season_table} "
+            f"ON {self._season_table}.UUID = {self._game_table}.SeasonID "
+            "GROUP BY "
+            f"{self._game_table}.SeasonID, "
+            f"{self._season_table}.Year"
+            ") season "
+            "WHERE season.GamesCompleted > 0 "
+            "ORDER BY season.Year DESC "
+            "LIMIT 1;",
             [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name],
         )
         row = cursor.fetchone()
@@ -69,33 +55,20 @@ class LatestSeasonWeekQueryHandler:
         if games_scheduled == 0:
             return LatestSeasonWeekResult(UUID(season_id), year, None)
 
-        week_subquery = (
-            Query.from_(self._game_table)
-            .select(
-                self._game_table.Week,
-                Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
-                ).as_("GamesCompleted"),
-                Sum(
-                    Case().when(self._game_table.Status == Parameter("?"), 1).else_(0),
-                ).as_("GamesScheduled"),
-            )
-            .where(self._game_table.SeasonID == Parameter("?"))
-            .groupby(self._game_table.Week)
-            .as_("week")
-        )
-
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(week_subquery)
-            .select(week_subquery.Week)
-            .where(
-                (week_subquery.GamesCompleted > 0)
-                & (week_subquery.GamesScheduled == 0),
-            )
-            .orderby(week_subquery.Week, order=Order.desc)
-            .limit(1)
-            .get_sql(),
+            "SELECT week.Week "
+            "FROM ("
+            "SELECT Week, "
+            "SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) GamesCompleted, "
+            "SUM(CASE WHEN Status = ? THEN 1 ELSE 0 END) GamesScheduled "
+            f"FROM {self._game_table} "
+            "WHERE SeasonID = ? "
+            "GROUP BY Week"
+            ") week "
+            "WHERE week.GamesCompleted > 0 AND week.GamesScheduled = 0 "
+            "ORDER BY week.Week DESC "
+            "LIMIT 1;",
             [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name, season_id],
         )
         row = cursor.fetchone()

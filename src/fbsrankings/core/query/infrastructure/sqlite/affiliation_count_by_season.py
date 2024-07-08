@@ -1,10 +1,5 @@
 import sqlite3
 
-from pypika import Case
-from pypika import Parameter
-from pypika import Query
-from pypika.functions import Sum
-
 from fbsrankings.shared.enums import Subdivision
 from fbsrankings.shared.query import AffiliationCountBySeasonQuery
 from fbsrankings.shared.query import AffiliationCountBySeasonResult
@@ -23,26 +18,12 @@ class AffiliationCountBySeasonQueryHandler:
     ) -> AffiliationCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(
-                Sum(
-                    Case()
-                    .when(self._table.Subdivision == Subdivision.FBS.name, 1)
-                    .else_(0),
-                ).as_(
-                    "FBS_Count",
-                ),
-                Sum(
-                    Case()
-                    .when(self._table.Subdivision == Subdivision.FCS.name, 1)
-                    .else_(0),
-                ).as_(
-                    "FCS_Count",
-                ),
-            )
-            .where(self._table.SeasonID == Parameter("?"))
-            .get_sql(),
-            [str(query.season_id)],
+            "SELECT "
+            "SUM(CASE WHEN Subdivision = ? THEN 1 ELSE 0 END) FBS_Count, "
+            "SUM(CASE WHEN Subdivision = ? THEN 1 ELSE 0 END) FCS_Count "
+            f"FROM {self._table} "
+            "WHERE SeasonID = ?;",
+            [Subdivision.FBS.name, Subdivision.FCS.name, str(query.season_id)],
         )
         row = cursor.fetchone()
         cursor.close()

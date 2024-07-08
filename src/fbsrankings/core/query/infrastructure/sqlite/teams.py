@@ -1,8 +1,6 @@
 import sqlite3
 from uuid import UUID
 
-from pypika import Query
-
 from fbsrankings.shared.query import TeamResult
 from fbsrankings.shared.query import TeamsQuery
 from fbsrankings.shared.query import TeamsResult
@@ -18,9 +16,7 @@ class TeamsQueryHandler:
     def __call__(self, query: TeamsQuery) -> TeamsResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(self._table.UUID, self._table.Name)
-            .get_sql(),
+            f"SELECT UUID, Name FROM {self._table};",
         )
         items = [TeamResult(UUID(row[0]), row[1]) for row in cursor.fetchall()]
         cursor.close()

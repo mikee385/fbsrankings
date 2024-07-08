@@ -1,8 +1,6 @@
 import sqlite3
 from uuid import UUID
 
-from pypika import Query
-
 from fbsrankings.shared.query import SeasonResult
 from fbsrankings.shared.query import SeasonsQuery
 from fbsrankings.shared.query import SeasonsResult
@@ -18,9 +16,7 @@ class SeasonsQueryHandler:
     def __call__(self, query: SeasonsQuery) -> SeasonsResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(self._table.UUID, self._table.Year)
-            .get_sql(),
+            f"SELECT UUID, Year FROM {self._table};",
         )
         items = [SeasonResult(UUID(row[0]), row[1]) for row in cursor.fetchall()]
         cursor.close()

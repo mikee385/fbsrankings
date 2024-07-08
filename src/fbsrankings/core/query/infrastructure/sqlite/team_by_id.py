@@ -2,9 +2,6 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from pypika import Parameter
-from pypika import Query
-
 from fbsrankings.shared.query import TeamByIDQuery
 from fbsrankings.shared.query import TeamByIDResult
 from fbsrankings.storage.sqlite import TeamTable
@@ -19,10 +16,9 @@ class TeamByIDQueryHandler:
     def __call__(self, query: TeamByIDQuery) -> Optional[TeamByIDResult]:
         cursor = self._connection.cursor()
         cursor.execute(
-            Query.from_(self._table)
-            .select(self._table.UUID, self._table.Name)
-            .where(self._table.UUID == Parameter("?"))
-            .get_sql(),
+            "SELECT UUID, Name "
+            f"FROM {self._table} "
+            "WHERE UUID = ?;",
             [str(query.id_)],
         )
         row = cursor.fetchone()
