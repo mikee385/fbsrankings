@@ -59,10 +59,7 @@ class TeamRecordRepository(BaseRepository):
         return self._to_record(row) if row is not None else None
 
     def _query(self) -> str:
-        return (
-            "SELECT UUID, SeasonID, Week "
-            "FROM {self._record_table}"
-        )
+        return f"SELECT UUID, SeasonID, Week FROM {self._record_table}"
 
     def _to_record(self, row: Tuple[str, str, Optional[int]]) -> TeamRecord:
         cursor = self._connection.cursor()
@@ -101,11 +98,7 @@ class TeamRecordEventHandler(BaseEventHandler):
         self._value_table = TeamRecordValueTable().table
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
-        query = (
-            "SELECT UUID "
-            f"FROM {self._record_table} "
-            "WHERE SeasonID = ?"
-        )
+        query = f"SELECT UUID FROM {self._record_table} WHERE SeasonID = ?"
         params: List[SqliteParam] = [str(event.season_id)]
 
         if event.week is not None:
@@ -118,13 +111,11 @@ class TeamRecordEventHandler(BaseEventHandler):
         row = self._cursor.fetchone()
         if row is not None:
             self._cursor.execute(
-                f"DELETE FROM {self._value_table} "
-                "WHERE TeamRecordID = ?;",
+                f"DELETE FROM {self._value_table} WHERE TeamRecordID = ?;",
                 [row[0]],
             )
             self._cursor.execute(
-                f"DELETE FROM {self._record_table} "
-                "WHERE UUID = ?;",
+                f"DELETE FROM {self._record_table} WHERE UUID = ?;",
                 [row[0]],
             )
 

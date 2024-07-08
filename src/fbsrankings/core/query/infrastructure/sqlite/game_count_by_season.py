@@ -14,9 +14,7 @@ class GameCountBySeasonQueryHandler:
     def __call__(self, query: GameCountBySeasonQuery) -> GameCountBySeasonResult:
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT COUNT(*) "
-            f"FROM {self._table} "
-            "WHERE SeasonID = ?;",
+            f"SELECT COUNT(*) FROM {self._table} WHERE SeasonID = ?;",
             [str(query.season_id)],
         )
         row = cursor.fetchone()

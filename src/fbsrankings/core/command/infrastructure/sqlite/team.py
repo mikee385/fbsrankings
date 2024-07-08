@@ -41,10 +41,7 @@ class TeamRepository(BaseRepository):
         return self._to_team(row) if row is not None else None
 
     def _query(self) -> str:
-        return (
-            "SELECT UUID, Name "
-            f"FROM {self._table}"
-        )
+        return f"SELECT UUID, Name FROM {self._table}"
 
     def _to_team(self, row: Tuple[str, str]) -> Team:
         return Team(self._bus, TeamID(UUID(row[0])), row[1])
@@ -57,7 +54,6 @@ class TeamEventHandler(BaseEventHandler):
 
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self._table} " "(UUID, Name) "
-            "VALUES (?,?);",
+            f"INSERT INTO {self._table} (UUID, Name) VALUES (?,?);",
             [str(event.id_), event.name],
         )

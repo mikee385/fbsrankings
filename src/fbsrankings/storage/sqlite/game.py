@@ -9,8 +9,7 @@ class GameStatusTable:
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS {self.table} "
-            "(Name TEXT NOT NULL UNIQUE);",
+            f"CREATE TABLE IF NOT EXISTS {self.table} (Name TEXT NOT NULL UNIQUE);",
         )
 
         cursor.execute(f"SELECT Name FROM {self.table};")

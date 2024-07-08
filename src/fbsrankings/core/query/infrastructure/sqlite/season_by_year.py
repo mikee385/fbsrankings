@@ -16,9 +16,7 @@ class SeasonByYearQueryHandler:
     def __call__(self, query: SeasonByYearQuery) -> Optional[SeasonByYearResult]:
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT UUID, Year "
-            f"FROM {self._table} "
-            "WHERE Year = ?;",
+            f"SELECT UUID, Year FROM {self._table} WHERE Year = ?;",
             [str(query.year)],
         )
         row = cursor.fetchone()

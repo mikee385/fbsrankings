@@ -43,10 +43,7 @@ class SeasonRepository(BaseRepository):
         return self._to_season(row) if row is not None else None
 
     def _query(self) -> str:
-        return (
-            "SELECT UUID, Year "
-            f"FROM {self._table}"
-        )
+        return f"SELECT UUID, Year FROM {self._table}"
 
     def _to_season(self, row: Tuple[str, int]) -> Season:
         return Season(self._bus, SeasonID(UUID(row[0])), row[1])
@@ -59,9 +56,6 @@ class SeasonEventHandler(BaseEventHandler):
 
     def handle_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
-            f"INSERT INTO {self._table} "
-            "(UUID, Year) "
-            "VALUES (?,?);",
+            f"INSERT INTO {self._table} (UUID, Year) VALUES (?,?);",
             [str(event.id_), event.year],
         )
-

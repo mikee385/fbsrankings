@@ -109,9 +109,7 @@ class RankingRepository(Generic[T]):
     def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]]) -> Ranking[T]:
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT "
-            " ,".join(self._value_columns) + " "
-            "WHERE RankingID = ?;",
+            "SELECT " + " ,".join(self._value_columns) + " WHERE RankingID = ?;",
             [row[0]],
         )
         rows = cursor.fetchall()
@@ -161,13 +159,11 @@ class RankingEventHandler:
         row = self._cursor.fetchone()
         if row is not None:
             self._cursor.execute(
-                f"DELETE FROM {self._value_table} "
-                "WHERE RankingID = ?;",
+                f"DELETE FROM {self._value_table} WHERE RankingID = ?;",
                 [row[0]],
             )
             self._cursor.execute(
-                f"DELETE FROM {self._ranking_table} "
-                "WHERE UUID = ?;",
+                f"DELETE FROM {self._ranking_table} WHERE UUID = ?;",
                 [row[0]],
             )
 

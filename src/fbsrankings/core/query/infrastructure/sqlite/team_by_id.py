@@ -16,9 +16,7 @@ class TeamByIDQueryHandler:
     def __call__(self, query: TeamByIDQuery) -> Optional[TeamByIDResult]:
         cursor = self._connection.cursor()
         cursor.execute(
-            "SELECT UUID, Name "
-            f"FROM {self._table} "
-            "WHERE UUID = ?;",
+            f"SELECT UUID, Name FROM {self._table} WHERE UUID = ?;",
             [str(query.id_)],
         )
         row = cursor.fetchone()
