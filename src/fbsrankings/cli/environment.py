@@ -6,16 +6,18 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from fbsrankings.channel import MemoryEventChannel
 from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
+from fbsrankings.serialization import PickleSerializer
+from fbsrankings.serialization import SerializationEventBus
 from fbsrankings.shared.command import DropStorageCommand
 from fbsrankings.shared.config import Config
 from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import CommandBus
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
+from fbsrankings.shared.messaging import MemoryCommandBus
+from fbsrankings.shared.messaging import MemoryQueryBus
 
 
 class Environment(ContextManager["Environment"]):
@@ -32,9 +34,16 @@ class Environment(ContextManager["Environment"]):
         config = Config.from_ini(config_path)
         self.context = Context(config)
 
-        self.command_bus = CommandBus()
-        self.query_bus = QueryBus()
-        self.event_bus = EventBus()
+        self.command_bus = MemoryCommandBus()
+        self.query_bus = MemoryQueryBus()
+
+        self._serializer = PickleSerializer()
+
+        self._event_channel = MemoryEventChannel()
+        self.event_bus = SerializationEventBus(
+            self._event_channel,
+            self._serializer,
+        )
 
         self.command_bus.register_handler(DropStorageCommand, self._drop_storage)
 

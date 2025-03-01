@@ -21,6 +21,7 @@ from fbsrankings.ranking.command.infrastructure.transaction.repository import (
     Repository as TransactionRepository,
 )
 from fbsrankings.shared.messaging import EventBus
+from fbsrankings.shared.messaging import MemoryEventBus
 from fbsrankings.storage.memory import Storage as MemoryStorage
 
 
@@ -28,12 +29,12 @@ class Transaction(ContextManager["Transaction"]):
     def __init__(self, data_source: DataSource, bus: EventBus) -> None:
         self._data_source = data_source
         self._outer_bus = bus
-        self._inner_bus = EventBus()
+        self._inner_bus = MemoryEventBus()
 
         self._factory = Factory(self._inner_bus)
         self._data_repository = self._data_source.repository(self._inner_bus)
 
-        self._cache_bus = EventBus()
+        self._cache_bus = MemoryEventBus()
         self._cache_storage = MemoryStorage()
         self._cache_repository = MemoryRepository(self._cache_storage, self._inner_bus)
         self._cache_handler = MemoryEventHandler(self._cache_storage, self._cache_bus)
@@ -54,7 +55,7 @@ class Transaction(ContextManager["Transaction"]):
         return self._repository
 
     def commit(self) -> None:
-        storage_bus = EventBus()
+        storage_bus = MemoryEventBus()
         with self._data_source.event_handler(storage_bus) as event_handler:
             for event in self._event_handler.events:
                 storage_bus.publish(event)

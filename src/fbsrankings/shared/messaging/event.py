@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from abc import abstractmethod
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -17,7 +18,21 @@ E = TypeVar("E", bound=Event, contravariant=True)
 EventHandler = Callable[[E], None]
 
 
-class EventBus:
+class EventBus(metaclass=ABCMeta):
+    @abstractmethod
+    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def unregister_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def publish(self, event: E) -> None:
+        raise NotImplementedError
+
+
+class MemoryEventBus(EventBus):
     def __init__(self) -> None:
         self._handlers: Dict[Type[Event], List[EventHandler[Any]]] = {}
 

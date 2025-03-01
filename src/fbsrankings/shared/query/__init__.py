@@ -1,5 +1,11 @@
 """Shared query classes for the fbsrankings package"""
 
+from typing import Any
+from typing import Dict
+from typing import Type
+
+from fbsrankings.shared.messaging import Query
+
 from .affiliation_count_by_season import AffiliationCountBySeasonQuery
 from .affiliation_count_by_season import AffiliationCountBySeasonResult
 from .affiliations_by_season import AffiliationBySeasonResult
@@ -92,3 +98,24 @@ __all__ = [
     "WeekCountBySeasonQuery",
     "WeekCountBySeasonResult",
 ]
+
+Topics: Dict[Type[Query[Any]], str] = {
+    AffiliationCountBySeasonQuery: "fbsrankings/query/affiliation_count_by_season",
+    AffiliationsBySeasonQuery: "fbsrankings/query/affiliations_by_season",
+    CanceledGamesQuery: "fbsrankings/query/canceled_games",
+    GameByIDQuery: "fbsrankings/query/game_by_id",
+    GameCountBySeasonQuery: "fbsrankings/query/game_count_by_season",
+    GameRankingBySeasonWeekQuery: "fbsrankings/query/game_ranking_by_season_week",
+    GamesBySeasonQuery: "fbsrankings/query/games_by_season",
+    LatestSeasonWeekQuery: "fbsrankings/query/latest_season_week",
+    PostseasonGameCountBySeasonQuery: "fbsrankings/query/postseason_game_count_by_season",
+    SeasonByIDQuery: "fbsrankings/query/season_by_id",
+    SeasonByYearQuery: "fbsrankings/query/season_by_year",
+    SeasonsQuery: "fbsrankings/query/seasons",
+    TeamByIDQuery: "fbsrankings/query/team_by_id",
+    TeamCountBySeasonQuery: "fbsrankings/query/team_count_by_season",
+    TeamRankingBySeasonWeekQuery: "fbsrankings/query/team_ranking_by_season_week",
+    TeamRecordBySeasonWeekQuery: "fbsrankings/query/team_record_by_season_week",
+    TeamsQuery: "fbsrankings/query/teams",
+    WeekCountBySeasonQuery: "fbsrankings/query/week_count_by_season",
+}

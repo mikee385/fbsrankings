@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from abc import abstractmethod
 from typing import Any
 from typing import Callable
 from typing import cast
@@ -19,7 +20,21 @@ class Query(Generic[R], metaclass=ABCMeta):  # noqa: B024
 QueryHandler = Callable[[Q], R]
 
 
-class QueryBus:
+class QueryBus(metaclass=ABCMeta):
+    @abstractmethod
+    def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def unregister_handler(self, type_: Type[Q]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def query(self, query: Query[R]) -> R:
+        raise NotImplementedError
+
+
+class MemoryQueryBus(QueryBus):
     def __init__(self) -> None:
         self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
 

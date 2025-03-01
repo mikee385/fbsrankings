@@ -4,8 +4,10 @@ from uuid import UUID
 from fbsrankings.shared.messaging import Event
 
 
-class ValidationError(Event, ValueError):
-    pass
+class ValidationError(Event):
+    def __init__(self, message: str) -> None:
+        super().__init__()
+        self.message = message
 
 
 class MultipleValidationError(ValidationError):

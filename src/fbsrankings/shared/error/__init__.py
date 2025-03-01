@@ -1,5 +1,10 @@
 """Shared error classes for the fbsrankings package"""
 
+from typing import Dict
+from typing import Type
+
+from fbsrankings.shared.messaging import Event
+
 from .validation import AffiliationDataValidationError
 from .validation import FBSGameCountValidationError
 from .validation import FCSGameCountValidationError
@@ -22,3 +27,14 @@ __all__ = [
     "TeamDataValidationError",
     "ValidationError",
 ]
+
+Topics: Dict[Type[Event], str] = {
+    AffiliationDataValidationError: "fbsrankings/error/validation/affiliation_data",
+    FBSGameCountValidationError: "fbsrankings/error/validation/fbs_game_count",
+    FCSGameCountValidationError: "fbsrankings/error/validation/fcs_game_count",
+    GameDataValidationError: "fbsrankings/error/validation/game_data",
+    MultipleValidationError: "fbsrankings/error/validation/multiple",
+    PostseasonGameCountValidationError: "fbsrankings/error/validation/postseason_game_count",
+    SeasonDataValidationError: "fbsrankings/error/validation/season_data",
+    TeamDataValidationError: "fbsrankings/error/validation/team_data",
+}

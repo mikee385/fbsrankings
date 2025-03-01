@@ -53,7 +53,7 @@ check:
     mypy src tests setup.py
     vulture src tests setup.py
     pylint src tests setup.py
-    bandit -r src
+    bandit --ini setup.cfg -r src
     pyroma .
 
 pre-commit:

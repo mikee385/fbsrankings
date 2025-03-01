@@ -1,5 +1,10 @@
 """Shared event classes for the fbsrankings package"""
 
+from typing import Dict
+from typing import Type
+
+from fbsrankings.shared.messaging import Event
+
 from .affiliation import AffiliationCreatedEvent
 from .affiliation import AffiliationEventHandler
 from .affiliation import AffiliationEventManager
@@ -60,3 +65,17 @@ __all__ = [
     "TeamRecordEventManager",
     "TeamRecordValue",
 ]
+
+Topics: Dict[Type[Event], str] = {
+    AffiliationCreatedEvent: "fbsrankings/event/affiliation_created",
+    GameCanceledEvent: "fbsrankings/event/game_canceled",
+    GameCompletedEvent: "fbsrankings/event/game_completed",
+    GameCreatedEvent: "fbsrankings/event/game_created",
+    GameNotesUpdatedEvent: "fbsrankings/event/game_notes_updated",
+    GameRankingCalculatedEvent: "fbsrankings/event/game_ranking_calculated",
+    GameRescheduledEvent: "fbsrankings/event/game_rescheduled",
+    SeasonCreatedEvent: "fbsrankings/event/season_created",
+    TeamCreatedEvent: "fbsrankings/event/team_created",
+    TeamRankingCalculatedEvent: "fbsrankings/event/team_ranking_calculated",
+    TeamRecordCalculatedEvent: "fbsrankings/event/team_record_calculated",
+}

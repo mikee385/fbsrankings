@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from abc import abstractmethod
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -16,7 +17,21 @@ C = TypeVar("C", bound=Command, contravariant=True)
 CommandHandler = Callable[[C], None]
 
 
-class CommandBus:
+class CommandBus(metaclass=ABCMeta):
+    @abstractmethod
+    def register_handler(self, type_: Type[C], handler: CommandHandler[C]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def unregister_handler(self, type_: Type[C]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def send(self, command: C) -> None:
+        raise NotImplementedError
+
+
+class MemoryCommandBus(CommandBus):
     def __init__(self) -> None:
         self._handlers: Dict[Type[Command], CommandHandler[Any]] = {}
 

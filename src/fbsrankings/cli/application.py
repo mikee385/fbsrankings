@@ -140,7 +140,6 @@ class Application:
         self._event_bus.register_handler(GameNotesUpdatedEvent, self._save_notes_event)
 
         self._errors: List[ValidationError] = []
-        self._event_bus.register_handler(ValidationError, self._save_error)
         self._event_bus.register_handler(MultipleValidationError, self._save_error)
         self._event_bus.register_handler(SeasonDataValidationError, self._save_error)
         self._event_bus.register_handler(TeamDataValidationError, self._save_error)
@@ -780,7 +779,7 @@ class Application:
                     else:
                         print(game.status)
                     print(game.notes)
-                    print(error)
+                    print(f"{type(error).__name__}: {error.message}")
                     print(
                         f"For {error.attribute_name}, expected: {error.expected_value},"
                         f" found: {error.attribute_value}",
@@ -793,14 +792,14 @@ class Application:
             print("Other Errors:")
             print()
             for error in other_errors:
-                print(error)
+                print(f"{type(error).__name__}: {error.message}")
 
     def _raise_errors(self) -> None:
         if len(self._errors) == 1:
             error = self._errors[0]
             self._errors.clear()
-            raise error
+            raise ValueError(f"{type(error).__name__}: {error.message}")
         if len(self._errors) > 1:
             error = MultipleValidationError(self._errors)
             self._errors = []
-            raise error
+            raise ValueError(f"{type(error).__name__}: {error.message}")
