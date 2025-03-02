@@ -1,13 +1,13 @@
 from typing import Optional
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.season import (
     SeasonRepository as BaseRepository,
 )
-from fbsrankings.shared.event import SeasonCreatedEvent
-from fbsrankings.shared.event import SeasonEventHandler as BaseEventHandler
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.event import SeasonCreatedEvent
+from fbsrankings.messages.event import SeasonEventHandler as BaseEventHandler
 from fbsrankings.storage.memory import SeasonDto
 from fbsrankings.storage.memory import SeasonStorage
 

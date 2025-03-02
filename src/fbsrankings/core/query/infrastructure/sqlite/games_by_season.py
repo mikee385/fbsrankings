@@ -2,9 +2,9 @@ import sqlite3
 from datetime import datetime
 from uuid import UUID
 
-from fbsrankings.shared.query import GameBySeasonResult
-from fbsrankings.shared.query import GamesBySeasonQuery
-from fbsrankings.shared.query import GamesBySeasonResult
+from fbsrankings.messages.query import GameBySeasonResult
+from fbsrankings.messages.query import GamesBySeasonQuery
+from fbsrankings.messages.query import GamesBySeasonResult
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

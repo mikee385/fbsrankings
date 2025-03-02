@@ -1,7 +1,7 @@
 from typing import Optional
 
-from fbsrankings.shared.query import GameByIDQuery
-from fbsrankings.shared.query import GameByIDResult
+from fbsrankings.messages.query import GameByIDQuery
+from fbsrankings.messages.query import GameByIDResult
 from fbsrankings.storage.memory import Storage
 
 

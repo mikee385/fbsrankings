@@ -1,5 +1,6 @@
 from typing import Optional
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.affiliation import AffiliationID
 from fbsrankings.core.command.domain.model.affiliation import (
@@ -7,10 +8,9 @@ from fbsrankings.core.command.domain.model.affiliation import (
 )
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.shared.enums import Subdivision
-from fbsrankings.shared.event import AffiliationCreatedEvent
-from fbsrankings.shared.event import AffiliationEventHandler as BaseEventHandler
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.enums import Subdivision
+from fbsrankings.messages.event import AffiliationCreatedEvent
+from fbsrankings.messages.event import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.storage.memory import AffiliationDto
 from fbsrankings.storage.memory import AffiliationStorage
 

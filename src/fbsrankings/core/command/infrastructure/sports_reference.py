@@ -14,9 +14,9 @@ from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.service.importer import Importer
 from fbsrankings.core.command.domain.service.validator import Validator
-from fbsrankings.shared.enums import GameStatus
-from fbsrankings.shared.enums import SeasonSection
-from fbsrankings.shared.enums import Subdivision
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.enums import SeasonSection
+from fbsrankings.messages.enums import Subdivision
 
 
 class SportsReference:

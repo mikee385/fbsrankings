@@ -1,5 +1,8 @@
 from typing import Union
 
+from communication.bus import EventBus
+from fbsrankings.config import ConfigCommandStorageType
+from fbsrankings.context import Context
 from fbsrankings.core.command.infrastructure.event_handler import EventHandler
 from fbsrankings.core.command.infrastructure.event_handler import EventHandlerFactory
 from fbsrankings.core.command.infrastructure.memory.data_source import (
@@ -10,9 +13,6 @@ from fbsrankings.core.command.infrastructure.repository import RepositoryFactory
 from fbsrankings.core.command.infrastructure.sqlite.data_source import (
     DataSource as SqliteDataSource,
 )
-from fbsrankings.shared.config import ConfigCommandStorageType
-from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage as MemoryStorage
 from fbsrankings.storage.sqlite import Storage as SqliteStorage
 

@@ -5,6 +5,9 @@ from typing import Tuple
 from typing import Union
 from uuid import UUID
 
+from communication.bus import EventBus
+from fbsrankings.messages.event import TeamRecordCalculatedEvent
+from fbsrankings.messages.event import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
@@ -13,9 +16,6 @@ from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
-from fbsrankings.shared.event import TeamRecordCalculatedEvent
-from fbsrankings.shared.event import TeamRecordEventHandler as BaseEventHandler
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import TeamRecordTable
 from fbsrankings.storage.sqlite import TeamRecordValueTable
 

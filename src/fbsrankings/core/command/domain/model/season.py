@@ -5,8 +5,8 @@ from typing import Optional
 from uuid import UUID
 from uuid import uuid4
 
-from fbsrankings.shared.event import SeasonCreatedEvent
-from fbsrankings.shared.messaging import EventBus
+from communication.bus import EventBus
+from fbsrankings.messages.event import SeasonCreatedEvent
 
 
 SeasonID = NewType("SeasonID", UUID)

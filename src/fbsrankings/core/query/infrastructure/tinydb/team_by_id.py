@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.shared.query import TeamByIDQuery
-from fbsrankings.shared.query import TeamByIDResult
+from fbsrankings.messages.query import TeamByIDQuery
+from fbsrankings.messages.query import TeamByIDResult
 from fbsrankings.storage.tinydb import Storage
 
 

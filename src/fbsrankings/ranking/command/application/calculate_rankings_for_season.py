@@ -1,5 +1,12 @@
 from uuid import UUID
 
+from communication.bus import EventBus
+from communication.bus import QueryBus
+from fbsrankings.messages.command import CalculateRankingsForSeasonCommand
+from fbsrankings.messages.query import AffiliationsBySeasonQuery
+from fbsrankings.messages.query import GamesBySeasonQuery
+from fbsrankings.messages.query import SeasonByIDQuery
+from fbsrankings.messages.query import SeasonByYearQuery
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.service.colley_matrix_ranking_calculator import (
     ColleyMatrixRankingCalculator,
@@ -23,13 +30,6 @@ from fbsrankings.ranking.command.infrastructure.data_source import DataSource
 from fbsrankings.ranking.command.infrastructure.transaction.transaction import (
     Transaction,
 )
-from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
-from fbsrankings.shared.query import AffiliationsBySeasonQuery
-from fbsrankings.shared.query import GamesBySeasonQuery
-from fbsrankings.shared.query import SeasonByIDQuery
-from fbsrankings.shared.query import SeasonByYearQuery
 
 
 class CalculateRankingsForSeasonCommandHandler:

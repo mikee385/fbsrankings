@@ -1,6 +1,6 @@
 import sqlite3
 
-from fbsrankings.shared.enums import GameStatus
+from fbsrankings.messages.enums import GameStatus
 
 
 class GameStatusTable:

@@ -4,6 +4,10 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import EventBus
+from fbsrankings.messages.event import GameRankingEventManager
+from fbsrankings.messages.event import TeamRankingEventManager
+from fbsrankings.messages.event import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -16,10 +20,6 @@ from fbsrankings.ranking.command.infrastructure.memory.ranking import (
 from fbsrankings.ranking.command.infrastructure.memory.record import (
     TeamRecordEventHandler,
 )
-from fbsrankings.shared.event import GameRankingEventManager
-from fbsrankings.shared.event import TeamRankingEventManager
-from fbsrankings.shared.event import TeamRecordEventManager
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage
 
 

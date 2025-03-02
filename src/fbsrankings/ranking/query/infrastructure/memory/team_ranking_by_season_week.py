@@ -1,8 +1,8 @@
 from typing import Optional
 
-from fbsrankings.shared.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRankingBySeasonWeekResult
-from fbsrankings.shared.query import TeamRankingValueBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingValueBySeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
 

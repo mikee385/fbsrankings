@@ -5,6 +5,8 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import EventBus
+from communication.bus import MemoryEventBus
 from fbsrankings.ranking.command.domain.model.factory import Factory
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
 from fbsrankings.ranking.command.infrastructure.memory.event_handler import (
@@ -20,8 +22,6 @@ from fbsrankings.ranking.command.infrastructure.transaction.event_handler import
 from fbsrankings.ranking.command.infrastructure.transaction.repository import (
     Repository as TransactionRepository,
 )
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import MemoryEventBus
 from fbsrankings.storage.memory import Storage as MemoryStorage
 
 

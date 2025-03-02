@@ -1,13 +1,13 @@
 from typing import Dict
 from uuid import UUID
 
+from fbsrankings.messages.enums import GameStatus
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.ranking import Ranking
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingCalculator
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingFactory
-from fbsrankings.shared.enums import GameStatus
 
 
 class TeamData:

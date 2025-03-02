@@ -1,3 +1,4 @@
+from communication.bus import EventBus
 from fbsrankings.core.command.infrastructure.memory.affiliation import (
     AffiliationRepository,
 )
@@ -7,7 +8,6 @@ from fbsrankings.core.command.infrastructure.memory.team import TeamRepository
 from fbsrankings.core.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage
 
 

@@ -1,6 +1,6 @@
-from fbsrankings.shared.query import AffiliationBySeasonResult
-from fbsrankings.shared.query import AffiliationsBySeasonQuery
-from fbsrankings.shared.query import AffiliationsBySeasonResult
+from fbsrankings.messages.query import AffiliationBySeasonResult
+from fbsrankings.messages.query import AffiliationsBySeasonQuery
+from fbsrankings.messages.query import AffiliationsBySeasonResult
 from fbsrankings.storage.memory import Storage
 
 

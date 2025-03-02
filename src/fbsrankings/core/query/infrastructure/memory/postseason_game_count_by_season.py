@@ -1,6 +1,6 @@
-from fbsrankings.shared.enums import SeasonSection
-from fbsrankings.shared.query import PostseasonGameCountBySeasonQuery
-from fbsrankings.shared.query import PostseasonGameCountBySeasonResult
+from fbsrankings.messages.enums import SeasonSection
+from fbsrankings.messages.query import PostseasonGameCountBySeasonQuery
+from fbsrankings.messages.query import PostseasonGameCountBySeasonResult
 from fbsrankings.storage.memory import Storage
 
 

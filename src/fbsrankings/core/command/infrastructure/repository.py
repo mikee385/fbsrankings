@@ -3,11 +3,11 @@ from abc import abstractmethod
 
 from typing_extensions import Protocol
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.affiliation import AffiliationRepository
 from fbsrankings.core.command.domain.model.game import GameRepository
 from fbsrankings.core.command.domain.model.season import SeasonRepository
 from fbsrankings.core.command.domain.model.team import TeamRepository
-from fbsrankings.shared.messaging import EventBus
 
 
 class Repository(metaclass=ABCMeta):

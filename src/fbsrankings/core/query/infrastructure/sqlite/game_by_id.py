@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.shared.query import GameByIDQuery
-from fbsrankings.shared.query import GameByIDResult
+from fbsrankings.messages.query import GameByIDQuery
+from fbsrankings.messages.query import GameByIDResult
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

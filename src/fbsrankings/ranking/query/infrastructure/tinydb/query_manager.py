@@ -5,6 +5,11 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import EventBus
+from communication.bus import QueryBus
+from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.ranking.query.infrastructure.tinydb.game_ranking_by_season_week import (
     GameRankingBySeasonWeekQueryHandler,
 )
@@ -23,11 +28,6 @@ from fbsrankings.ranking.query.infrastructure.tinydb.team_record_by_season_week 
 from fbsrankings.ranking.query.infrastructure.tinydb.team_record_by_season_week import (
     TeamRecordBySeasonWeekQueryProjection,
 )
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
-from fbsrankings.shared.query import GameRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.storage.tinydb import Storage
 
 

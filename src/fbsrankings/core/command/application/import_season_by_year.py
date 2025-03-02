@@ -1,11 +1,11 @@
+from communication.bus import EventBus
+from fbsrankings.config import Config
 from fbsrankings.core.command.domain.service.importer import Importer
 from fbsrankings.core.command.domain.service.validator import Validator
 from fbsrankings.core.command.infrastructure.data_source import DataSource
 from fbsrankings.core.command.infrastructure.sports_reference import SportsReference
 from fbsrankings.core.command.infrastructure.transaction.transaction import Transaction
-from fbsrankings.shared.command import ImportSeasonByYearCommand
-from fbsrankings.shared.config import Config
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.command import ImportSeasonByYearCommand
 
 
 class ImportSeasonByYearCommandHandler:

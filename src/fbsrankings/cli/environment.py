@@ -6,18 +6,18 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.channel import MemoryEventChannel
+from communication.bridge import EventBridge
+from communication.bus import MemoryCommandBus
+from communication.bus import MemoryQueryBus
+from communication.channel import MemoryEventChannel
+from fbsrankings.config import Config
+from fbsrankings.context import Context
 from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
+from fbsrankings.messages.command import DropStorageCommand
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
-from fbsrankings.serialization import PickleSerializer
-from fbsrankings.serialization import SerializationEventBus
-from fbsrankings.shared.command import DropStorageCommand
-from fbsrankings.shared.config import Config
-from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import MemoryCommandBus
-from fbsrankings.shared.messaging import MemoryQueryBus
+from serialization import PickleSerializer
 
 
 class Environment(ContextManager["Environment"]):
@@ -40,7 +40,7 @@ class Environment(ContextManager["Environment"]):
         self._serializer = PickleSerializer()
 
         self._event_channel = MemoryEventChannel()
-        self.event_bus = SerializationEventBus(
+        self.event_bus = EventBridge(
             self._event_channel,
             self._serializer,
         )

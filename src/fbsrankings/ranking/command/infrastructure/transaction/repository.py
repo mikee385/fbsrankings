@@ -1,3 +1,4 @@
+from communication.bus import EventBus
 from fbsrankings.ranking.command.domain.model.ranking import GameRankingRepository
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
 from fbsrankings.ranking.command.domain.model.record import TeamRecordRepository
@@ -16,7 +17,6 @@ from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
 from fbsrankings.ranking.command.infrastructure.transaction.record import (
     TeamRecordRepository as TransactionTeamRecordRepository,
 )
-from fbsrankings.shared.messaging import EventBus
 
 
 class Repository(BaseRepository):

@@ -1,6 +1,6 @@
 import sqlite3
 
-from fbsrankings.shared.enums import Subdivision
+from fbsrankings.messages.enums import Subdivision
 
 
 class SubdivisionTable:

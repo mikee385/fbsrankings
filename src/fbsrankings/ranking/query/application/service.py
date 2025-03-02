@@ -6,6 +6,10 @@ from typing import Union
 
 from typing_extensions import Literal
 
+from communication.bus import EventBus
+from communication.bus import QueryBus
+from fbsrankings.config import ConfigQueryStorageType
+from fbsrankings.context import Context
 from fbsrankings.ranking.query.infrastructure.memory.query_manager import (
     QueryManager as MemoryQueryManager,
 )
@@ -15,10 +19,6 @@ from fbsrankings.ranking.query.infrastructure.sqlite.query_manager import (
 from fbsrankings.ranking.query.infrastructure.tinydb.query_manager import (
     QueryManager as TinyDbQueryManager,
 )
-from fbsrankings.shared.config import ConfigQueryStorageType
-from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
 from fbsrankings.storage.memory import Storage as MemoryStorage
 from fbsrankings.storage.sqlite import Storage as SqliteStorage
 from fbsrankings.storage.tinydb import Storage as TinyDbStorage

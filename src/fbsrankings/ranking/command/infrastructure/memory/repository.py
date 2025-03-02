@@ -1,3 +1,4 @@
+from communication.bus import EventBus
 from fbsrankings.ranking.command.infrastructure.memory.ranking import (
     GameRankingRepository,
 )
@@ -10,7 +11,6 @@ from fbsrankings.ranking.command.infrastructure.memory.record import (
 from fbsrankings.ranking.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.memory import Storage
 
 

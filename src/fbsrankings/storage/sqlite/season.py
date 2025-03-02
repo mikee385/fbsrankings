@@ -1,6 +1,6 @@
 import sqlite3
 
-from fbsrankings.shared.enums import SeasonSection
+from fbsrankings.messages.enums import SeasonSection
 
 
 class SeasonSectionTable:

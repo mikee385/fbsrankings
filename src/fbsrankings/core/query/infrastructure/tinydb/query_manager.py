@@ -5,6 +5,8 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import EventBus
+from communication.bus import QueryBus
 from fbsrankings.core.query.infrastructure.tinydb.affiliation_count_by_season import (
     AffiliationCountBySeasonQueryHandler,
 )
@@ -71,23 +73,21 @@ from fbsrankings.core.query.infrastructure.tinydb.week_count_by_season import (
 from fbsrankings.core.query.infrastructure.tinydb.week_count_by_season import (
     WeekCountBySeasonQueryProjection,
 )
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
-from fbsrankings.shared.query import AffiliationCountBySeasonQuery
-from fbsrankings.shared.query import AffiliationsBySeasonQuery
-from fbsrankings.shared.query import CanceledGamesQuery
-from fbsrankings.shared.query import GameByIDQuery
-from fbsrankings.shared.query import GameCountBySeasonQuery
-from fbsrankings.shared.query import GamesBySeasonQuery
-from fbsrankings.shared.query import LatestSeasonWeekQuery
-from fbsrankings.shared.query import PostseasonGameCountBySeasonQuery
-from fbsrankings.shared.query import SeasonByIDQuery
-from fbsrankings.shared.query import SeasonByYearQuery
-from fbsrankings.shared.query import SeasonsQuery
-from fbsrankings.shared.query import TeamByIDQuery
-from fbsrankings.shared.query import TeamCountBySeasonQuery
-from fbsrankings.shared.query import TeamsQuery
-from fbsrankings.shared.query import WeekCountBySeasonQuery
+from fbsrankings.messages.query import AffiliationCountBySeasonQuery
+from fbsrankings.messages.query import AffiliationsBySeasonQuery
+from fbsrankings.messages.query import CanceledGamesQuery
+from fbsrankings.messages.query import GameByIDQuery
+from fbsrankings.messages.query import GameCountBySeasonQuery
+from fbsrankings.messages.query import GamesBySeasonQuery
+from fbsrankings.messages.query import LatestSeasonWeekQuery
+from fbsrankings.messages.query import PostseasonGameCountBySeasonQuery
+from fbsrankings.messages.query import SeasonByIDQuery
+from fbsrankings.messages.query import SeasonByYearQuery
+from fbsrankings.messages.query import SeasonsQuery
+from fbsrankings.messages.query import TeamByIDQuery
+from fbsrankings.messages.query import TeamCountBySeasonQuery
+from fbsrankings.messages.query import TeamsQuery
+from fbsrankings.messages.query import WeekCountBySeasonQuery
 from fbsrankings.storage.tinydb import Storage
 
 

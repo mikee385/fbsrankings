@@ -1,7 +1,7 @@
 import sqlite3
 
-from fbsrankings.shared.query import TeamCountBySeasonQuery
-from fbsrankings.shared.query import TeamCountBySeasonResult
+from fbsrankings.messages.query import TeamCountBySeasonQuery
+from fbsrankings.messages.query import TeamCountBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

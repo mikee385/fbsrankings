@@ -1,5 +1,5 @@
-from fbsrankings.shared.query import GameCountBySeasonQuery
-from fbsrankings.shared.query import GameCountBySeasonResult
+from fbsrankings.messages.query import GameCountBySeasonQuery
+from fbsrankings.messages.query import GameCountBySeasonResult
 from fbsrankings.storage.memory import Storage
 
 

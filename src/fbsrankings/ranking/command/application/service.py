@@ -5,15 +5,15 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import CommandBus
+from communication.bus import EventBus
+from communication.bus import QueryBus
+from fbsrankings.context import Context
+from fbsrankings.messages.command import CalculateRankingsForSeasonCommand
 from fbsrankings.ranking.command.application.calculate_rankings_for_season import (
     CalculateRankingsForSeasonCommandHandler,
 )
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
-from fbsrankings.shared.command import CalculateRankingsForSeasonCommand
-from fbsrankings.shared.context import Context
-from fbsrankings.shared.messaging import CommandBus
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.messaging import QueryBus
 
 
 class Service(ContextManager["Service"]):

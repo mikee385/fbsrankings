@@ -3,11 +3,11 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.shared.enums import SeasonSection
-from fbsrankings.shared.event import GameCreatedEvent
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.query import PostseasonGameCountBySeasonQuery
-from fbsrankings.shared.query import PostseasonGameCountBySeasonResult
+from communication.bus import EventBus
+from fbsrankings.messages.enums import SeasonSection
+from fbsrankings.messages.event import GameCreatedEvent
+from fbsrankings.messages.query import PostseasonGameCountBySeasonQuery
+from fbsrankings.messages.query import PostseasonGameCountBySeasonResult
 from fbsrankings.storage.tinydb import Storage
 
 

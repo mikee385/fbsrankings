@@ -4,7 +4,7 @@ from typing import ContextManager
 
 from typing_extensions import Protocol
 
-from fbsrankings.shared.messaging import EventBus
+from communication.bus import EventBus
 
 
 class EventHandler(ContextManager["EventHandler"], metaclass=ABCMeta):

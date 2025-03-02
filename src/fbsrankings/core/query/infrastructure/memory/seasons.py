@@ -1,6 +1,6 @@
-from fbsrankings.shared.query import SeasonResult
-from fbsrankings.shared.query import SeasonsQuery
-from fbsrankings.shared.query import SeasonsResult
+from fbsrankings.messages.query import SeasonResult
+from fbsrankings.messages.query import SeasonsQuery
+from fbsrankings.messages.query import SeasonsResult
 from fbsrankings.storage.memory import Storage
 
 

@@ -2,23 +2,23 @@ import datetime
 from typing import Iterable
 from typing import Optional
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.shared.enums import GameStatus
-from fbsrankings.shared.enums import SeasonSection
-from fbsrankings.shared.enums import Subdivision
-from fbsrankings.shared.error import AffiliationDataValidationError
-from fbsrankings.shared.error import FBSGameCountValidationError
-from fbsrankings.shared.error import FCSGameCountValidationError
-from fbsrankings.shared.error import GameDataValidationError
-from fbsrankings.shared.error import PostseasonGameCountValidationError
-from fbsrankings.shared.error import SeasonDataValidationError
-from fbsrankings.shared.error import TeamDataValidationError
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.enums import SeasonSection
+from fbsrankings.messages.enums import Subdivision
+from fbsrankings.messages.error import AffiliationDataValidationError
+from fbsrankings.messages.error import FBSGameCountValidationError
+from fbsrankings.messages.error import FCSGameCountValidationError
+from fbsrankings.messages.error import GameDataValidationError
+from fbsrankings.messages.error import PostseasonGameCountValidationError
+from fbsrankings.messages.error import SeasonDataValidationError
+from fbsrankings.messages.error import TeamDataValidationError
 
 
 class Validator:

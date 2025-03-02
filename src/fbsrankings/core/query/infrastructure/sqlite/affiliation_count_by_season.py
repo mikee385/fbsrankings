@@ -1,8 +1,8 @@
 import sqlite3
 
-from fbsrankings.shared.enums import Subdivision
-from fbsrankings.shared.query import AffiliationCountBySeasonQuery
-from fbsrankings.shared.query import AffiliationCountBySeasonResult
+from fbsrankings.messages.enums import Subdivision
+from fbsrankings.messages.query import AffiliationCountBySeasonQuery
+from fbsrankings.messages.query import AffiliationCountBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 
 

@@ -1,9 +1,9 @@
 import sqlite3
 from uuid import UUID
 
-from fbsrankings.shared.query import TeamResult
-from fbsrankings.shared.query import TeamsQuery
-from fbsrankings.shared.query import TeamsResult
+from fbsrankings.messages.query import TeamResult
+from fbsrankings.messages.query import TeamsQuery
+from fbsrankings.messages.query import TeamsResult
 from fbsrankings.storage.sqlite import TeamTable
 
 

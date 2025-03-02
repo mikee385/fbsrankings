@@ -3,12 +3,12 @@ from typing import Optional
 from typing import Tuple
 from uuid import UUID
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
-from fbsrankings.shared.event import TeamCreatedEvent
-from fbsrankings.shared.event import TeamEventHandler as BaseEventHandler
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.event import TeamCreatedEvent
+from fbsrankings.messages.event import TeamEventHandler as BaseEventHandler
 from fbsrankings.storage.sqlite import TeamTable
 
 

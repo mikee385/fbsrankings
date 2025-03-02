@@ -2,8 +2,8 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.shared.query import SeasonByIDQuery
-from fbsrankings.shared.query import SeasonByIDResult
+from fbsrankings.messages.query import SeasonByIDQuery
+from fbsrankings.messages.query import SeasonByIDResult
 from fbsrankings.storage.sqlite import SeasonTable
 
 

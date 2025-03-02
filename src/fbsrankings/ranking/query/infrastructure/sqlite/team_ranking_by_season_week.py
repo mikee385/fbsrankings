@@ -4,9 +4,9 @@ from typing import Optional
 from typing import Union
 from uuid import UUID
 
-from fbsrankings.shared.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRankingBySeasonWeekResult
-from fbsrankings.shared.query import TeamRankingValueBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingValueBySeasonWeekResult
 from fbsrankings.storage.sqlite import RankingTable
 from fbsrankings.storage.sqlite import RankingType
 from fbsrankings.storage.sqlite import SeasonTable

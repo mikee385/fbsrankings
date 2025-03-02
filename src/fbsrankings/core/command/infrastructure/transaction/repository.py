@@ -1,3 +1,4 @@
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.affiliation import AffiliationRepository
 from fbsrankings.core.command.domain.model.game import GameRepository
 from fbsrankings.core.command.domain.model.season import SeasonRepository
@@ -20,7 +21,6 @@ from fbsrankings.core.command.infrastructure.transaction.season import (
 from fbsrankings.core.command.infrastructure.transaction.team import (
     TeamRepository as TransactionTeamRepository,
 )
-from fbsrankings.shared.messaging import EventBus
 
 
 class Repository(BaseRepository):

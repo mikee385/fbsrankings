@@ -2,9 +2,9 @@ import sqlite3
 from typing import Optional
 from uuid import UUID
 
-from fbsrankings.shared.enums import GameStatus
-from fbsrankings.shared.query import LatestSeasonWeekQuery
-from fbsrankings.shared.query import LatestSeasonWeekResult
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.query import LatestSeasonWeekQuery
+from fbsrankings.messages.query import LatestSeasonWeekResult
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 

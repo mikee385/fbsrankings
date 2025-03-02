@@ -5,6 +5,11 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import Event
+from communication.bus import EventBus
+from fbsrankings.messages.event import GameRankingEventManager
+from fbsrankings.messages.event import TeamRankingEventManager
+from fbsrankings.messages.event import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -17,11 +22,6 @@ from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
 from fbsrankings.ranking.command.infrastructure.transaction.record import (
     TeamRecordEventHandler,
 )
-from fbsrankings.shared.event import GameRankingEventManager
-from fbsrankings.shared.event import TeamRankingEventManager
-from fbsrankings.shared.event import TeamRecordEventManager
-from fbsrankings.shared.messaging import Event
-from fbsrankings.shared.messaging import EventBus
 
 
 class EventHandler(BaseEventHandler):

@@ -4,13 +4,13 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.shared.event import GameCanceledEvent
-from fbsrankings.shared.event import GameCompletedEvent
-from fbsrankings.shared.event import GameCreatedEvent
-from fbsrankings.shared.event import GameRescheduledEvent
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.query import LatestSeasonWeekQuery
-from fbsrankings.shared.query import LatestSeasonWeekResult
+from communication.bus import EventBus
+from fbsrankings.messages.event import GameCanceledEvent
+from fbsrankings.messages.event import GameCompletedEvent
+from fbsrankings.messages.event import GameCreatedEvent
+from fbsrankings.messages.event import GameRescheduledEvent
+from fbsrankings.messages.query import LatestSeasonWeekQuery
+from fbsrankings.messages.query import LatestSeasonWeekResult
 from fbsrankings.storage.tinydb import Storage
 
 

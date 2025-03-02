@@ -14,16 +14,16 @@ from typing import TypeVar
 from uuid import UUID
 from uuid import uuid4
 
+from communication.bus import EventBus
+from fbsrankings.messages.event import GameRankingCalculatedEvent
+from fbsrankings.messages.event import RankingValue as EventValue
+from fbsrankings.messages.event import TeamRankingCalculatedEvent
+from fbsrankings.messages.query import AffiliationBySeasonResult
+from fbsrankings.messages.query import GameBySeasonResult
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
-from fbsrankings.shared.event import GameRankingCalculatedEvent
-from fbsrankings.shared.event import RankingValue as EventValue
-from fbsrankings.shared.event import TeamRankingCalculatedEvent
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.query import AffiliationBySeasonResult
-from fbsrankings.shared.query import GameBySeasonResult
-from fbsrankings.shared.typing_helpers import SupportsRichComparison
+from fbsrankings.typing_helpers import SupportsRichComparison
 
 
 T = TypeVar("T", bound=UUID)

@@ -6,16 +6,16 @@ from typing import Optional
 from uuid import UUID
 from uuid import uuid4
 
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.shared.enums import GameStatus
-from fbsrankings.shared.enums import SeasonSection
-from fbsrankings.shared.event import GameCanceledEvent
-from fbsrankings.shared.event import GameCompletedEvent
-from fbsrankings.shared.event import GameCreatedEvent
-from fbsrankings.shared.event import GameNotesUpdatedEvent
-from fbsrankings.shared.event import GameRescheduledEvent
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.enums import SeasonSection
+from fbsrankings.messages.event import GameCanceledEvent
+from fbsrankings.messages.event import GameCompletedEvent
+from fbsrankings.messages.event import GameCreatedEvent
+from fbsrankings.messages.event import GameNotesUpdatedEvent
+from fbsrankings.messages.event import GameRescheduledEvent
 
 
 GameID = NewType("GameID", UUID)

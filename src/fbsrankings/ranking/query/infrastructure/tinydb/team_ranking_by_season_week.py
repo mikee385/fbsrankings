@@ -3,11 +3,11 @@ from uuid import UUID
 
 from tinydb import Query
 
-from fbsrankings.shared.event import TeamRankingCalculatedEvent
-from fbsrankings.shared.messaging import EventBus
-from fbsrankings.shared.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRankingBySeasonWeekResult
-from fbsrankings.shared.query import TeamRankingValueBySeasonWeekResult
+from communication.bus import EventBus
+from fbsrankings.messages.event import TeamRankingCalculatedEvent
+from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingValueBySeasonWeekResult
 from fbsrankings.storage.tinydb import Storage
 
 

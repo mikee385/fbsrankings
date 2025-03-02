@@ -1,6 +1,8 @@
 from typing import List
 from typing import Optional
 
+from communication.bus import Event
+from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.game import GameID
 from fbsrankings.core.command.domain.model.game import GameRepository as BaseRepository
@@ -9,14 +11,12 @@ from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.infrastructure.memory.game import (
     GameRepository as MemoryRepository,
 )
-from fbsrankings.shared.event import GameCanceledEvent
-from fbsrankings.shared.event import GameCompletedEvent
-from fbsrankings.shared.event import GameCreatedEvent
-from fbsrankings.shared.event import GameEventHandler as BaseEventHandler
-from fbsrankings.shared.event import GameNotesUpdatedEvent
-from fbsrankings.shared.event import GameRescheduledEvent
-from fbsrankings.shared.messaging import Event
-from fbsrankings.shared.messaging import EventBus
+from fbsrankings.messages.event import GameCanceledEvent
+from fbsrankings.messages.event import GameCompletedEvent
+from fbsrankings.messages.event import GameCreatedEvent
+from fbsrankings.messages.event import GameEventHandler as BaseEventHandler
+from fbsrankings.messages.event import GameNotesUpdatedEvent
+from fbsrankings.messages.event import GameRescheduledEvent
 
 
 class GameRepository(BaseRepository):

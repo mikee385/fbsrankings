@@ -1,6 +1,13 @@
 from typing import List
 from typing import Optional
 
+from communication.bus import Event
+from communication.bus import EventBus
+from fbsrankings.messages.event import GameRankingCalculatedEvent
+from fbsrankings.messages.event import GameRankingEventHandler as BaseGameEventHandler
+from fbsrankings.messages.event import RankingValue as EventValue
+from fbsrankings.messages.event import TeamRankingCalculatedEvent
+from fbsrankings.messages.event import TeamRankingEventHandler as BaseTeamEventHandler
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -18,13 +25,6 @@ from fbsrankings.ranking.command.infrastructure.memory.ranking import (
 from fbsrankings.ranking.command.infrastructure.memory.ranking import (
     TeamRankingRepository as MemoryTeamRepository,
 )
-from fbsrankings.shared.event import GameRankingCalculatedEvent
-from fbsrankings.shared.event import GameRankingEventHandler as BaseGameEventHandler
-from fbsrankings.shared.event import RankingValue as EventValue
-from fbsrankings.shared.event import TeamRankingCalculatedEvent
-from fbsrankings.shared.event import TeamRankingEventHandler as BaseTeamEventHandler
-from fbsrankings.shared.messaging import Event
-from fbsrankings.shared.messaging import EventBus
 
 
 class TeamRankingRepository(BaseTeamRepository):

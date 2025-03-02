@@ -1,7 +1,7 @@
 from typing import Optional
 
-from fbsrankings.shared.query import SeasonByYearQuery
-from fbsrankings.shared.query import SeasonByYearResult
+from fbsrankings.messages.query import SeasonByYearQuery
+from fbsrankings.messages.query import SeasonByYearResult
 from fbsrankings.storage.memory import Storage
 
 

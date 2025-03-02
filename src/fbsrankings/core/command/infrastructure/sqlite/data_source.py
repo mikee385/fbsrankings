@@ -1,8 +1,8 @@
+from communication.bus import EventBus
 from fbsrankings.core.command.infrastructure.event_handler import EventHandlerFactory
 from fbsrankings.core.command.infrastructure.repository import RepositoryFactory
 from fbsrankings.core.command.infrastructure.sqlite.event_handler import EventHandler
 from fbsrankings.core.command.infrastructure.sqlite.repository import Repository
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import Storage
 
 

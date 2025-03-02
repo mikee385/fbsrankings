@@ -1,9 +1,9 @@
 import sqlite3
 from uuid import UUID
 
-from fbsrankings.shared.query import AffiliationBySeasonResult
-from fbsrankings.shared.query import AffiliationsBySeasonQuery
-from fbsrankings.shared.query import AffiliationsBySeasonResult
+from fbsrankings.messages.query import AffiliationBySeasonResult
+from fbsrankings.messages.query import AffiliationsBySeasonQuery
+from fbsrankings.messages.query import AffiliationsBySeasonResult
 from fbsrankings.storage.sqlite import AffiliationTable
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamTable

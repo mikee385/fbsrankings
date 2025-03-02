@@ -1,3 +1,4 @@
+from communication.bus import EventBus
 from fbsrankings.ranking.command.infrastructure.repository import (
     Repository as BaseRepository,
 )
@@ -10,7 +11,6 @@ from fbsrankings.ranking.command.infrastructure.sqlite.ranking import (
 from fbsrankings.ranking.command.infrastructure.sqlite.record import (
     TeamRecordRepository,
 )
-from fbsrankings.shared.messaging import EventBus
 from fbsrankings.storage.sqlite import Storage
 
 

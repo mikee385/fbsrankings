@@ -5,6 +5,10 @@ from typing import Type
 
 from typing_extensions import Literal
 
+from communication.bus import QueryBus
+from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
+from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.ranking.query.infrastructure.sqlite.game_ranking_by_season_week import (
     GameRankingBySeasonWeekQueryHandler,
 )
@@ -14,10 +18,6 @@ from fbsrankings.ranking.query.infrastructure.sqlite.team_ranking_by_season_week
 from fbsrankings.ranking.query.infrastructure.sqlite.team_record_by_season_week import (
     TeamRecordBySeasonWeekQueryHandler,
 )
-from fbsrankings.shared.messaging import QueryBus
-from fbsrankings.shared.query import GameRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRankingBySeasonWeekQuery
-from fbsrankings.shared.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.storage.sqlite import Storage
 
 

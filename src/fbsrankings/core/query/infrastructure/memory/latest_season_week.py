@@ -2,9 +2,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from fbsrankings.shared.enums import GameStatus
-from fbsrankings.shared.query import LatestSeasonWeekQuery
-from fbsrankings.shared.query import LatestSeasonWeekResult
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.query import LatestSeasonWeekQuery
+from fbsrankings.messages.query import LatestSeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
 
