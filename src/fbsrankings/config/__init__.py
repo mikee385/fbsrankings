@@ -1,14 +1,18 @@
 """Configuration classes for the fbsrankings package"""
 
+from .config import ChannelType
 from .config import Config
-from .config import ConfigCommandStorageType
-from .config import ConfigQueryStorageType
-from .config import ConfigStorageFile
+from .config import SerializationType
+from .config import SqliteFile
+from .config import StorageType
+from .config import TinyDbFile
 
 
 __all__ = [
+    "ChannelType",
     "Config",
-    "ConfigCommandStorageType",
-    "ConfigQueryStorageType",
-    "ConfigStorageFile",
+    "SerializationType",
+    "SqliteFile",
+    "StorageType",
+    "TinyDbFile",
 ]

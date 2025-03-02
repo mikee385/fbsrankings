@@ -7,10 +7,16 @@ from typing import Type
 from typing_extensions import Literal
 
 from communication.bridge import EventBridge
+from communication.bus import CommandBus
+from communication.bus import EventBus
 from communication.bus import MemoryCommandBus
+from communication.bus import MemoryEventBus
 from communication.bus import MemoryQueryBus
+from communication.bus import QueryBus
 from communication.channel import MemoryEventChannel
+from fbsrankings.config import ChannelType
 from fbsrankings.config import Config
+from fbsrankings.config import SerializationType
 from fbsrankings.context import Context
 from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
@@ -22,6 +28,10 @@ from serialization import PickleSerializer
 
 class Environment(ContextManager["Environment"]):
     def __init__(self, config_location: str) -> None:
+        self.command_bus: CommandBus
+        self.query_bus: QueryBus
+        self.event_bus: EventBus
+
         package_dir = Path(__file__).resolve().parent.parent
 
         if config_location is not None:
@@ -37,13 +47,28 @@ class Environment(ContextManager["Environment"]):
         self.command_bus = MemoryCommandBus()
         self.query_bus = MemoryQueryBus()
 
-        self._serializer = PickleSerializer()
+        if config.serialization == SerializationType.NONE:
+            self._serializer = None
+        elif config.serialization == SerializationType.PICKLE:
+            self._serializer = PickleSerializer()
+        else:
+            raise ValueError(f"Unknown serialization type: {config.serialization}")
 
-        self._event_channel = MemoryEventChannel()
-        self.event_bus = EventBridge(
-            self._event_channel,
-            self._serializer,
-        )
+        if config.channel == ChannelType.NONE:
+            self.event_bus = MemoryEventBus()
+        elif config.channel == ChannelType.MEMORY:
+            if self._serializer is None:
+                raise ValueError(
+                    f"Serialization cannot be 'none' when channel is {config.channel}",
+                )
+
+            self._event_channel = MemoryEventChannel()
+            self.event_bus = EventBridge(
+                self._event_channel,
+                self._serializer,
+            )
+        else:
+            raise ValueError(f"Unknown channel type: {config.channel}")
 
         self.command_bus.register_handler(DropStorageCommand, self._drop_storage)
 

@@ -11,22 +11,17 @@ from tinydb.storages import JSONStorage
 from tinydb.table import Document
 from typing_extensions import Literal
 
-from fbsrankings.config import ConfigStorageFile
+from fbsrankings.config import TinyDbFile
 
 
 class Storage(ContextManager["Storage"]):
-    def __init__(self, storage_file: ConfigStorageFile) -> None:
-        if storage_file is None:
-            storage_file = Path("fbsrankings.json")
-            storage_file.parent.mkdir(parents=True, exist_ok=True)
-            self._database = str(storage_file)
-
-        elif isinstance(storage_file, Path):
+    def __init__(self, storage_file: TinyDbFile) -> None:
+        if isinstance(storage_file, Path):
             storage_file.parent.mkdir(parents=True, exist_ok=True)
             self._database = str(storage_file)
 
         else:
-            raise TypeError("TinyDB storage file must be a Path or None")
+            raise TypeError("TinyDB storage file must be a Path")
 
         self.connection = TinyDB(
             self._database,

@@ -7,8 +7,7 @@ from typing import Union
 from typing_extensions import Literal
 
 from fbsrankings.config import Config
-from fbsrankings.config import ConfigCommandStorageType
-from fbsrankings.config import ConfigQueryStorageType
+from fbsrankings.config import StorageType
 from fbsrankings.storage.memory.storage import Storage as MemoryStorage
 from fbsrankings.storage.sqlite.storage import Storage as SqliteStorage
 from fbsrankings.storage.tinydb.storage import Storage as TinyDbStorage
@@ -20,28 +19,20 @@ class Context(ContextManager["Context"]):
         self.command_storage: Union[MemoryStorage, SqliteStorage]
         self.query_storage: Union[MemoryStorage, SqliteStorage, TinyDbStorage]
 
-        if config.command_storage_type == ConfigCommandStorageType.MEMORY:
+        if config.storage == StorageType.MEMORY_SHARED:
             self.command_storage = MemoryStorage()
-
-        elif config.command_storage_type == ConfigCommandStorageType.SQLITE:
-            self.command_storage = SqliteStorage(config.command_storage_file)
-
-        else:
-            raise ValueError(
-                f"Unknown command storage type: {config.command_storage_type}",
-            )
-
-        if config.query_storage_type.name == config.command_storage_type.name:
             self.query_storage = self.command_storage
 
-        elif config.query_storage_type == ConfigQueryStorageType.TINYDB:
-            self.query_storage = TinyDbStorage(config.query_storage_file)
+        elif config.storage == StorageType.SQLITE_SHARED:
+            self.command_storage = SqliteStorage(config.sqlite.file)
+            self.query_storage = self.command_storage
+
+        elif config.storage == StorageType.SQLITE_TINYDB:
+            self.command_storage = SqliteStorage(config.sqlite.file)
+            self.query_storage = TinyDbStorage(config.tinydb.file)
 
         else:
-            raise ValueError(
-                "Query storage type must either be equal to command storage type "
-                f"or 'tinydb': {config.query_storage_type}",
-            )
+            raise ValueError(f"Unknown storage type: {config.storage}")
 
     def drop_storage(self) -> None:
         self.command_storage.drop()

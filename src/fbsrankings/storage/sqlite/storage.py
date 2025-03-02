@@ -7,7 +7,7 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from fbsrankings.config import ConfigStorageFile
+from fbsrankings.config import SqliteFile
 from fbsrankings.storage.sqlite.affiliation import AffiliationTable
 from fbsrankings.storage.sqlite.affiliation import SubdivisionTable
 from fbsrankings.storage.sqlite.game import GameStatusTable
@@ -21,13 +21,8 @@ from fbsrankings.storage.sqlite.team import TeamTable
 
 
 class Storage(ContextManager["Storage"]):
-    def __init__(self, storage_file: ConfigStorageFile) -> None:
-        if storage_file is None:
-            storage_file = Path("fbsrankings.db")
-            storage_file.parent.mkdir(parents=True, exist_ok=True)
-            self._database = str(storage_file)
-
-        elif isinstance(storage_file, Path):
+    def __init__(self, storage_file: SqliteFile) -> None:
+        if isinstance(storage_file, Path):
             storage_file.parent.mkdir(parents=True, exist_ok=True)
             self._database = str(storage_file)
 
@@ -35,7 +30,7 @@ class Storage(ContextManager["Storage"]):
             self._database = storage_file
 
         else:
-            raise TypeError("SQLite storage file must be a Path, ':memory:', or None")
+            raise TypeError("SQLite storage file must be a Path or ':memory:'")
 
         self.connection = sqlite3.connect(self._database, isolation_level=None)
         self.connection.execute("PRAGMA foreign_keys = ON")

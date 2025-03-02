@@ -1,7 +1,7 @@
 from typing import Union
 
 from communication.bus import EventBus
-from fbsrankings.config import ConfigCommandStorageType
+from fbsrankings.config import StorageType
 from fbsrankings.context import Context
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandler
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandlerFactory
@@ -21,8 +21,8 @@ class DataSource(RepositoryFactory, EventHandlerFactory):
     def __init__(self, context: Context) -> None:
         self._data_source: Union[MemoryDataSource, SqliteDataSource]
 
-        storage_type = context.config.command_storage_type
-        if storage_type == ConfigCommandStorageType.MEMORY:
+        storage_type = context.config.storage
+        if storage_type == StorageType.MEMORY_SHARED:
             if not isinstance(context.command_storage, MemoryStorage):
                 raise ValueError(
                     f"For command storage type, expected: {MemoryStorage}, "
@@ -30,7 +30,7 @@ class DataSource(RepositoryFactory, EventHandlerFactory):
                 )
             self._data_source = MemoryDataSource(context.command_storage)
 
-        elif storage_type == ConfigCommandStorageType.SQLITE:
+        elif storage_type in (StorageType.SQLITE_SHARED, StorageType.SQLITE_TINYDB):
             if not isinstance(context.command_storage, SqliteStorage):
                 raise ValueError(
                     f"For command storage type, expected: {SqliteStorage}, "

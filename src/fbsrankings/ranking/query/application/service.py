@@ -8,7 +8,7 @@ from typing_extensions import Literal
 
 from communication.bus import EventBus
 from communication.bus import QueryBus
-from fbsrankings.config import ConfigQueryStorageType
+from fbsrankings.config import StorageType
 from fbsrankings.context import Context
 from fbsrankings.ranking.query.infrastructure.memory.query_manager import (
     QueryManager as MemoryQueryManager,
@@ -37,8 +37,8 @@ class Service(ContextManager["Service"]):
             TinyDbQueryManager,
         ]
 
-        storage_type = context.config.query_storage_type
-        if storage_type == ConfigQueryStorageType.MEMORY:
+        storage_type = context.config.storage
+        if storage_type == StorageType.MEMORY_SHARED:
             if not isinstance(context.query_storage, MemoryStorage):
                 raise ValueError(
                     "For query storage type, expected: MemoryStorage, "
@@ -46,7 +46,7 @@ class Service(ContextManager["Service"]):
                 )
             self._query_manager = MemoryQueryManager(context.query_storage, query_bus)
 
-        elif storage_type == ConfigQueryStorageType.SQLITE:
+        elif storage_type == StorageType.SQLITE_SHARED:
             if not isinstance(context.query_storage, SqliteStorage):
                 raise ValueError(
                     "For query storage type, expected: SqliteStorage, "
@@ -54,7 +54,7 @@ class Service(ContextManager["Service"]):
                 )
             self._query_manager = SqliteQueryManager(context.query_storage, query_bus)
 
-        elif storage_type == ConfigQueryStorageType.TINYDB:
+        elif storage_type == StorageType.SQLITE_TINYDB:
             if not isinstance(context.query_storage, TinyDbStorage):
                 raise ValueError(
                     "For query storage type, expected: TinyDbStorage, "

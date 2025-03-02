@@ -62,10 +62,11 @@ def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "sqlite"
-    parser["fbsrankings"]["command_storage_file"] = str(db_path)
-    parser["fbsrankings"]["query_storage_type"] = "sqlite"
-    parser["fbsrankings"]["query_storage_file"] = str(db_path)
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "sqlite-shared")
+    parser.add_section("fbsrankings.sqlite")
+    parser.set("fbsrankings.sqlite", "file", str(db_path))
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
@@ -84,10 +85,13 @@ def sqlite_file_tinydb_config(
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "sqlite"
-    parser["fbsrankings"]["command_storage_file"] = str(sqlite_path)
-    parser["fbsrankings"]["query_storage_type"] = "tinydb"
-    parser["fbsrankings"]["query_storage_file"] = str(tinydb_path)
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "sqlite-tinydb")
+    parser.add_section("fbsrankings.sqlite")
+    parser.set("fbsrankings.sqlite", "file", str(sqlite_path))
+    parser.add_section("fbsrankings.tinydb")
+    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
@@ -101,10 +105,11 @@ def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "sqlite"
-    parser["fbsrankings"]["command_storage_file"] = ":memory:"
-    parser["fbsrankings"]["query_storage_type"] = "sqlite"
-    parser["fbsrankings"]["query_storage_file"] = ":memory:"
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "sqlite-shared")
+    parser.add_section("fbsrankings.sqlite")
+    parser.set("fbsrankings.sqlite", "file", ":memory:")
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
@@ -119,10 +124,13 @@ def sqlite_memory_tinydb_config(data_path: Path, test_path: Path) -> Tuple[Path,
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "sqlite"
-    parser["fbsrankings"]["command_storage_file"] = ":memory:"
-    parser["fbsrankings"]["query_storage_type"] = "tinydb"
-    parser["fbsrankings"]["query_storage_file"] = str(tinydb_path)
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "sqlite-tinydb")
+    parser.add_section("fbsrankings.sqlite")
+    parser.set("fbsrankings.sqlite", "file", ":memory:")
+    parser.add_section("fbsrankings.tinydb")
+    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
@@ -136,8 +144,9 @@ def memory_config(data_path: Path, test_path: Path) -> Path:
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "memory"
-    parser["fbsrankings"]["query_storage_type"] = "memory"
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "memory-shared")
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 
@@ -152,9 +161,13 @@ def memory_tinydb_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
 
     parser = ConfigParser()
     parser.read(src_path)
-    parser["fbsrankings"]["command_storage_type"] = "memory"
-    parser["fbsrankings"]["query_storage_type"] = "tinydb"
-    parser["fbsrankings"]["query_storage_file"] = str(tinydb_path)
+    parser.set("fbsrankings", "channel", "memory")
+    parser.set("fbsrankings", "serialization", "pickle")
+    parser.set("fbsrankings", "storage", "sqlite-tinydb")
+    parser.add_section("fbsrankings.sqlite")
+    parser.set("fbsrankings.sqlite", "file", ":memory:")
+    parser.add_section("fbsrankings.tinydb")
+    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
     with dest_path.open(mode="w", encoding="utf-8") as dest_file:
         parser.write(dest_file)
 

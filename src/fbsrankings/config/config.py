@@ -3,35 +3,51 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 from typing import Dict
-from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
 
 
-class ConfigCommandStorageType(str, Enum):
+class ChannelType(str, Enum):
+    NONE = "none"
     MEMORY = "memory"
-    SQLITE = "sqlite"
 
 
-class ConfigQueryStorageType(str, Enum):
-    MEMORY = "memory"
-    SQLITE = "sqlite"
-    TINYDB = "tinydb"
+class SerializationType(str, Enum):
+    NONE = "none"
+    PICKLE = "pickle"
 
 
-ConfigStorageFile = Optional[Union[Path, Literal[":memory:"]]]
+class StorageType(str, Enum):
+    MEMORY_SHARED = "memory-shared"
+    SQLITE_SHARED = "sqlite-shared"
+    SQLITE_TINYDB = "sqlite-tinydb"
+
+
+SqliteFile = Union[Path, Literal[":memory:"]]
+
+
+class SqliteConfig(BaseModel):
+    file: SqliteFile
+
+
+TinyDbFile = Path
+
+
+class TinyDbConfig(BaseModel):
+    file: TinyDbFile
 
 
 class Config(BaseModel):
-    command_storage_type: ConfigCommandStorageType
-    command_storage_file: ConfigStorageFile = None
+    channel: ChannelType
+    serialization: SerializationType
+    storage: StorageType
 
-    query_storage_type: ConfigQueryStorageType
-    query_storage_file: ConfigStorageFile = None
+    alternate_names: Dict[str, str] = {}
 
-    alternate_names: Optional[Dict[str, str]] = None
+    sqlite: SqliteConfig = SqliteConfig(file="fbsrankings.db")
+    tinydb: TinyDbConfig = TinyDbConfig(file="fbsrankings.json")
 
     @staticmethod
     def from_ini(file_path: Path) -> "Config":
