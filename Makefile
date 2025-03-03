@@ -60,10 +60,10 @@ pre-commit:
     pre-commit run --all-files
 
 test:
-    pytest tests
+    pytest tests -v
 
 test-types:
-    pytest tests --typeguard-packages=fbsrankings
+    pytest tests -v --typeguard-packages=fbsrankings
 
 test-coverage:
     coverage erase

@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 from typing import List
 from typing import Sequence
-from typing import Tuple
 
 import pytest
 
@@ -42,6 +41,35 @@ def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence
     return file_paths
 
 
+def _build_config_file(config_path: Path, config_file: str, test_path: Path) -> Path:
+    common_path = config_path / "common.ini"
+    src_path = config_path / config_file
+    dest_path = test_path / "test_config.ini"
+    sqlite_path = test_path / "test_data.db"
+    tinydb_path = test_path / "test_data.json"
+
+    parser = ConfigParser()
+    parser.read(common_path)
+    parser.read(src_path)
+    if parser["fbsrankings"]["storage"] in ("sqlite-shared", "sqlite-tinydb"):
+        parser.add_section("fbsrankings.sqlite")
+        parser.set("fbsrankings.sqlite", "file", str(sqlite_path))
+    if parser["fbsrankings"]["storage"] == "sqlite-tinydb":
+        parser.add_section("fbsrankings.tinydb")
+        parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
+    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
+        parser.write(dest_file)
+
+    return dest_path
+
+
+@pytest.fixture()
+def config_path(request: Any) -> Path:
+    filename = request.module.__file__
+    test_dir = Path(filename).parent.parent
+    return test_dir / "config"
+
+
 @pytest.fixture()
 def data_path(request: Any) -> Path:
     filename = request.module.__file__
@@ -50,128 +78,30 @@ def data_path(request: Any) -> Path:
 
 
 @pytest.fixture()
+def output_path(request: Any) -> Path:
+    filename = request.module.__file__
+    test_dir = Path(filename).parent.parent
+    return test_dir / "output"
+
+
+@pytest.fixture()
 def test_path(tmpdir: Any) -> Path:
     return Path(str(tmpdir))
 
 
-@pytest.fixture()
-def sqlite_file_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-    db_path = test_path / "test_data.db"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "sqlite-shared")
-    parser.add_section("fbsrankings.sqlite")
-    parser.set("fbsrankings.sqlite", "file", str(db_path))
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path, db_path
+@pytest.fixture(params=["memory.ini"])
+def option_config(request: Any, config_path: Path, test_path: Path) -> Path:
+    return _build_config_file(config_path, request.param, test_path)
 
 
-@pytest.fixture()
-def sqlite_file_tinydb_config(
-    data_path: Path,
-    test_path: Path,
-) -> Tuple[Path, Path, Path]:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-    sqlite_path = test_path / "test_data.db"
-    tinydb_path = test_path / "test_data.json"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "sqlite-tinydb")
-    parser.add_section("fbsrankings.sqlite")
-    parser.set("fbsrankings.sqlite", "file", str(sqlite_path))
-    parser.add_section("fbsrankings.tinydb")
-    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path, sqlite_path, tinydb_path
+@pytest.fixture(params=["memory.ini", "sqlite.ini", "tinydb.ini"])
+def command_config(request: Any, config_path: Path, test_path: Path) -> Path:
+    return _build_config_file(config_path, request.param, test_path)
 
 
-@pytest.fixture()
-def sqlite_memory_config(data_path: Path, test_path: Path) -> Path:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "sqlite-shared")
-    parser.add_section("fbsrankings.sqlite")
-    parser.set("fbsrankings.sqlite", "file", ":memory:")
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path
-
-
-@pytest.fixture()
-def sqlite_memory_tinydb_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-    tinydb_path = test_path / "test_data.json"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "sqlite-tinydb")
-    parser.add_section("fbsrankings.sqlite")
-    parser.set("fbsrankings.sqlite", "file", ":memory:")
-    parser.add_section("fbsrankings.tinydb")
-    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path, tinydb_path
-
-
-@pytest.fixture()
-def memory_config(data_path: Path, test_path: Path) -> Path:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "memory-shared")
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path
-
-
-@pytest.fixture()
-def memory_tinydb_config(data_path: Path, test_path: Path) -> Tuple[Path, Path]:
-    src_path = data_path / "test_config.ini"
-    dest_path = test_path / "test_config.ini"
-    tinydb_path = test_path / "test_data.json"
-
-    parser = ConfigParser()
-    parser.read(src_path)
-    parser.set("fbsrankings", "channel", "memory")
-    parser.set("fbsrankings", "serialization", "pickle")
-    parser.set("fbsrankings", "storage", "sqlite-tinydb")
-    parser.add_section("fbsrankings.sqlite")
-    parser.set("fbsrankings.sqlite", "file", ":memory:")
-    parser.add_section("fbsrankings.tinydb")
-    parser.set("fbsrankings.tinydb", "file", str(tinydb_path))
-    with dest_path.open(mode="w", encoding="utf-8") as dest_file:
-        parser.write(dest_file)
-
-    return dest_path, tinydb_path
+@pytest.fixture(params=["sqlite.ini", "tinydb.ini"])
+def query_config(request: Any, config_path: Path, test_path: Path) -> Path:
+    return _build_config_file(config_path, request.param, test_path)
 
 
 @pytest.fixture()
@@ -181,16 +111,15 @@ def test_seasons() -> List[str]:
 
 def test_main_help(
     capsys: Any,
-    data_path: Path,
+    output_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    option_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_help.txt"])
+    files = _copy_files(output_path, test_path, ["main_help.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main(["--help", f"--config={test_config}"])
+    exit_result = main(["--help", f"--config={option_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -198,9 +127,8 @@ def test_main_help(
     assert captured_err == ""
 
 
-def test_main_version(capsys: Any, sqlite_file_config: Tuple[Path, Path]) -> None:
-    test_config, _ = sqlite_file_config
-    exit_result = main(["--version", f"--config={test_config}"])
+def test_main_version(capsys: Any, option_config: Path) -> None:
+    exit_result = main(["--version", f"--config={option_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -210,16 +138,15 @@ def test_main_version(capsys: Any, sqlite_file_config: Tuple[Path, Path]) -> Non
 
 def test_main_missing_command(
     capsys: Any,
-    data_path: Path,
+    output_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    option_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_missing_command.txt"])
+    files = _copy_files(output_path, test_path, ["main_missing_command.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main([f"--config={test_config}"])
+    exit_result = main([f"--config={option_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -229,16 +156,15 @@ def test_main_missing_command(
 
 def test_main_invalid_command(
     capsys: Any,
-    data_path: Path,
+    output_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    option_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_invalid_command.txt"])
+    files = _copy_files(output_path, test_path, ["main_invalid_command.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_err = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main(["invalid", f"--config={test_config}"])
+    exit_result = main(["invalid", f"--config={option_config}"])
     assert exit_result == 2
 
     captured_out, captured_err = capsys.readouterr()
@@ -246,299 +172,53 @@ def test_main_invalid_command(
     assert expected_err == captured_err
 
 
-def test_main_import_sqlite_file(
+def test_main_import(
     capsys: Any,
-    data_path: Path,
+    output_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    command_config: Path,
     test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, test_db = sqlite_file_config
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={test_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-    assert test_db.exists(), "Test database is missing"
-    assert test_db.is_file(), "Test database is not a file"
-
-
-def test_main_import_sqlite_file_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-    test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, test_sqlite, test_tinydb = sqlite_file_tinydb_config
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={test_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-    assert test_sqlite.exists(), "SQLite database is missing"
-    assert test_sqlite.is_file(), "SQLite database is not a file"
-
-    assert test_tinydb.exists(), "TinyDB database is missing"
-    assert test_tinydb.is_file(), "TinyDB database is not a file"
-
-
-def test_main_import_sqlite_memory(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_memory_config: Path,
-    test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={sqlite_memory_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-
-def test_main_import_sqlite_memory_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_memory_tinydb_config: Tuple[Path, Path],
-    test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, test_tinydb = sqlite_memory_tinydb_config
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={test_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-    assert test_tinydb.exists(), "TinyDB database is missing"
-    assert test_tinydb.is_file(), "TinyDB database is not a file"
-
-
-def test_main_import_memory(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    memory_config: Path,
-    test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={memory_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-
-def test_main_import_memory_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    memory_tinydb_config: Tuple[Path, Path],
-    test_seasons: List[str],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_import_2012_2013_drop_check.txt"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, test_tinydb = memory_tinydb_config
-    exit_result = main(
-        [
-            "import",
-            *test_seasons,
-            "--drop",
-            "--check",
-            f"--config={test_config}",
-            "--trace",
-        ],
-    )
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert "Dropping existing data:" in captured_err
-    assert "Importing season data:" in captured_err
-    assert "Calculating rankings:" in captured_err
-
-    assert test_tinydb.exists(), "TinyDB database is missing"
-    assert test_tinydb.is_file(), "TinyDB database is not a file"
-
-
-def test_main_seasons_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_seasons.txt", "test_data.db"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _ = sqlite_file_config
-    exit_result = main(["seasons", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_seasons_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_seasons.txt", "test_data.json"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["seasons", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_latest_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_latest.txt", "test_data.db"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _ = sqlite_file_config
-    exit_result = main(["latest", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_latest_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_latest.txt", "test_data.json"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["latest", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_latest_rating_srs_top_5_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
 ) -> None:
     files = _copy_files(
-        data_path,
+        output_path,
         test_path,
-        ["main_latest_rating_colley_matrix_top_5.txt", "test_data.db"],
+        ["main_import_2012_2013_drop_check.txt"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
     exit_result = main(
-        ["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"],
+        [
+            "import",
+            *test_seasons,
+            "--drop",
+            "--check",
+            f"--config={command_config}",
+            "--trace",
+        ],
     )
+    assert exit_result == 0
+
+    captured_out, captured_err = capsys.readouterr()
+    assert captured_out == expected_out
+    assert "Dropping existing data:" in captured_err
+    assert "Importing season data:" in captured_err
+    assert "Calculating rankings:" in captured_err
+
+
+def test_main_seasons(
+    capsys: Any,
+    output_path: Path,
+    data_path: Path,
+    test_path: Path,
+    query_config: Path,
+) -> None:
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_seasons.txt"])
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
+        expected_out = expected_file.read()
+
+    exit_result = main(["seasons", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -546,23 +226,44 @@ def test_main_latest_rating_srs_top_5_sqlite(
     assert captured_err == ""
 
 
-def test_main_latest_rating_srs_top_5_tinydb(
+def test_main_latest(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
+    query_config: Path,
 ) -> None:
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_latest.txt"])
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
+        expected_out = expected_file.read()
+
+    exit_result = main(["latest", f"--config={query_config}"])
+    assert exit_result == 0
+
+    captured_out, captured_err = capsys.readouterr()
+    assert captured_out == expected_out
+    assert captured_err == ""
+
+
+def test_main_latest_rating_srs_top_5(
+    capsys: Any,
+    output_path: Path,
+    data_path: Path,
+    test_path: Path,
+    query_config: Path,
+) -> None:
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
     files = _copy_files(
-        data_path,
+        output_path,
         test_path,
-        ["main_latest_rating_colley_matrix_top_5.txt", "test_data.json"],
+        ["main_latest_rating_colley_matrix_top_5.txt"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _, _ = sqlite_file_tinydb_config
     exit_result = main(
-        ["latest", "--rating=colley-matrix", "--top=5", f"--config={test_config}"],
+        ["latest", "--rating=colley-matrix", "--top=5", f"--config={query_config}"],
     )
     assert exit_result == 0
 
@@ -571,18 +272,19 @@ def test_main_latest_rating_srs_top_5_tinydb(
     assert captured_err == ""
 
 
-def test_main_teams_sqlite(
+def test_main_teams(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_teams.txt", "test_data.db"])
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_teams.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main(["teams", f"--config={test_config}"])
+    exit_result = main(["teams", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -590,18 +292,19 @@ def test_main_teams_sqlite(
     assert captured_err == ""
 
 
-def test_main_teams_tinydb(
+def test_main_teams_year(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_teams.txt", "test_data.json"])
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_teams_2012.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["teams", f"--config={test_config}"])
+    exit_result = main(["teams", "2012", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -609,18 +312,19 @@ def test_main_teams_tinydb(
     assert captured_err == ""
 
 
-def test_main_teams_year_sqlite(
+def test_main_teams_week(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_teams_2012.txt", "test_data.db"])
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_teams_2012w9.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main(["teams", "2012", f"--config={test_config}"])
+    exit_result = main(["teams", "2012w9", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -628,18 +332,19 @@ def test_main_teams_year_sqlite(
     assert captured_err == ""
 
 
-def test_main_teams_year_tinydb(
+def test_main_games(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_teams_2012.txt", "test_data.json"])
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_games.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["teams", "2012", f"--config={test_config}"])
+    exit_result = main(["games", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -647,18 +352,19 @@ def test_main_teams_year_tinydb(
     assert captured_err == ""
 
 
-def test_main_teams_week_sqlite(
+def test_main_games_year(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(data_path, test_path, ["main_teams_2012w9.txt", "test_data.db"])
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_games_2012.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _ = sqlite_file_config
-    exit_result = main(["teams", "2012w9", f"--config={test_config}"])
+    exit_result = main(["games", "2012", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
@@ -666,140 +372,19 @@ def test_main_teams_week_sqlite(
     assert captured_err == ""
 
 
-def test_main_teams_week_tinydb(
+def test_main_games_week(
     capsys: Any,
+    output_path: Path,
     data_path: Path,
     test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
+    query_config: Path,
 ) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_teams_2012w9.txt", "test_data.json"],
-    )
+    _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
+    files = _copy_files(output_path, test_path, ["main_games_2012w9.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["teams", "2012w9", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_games.txt", "test_data.db"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _ = sqlite_file_config
-    exit_result = main(["games", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_games.txt", "test_data.json"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["games", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_year_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_games_2012.txt", "test_data.db"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _ = sqlite_file_config
-    exit_result = main(["games", "2012", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_year_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_games_2012.txt", "test_data.json"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["games", "2012", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_week_sqlite(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_config: Tuple[Path, Path],
-) -> None:
-    files = _copy_files(data_path, test_path, ["main_games_2012w9.txt", "test_data.db"])
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _ = sqlite_file_config
-    exit_result = main(["games", "2012w9", f"--config={test_config}"])
-    assert exit_result == 0
-
-    captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
-
-
-def test_main_games_week_tinydb(
-    capsys: Any,
-    data_path: Path,
-    test_path: Path,
-    sqlite_file_tinydb_config: Tuple[Path, Path, Path],
-) -> None:
-    files = _copy_files(
-        data_path,
-        test_path,
-        ["main_games_2012w9.txt", "test_data.json"],
-    )
-    with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
-
-    test_config, _, _ = sqlite_file_tinydb_config
-    exit_result = main(["games", "2012w9", f"--config={test_config}"])
+    exit_result = main(["games", "2012w9", f"--config={query_config}"])
     assert exit_result == 0
 
     captured_out, captured_err = capsys.readouterr()
