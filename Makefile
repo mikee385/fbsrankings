@@ -67,7 +67,7 @@ test-types:
 
 test-coverage:
     coverage erase
-    coverage run --source=src -m pytest tests
+    coverage run --source=src -m pytest tests -v
     coverage report
 
 run:

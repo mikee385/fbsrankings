@@ -7,8 +7,8 @@ include README.md
 include requirements/*
 include src/fbsrankings/py.typed
 include src/fbsrankings/fbsrankings.ini
-include tests/coverage_baseline.txt
 recursive-include tests *.py
 recursive-include tests/config *
+recursive-include tests/coverage *
 recursive-include tests/data *
 recursive-include tests/output *
