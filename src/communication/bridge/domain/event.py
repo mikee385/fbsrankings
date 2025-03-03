@@ -21,20 +21,7 @@ E = TypeVar("E", bound=Event, contravariant=True)
 EventHandler = Callable[[E], None]
 
 
-class PayloadHandler:
-    def __init__(
-        self,
-        type_: Type[E],
-        handler: EventHandler[E],
-        serializer: Serializer,
-    ) -> None:
-        self._type = type_
-        self._handler = handler
-        self._serializer = serializer
-
-    def __call__(self, payload: Payload) -> None:
-        event = self._serializer.deserialize(payload, self._type)
-        self._handler(event)
+PayloadHandler = Callable[[Payload], None]
 
 
 class EventBridge(EventBus):
@@ -60,9 +47,11 @@ class EventBridge(EventBus):
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
 
-        key = (type_, handler)
-        payload_handler = PayloadHandler(type_, handler, self._serializer)
+        def payload_handler(payload: Payload) -> None:
+            event = self._serializer.deserialize(payload, type_)
+            handler(event)
 
+        key = (type_, handler)
         handlers = self._handlers.get(key)
         if handlers is not None:
             handlers.append(payload_handler)

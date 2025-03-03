@@ -17,20 +17,7 @@ C = TypeVar("C", bound=Command, contravariant=True)
 CommandHandler = Callable[[C], None]
 
 
-class PayloadHandler:
-    def __init__(
-        self,
-        type_: Type[C],
-        handler: CommandHandler[C],
-        serializer: Serializer,
-    ) -> None:
-        self._type = type_
-        self._handler = handler
-        self._serializer = serializer
-
-    def __call__(self, payload: Payload) -> None:
-        command = self._serializer.deserialize(payload, self._type)
-        self._handler(command)
+PayloadHandler = Callable[[Payload], None]
 
 
 class CommandBridge(CommandBus):
@@ -52,7 +39,9 @@ class CommandBridge(CommandBus):
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
 
-        payload_handler = PayloadHandler(type_, handler, self._serializer)
+        def payload_handler(payload: Payload) -> None:
+            command = self._serializer.deserialize(payload, type_)
+            handler(command)
 
         existing = self._handlers.get(type_)
         if existing is not None:
