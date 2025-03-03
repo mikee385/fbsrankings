@@ -1,14 +1,14 @@
 """Common channel classes that can be utilized in any package"""
 
-from .domain.event import EventChannel
-from .domain.event import Payload
-from .domain.event import PayloadHandler
-from .infrastructure.memory.event import MemoryEventChannel
+from .domain.channel import Channel
+from .domain.channel import Payload
+from .domain.channel import PayloadHandler
+from .infrastructure.memory.channel import MemoryChannel
 
 
 __all__ = [
-    "EventChannel",
-    "MemoryEventChannel",
+    "Channel",
+    "MemoryChannel",
     "Payload",
     "PayloadHandler",
 ]

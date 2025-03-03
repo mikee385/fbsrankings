@@ -9,7 +9,7 @@ Payload = bytes
 PayloadHandler = Callable[[Payload], None]
 
 
-class EventChannel(metaclass=ABCMeta):
+class Channel(metaclass=ABCMeta):
     @abstractmethod
     def subscribe(self, topic: str, handler: PayloadHandler) -> None:
         raise NotImplementedError

@@ -1,8 +1,9 @@
 Name                                                                                        Stmts   Miss  Cover
 ---------------------------------------------------------------------------------------------------------------
 src\communication\__init__.py                                                                   0      0   100%
-src\communication\bridge\__init__.py                                                            2      0   100%
+src\communication\bridge\__init__.py                                                            3      0   100%
 src\communication\bridge\domain\__init__.py                                                     0      0   100%
+src\communication\bridge\domain\command.py                                                     51      4    92%
 src\communication\bridge\domain\event.py                                                       61      4    93%
 src\communication\bus\__init__.py                                                              10      0   100%
 src\communication\bus\domain\__init__.py                                                        0      0   100%
@@ -16,19 +17,19 @@ src\communication\bus\infrastructure\memory\event.py                            
 src\communication\bus\infrastructure\memory\query.py                                           24      2    92%
 src\communication\channel\__init__.py                                                           5      0   100%
 src\communication\channel\domain\__init__.py                                                    0      0   100%
-src\communication\channel\domain\event.py                                                      15      3    80%
+src\communication\channel\domain\channel.py                                                    15      3    80%
 src\communication\channel\infrastructure\__init__.py                                            0      0   100%
 src\communication\channel\infrastructure\memory\__init__.py                                     0      0   100%
-src\communication\channel\infrastructure\memory\event.py                                       22      0   100%
+src\communication\channel\infrastructure\memory\channel.py                                     22      0   100%
 src\fbsrankings\__init__.py                                                                     2      0   100%
 src\fbsrankings\__main__.py                                                                     4      4     0%
 src\fbsrankings\cli\__init__.py                                                                 2      0   100%
 src\fbsrankings\cli\application.py                                                            464    122    74%
 src\fbsrankings\cli\arg_types.py                                                               31      6    81%
-src\fbsrankings\cli\environment.py                                                             81     11    86%
+src\fbsrankings\cli\environment.py                                                             83     11    87%
 src\fbsrankings\cli\error.py                                                                    4      0   100%
 src\fbsrankings\cli\main.py                                                                    75      5    93%
-src\fbsrankings\cli\spinner.py                                                                 46      3    93%
+src\fbsrankings\cli\spinner.py                                                                 46      5    89%
 src\fbsrankings\config\__init__.py                                                              7      0   100%
 src\fbsrankings\config\config.py                                                               46      1    98%
 src\fbsrankings\context\__init__.py                                                             2      0   100%
@@ -252,4 +253,4 @@ src\serialization\infrastructure\__init__.py                                    
 src\serialization\infrastructure\pickle\__init__.py                                             0      0   100%
 src\serialization\infrastructure\pickle\serializer.py                                          11      0   100%
 ---------------------------------------------------------------------------------------------------------------
-TOTAL                                                                                        7318    862    88%
+TOTAL                                                                                        7372    868    88%

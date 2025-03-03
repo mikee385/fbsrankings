@@ -8,7 +8,7 @@ from typing import TypeVar
 
 from communication.bus import Event
 from communication.bus import EventBus
-from communication.channel import EventChannel
+from communication.channel import Channel
 from communication.channel import Payload
 from fbsrankings.messages.error import Topics as ErrorTopics
 from fbsrankings.messages.event import Topics as EventTopics
@@ -40,7 +40,7 @@ class PayloadHandler:
 class EventBridge(EventBus):
     def __init__(
         self,
-        channel: EventChannel,
+        channel: Channel,
         serializer: Serializer,
     ) -> None:
         self._channel = channel

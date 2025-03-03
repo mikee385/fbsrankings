@@ -1,12 +1,12 @@
 from typing import Dict
 from typing import List
 
-from communication.channel.domain.event import EventChannel
-from communication.channel.domain.event import Payload
-from communication.channel.domain.event import PayloadHandler
+from communication.channel.domain.channel import Channel
+from communication.channel.domain.channel import Payload
+from communication.channel.domain.channel import PayloadHandler
 
 
-class MemoryEventChannel(EventChannel):
+class MemoryChannel(Channel):
     def __init__(self) -> None:
         self._handlers: Dict[str, List[PayloadHandler]] = {}
 
