@@ -8,6 +8,7 @@ from typing_extensions import Literal
 
 from communication.bridge import CommandBridge
 from communication.bridge import EventBridge
+from communication.bridge import QueryBridge
 from communication.bus import CommandBus
 from communication.bus import EventBus
 from communication.bus import MemoryCommandBus
@@ -54,6 +55,7 @@ class Environment(ContextManager["Environment"]):
 
         if config.channel == ChannelType.NONE:
             self.command_bus = MemoryCommandBus()
+            self.query_bus = MemoryQueryBus()
             self.event_bus = MemoryEventBus()
 
         elif config.channel == ChannelType.MEMORY:
@@ -67,6 +69,10 @@ class Environment(ContextManager["Environment"]):
                 self._channel,
                 self._serializer,
             )
+            self.query_bus = QueryBridge(
+                self._channel,
+                self._serializer,
+            )
             self.event_bus = EventBridge(
                 self._channel,
                 self._serializer,
@@ -74,8 +80,6 @@ class Environment(ContextManager["Environment"]):
 
         else:
             raise ValueError(f"Unknown channel type: {config.channel}")
-
-        self.query_bus = MemoryQueryBus()
 
         self.command_bus.register_handler(DropStorageCommand, self._drop_storage)
 

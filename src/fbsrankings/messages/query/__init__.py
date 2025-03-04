@@ -3,6 +3,7 @@
 from typing import Any
 from typing import Dict
 from typing import Type
+from typing import TypeVar
 
 from communication.bus import Query
 
@@ -52,6 +53,10 @@ from .week_count_by_season import WeekCountBySeasonQuery
 from .week_count_by_season import WeekCountBySeasonResult
 
 
+R = TypeVar("R", covariant=True)
+Q = TypeVar("Q", contravariant=True)
+
+
 __all__ = [
     "AffiliationBySeasonResult",
     "AffiliationCountBySeasonQuery",
@@ -98,6 +103,27 @@ __all__ = [
     "WeekCountBySeasonQuery",
     "WeekCountBySeasonResult",
 ]
+
+ResultTypes: Dict[Type[Query[Any]], Type[Any]] = {
+    AffiliationCountBySeasonQuery: AffiliationCountBySeasonResult,
+    AffiliationsBySeasonQuery: AffiliationsBySeasonResult,
+    CanceledGamesQuery: CanceledGamesResult,
+    GameByIDQuery: GameByIDResult,
+    GameCountBySeasonQuery: GameCountBySeasonResult,
+    GameRankingBySeasonWeekQuery: GameRankingBySeasonWeekResult,
+    GamesBySeasonQuery: GamesBySeasonResult,
+    LatestSeasonWeekQuery: LatestSeasonWeekResult,
+    PostseasonGameCountBySeasonQuery: PostseasonGameCountBySeasonResult,
+    SeasonByIDQuery: SeasonByIDResult,
+    SeasonByYearQuery: SeasonByYearResult,
+    SeasonsQuery: SeasonsResult,
+    TeamByIDQuery: TeamByIDResult,
+    TeamCountBySeasonQuery: TeamCountBySeasonResult,
+    TeamRankingBySeasonWeekQuery: TeamRankingBySeasonWeekResult,
+    TeamRecordBySeasonWeekQuery: TeamRecordBySeasonWeekResult,
+    TeamsQuery: TeamsResult,
+    WeekCountBySeasonQuery: WeekCountBySeasonResult,
+}
 
 Topics: Dict[Type[Query[Any]], str] = {
     AffiliationCountBySeasonQuery: "fbsrankings/query/affiliation_count_by_season",
