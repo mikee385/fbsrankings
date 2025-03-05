@@ -28,7 +28,7 @@ prettytable==2.5.0
     # via fbsrankings (setup.py)
 pydantic==1.9.2
     # via fbsrankings (setup.py)
-six==1.16.0
+six==1.17.0
     # via html5lib
 soupsieve==2.3.2.post1
     # via beautifulsoup4

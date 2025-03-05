@@ -6,7 +6,7 @@
 #
 annotated-types==0.5.0
     # via pydantic
-beautifulsoup4==4.12.3
+beautifulsoup4==4.13.3
     # via fbsrankings (setup.py)
 colorama==0.4.6
     # via tqdm
@@ -25,17 +25,18 @@ pydantic==2.5.3
     # via fbsrankings (setup.py)
 pydantic-core==2.14.6
     # via pydantic
-six==1.16.0
+six==1.17.0
     # via html5lib
 soupsieve==2.4.1
     # via beautifulsoup4
 tinydb==4.8.0
     # via fbsrankings (setup.py)
-tqdm==4.66.2
+tqdm==4.67.1
     # via fbsrankings (setup.py)
 typing-extensions==4.7.1
     # via
     #   annotated-types
+    #   beautifulsoup4
     #   fbsrankings (setup.py)
     #   importlib-metadata
     #   pydantic

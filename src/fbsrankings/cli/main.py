@@ -1,6 +1,7 @@
 import argparse
 from typing import Optional
 from typing import Sequence
+from typing import Union
 
 from fbsrankings import __version__
 from fbsrankings.cli.application import Application
@@ -238,7 +239,7 @@ games_parser.set_defaults(func=print_games)
 # ENTRY POINT--------------------------------
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Optional[Sequence[str]] = None) -> Union[str, int, None]:
     try:
         args = main_parser.parse_args(argv)
     except SystemExit as result:
