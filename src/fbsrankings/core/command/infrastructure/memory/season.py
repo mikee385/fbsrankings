@@ -34,4 +34,4 @@ class SeasonEventHandler(BaseEventHandler):
         self._storage = storage
 
     def handle_created(self, event: SeasonCreatedEvent) -> None:
-        self._storage.add(SeasonDto(event.id_, event.year))
+        self._storage.add(SeasonDto(event.season_id, event.year))

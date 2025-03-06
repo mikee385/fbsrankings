@@ -61,7 +61,7 @@ class GameEventHandler(BaseEventHandler):
     def handle_created(self, event: GameCreatedEvent) -> None:
         self._storage.add(
             GameDto(
-                event.id_,
+                event.game_id,
                 event.season_id,
                 event.week,
                 event.date,
@@ -76,24 +76,24 @@ class GameEventHandler(BaseEventHandler):
         )
 
     def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
-        dto = self._storage.get(event.id_)
+        dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.week = event.week
             dto.date = event.date
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:
-        dto = self._storage.get(event.id_)
+        dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.status = GameStatus.CANCELED.name
 
     def handle_completed(self, event: GameCompletedEvent) -> None:
-        dto = self._storage.get(event.id_)
+        dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
             dto.status = GameStatus.COMPLETED.name
 
     def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
-        dto = self._storage.get(event.id_)
+        dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.notes = event.notes

@@ -15,7 +15,8 @@ from communication.bus import EventBus
 
 @dataclass(frozen=True)
 class AffiliationCreatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    affiliation_id: UUID
     season_id: UUID
     team_id: UUID
     subdivision: str

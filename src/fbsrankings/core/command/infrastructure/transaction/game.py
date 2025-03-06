@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -55,6 +56,7 @@ class GameRepository(BaseRepository):
 
 def _created_event(game: Game) -> GameCreatedEvent:
     return GameCreatedEvent(
+        uuid4(),
         game.id_,
         game.season_id,
         game.week,

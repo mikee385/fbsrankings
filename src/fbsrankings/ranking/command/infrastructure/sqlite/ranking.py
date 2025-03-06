@@ -172,7 +172,7 @@ class RankingEventHandler:
             "(UUID, Name, Type, SeasonID, Week) "
             "VALUES (?,?,?,?,?)",
             [
-                str(event.id_),
+                str(event.ranking_id),
                 event.name,
                 self._type.name,
                 str(event.season_id),
@@ -187,7 +187,13 @@ class RankingEventHandler:
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.id_), str(value.id_), value.order, value.rank, value.value],
+                [
+                    str(event.ranking_id),
+                    str(value.id_),
+                    value.order,
+                    value.rank,
+                    value.value,
+                ],
             )
 
 

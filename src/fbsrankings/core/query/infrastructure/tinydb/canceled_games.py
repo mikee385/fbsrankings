@@ -37,20 +37,20 @@ class CanceledGamesQueryProjection:
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Season {event.season_id} was not found for game {event.id_}",
+                f"Season {event.season_id} was not found for game {event.game_id}",
             )
 
         existing_home_team = self._storage.cache_team_by_id.get(str(event.home_team_id))
         if existing_home_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Home Team {event.home_team_id} was not found for game {event.id_}",
+                f"Home Team {event.home_team_id} was not found for game {event.game_id}",
             )
         existing_away_team = self._storage.cache_team_by_id.get(str(event.away_team_id))
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Away Team {event.away_team_id} was not found for game {event.id_}",
+                f"Away Team {event.away_team_id} was not found for game {event.game_id}",
             )
 
         if event.home_team_id < event.away_team_id:
@@ -71,7 +71,7 @@ class CanceledGamesQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.id_),
+                    "id_": str(event.game_id),
                     "season_id": str(event.season_id),
                     "year": existing_season["year"],
                     "week": event.week,
@@ -85,22 +85,25 @@ class CanceledGamesQueryProjection:
                 },
             )
 
-        elif existing["id_"] != str(event.id_):
+        elif existing["id_"] != str(event.game_id):
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for game does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"{existing['id_']} vs. {event.game_id}",
             )
 
     def project_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         table = self._storage.connection.table("canceled_games")
 
-        existing = table.update({"notes": event.notes}, Query().id_ == str(event.id_))
+        existing = table.update(
+            {"notes": event.notes},
+            Query().id_ == str(event.game_id),
+        )
 
         if len(existing) == 0:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Game {event.id_} was not found",
+                f"Game {event.game_id} was not found",
             )
 
 

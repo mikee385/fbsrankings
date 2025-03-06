@@ -50,7 +50,7 @@ class TeamRecordEventHandler(BaseEventHandler):
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         self._storage.add(
             TeamRecordDto(
-                event.id_,
+                event.record_id,
                 event.season_id,
                 event.week,
                 [

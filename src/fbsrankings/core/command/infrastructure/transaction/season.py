@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -44,7 +45,7 @@ class SeasonRepository(BaseRepository):
 
 
 def _created_event(season: Season) -> SeasonCreatedEvent:
-    return SeasonCreatedEvent(season.id_, season.year)
+    return SeasonCreatedEvent(uuid4(), season.id_, season.year)
 
 
 class SeasonEventHandler(BaseEventHandler):

@@ -76,7 +76,7 @@ class AffiliationEventHandler(BaseEventHandler):
             "(UUID, SeasonID, TeamID, Subdivision) "
             "VALUES (?,?,?,?);",
             [
-                str(event.id_),
+                str(event.affiliation_id),
                 str(event.season_id),
                 str(event.team_id),
                 event.subdivision,

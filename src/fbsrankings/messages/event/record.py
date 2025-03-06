@@ -25,7 +25,8 @@ class TeamRecordValue:
 
 @dataclass(frozen=True)
 class TeamRecordCalculatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    record_id: UUID
     season_id: UUID
     week: Optional[int]
     values: List[TeamRecordValue]

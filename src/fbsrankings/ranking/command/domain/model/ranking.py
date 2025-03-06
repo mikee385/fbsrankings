@@ -171,6 +171,7 @@ class TeamRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
+                uuid4(),
                 ranking.id_,
                 ranking.name,
                 ranking.season_id,
@@ -246,6 +247,7 @@ class GameRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
+                uuid4(),
                 ranking.id_,
                 ranking.name,
                 ranking.season_id,

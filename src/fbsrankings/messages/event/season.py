@@ -15,7 +15,8 @@ from communication.bus import EventBus
 
 @dataclass(frozen=True)
 class SeasonCreatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    season_id: UUID
     year: int
 
 

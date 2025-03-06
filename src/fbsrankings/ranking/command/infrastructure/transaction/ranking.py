@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -62,6 +63,7 @@ class TeamRankingRepository(BaseTeamRepository):
 
 def _team_created_event(ranking: Ranking[TeamID]) -> TeamRankingCalculatedEvent:
     return TeamRankingCalculatedEvent(
+        uuid4(),
         ranking.id_,
         ranking.name,
         ranking.season_id,
@@ -122,6 +124,7 @@ class GameRankingRepository(BaseGameRepository):
 
 def _game_created_event(ranking: Ranking[GameID]) -> GameRankingCalculatedEvent:
     return GameRankingCalculatedEvent(
+        uuid4(),
         ranking.id_,
         ranking.name,
         ranking.season_id,

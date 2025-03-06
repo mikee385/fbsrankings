@@ -37,7 +37,7 @@ class TeamRecordBySeasonWeekQueryProjection:
             if existing_team is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
-                    f"Team {value.team_id} was not found for team record {event.id_}",
+                    f"Team {value.team_id} was not found for team record {event.record_id}",
                 )
             values.append(
                 {
@@ -56,7 +56,7 @@ class TeamRecordBySeasonWeekQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.id_),
+                    "id_": str(event.record_id),
                     "season_id": str(event.season_id),
                     "year": existing_season["year"],
                     "week": event.week,
@@ -64,11 +64,11 @@ class TeamRecordBySeasonWeekQueryProjection:
                 },
             )
 
-        elif existing["id_"] != str(event.id_):
+        elif existing["id_"] != str(event.record_id):
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for team record does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"{existing['id_']} vs. {event.record_id}",
             )
 
 

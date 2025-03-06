@@ -123,7 +123,7 @@ class TeamRecordEventHandler(BaseEventHandler):
             f"INSERT INTO {self._record_table} "
             "(UUID, SeasonID, Week) "
             "VALUES (?,?,?);",
-            [str(event.id_), str(event.season_id), event.week],
+            [str(event.record_id), str(event.season_id), event.week],
         )
         insert_sql = (
             f"INSERT INTO {self._value_table} "
@@ -133,5 +133,5 @@ class TeamRecordEventHandler(BaseEventHandler):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.id_), str(value.team_id), value.wins, value.losses],
+                [str(event.record_id), str(value.team_id), value.wins, value.losses],
             )

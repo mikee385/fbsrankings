@@ -27,14 +27,16 @@ class AffiliationsBySeasonQueryProjection:
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Season {event.season_id} was not found for affiliation {event.id_}",
+                f"Season {event.season_id} was not found for affiliation "
+                f"{event.affiliation_id}",
             )
 
         existing_team = self._storage.cache_team_by_id.get(str(event.team_id))
         if existing_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Team {event.team_id} was not found for affiliation {event.id_}",
+                f"Team {event.team_id} was not found for affiliation "
+                f"{event.affiliation_id}",
             )
 
         existing = table.get(
@@ -46,7 +48,7 @@ class AffiliationsBySeasonQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.id_),
+                    "id_": str(event.affiliation_id),
                     "season_id": str(event.season_id),
                     "year": existing_season["year"],
                     "team_id": str(event.team_id),
@@ -55,11 +57,11 @@ class AffiliationsBySeasonQueryProjection:
                 },
             )
 
-        elif existing["id_"] != str(event.id_):
+        elif existing["id_"] != str(event.affiliation_id):
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for affiliation does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"{existing['id_']} vs. {event.affiliation_id}",
             )
 
 

@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -42,7 +43,7 @@ class TeamRepository(BaseRepository):
 
 
 def _created_event(team: Team) -> TeamCreatedEvent:
-    return TeamCreatedEvent(team.id_, team.name)
+    return TeamCreatedEvent(uuid4(), team.id_, team.name)
 
 
 class TeamEventHandler(BaseEventHandler):

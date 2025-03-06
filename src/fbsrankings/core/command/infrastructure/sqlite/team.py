@@ -55,5 +55,5 @@ class TeamEventHandler(BaseEventHandler):
     def handle_created(self, event: TeamCreatedEvent) -> None:
         self._cursor.execute(
             f"INSERT INTO {self._table} (UUID, Name) VALUES (?,?);",
-            [str(event.id_), event.name],
+            [str(event.team_id), event.name],
         )

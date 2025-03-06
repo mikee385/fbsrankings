@@ -683,7 +683,7 @@ class Application:
             print()
             print("Notes:")
             for event in self._note_events:
-                game = self._query_bus.query(GameByIDQuery(uuid4(), event.id_))
+                game = self._query_bus.query(GameByIDQuery(uuid4(), event.game_id))
                 if game is not None:
                     print()
                     print(f"ID: {game.game_id}")
@@ -807,6 +807,6 @@ class Application:
             self._errors.clear()
             raise ValueError(f"{type(error).__name__}: {error.message}")
         if len(self._errors) > 1:
-            error = MultipleValidationError(self._errors)
+            error = MultipleValidationError(uuid4(), self._errors)
             self._errors = []
             raise ValueError(f"{type(error).__name__}: {error.message}")

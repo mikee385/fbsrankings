@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -47,6 +48,7 @@ class AffiliationRepository(BaseRepository):
 
 def _created_event(affiliation: Affiliation) -> AffiliationCreatedEvent:
     return AffiliationCreatedEvent(
+        uuid4(),
         affiliation.id_,
         affiliation.season_id,
         affiliation.team_id,

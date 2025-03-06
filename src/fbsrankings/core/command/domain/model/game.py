@@ -162,6 +162,7 @@ class Game:
 
         self._bus.publish(
             GameRescheduledEvent(
+                uuid4(),
                 self.id_,
                 self.season_id,
                 old_week,
@@ -187,6 +188,7 @@ class Game:
 
         self._bus.publish(
             GameCanceledEvent(
+                uuid4(),
                 self.id_,
                 self.season_id,
                 self.week,
@@ -218,6 +220,7 @@ class Game:
 
         self._bus.publish(
             GameCompletedEvent(
+                uuid4(),
                 self.id_,
                 self.season_id,
                 self.week,
@@ -257,6 +260,7 @@ class Game:
 
         self._bus.publish(
             GameNotesUpdatedEvent(
+                uuid4(),
                 self.id_,
                 self.season_id,
                 self.week,
@@ -301,6 +305,7 @@ class GameFactory:
         )
         self._bus.publish(
             GameCreatedEvent(
+                uuid4(),
                 game.id_,
                 game.season_id,
                 game.week,

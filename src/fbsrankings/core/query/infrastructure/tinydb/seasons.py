@@ -21,13 +21,13 @@ class SeasonsQueryProjection:
         self._event_bus.unregister_handler(SeasonCreatedEvent, self.project)
 
     def project(self, event: SeasonCreatedEvent) -> None:
-        item = {"id_": str(event.id_), "year": event.year}
+        item = {"id_": str(event.season_id), "year": event.year}
 
-        existing_by_id = self._storage.cache_season_by_id.get(str(event.id_))
+        existing_by_id = self._storage.cache_season_by_id.get(str(event.season_id))
         if existing_by_id is not None and existing_by_id["year"] != item["year"]:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Year for season {event.id_} does not match: "
+                f"Year for season {event.season_id} does not match: "
                 f"{existing_by_id['year']} vs. {item['year']}",
             )
 
@@ -41,7 +41,7 @@ class SeasonsQueryProjection:
 
         doc_id = self._storage.connection.table("seasons").insert(item)
         document = Document(item, doc_id)
-        self._storage.cache_season_by_id[str(event.id_)] = document
+        self._storage.cache_season_by_id[str(event.season_id)] = document
         self._storage.cache_season_by_year[event.year] = document
 
 

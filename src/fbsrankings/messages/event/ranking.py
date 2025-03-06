@@ -24,7 +24,8 @@ class RankingValue:
 
 @dataclass(frozen=True)  # noqa: B024
 class RankingCalculatedEvent(Event, metaclass=ABCMeta):
-    id_: UUID
+    event_id: UUID
+    ranking_id: UUID
     name: str
     season_id: UUID
     week: Optional[int]

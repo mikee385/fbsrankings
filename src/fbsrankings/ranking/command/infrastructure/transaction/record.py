@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from uuid import uuid4
 
 from communication.bus import Event
 from communication.bus import EventBus
@@ -47,6 +48,7 @@ class TeamRecordRepository(BaseRepository):
 
 def _created_event(record: TeamRecord) -> TeamRecordCalculatedEvent:
     return TeamRecordCalculatedEvent(
+        uuid4(),
         record.id_,
         record.season_id,
         record.week,

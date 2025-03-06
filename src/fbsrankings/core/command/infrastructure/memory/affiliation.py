@@ -45,7 +45,7 @@ class AffiliationEventHandler(BaseEventHandler):
     def handle_created(self, event: AffiliationCreatedEvent) -> None:
         self._storage.add(
             AffiliationDto(
-                event.id_,
+                event.affiliation_id,
                 event.season_id,
                 event.team_id,
                 event.subdivision,

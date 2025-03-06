@@ -21,13 +21,13 @@ class TeamsQueryProjection:
         self._event_bus.unregister_handler(TeamCreatedEvent, self.project)
 
     def project(self, event: TeamCreatedEvent) -> None:
-        item = {"id_": str(event.id_), "name": event.name}
+        item = {"id_": str(event.team_id), "name": event.name}
 
-        existing_by_id = self._storage.cache_team_by_id.get(str(event.id_))
+        existing_by_id = self._storage.cache_team_by_id.get(str(event.team_id))
         if existing_by_id is not None and existing_by_id["name"] != item["name"]:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
-                f"Name for team {event.id_} does not match: "
+                f"Name for team {event.team_id} does not match: "
                 f"{existing_by_id['name']} vs. {item['name']}",
             )
 
@@ -41,7 +41,7 @@ class TeamsQueryProjection:
 
         doc_id = self._storage.connection.table("teams").insert(item)
         document = Document(item, doc_id)
-        self._storage.cache_team_by_id[str(event.id_)] = document
+        self._storage.cache_team_by_id[str(event.team_id)] = document
         self._storage.cache_team_by_name[event.name] = document
 
 

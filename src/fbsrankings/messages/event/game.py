@@ -16,7 +16,8 @@ from communication.bus import EventBus
 
 @dataclass(frozen=True)
 class GameCreatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    game_id: UUID
     season_id: UUID
     week: int
     date: datetime.date
@@ -28,7 +29,8 @@ class GameCreatedEvent(Event):
 
 @dataclass(frozen=True)
 class GameRescheduledEvent(Event):
-    id_: UUID
+    event_id: UUID
+    game_id: UUID
     season_id: UUID
     old_week: int
     old_date: datetime.date
@@ -42,7 +44,8 @@ class GameRescheduledEvent(Event):
 
 @dataclass(frozen=True)
 class GameCanceledEvent(Event):
-    id_: UUID
+    event_id: UUID
+    game_id: UUID
     season_id: UUID
     week: int
     date: datetime.date
@@ -54,7 +57,8 @@ class GameCanceledEvent(Event):
 
 @dataclass(frozen=True)
 class GameCompletedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    game_id: UUID
     season_id: UUID
     week: int
     date: datetime.date
@@ -68,7 +72,8 @@ class GameCompletedEvent(Event):
 
 @dataclass(frozen=True)
 class GameNotesUpdatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    game_id: UUID
     season_id: UUID
     week: int
     date: datetime.date

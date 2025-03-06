@@ -15,7 +15,8 @@ from communication.bus import EventBus
 
 @dataclass(frozen=True)
 class TeamCreatedEvent(Event):
-    id_: UUID
+    event_id: UUID
+    team_id: UUID
     name: str
 
 

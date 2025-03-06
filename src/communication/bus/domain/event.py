@@ -3,10 +3,13 @@ from abc import abstractmethod
 from typing import Callable
 from typing import Type
 from typing import TypeVar
+from uuid import UUID
+
+from typing_extensions import Protocol
 
 
-class Event(metaclass=ABCMeta):  # noqa: B024
-    pass
+class Event(Protocol):
+    event_id: UUID
 
 
 E = TypeVar("E", bound=Event, contravariant=True)

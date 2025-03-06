@@ -32,4 +32,4 @@ class TeamEventHandler(BaseEventHandler):
         self._storage = storage
 
     def handle_created(self, event: TeamCreatedEvent) -> None:
-        self._storage.add(TeamDto(event.id_, event.name))
+        self._storage.add(TeamDto(event.team_id, event.name))

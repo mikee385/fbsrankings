@@ -38,7 +38,7 @@ class GameRankingBySeasonWeekQueryProjection:
             if existing_game is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
-                    f"Game {value.id_} was not found for game ranking {event.id_}",
+                    f"Game {value.id_} was not found for game ranking {event.ranking_id}",
                 )
             values.append(
                 {
@@ -72,7 +72,7 @@ class GameRankingBySeasonWeekQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.id_),
+                    "id_": str(event.ranking_id),
                     "name": event.name,
                     "season_id": str(event.season_id),
                     "year": existing_season["year"],
@@ -81,11 +81,11 @@ class GameRankingBySeasonWeekQueryProjection:
                 },
             )
 
-        elif existing["id_"] != str(event.id_):
+        elif existing["id_"] != str(event.ranking_id):
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for game ranking does not match: "
-                f"{existing['id_']} vs. {event.id_}",
+                f"{existing['id_']} vs. {event.ranking_id}",
             )
 
 

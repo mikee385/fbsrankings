@@ -76,7 +76,7 @@ class RankingEventHandler:
     def handle_calculated(self, event: RankingCalculatedEvent) -> None:
         self._storage.add(
             RankingDto(
-                event.id_,
+                event.ranking_id,
                 event.name,
                 event.season_id,
                 event.week,

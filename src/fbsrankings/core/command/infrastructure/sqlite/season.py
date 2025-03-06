@@ -57,5 +57,5 @@ class SeasonEventHandler(BaseEventHandler):
     def handle_created(self, event: SeasonCreatedEvent) -> None:
         self._cursor.execute(
             f"INSERT INTO {self._table} (UUID, Year) VALUES (?,?);",
-            [str(event.id_), event.year],
+            [str(event.season_id), event.year],
         )
