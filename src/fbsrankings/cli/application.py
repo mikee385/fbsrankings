@@ -9,6 +9,7 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 from uuid import UUID
+from uuid import uuid4
 
 from prettytable import PrettyTable
 from tqdm import tqdm
@@ -161,20 +162,20 @@ class Application:
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._command_bus.send(DropStorageCommand())
+                self._command_bus.send(DropStorageCommand(uuid4()))
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:
             print_err("Importing season data:")
             for year in tqdm(years):
-                self._command_bus.send(ImportSeasonByYearCommand(year))
+                self._command_bus.send(ImportSeasonByYearCommand(uuid4(), year))
 
             if tracker.updates:
                 print_err()
                 print_err("Calculating rankings:")
                 for season in tqdm(tracker.updates):
                     self._command_bus.send(
-                        CalculateRankingsForSeasonCommand(season),
+                        CalculateRankingsForSeasonCommand(uuid4(), season),
                     )
 
         if check:
