@@ -18,7 +18,7 @@ class TeamRankingValueBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class TeamRankingBySeasonWeekResult:
-    ranking_id: UUID  # noqa: F841
+    ranking_id: UUID
     name: str
     season_id: UUID
     year: int

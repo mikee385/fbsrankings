@@ -1,0 +1,7 @@
+command_id  # unused variable (src\communication\bus\domain\command.py:12)
+command_id  # unused variable (src\fbsrankings\messages\command\calculate_rankings_for_season.py:11)
+command_id  # unused variable (src\fbsrankings\messages\command\drop_storage.py:10)
+command_id  # unused variable (src\fbsrankings\messages\command\import_season_by_year.py:10)
+ranking_id  # unused variable (src\fbsrankings\messages\query\game_ranking_by_season_week.py:34)
+ranking_id  # unused variable (src\fbsrankings\messages\query\team_ranking_by_season_week.py:21)
+record_id  # unused variable (src\fbsrankings\messages\query\team_record_by_season_week.py:20)

@@ -8,5 +8,5 @@ from communication.bus import Command
 
 @dataclass(frozen=True)
 class CalculateRankingsForSeasonCommand(Command):
-    id_: UUID
+    command_id: UUID
     season_id_or_year: Union[UUID, int]

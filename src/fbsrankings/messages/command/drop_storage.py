@@ -7,4 +7,4 @@ from communication.bus import Command
 
 @dataclass(frozen=True)
 class DropStorageCommand(Command):
-    id_: UUID
+    command_id: UUID

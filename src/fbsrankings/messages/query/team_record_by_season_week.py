@@ -17,7 +17,7 @@ class TeamRecordValueBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class TeamRecordBySeasonWeekResult:
-    record_id: UUID  # noqa: F841
+    record_id: UUID
     season_id: UUID
     year: int
     week: Optional[int]

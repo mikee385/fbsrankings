@@ -51,7 +51,7 @@ check:
     black src tests setup.py
     flake8 src tests setup.py
     mypy src tests setup.py
-    vulture src tests setup.py
+    vulture src tests setup.py whitelist.py
     pylint src tests setup.py
     bandit --ini setup.cfg -r src
     pyroma .

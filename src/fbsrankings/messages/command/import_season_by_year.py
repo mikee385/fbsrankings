@@ -7,5 +7,5 @@ from communication.bus import Command
 
 @dataclass(frozen=True)
 class ImportSeasonByYearCommand(Command):
-    id_: UUID
+    command_id: UUID
     year: int

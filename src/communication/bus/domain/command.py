@@ -9,7 +9,7 @@ from typing_extensions import Protocol
 
 
 class Command(Protocol):
-    id_: UUID
+    command_id: UUID
 
 
 C = TypeVar("C", bound=Command, contravariant=True)
