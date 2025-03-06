@@ -1,4 +1,5 @@
 from uuid import UUID
+from uuid import uuid4
 
 from communication.bus import EventBus
 from communication.bus import QueryBus
@@ -47,31 +48,31 @@ class CalculateRankingsForSeasonCommandHandler:
         with Transaction(self._data_source, self._event_bus) as transaction:
             if isinstance(command.season_id_or_year, UUID):
                 season_by_id = self._query_bus.query(
-                    SeasonByIDQuery(command.season_id_or_year),
+                    SeasonByIDQuery(uuid4(), command.season_id_or_year),
                 )
                 if season_by_id is None:
                     raise ValueError(
                         f"Season not found for {command.season_id_or_year}",
                     )
-                season_id = season_by_id.id_
+                season_id = season_by_id.season_id
 
             elif isinstance(command.season_id_or_year, int):
                 season_by_year = self._query_bus.query(
-                    SeasonByYearQuery(command.season_id_or_year),
+                    SeasonByYearQuery(uuid4(), command.season_id_or_year),
                 )
                 if season_by_year is None:
                     raise ValueError(
                         f"Season not found for {command.season_id_or_year}",
                     )
-                season_id = season_by_year.id_
+                season_id = season_by_year.season_id
 
             else:
                 raise TypeError("season_id_or_year must be of type UUID or int")
 
             affiliations = self._query_bus.query(
-                AffiliationsBySeasonQuery(season_id),
+                AffiliationsBySeasonQuery(uuid4(), season_id),
             ).affiliations
-            games = self._query_bus.query(GamesBySeasonQuery(season_id)).games
+            games = self._query_bus.query(GamesBySeasonQuery(uuid4(), season_id)).games
 
             season_data = SeasonData(season_id, affiliations, games)
 

@@ -17,7 +17,7 @@ class TeamByIDQueryHandler:
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT UUID, Name FROM {self._table} WHERE UUID = ?;",
-            [str(query.id_)],
+            [str(query.team_id)],
         )
         row = cursor.fetchone()
         cursor.close()

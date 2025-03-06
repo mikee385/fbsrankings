@@ -14,4 +14,5 @@ class AffiliationCountBySeasonResult:
 
 @dataclass(frozen=True)
 class AffiliationCountBySeasonQuery(Query[AffiliationCountBySeasonResult]):
+    query_id: UUID
     season_id: UUID

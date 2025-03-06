@@ -44,7 +44,7 @@ class GameByIDQueryHandler:
             f"JOIN {self._team_table} away_team "
             f"ON away_team.UUID = {self._game_table}.AwayTeamID "
             f"WHERE {self._game_table}.UUID = ?;",
-            [str(query.id_)],
+            [str(query.game_id)],
         )
         row = cursor.fetchone()
         cursor.close()

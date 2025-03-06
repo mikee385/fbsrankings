@@ -38,7 +38,7 @@ class GameStrengthRankingCalculator:
                         game_value = (
                             99 * home_performance.value + away_performance.value
                         ) / 100.0
-                    game_data[game.id_] = game_value
+                    game_data[game.game_id] = game_value
 
         result = {GameID(id_): data for id_, data in game_data.items()}
         ranking_values = GameRankingCalculator.to_values(season_data, result)

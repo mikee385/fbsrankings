@@ -8,10 +8,11 @@ from communication.bus import Query
 
 @dataclass(frozen=True)
 class TeamByIDResult:
-    id_: UUID
+    team_id: UUID
     name: str
 
 
 @dataclass(frozen=True)
 class TeamByIDQuery(Query[Optional[TeamByIDResult]]):
-    id_: UUID
+    query_id: UUID
+    team_id: UUID

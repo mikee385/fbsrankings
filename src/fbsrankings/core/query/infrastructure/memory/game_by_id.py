@@ -10,7 +10,7 @@ class GameByIDQueryHandler:
         self._storage = storage
 
     def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
-        game = self._storage.game.get(query.id_)
+        game = self._storage.game.get(query.game_id)
         if game is not None:
             season = self._storage.season.get(game.season_id)
             home_team = self._storage.team.get(game.home_team_id)

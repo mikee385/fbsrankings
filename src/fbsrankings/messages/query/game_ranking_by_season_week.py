@@ -10,7 +10,7 @@ from communication.bus import Query
 
 @dataclass(frozen=True)
 class GameRankingValueBySeasonWeekResult:
-    id_: UUID
+    game_id: UUID
     season_id: UUID
     year: int
     week: int
@@ -31,7 +31,7 @@ class GameRankingValueBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class GameRankingBySeasonWeekResult:
-    id_: UUID
+    ranking_id: UUID  # noqa: F841
     name: str
     season_id: UUID
     year: int
@@ -41,6 +41,7 @@ class GameRankingBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class GameRankingBySeasonWeekQuery(Query[Optional[GameRankingBySeasonWeekResult]]):
+    query_id: UUID
     name: str
     season_id: UUID
     week: Optional[int]

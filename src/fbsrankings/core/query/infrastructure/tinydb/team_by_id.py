@@ -11,7 +11,7 @@ class TeamByIDQueryHandler:
         self._storage = storage
 
     def __call__(self, query: TeamByIDQuery) -> Optional[TeamByIDResult]:
-        item = self._storage.cache_team_by_id.get(str(query.id_))
+        item = self._storage.cache_team_by_id.get(str(query.team_id))
 
         return (
             TeamByIDResult(UUID(item["id_"]), item["name"])

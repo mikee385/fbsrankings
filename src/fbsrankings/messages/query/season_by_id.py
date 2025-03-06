@@ -8,10 +8,11 @@ from communication.bus import Query
 
 @dataclass(frozen=True)
 class SeasonByIDResult:
-    id_: UUID
+    season_id: UUID
     year: int
 
 
 @dataclass(frozen=True)
 class SeasonByIDQuery(Query[Optional[SeasonByIDResult]]):
-    id_: UUID
+    query_id: UUID
+    season_id: UUID

@@ -4,14 +4,17 @@ from typing import Callable
 from typing import Generic
 from typing import Type
 from typing import TypeVar
+from uuid import UUID
+
+from typing_extensions import Protocol
 
 
 R = TypeVar("R", covariant=True)
 Q = TypeVar("Q", contravariant=True)
 
 
-class Query(Generic[R], metaclass=ABCMeta):  # noqa: B024
-    pass
+class Query(Generic[R], Protocol):
+    query_id: UUID
 
 
 QueryHandler = Callable[[Q], R]

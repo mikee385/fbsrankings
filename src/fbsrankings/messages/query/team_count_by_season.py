@@ -13,4 +13,5 @@ class TeamCountBySeasonResult:
 
 @dataclass(frozen=True)
 class TeamCountBySeasonQuery(Query[TeamCountBySeasonResult]):
+    query_id: UUID
     season_id: UUID

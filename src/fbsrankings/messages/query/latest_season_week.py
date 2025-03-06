@@ -15,4 +15,4 @@ class LatestSeasonWeekResult:
 
 @dataclass(frozen=True)
 class LatestSeasonWeekQuery(Query[Optional[LatestSeasonWeekResult]]):
-    pass
+    query_id: UUID

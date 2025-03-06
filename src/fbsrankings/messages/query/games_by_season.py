@@ -10,7 +10,7 @@ from communication.bus import Query
 
 @dataclass(frozen=True)
 class GameBySeasonResult:
-    id_: UUID
+    game_id: UUID
     season_id: UUID
     year: int
     week: int
@@ -33,4 +33,5 @@ class GamesBySeasonResult:
 
 @dataclass(frozen=True)
 class GamesBySeasonQuery(Query[GamesBySeasonResult]):
+    query_id: UUID
     season_id: UUID

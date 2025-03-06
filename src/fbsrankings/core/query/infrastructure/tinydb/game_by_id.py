@@ -12,7 +12,7 @@ class GameByIDQueryHandler:
         self._storage = storage
 
     def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
-        item = self._storage.cache_game_by_id.get(str(query.id_))
+        item = self._storage.cache_game_by_id.get(str(query.game_id))
 
         return (
             GameByIDResult(

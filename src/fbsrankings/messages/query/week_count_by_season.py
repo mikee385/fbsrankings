@@ -13,4 +13,5 @@ class WeekCountBySeasonResult:
 
 @dataclass(frozen=True)
 class WeekCountBySeasonQuery(Query[WeekCountBySeasonResult]):
+    query_id: UUID
     season_id: UUID

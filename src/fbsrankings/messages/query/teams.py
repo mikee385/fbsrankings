@@ -8,7 +8,7 @@ from communication.bus import Query
 
 @dataclass(frozen=True)
 class TeamResult:
-    id_: UUID
+    team_id: UUID
     name: str
 
 
@@ -19,4 +19,4 @@ class TeamsResult:
 
 @dataclass(frozen=True)
 class TeamsQuery(Query[TeamsResult]):
-    pass
+    query_id: UUID

@@ -40,7 +40,7 @@ class SeasonData:
         self.affiliation_map = {
             affiliation.team_id: affiliation for affiliation in affiliations
         }
-        self.game_map = {game.id_: game for game in games}
+        self.game_map = {game.game_id: game for game in games}
 
 
 RankingID = NewType("RankingID", UUID)
