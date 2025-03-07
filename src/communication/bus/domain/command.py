@@ -1,21 +1,9 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Callable
 from typing import Type
-from typing import TypeVar
-from uuid import UUID
 
-from typing_extensions import Protocol
-
-
-class Command(Protocol):
-    command_id: UUID
-
-
-C = TypeVar("C", bound=Command, contravariant=True)
-
-
-CommandHandler = Callable[[C], None]
+from communication.messages import C
+from communication.messages import CommandHandler
 
 
 class CommandBus(metaclass=ABCMeta):

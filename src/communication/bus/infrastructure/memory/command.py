@@ -2,10 +2,10 @@ from typing import Any
 from typing import Dict
 from typing import Type
 
-from communication.bus.domain.command import C
-from communication.bus.domain.command import Command
 from communication.bus.domain.command import CommandBus
-from communication.bus.domain.command import CommandHandler
+from communication.messages import C
+from communication.messages import Command
+from communication.messages import CommandHandler
 
 
 class MemoryCommandBus(CommandBus):

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from dataclasses import dataclass
 
-from communication.bus import Query
+from communication.messages import Query
 
 
 @dataclass(frozen=True)

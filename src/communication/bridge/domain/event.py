@@ -5,12 +5,12 @@ from typing import List
 from typing import Tuple
 from typing import Type
 
-from communication.bus.domain.event import E
-from communication.bus.domain.event import Event
-from communication.bus.domain.event import EventBus
-from communication.bus.domain.event import EventHandler
+from communication.bus import EventBus
 from communication.channel import Channel
 from communication.channel import Payload
+from communication.messages import E
+from communication.messages import Event
+from communication.messages import EventHandler
 from serialization import Serializer
 
 

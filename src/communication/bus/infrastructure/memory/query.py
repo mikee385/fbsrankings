@@ -3,11 +3,11 @@ from typing import cast
 from typing import Dict
 from typing import Type
 
-from communication.bus.domain.query import Q
-from communication.bus.domain.query import Query
 from communication.bus.domain.query import QueryBus
-from communication.bus.domain.query import QueryHandler
-from communication.bus.domain.query import R
+from communication.messages import Q
+from communication.messages import Query
+from communication.messages import QueryHandler
+from communication.messages import R
 
 
 class MemoryQueryBus(QueryBus):

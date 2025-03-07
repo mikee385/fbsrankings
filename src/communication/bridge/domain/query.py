@@ -3,13 +3,13 @@ from typing import Dict
 from typing import Optional
 from typing import Type
 
-from communication.bus.domain.query import Q
-from communication.bus.domain.query import Query
-from communication.bus.domain.query import QueryBus
-from communication.bus.domain.query import QueryHandler
-from communication.bus.domain.query import R
+from communication.bus import QueryBus
 from communication.channel import Channel
 from communication.channel import Payload
+from communication.messages import Q
+from communication.messages import Query
+from communication.messages import QueryHandler
+from communication.messages import R
 from serialization import Serializer
 
 

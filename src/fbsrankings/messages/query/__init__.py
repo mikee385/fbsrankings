@@ -3,9 +3,8 @@
 from typing import Any
 from typing import Dict
 from typing import Type
-from typing import TypeVar
 
-from communication.bus import Query
+from communication.messages import Query
 
 from .affiliation_count_by_season import AffiliationCountBySeasonQuery
 from .affiliation_count_by_season import AffiliationCountBySeasonResult
@@ -51,10 +50,6 @@ from .teams import TeamsQuery
 from .teams import TeamsResult
 from .week_count_by_season import WeekCountBySeasonQuery
 from .week_count_by_season import WeekCountBySeasonResult
-
-
-R = TypeVar("R", covariant=True)
-Q = TypeVar("Q", contravariant=True)
 
 
 __all__ = [

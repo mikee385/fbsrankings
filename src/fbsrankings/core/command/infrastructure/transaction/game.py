@@ -2,8 +2,8 @@ from typing import List
 from typing import Optional
 from uuid import uuid4
 
-from communication.bus import Event
 from communication.bus import EventBus
+from communication.messages import Event
 from fbsrankings.core.command.domain.model.game import Game
 from fbsrankings.core.command.domain.model.game import GameID
 from fbsrankings.core.command.domain.model.game import GameRepository as BaseRepository

@@ -10,8 +10,8 @@ from uuid import UUID
 from dataclasses import dataclass
 from typing_extensions import Literal
 
-from communication.bus import Event
 from communication.bus import EventBus
+from communication.messages import Event
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,7 @@
 from typing import Dict
 from typing import Type
 
-from communication.bus import Event
+from communication.messages import Event
 
 from .affiliation import AffiliationCreatedEvent
 from .affiliation import AffiliationEventHandler

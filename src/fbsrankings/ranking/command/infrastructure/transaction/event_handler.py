@@ -5,8 +5,8 @@ from typing import Type
 
 from typing_extensions import Literal
 
-from communication.bus import Event
 from communication.bus import EventBus
+from communication.messages import Event
 from fbsrankings.messages.event import GameRankingEventManager
 from fbsrankings.messages.event import TeamRankingEventManager
 from fbsrankings.messages.event import TeamRecordEventManager

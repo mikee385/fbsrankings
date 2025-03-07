@@ -1,8 +1,10 @@
 from typing import List
 from uuid import UUID
 
+from communication.messages import Event
 
-class ValidationError:
+
+class ValidationError(Event):
     def __init__(self, event_id: UUID, message: str) -> None:
         super().__init__()
         self.event_id = event_id

@@ -3,7 +3,7 @@
 from typing import Dict
 from typing import Type
 
-from communication.bus import Command
+from communication.messages import Command
 
 from .calculate_rankings_for_season import CalculateRankingsForSeasonCommand
 from .drop_storage import DropStorageCommand

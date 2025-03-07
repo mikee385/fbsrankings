@@ -2,8 +2,8 @@ from typing import List
 from typing import Optional
 from uuid import uuid4
 
-from communication.bus import Event
 from communication.bus import EventBus
+from communication.messages import Event
 from fbsrankings.messages.event import GameRankingCalculatedEvent
 from fbsrankings.messages.event import GameRankingEventHandler as BaseGameEventHandler
 from fbsrankings.messages.event import RankingValue as EventValue

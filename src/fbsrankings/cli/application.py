@@ -16,9 +16,9 @@ from tqdm import tqdm
 from typing_extensions import Literal
 
 from communication.bus import CommandBus
-from communication.bus import Event
 from communication.bus import EventBus
 from communication.bus import QueryBus
+from communication.messages import Event
 from fbsrankings.cli.error import print_err
 from fbsrankings.cli.spinner import Spinner
 from fbsrankings.messages.command import CalculateRankingsForSeasonCommand
