@@ -1,4 +1,6 @@
+from typing import Any
 from typing import Callable
+from typing import cast
 from typing import Dict
 from typing import Optional
 from typing import Type
@@ -21,23 +23,23 @@ class QueryBridge(QueryBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: Dict[Type[Query[R]], str],
-        result_types: Dict[Type[Query[R]], Type[R]],
+        topics: Dict[Type[Query[Any]], str],
+        result_types: Dict[Type[Query[Any]], Type[Any]],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
-        self._request_topics: Dict[Type[Query[R]], str] = {}
-        self._response_topics: Dict[Type[Query[R]], str] = {}
+        self._request_topics: Dict[Type[Query[Any]], str] = {}
+        self._response_topics: Dict[Type[Query[Any]], str] = {}
         for type_, topic in topics.items():
             self._request_topics[type_] = topic + "/request"
             self._response_topics[type_] = topic + "/response"
 
-        self._result_types: Dict[Type[Query[R]], Type[R]] = {}
+        self._result_types: Dict[Type[Query[Any]], Type[Any]] = {}
         self._result_types.update(result_types)
 
-        self._handlers: Dict[Type[Query[R]], PayloadHandler] = {}
-        self._results: Dict[str, Optional[R]] = {}
+        self._handlers: Dict[Type[Query[Any]], PayloadHandler] = {}
+        self._results: Dict[str, Optional[Any]] = {}
 
     def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
         query_type = type_
@@ -105,4 +107,4 @@ class QueryBridge(QueryBus):
         if result is None:
             raise RuntimeError(f"No result found for {query_type}")
 
-        return result
+        return cast(R, result)

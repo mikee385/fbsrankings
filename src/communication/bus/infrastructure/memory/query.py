@@ -12,7 +12,7 @@ from communication.messages import R
 
 class MemoryQueryBus(QueryBus):
     def __init__(self) -> None:
-        self._handlers: Dict[Type[Any], QueryHandler[Any, Any]] = {}
+        self._handlers: Dict[Type[Query[Any]], QueryHandler[Any, Any]] = {}
 
     def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
         existing = self._handlers.get(type_)
