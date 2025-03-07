@@ -9,12 +9,16 @@ from uuid import UUID
 from typing_extensions import Protocol
 
 
-R = TypeVar("R", covariant=True)
-Q = TypeVar("Q", contravariant=True)
-
-
-class Query(Generic[R], Protocol):
+class QueryBase(Protocol):
     query_id: UUID
+
+
+Q = TypeVar("Q", bound=QueryBase, contravariant=True)
+R = TypeVar("R", covariant=True)
+
+
+class Query(QueryBase, Generic[R], Protocol):
+    pass
 
 
 QueryHandler = Callable[[Q], R]

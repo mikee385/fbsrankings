@@ -4,21 +4,16 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Type
-from typing import TypeVar
 
-from communication.bus import Event
-from communication.bus import EventBus
+from communication.bus.domain.event import E
+from communication.bus.domain.event import Event
+from communication.bus.domain.event import EventBus
+from communication.bus.domain.event import EventHandler
 from communication.channel import Channel
 from communication.channel import Payload
 from fbsrankings.messages.error import Topics as ErrorTopics
 from fbsrankings.messages.event import Topics as EventTopics
 from serialization import Serializer
-
-
-E = TypeVar("E", bound=Event, contravariant=True)
-
-
-EventHandler = Callable[[E], None]
 
 
 PayloadHandler = Callable[[Payload], None]

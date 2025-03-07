@@ -3,24 +3,17 @@ from typing import Callable
 from typing import cast
 from typing import Dict
 from typing import Type
-from typing import TypeVar
-from uuid import UUID
-from uuid import uuid4
 
-from communication.bus import Query
-from communication.bus import QueryBus
+from communication.bus.domain.query import Q
+from communication.bus.domain.query import Query
+from communication.bus.domain.query import QueryBus
+from communication.bus.domain.query import QueryHandler
+from communication.bus.domain.query import R
 from communication.channel import Channel
 from communication.channel import Payload
 from fbsrankings.messages.query import ResultTypes
 from fbsrankings.messages.query import Topics as QueryTopics
 from serialization import Serializer
-
-
-R = TypeVar("R", covariant=True)
-Q = TypeVar("Q", contravariant=True)
-
-
-QueryHandler = Callable[[Q], R]
 
 
 PayloadHandler = Callable[[Payload], None]
@@ -45,7 +38,7 @@ class QueryBridge(QueryBus):
         self._result_types.update(ResultTypes)
 
         self._handlers: Dict[Type[Any], PayloadHandler] = {}
-        self._results: Dict[UUID, Any] = {}
+        self._results: Dict[str, Any] = {}
 
     def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
         query_type = type_
@@ -62,7 +55,7 @@ class QueryBridge(QueryBus):
             query = self._serializer.deserialize(payload, query_type)
             result = handler(query)
             response = self._serializer.serialize(result)
-            self._channel.publish(response_topic, response)
+            self._channel.publish(response_topic + "/" + str(query.query_id), response)
 
         existing = self._handlers.get(query_type)
         if existing is not None:
@@ -93,22 +86,21 @@ class QueryBridge(QueryBus):
 
         if query_type not in self._response_topics:
             raise ValueError(f"Unknown type: {query_type}")
-        response_topic = self._response_topics[query_type]
+        response_topic = self._response_topics[query_type] + "/" + str(query.query_id)
 
-        query_id = uuid4()
-        self._results[query_id] = None
+        self._results[response_topic] = None
 
         def payload_handler(payload: Payload) -> None:
             result = cast(R, self._serializer.deserialize(payload, result_type))
-            if query_id in self._results:
-                self._results[query_id] = result
+            if response_topic in self._results:
+                self._results[response_topic] = result
 
         self._channel.subscribe(response_topic, payload_handler)
 
         request = self._serializer.serialize(query)
         self._channel.publish(request_topic, request)
 
-        result = cast(R, self._results.pop(query_id))
+        result = cast(R, self._results.pop(response_topic))
         self._channel.unsubscribe(response_topic, payload_handler)
 
         if result is None:
