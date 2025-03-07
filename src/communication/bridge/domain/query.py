@@ -1,7 +1,6 @@
-from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Dict
+from typing import Optional
 from typing import Type
 
 from communication.bus.domain.query import Q
@@ -11,8 +10,6 @@ from communication.bus.domain.query import QueryHandler
 from communication.bus.domain.query import R
 from communication.channel import Channel
 from communication.channel import Payload
-from fbsrankings.messages.query import ResultTypes
-from fbsrankings.messages.query import Topics as QueryTopics
 from serialization import Serializer
 
 
@@ -24,21 +21,23 @@ class QueryBridge(QueryBus):
         self,
         channel: Channel,
         serializer: Serializer,
+        topics: Dict[Type[Query[R]], str],
+        result_types: Dict[Type[Query[R]], Type[R]],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
-        self._request_topics: Dict[Type[Any], str] = {}
-        self._response_topics: Dict[Type[Any], str] = {}
-        for type_, topic in QueryTopics.items():
+        self._request_topics: Dict[Type[Query[R]], str] = {}
+        self._response_topics: Dict[Type[Query[R]], str] = {}
+        for type_, topic in topics.items():
             self._request_topics[type_] = topic + "/request"
             self._response_topics[type_] = topic + "/response"
 
-        self._result_types: Dict[Type[Any], Type[Any]] = {}
-        self._result_types.update(ResultTypes)
+        self._result_types: Dict[Type[Query[R]], Type[R]] = {}
+        self._result_types.update(result_types)
 
-        self._handlers: Dict[Type[Any], PayloadHandler] = {}
-        self._results: Dict[str, Any] = {}
+        self._handlers: Dict[Type[Query[R]], PayloadHandler] = {}
+        self._results: Dict[str, Optional[R]] = {}
 
     def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
         query_type = type_
@@ -91,7 +90,7 @@ class QueryBridge(QueryBus):
         self._results[response_topic] = None
 
         def payload_handler(payload: Payload) -> None:
-            result = cast(R, self._serializer.deserialize(payload, result_type))
+            result = self._serializer.deserialize(payload, result_type)
             if response_topic in self._results:
                 self._results[response_topic] = result
 
@@ -100,7 +99,7 @@ class QueryBridge(QueryBus):
         request = self._serializer.serialize(query)
         self._channel.publish(request_topic, request)
 
-        result = cast(R, self._results.pop(response_topic))
+        result = self._results.pop(response_topic)
         self._channel.unsubscribe(response_topic, payload_handler)
 
         if result is None:

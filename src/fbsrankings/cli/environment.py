@@ -23,6 +23,11 @@ from fbsrankings.context import Context
 from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
 from fbsrankings.messages.command import DropStorageCommand
+from fbsrankings.messages.command import Topics as CommandTopics
+from fbsrankings.messages.error import Topics as ErrorTopics
+from fbsrankings.messages.event import Topics as EventTopics
+from fbsrankings.messages.query import ResultTypes
+from fbsrankings.messages.query import Topics as QueryTopics
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
 from serialization import PickleSerializer
@@ -68,14 +73,18 @@ class Environment(ContextManager["Environment"]):
             self.command_bus = CommandBridge(
                 self._channel,
                 self._serializer,
+                CommandTopics,
             )
             self.query_bus = QueryBridge(
                 self._channel,
                 self._serializer,
+                QueryTopics,
+                ResultTypes,
             )
             self.event_bus = EventBridge(
                 self._channel,
                 self._serializer,
+                {**EventTopics, **ErrorTopics},
             )
 
         else:

@@ -11,8 +11,6 @@ from communication.bus.domain.event import EventBus
 from communication.bus.domain.event import EventHandler
 from communication.channel import Channel
 from communication.channel import Payload
-from fbsrankings.messages.error import Topics as ErrorTopics
-from fbsrankings.messages.event import Topics as EventTopics
 from serialization import Serializer
 
 
@@ -24,13 +22,13 @@ class EventBridge(EventBus):
         self,
         channel: Channel,
         serializer: Serializer,
+        topics: Dict[Type[Event], str],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
         self._topics: Dict[Type[Event], str] = {}
-        self._topics.update(EventTopics)
-        self._topics.update(ErrorTopics)
+        self._topics.update(topics)
 
         self._handlers: Dict[
             Tuple[Type[Event], EventHandler[Any]],

@@ -8,7 +8,6 @@ from communication.bus.domain.command import CommandBus
 from communication.bus.domain.command import CommandHandler
 from communication.channel import Channel
 from communication.channel import Payload
-from fbsrankings.messages.command import Topics as CommandTopics
 from serialization import Serializer
 
 
@@ -20,12 +19,13 @@ class CommandBridge(CommandBus):
         self,
         channel: Channel,
         serializer: Serializer,
+        topics: Dict[Type[Command], str],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
         self._topics: Dict[Type[Command], str] = {}
-        self._topics.update(CommandTopics)
+        self._topics.update(topics)
 
         self._handlers: Dict[Type[Command], PayloadHandler] = {}
 
