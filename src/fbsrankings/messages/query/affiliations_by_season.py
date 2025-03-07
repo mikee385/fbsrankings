@@ -1,5 +1,4 @@
 from typing import List
-from uuid import UUID
 
 from dataclasses import dataclass
 
@@ -8,10 +7,10 @@ from communication.messages import Query
 
 @dataclass(frozen=True)
 class AffiliationBySeasonResult:
-    affiliation_id: UUID
-    season_id: UUID
+    affiliation_id: str
+    season_id: str
     year: int
-    team_id: UUID
+    team_id: str
     team_name: str
     subdivision: str
 
@@ -23,5 +22,5 @@ class AffiliationsBySeasonResult:
 
 @dataclass(frozen=True)
 class AffiliationsBySeasonQuery(Query[AffiliationsBySeasonResult]):
-    query_id: UUID
-    season_id: UUID
+    query_id: str
+    season_id: str

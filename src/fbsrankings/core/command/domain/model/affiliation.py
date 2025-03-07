@@ -61,10 +61,10 @@ class AffiliationFactory:
         affiliation = Affiliation(self._bus, id_, season_id, team_id, subdivision)
         self._bus.publish(
             AffiliationCreatedEvent(
-                uuid4(),
-                affiliation.id_,
-                affiliation.season_id,
-                affiliation.team_id,
+                str(uuid4()),
+                str(affiliation.id_),
+                str(affiliation.season_id),
+                str(affiliation.team_id),
                 affiliation.subdivision.name,
             ),
         )

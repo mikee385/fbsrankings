@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from tinydb import Query
 
@@ -24,7 +23,7 @@ class AffiliationCountBySeasonQueryProjection:
     def project(self, event: AffiliationCreatedEvent) -> None:
         table = self._connection.table("affiliation_count_by_season")
 
-        existing = table.get(Query().season_id == str(event.season_id))
+        existing = table.get(Query().season_id == event.season_id)
         if isinstance(existing, list):
             existing = existing[0]
         if existing is not None:
@@ -42,7 +41,7 @@ class AffiliationCountBySeasonQueryProjection:
             if event.subdivision == Subdivision.FBS.name:
                 table.insert(
                     {
-                        "season_id": str(event.season_id),
+                        "season_id": event.season_id,
                         "fbs_count": 1,
                         "fcs_count": 0,
                     },
@@ -50,7 +49,7 @@ class AffiliationCountBySeasonQueryProjection:
             elif event.subdivision == Subdivision.FCS.name:
                 table.insert(
                     {
-                        "season_id": str(event.season_id),
+                        "season_id": event.season_id,
                         "fbs_count": 0,
                         "fcs_count": 1,
                     },
@@ -67,13 +66,13 @@ class AffiliationCountBySeasonQueryHandler:
     ) -> Optional[AffiliationCountBySeasonResult]:
         table = self._connection.table("affiliation_count_by_season")
 
-        item = table.get(Query().season_id == str(query.season_id))
+        item = table.get(Query().season_id == query.season_id)
         if isinstance(item, list):
             item = item[0]
 
         return (
             AffiliationCountBySeasonResult(
-                UUID(item["season_id"]),
+                item["season_id"],
                 item["fbs_count"],
                 item["fcs_count"],
             )

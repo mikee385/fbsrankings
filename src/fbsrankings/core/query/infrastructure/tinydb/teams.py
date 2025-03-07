@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from tinydb.table import Document
 
 from communication.bus import EventBus
@@ -21,9 +19,9 @@ class TeamsQueryProjection:
         self._event_bus.unregister_handler(TeamCreatedEvent, self.project)
 
     def project(self, event: TeamCreatedEvent) -> None:
-        item = {"id_": str(event.team_id), "name": event.name}
+        item = {"id_": event.team_id, "name": event.name}
 
-        existing_by_id = self._storage.cache_team_by_id.get(str(event.team_id))
+        existing_by_id = self._storage.cache_team_by_id.get(event.team_id)
         if existing_by_id is not None and existing_by_id["name"] != item["name"]:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -41,7 +39,7 @@ class TeamsQueryProjection:
 
         doc_id = self._storage.connection.table("teams").insert(item)
         document = Document(item, doc_id)
-        self._storage.cache_team_by_id[str(event.team_id)] = document
+        self._storage.cache_team_by_id[event.team_id] = document
         self._storage.cache_team_by_name[event.name] = document
 
 
@@ -52,7 +50,7 @@ class TeamsQueryHandler:
     def __call__(self, query: TeamsQuery) -> TeamsResult:
         return TeamsResult(
             [
-                TeamResult(UUID(item["id_"]), item["name"])
+                TeamResult(item["id_"], item["name"])
                 for item in self._storage.cache_team_by_id.values()
             ],
         )

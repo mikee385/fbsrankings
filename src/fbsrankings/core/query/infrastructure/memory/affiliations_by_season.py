@@ -20,10 +20,10 @@ class AffiliationsBySeasonQueryHandler:
             if season is not None and team is not None:
                 items.append(
                     AffiliationBySeasonResult(
-                        affiliation.id_,
-                        affiliation.season_id,
+                        str(affiliation.id_),
+                        str(affiliation.season_id),
                         season.year,
-                        affiliation.team_id,
+                        str(affiliation.team_id),
                         team.name,
                         affiliation.subdivision,
                     ),

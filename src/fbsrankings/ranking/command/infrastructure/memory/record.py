@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import TeamRecordCalculatedEvent
@@ -22,25 +23,25 @@ class TeamRecordRepository(BaseRepository):
         self._bus = bus
 
     def get(self, id_: TeamRecordID) -> Optional[TeamRecord]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_record(dto) if dto is not None else None
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
-        dto = self._storage.find(season_id, week)
+        dto = self._storage.find(str(season_id), week)
         return self._to_record(dto) if dto is not None else None
 
     def _to_record(self, dto: TeamRecordDto) -> TeamRecord:
         return TeamRecord(
             self._bus,
-            TeamRecordID(dto.id_),
-            SeasonID(dto.season_id),
+            TeamRecordID(UUID(dto.id_)),
+            SeasonID(UUID(dto.season_id)),
             dto.week,
             [self._to_value(value) for value in dto.values],
         )
 
     @staticmethod
     def _to_value(dto: TeamRecordValueDto) -> TeamRecordValue:
-        return TeamRecordValue(TeamID(dto.team_id), dto.wins, dto.losses)
+        return TeamRecordValue(TeamID(UUID(dto.team_id)), dto.wins, dto.losses)
 
 
 class TeamRecordEventHandler(BaseEventHandler):

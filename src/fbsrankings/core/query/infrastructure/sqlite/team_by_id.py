@@ -1,6 +1,5 @@
 import sqlite3
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.query import TeamByIDQuery
 from fbsrankings.messages.query import TeamByIDResult
@@ -17,11 +16,11 @@ class TeamByIDQueryHandler:
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT UUID, Name FROM {self._table} WHERE UUID = ?;",
-            [str(query.team_id)],
+            [query.team_id],
         )
         row = cursor.fetchone()
         cursor.close()
 
         if row:
-            return TeamByIDResult(UUID(row[0]), row[1])
+            return TeamByIDResult(row[0], row[1])
         return None

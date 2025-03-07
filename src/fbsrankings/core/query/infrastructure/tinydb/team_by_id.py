@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.query import TeamByIDQuery
 from fbsrankings.messages.query import TeamByIDResult
@@ -11,10 +10,6 @@ class TeamByIDQueryHandler:
         self._storage = storage
 
     def __call__(self, query: TeamByIDQuery) -> Optional[TeamByIDResult]:
-        item = self._storage.cache_team_by_id.get(str(query.team_id))
+        item = self._storage.cache_team_by_id.get(query.team_id)
 
-        return (
-            TeamByIDResult(UUID(item["id_"]), item["name"])
-            if item is not None
-            else None
-        )
+        return TeamByIDResult(item["id_"], item["name"]) if item is not None else None

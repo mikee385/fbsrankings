@@ -38,9 +38,9 @@ class TeamRankingBySeasonWeekQueryHandler:
 
             if season is not None:
                 return TeamRankingBySeasonWeekResult(
-                    ranking.id_,
+                    str(ranking.id_),
                     ranking.name,
-                    ranking.season_id,
+                    str(ranking.season_id),
                     season.year,
                     ranking.week,
                     values,

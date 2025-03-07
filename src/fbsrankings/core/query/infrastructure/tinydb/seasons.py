@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from tinydb.table import Document
 
 from communication.bus import EventBus
@@ -21,9 +19,9 @@ class SeasonsQueryProjection:
         self._event_bus.unregister_handler(SeasonCreatedEvent, self.project)
 
     def project(self, event: SeasonCreatedEvent) -> None:
-        item = {"id_": str(event.season_id), "year": event.year}
+        item = {"id_": event.season_id, "year": event.year}
 
-        existing_by_id = self._storage.cache_season_by_id.get(str(event.season_id))
+        existing_by_id = self._storage.cache_season_by_id.get(event.season_id)
         if existing_by_id is not None and existing_by_id["year"] != item["year"]:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -41,7 +39,7 @@ class SeasonsQueryProjection:
 
         doc_id = self._storage.connection.table("seasons").insert(item)
         document = Document(item, doc_id)
-        self._storage.cache_season_by_id[str(event.season_id)] = document
+        self._storage.cache_season_by_id[event.season_id] = document
         self._storage.cache_season_by_year[event.year] = document
 
 
@@ -52,7 +50,7 @@ class SeasonsQueryHandler:
     def __call__(self, query: SeasonsQuery) -> SeasonsResult:
         return SeasonsResult(
             [
-                SeasonResult(UUID(item["id_"]), item["year"])
+                SeasonResult(item["id_"], item["year"])
                 for item in self._storage.cache_season_by_id.values()
             ],
         )

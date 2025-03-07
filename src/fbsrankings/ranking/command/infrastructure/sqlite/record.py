@@ -99,7 +99,7 @@ class TeamRecordEventHandler(BaseEventHandler):
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = f"SELECT UUID FROM {self._record_table} WHERE SeasonID = ?"
-        params: List[SqliteParam] = [str(event.season_id)]
+        params: List[SqliteParam] = [event.season_id]
 
         if event.week is not None:
             query += " AND Week = ?;"
@@ -123,7 +123,7 @@ class TeamRecordEventHandler(BaseEventHandler):
             f"INSERT INTO {self._record_table} "
             "(UUID, SeasonID, Week) "
             "VALUES (?,?,?);",
-            [str(event.record_id), str(event.season_id), event.week],
+            [event.record_id, event.season_id, event.week],
         )
         insert_sql = (
             f"INSERT INTO {self._value_table} "
@@ -133,5 +133,5 @@ class TeamRecordEventHandler(BaseEventHandler):
         for value in event.values:
             self._cursor.execute(
                 insert_sql,
-                [str(event.record_id), str(value.team_id), value.wins, value.losses],
+                [event.record_id, value.team_id, value.wins, value.losses],
             )

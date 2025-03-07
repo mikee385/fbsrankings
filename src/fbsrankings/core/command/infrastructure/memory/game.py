@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.game import Game
@@ -24,7 +25,7 @@ class GameRepository(BaseRepository):
         self._bus = bus
 
     def get(self, id_: GameID) -> Optional[Game]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_game(dto) if dto is not None else None
 
     def find(
@@ -34,19 +35,19 @@ class GameRepository(BaseRepository):
         team1_id: TeamID,
         team2_id: TeamID,
     ) -> Optional[Game]:
-        dto = self._storage.find(season_id, week, team1_id, team2_id)
+        dto = self._storage.find(str(season_id), week, str(team1_id), str(team2_id))
         return self._to_game(dto) if dto is not None else None
 
     def _to_game(self, dto: GameDto) -> Game:
         return Game(
             self._bus,
-            GameID(dto.id_),
-            SeasonID(dto.season_id),
+            GameID(UUID(dto.id_)),
+            SeasonID(UUID(dto.season_id)),
             dto.week,
             dto.date,
             SeasonSection[dto.season_section],
-            TeamID(dto.home_team_id),
-            TeamID(dto.away_team_id),
+            TeamID(UUID(dto.home_team_id)),
+            TeamID(UUID(dto.away_team_id)),
             dto.home_team_score,
             dto.away_team_score,
             GameStatus[dto.status],

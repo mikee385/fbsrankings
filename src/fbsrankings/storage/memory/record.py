@@ -3,31 +3,30 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
-from uuid import UUID
 
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class TeamRecordValueDto:
-    team_id: UUID
+    team_id: str
     wins: int
     losses: int
 
 
 @dataclass(frozen=True)
 class TeamRecordDto:
-    id_: UUID
-    season_id: UUID
+    id_: str
+    season_id: str
     week: Optional[int]
     values: List[TeamRecordValueDto]
 
 
 class TeamRecordStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[UUID, TeamRecordDto] = {}
-        self._by_key: Dict[Tuple[UUID, Optional[int]], TeamRecordDto] = {}
-        self._by_season: Dict[UUID, List[TeamRecordDto]] = {}
+        self._by_id: Dict[str, TeamRecordDto] = {}
+        self._by_key: Dict[Tuple[str, Optional[int]], TeamRecordDto] = {}
+        self._by_season: Dict[str, List[TeamRecordDto]] = {}
 
     def add(self, record: TeamRecordDto) -> None:
         key = (record.season_id, record.week)
@@ -46,14 +45,14 @@ class TeamRecordStorage:
             self._by_season[record.season_id] = by_season
         by_season.append(record)
 
-    def get(self, id_: UUID) -> Optional[TeamRecordDto]:
+    def get(self, id_: str) -> Optional[TeamRecordDto]:
         return self._by_id.get(id_)
 
-    def find(self, season_id: UUID, week: Optional[int]) -> Optional[TeamRecordDto]:
+    def find(self, season_id: str, week: Optional[int]) -> Optional[TeamRecordDto]:
         key = (season_id, week)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: UUID) -> List[TeamRecordDto]:
+    def for_season(self, season_id: str) -> List[TeamRecordDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

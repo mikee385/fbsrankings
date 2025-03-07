@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import UUID
 
 from tinydb import Query
 
@@ -33,20 +32,20 @@ class CanceledGamesQueryProjection:
     def project_canceled(self, event: GameCanceledEvent) -> None:
         table = self._storage.connection.table("canceled_games")
 
-        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
+        existing_season = self._storage.cache_season_by_id.get(event.season_id)
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Season {event.season_id} was not found for game {event.game_id}",
             )
 
-        existing_home_team = self._storage.cache_team_by_id.get(str(event.home_team_id))
+        existing_home_team = self._storage.cache_team_by_id.get(event.home_team_id)
         if existing_home_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"Home Team {event.home_team_id} was not found for game {event.game_id}",
             )
-        existing_away_team = self._storage.cache_team_by_id.get(str(event.away_team_id))
+        existing_away_team = self._storage.cache_team_by_id.get(event.away_team_id)
         if existing_away_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -71,21 +70,21 @@ class CanceledGamesQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.game_id),
-                    "season_id": str(event.season_id),
+                    "id_": event.game_id,
+                    "season_id": event.season_id,
                     "year": existing_season["year"],
                     "week": event.week,
                     "date": event.date.strftime("%Y-%m-%d"),
                     "season_section": event.season_section,
-                    "home_team_id": str(event.home_team_id),
+                    "home_team_id": event.home_team_id,
                     "home_team_name": existing_home_team["name"],
-                    "away_team_id": str(event.away_team_id),
+                    "away_team_id": event.away_team_id,
                     "away_team_name": existing_away_team["name"],
                     "notes": event.notes,
                 },
             )
 
-        elif existing["id_"] != str(event.game_id):
+        elif existing["id_"] != event.game_id:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for game does not match: "
@@ -97,7 +96,7 @@ class CanceledGamesQueryProjection:
 
         existing = table.update(
             {"notes": event.notes},
-            Query().id_ == str(event.game_id),
+            Query().id_ == event.game_id,
         )
 
         if len(existing) == 0:
@@ -116,15 +115,15 @@ class CanceledGamesQueryHandler:
 
         items = [
             CanceledGameResult(
-                UUID(item["id_"]),
-                UUID(item["season_id"]),
+                item["id_"],
+                item["season_id"],
                 item["year"],
                 item["week"],
                 datetime.strptime(item["date"], "%Y-%m-%d").date(),
                 item["season_section"],
-                UUID(item["home_team_id"]),
+                item["home_team_id"],
                 item["home_team_name"],
-                UUID(item["away_team_id"]),
+                item["away_team_id"],
                 item["away_team_name"],
                 item["notes"],
             )

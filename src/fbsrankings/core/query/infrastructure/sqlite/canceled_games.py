@@ -1,6 +1,5 @@
 import sqlite3
 from datetime import datetime
-from uuid import UUID
 
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.query import CanceledGameResult
@@ -46,15 +45,15 @@ class CanceledGamesQueryHandler:
         )
         items = [
             CanceledGameResult(
-                UUID(row[0]),
-                UUID(row[1]),
+                row[0],
+                row[1],
                 row[2],
                 row[3],
                 datetime.strptime(row[4], "%Y-%m-%d").date(),
                 row[5],
-                UUID(row[6]),
+                row[6],
                 row[7],
-                UUID(row[8]),
+                row[8],
                 row[9],
                 row[10],
             )

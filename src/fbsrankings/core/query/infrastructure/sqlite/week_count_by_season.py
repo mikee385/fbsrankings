@@ -15,7 +15,7 @@ class WeekCountBySeasonQueryHandler:
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT MAX(Week) FROM {self._table} WHERE SeasonID = ?;",
-            [str(query.season_id)],
+            [query.season_id],
         )
         row = cursor.fetchone()
         cursor.close()

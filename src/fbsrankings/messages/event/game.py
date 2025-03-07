@@ -5,7 +5,6 @@ from types import TracebackType
 from typing import ContextManager
 from typing import Optional
 from typing import Type
-from uuid import UUID
 
 from dataclasses import dataclass
 from typing_extensions import Literal
@@ -16,55 +15,55 @@ from communication.messages import Event
 
 @dataclass(frozen=True)
 class GameCreatedEvent(Event):
-    event_id: UUID
-    game_id: UUID
-    season_id: UUID
+    event_id: str
+    game_id: str
+    season_id: str
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     notes: str
 
 
 @dataclass(frozen=True)
 class GameRescheduledEvent(Event):
-    event_id: UUID
-    game_id: UUID
-    season_id: UUID
+    event_id: str
+    game_id: str
+    season_id: str
     old_week: int
     old_date: datetime.date
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     notes: str
 
 
 @dataclass(frozen=True)
 class GameCanceledEvent(Event):
-    event_id: UUID
-    game_id: UUID
-    season_id: UUID
+    event_id: str
+    game_id: str
+    season_id: str
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     notes: str
 
 
 @dataclass(frozen=True)
 class GameCompletedEvent(Event):
-    event_id: UUID
-    game_id: UUID
-    season_id: UUID
+    event_id: str
+    game_id: str
+    season_id: str
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     home_team_score: int
     away_team_score: int
     notes: str
@@ -72,14 +71,14 @@ class GameCompletedEvent(Event):
 
 @dataclass(frozen=True)
 class GameNotesUpdatedEvent(Event):
-    event_id: UUID
-    game_id: UUID
-    season_id: UUID
+    event_id: str
+    game_id: str
+    season_id: str
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     old_notes: str
     notes: str
 

@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from tinydb import Query
 
@@ -25,7 +24,7 @@ class PostseasonGameCountBySeasonQueryProjection:
         if event.season_section == SeasonSection.POSTSEASON.name:
             table = self._connection.table("postseason_game_count_by_season")
 
-            existing = table.get(Query().season_id == str(event.season_id))
+            existing = table.get(Query().season_id == event.season_id)
             if isinstance(existing, list):
                 existing = existing[0]
             if existing is not None:
@@ -36,7 +35,7 @@ class PostseasonGameCountBySeasonQueryProjection:
             else:
                 table.insert(
                     {
-                        "season_id": str(event.season_id),
+                        "season_id": event.season_id,
                         "count": 1,
                     },
                 )
@@ -52,12 +51,12 @@ class PostseasonGameCountBySeasonQueryHandler:
     ) -> Optional[PostseasonGameCountBySeasonResult]:
         table = self._connection.table("postseason_game_count_by_season")
 
-        item = table.get(Query().season_id == str(query.season_id))
+        item = table.get(Query().season_id == query.season_id)
         if isinstance(item, list):
             item = item[0]
 
         return (
-            PostseasonGameCountBySeasonResult(UUID(item["season_id"]), item["count"])
+            PostseasonGameCountBySeasonResult(item["season_id"], item["count"])
             if item is not None
             else None
         )

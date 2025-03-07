@@ -1,5 +1,4 @@
 from typing import List
-from uuid import UUID
 
 from dataclasses import dataclass
 
@@ -8,7 +7,7 @@ from communication.messages import Query
 
 @dataclass(frozen=True)
 class TeamResult:
-    team_id: UUID
+    team_id: str
     name: str
 
 
@@ -19,4 +18,4 @@ class TeamsResult:
 
 @dataclass(frozen=True)
 class TeamsQuery(Query[TeamsResult]):
-    query_id: UUID
+    query_id: str

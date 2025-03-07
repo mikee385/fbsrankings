@@ -48,10 +48,10 @@ class AffiliationRepository(BaseRepository):
 
 def _created_event(affiliation: Affiliation) -> AffiliationCreatedEvent:
     return AffiliationCreatedEvent(
-        uuid4(),
-        affiliation.id_,
-        affiliation.season_id,
-        affiliation.team_id,
+        str(uuid4()),
+        str(affiliation.id_),
+        str(affiliation.season_id),
+        str(affiliation.team_id),
         affiliation.subdivision.name,
     )
 

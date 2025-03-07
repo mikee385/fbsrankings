@@ -4,7 +4,6 @@ from types import TracebackType
 from typing import ContextManager
 from typing import Optional
 from typing import Type
-from uuid import UUID
 
 from dataclasses import dataclass
 from typing_extensions import Literal
@@ -15,8 +14,8 @@ from communication.messages import Event
 
 @dataclass(frozen=True)
 class SeasonCreatedEvent(Event):
-    event_id: UUID
-    season_id: UUID
+    event_id: str
+    season_id: str
     year: int
 
 

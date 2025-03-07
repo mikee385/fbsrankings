@@ -43,7 +43,7 @@ class TeamRepository(BaseRepository):
 
 
 def _created_event(team: Team) -> TeamCreatedEvent:
-    return TeamCreatedEvent(uuid4(), team.id_, team.name)
+    return TeamCreatedEvent(str(uuid4()), str(team.id_), team.name)
 
 
 class TeamEventHandler(BaseEventHandler):

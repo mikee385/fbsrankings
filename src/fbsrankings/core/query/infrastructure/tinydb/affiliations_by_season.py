@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from tinydb import Query
 
 from communication.bus import EventBus
@@ -23,7 +21,7 @@ class AffiliationsBySeasonQueryProjection:
     def project(self, event: AffiliationCreatedEvent) -> None:
         table = self._storage.connection.table("affiliations")
 
-        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
+        existing_season = self._storage.cache_season_by_id.get(event.season_id)
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -31,7 +29,7 @@ class AffiliationsBySeasonQueryProjection:
                 f"{event.affiliation_id}",
             )
 
-        existing_team = self._storage.cache_team_by_id.get(str(event.team_id))
+        existing_team = self._storage.cache_team_by_id.get(event.team_id)
         if existing_team is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -40,24 +38,23 @@ class AffiliationsBySeasonQueryProjection:
             )
 
         existing = table.get(
-            (Query().season_id == str(event.season_id))
-            & (Query().team_id == str(event.team_id)),
+            (Query().season_id == event.season_id) & (Query().team_id == event.team_id),
         )
         if isinstance(existing, list):
             existing = existing[0]
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.affiliation_id),
-                    "season_id": str(event.season_id),
+                    "id_": event.affiliation_id,
+                    "season_id": event.season_id,
                     "year": existing_season["year"],
-                    "team_id": str(event.team_id),
+                    "team_id": event.team_id,
                     "team_name": existing_team["name"],
                     "subdivision": event.subdivision,
                 },
             )
 
-        elif existing["id_"] != str(event.affiliation_id):
+        elif existing["id_"] != event.affiliation_id:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for affiliation does not match: "
@@ -74,14 +71,14 @@ class AffiliationsBySeasonQueryHandler:
 
         items = [
             AffiliationBySeasonResult(
-                UUID(item["id_"]),
-                UUID(item["season_id"]),
+                item["id_"],
+                item["season_id"],
                 item["year"],
-                UUID(item["team_id"]),
+                item["team_id"],
                 item["team_name"],
                 item["subdivision"],
             )
-            for item in table.search(Query().season_id == str(query.season_id))
+            for item in table.search(Query().season_id == query.season_id)
         ]
 
         return AffiliationsBySeasonResult(items)

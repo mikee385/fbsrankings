@@ -10,5 +10,8 @@ class TeamsQueryHandler:
 
     def __call__(self, query: TeamsQuery) -> TeamsResult:
         return TeamsResult(
-            [TeamResult(item.id_, item.name) for item in self._storage.team.all_()],
+            [
+                TeamResult(str(item.id_), item.name)
+                for item in self._storage.team.all_()
+            ],
         )

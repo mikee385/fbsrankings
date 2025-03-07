@@ -4,7 +4,6 @@ from types import TracebackType
 from typing import ContextManager
 from typing import Optional
 from typing import Type
-from uuid import UUID
 
 from dataclasses import dataclass
 from typing_extensions import Literal
@@ -15,10 +14,10 @@ from communication.messages import Event
 
 @dataclass(frozen=True)
 class AffiliationCreatedEvent(Event):
-    event_id: UUID
-    affiliation_id: UUID
-    season_id: UUID
-    team_id: UUID
+    event_id: str
+    affiliation_id: str
+    season_id: str
+    team_id: str
     subdivision: str
 
 

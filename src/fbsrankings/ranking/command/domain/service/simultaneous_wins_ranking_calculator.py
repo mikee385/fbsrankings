@@ -40,7 +40,7 @@ class SimultaneousWinsRankingCalculator:
         self._factory = factory
 
     def calculate_for_season(self, season_data: SeasonData) -> List[Ranking[TeamID]]:
-        team_data: Dict[UUID, TeamData] = {}
+        team_data: Dict[str, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS.name:
                 team_data[affiliation.team_id] = TeamData(len(team_data))
@@ -99,7 +99,9 @@ class SimultaneousWinsRankingCalculator:
 
             x = numpy.linalg.solve(a, b)
 
-            result = {TeamID(id_): x[data.index] for id_, data in team_data.items()}
+            result = {
+                TeamID(UUID(id_)): x[data.index] for id_, data in team_data.items()
+            }
             ranking_values = TeamRankingCalculator.to_values(season_data, result)
 
             rankings.append(

@@ -63,13 +63,13 @@ class TeamRankingRepository(BaseTeamRepository):
 
 def _team_created_event(ranking: Ranking[TeamID]) -> TeamRankingCalculatedEvent:
     return TeamRankingCalculatedEvent(
-        uuid4(),
-        ranking.id_,
+        str(uuid4()),
+        str(ranking.id_),
         ranking.name,
-        ranking.season_id,
+        str(ranking.season_id),
         ranking.week,
         [
-            EventValue(value.id_, value.order, value.rank, value.value)
+            EventValue(str(value.id_), value.order, value.rank, value.value)
             for value in ranking.values
         ],
     )
@@ -124,13 +124,13 @@ class GameRankingRepository(BaseGameRepository):
 
 def _game_created_event(ranking: Ranking[GameID]) -> GameRankingCalculatedEvent:
     return GameRankingCalculatedEvent(
-        uuid4(),
-        ranking.id_,
+        str(uuid4()),
+        str(ranking.id_),
         ranking.name,
-        ranking.season_id,
+        str(ranking.season_id),
         ranking.week,
         [
-            EventValue(value.id_, value.order, value.rank, value.value)
+            EventValue(str(value.id_), value.order, value.rank, value.value)
             for value in ranking.values
         ],
     )

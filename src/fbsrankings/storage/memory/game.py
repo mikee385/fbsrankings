@@ -4,20 +4,19 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
-from uuid import UUID
 
 from dataclasses import dataclass
 
 
 @dataclass
 class GameDto:
-    id_: UUID
-    season_id: UUID
+    id_: str
+    season_id: str
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
-    away_team_id: UUID
+    home_team_id: str
+    away_team_id: str
     home_team_score: Optional[int]
     away_team_score: Optional[int]
     status: str
@@ -26,17 +25,17 @@ class GameDto:
 
 class GameStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[UUID, GameDto] = {}
-        self._by_key: Dict[Tuple[UUID, int, UUID, UUID], GameDto] = {}
-        self._by_season: Dict[UUID, List[GameDto]] = {}
+        self._by_id: Dict[str, GameDto] = {}
+        self._by_key: Dict[Tuple[str, int, str, str], GameDto] = {}
+        self._by_season: Dict[str, List[GameDto]] = {}
 
     @staticmethod
     def _get_key(
-        season_id: UUID,
+        season_id: str,
         week: int,
-        team1_id: UUID,
-        team2_id: UUID,
-    ) -> Tuple[UUID, int, UUID, UUID]:
+        team1_id: str,
+        team2_id: str,
+    ) -> Tuple[str, int, str, str]:
         if team1_id < team2_id:
             return (season_id, week, team1_id, team2_id)
         return (season_id, week, team2_id, team1_id)
@@ -63,20 +62,20 @@ class GameStorage:
             self._by_season[game.season_id] = by_season
         by_season.append(game)
 
-    def get(self, id_: UUID) -> Optional[GameDto]:
+    def get(self, id_: str) -> Optional[GameDto]:
         return self._by_id.get(id_)
 
     def find(
         self,
-        season_id: UUID,
+        season_id: str,
         week: int,
-        team1_id: UUID,
-        team2_id: UUID,
+        team1_id: str,
+        team2_id: str,
     ) -> Optional[GameDto]:
         key = self._get_key(season_id, week, team1_id, team2_id)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: UUID) -> List[GameDto]:
+    def for_season(self, season_id: str) -> List[GameDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

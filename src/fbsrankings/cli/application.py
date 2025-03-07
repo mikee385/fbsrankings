@@ -8,7 +8,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import Union
-from uuid import UUID
 from uuid import uuid4
 
 from prettytable import PrettyTable
@@ -69,7 +68,7 @@ from fbsrankings.messages.query import WeekCountBySeasonQuery
 class GameUpdateTracker(ContextManager["GameUpdateTracker"]):
     def __init__(self, event_bus: EventBus) -> None:
         self._event_bus = event_bus
-        self.updates: Dict[UUID, List[int]] = {}
+        self.updates: Dict[str, List[int]] = {}
 
         self._event_bus.register_handler(GameCreatedEvent, self)
         self._event_bus.register_handler(GameCompletedEvent, self)
@@ -114,7 +113,7 @@ class Application:
         self._query_bus = query_bus
         self._event_bus = event_bus
 
-        self._event_counts_by_season: Dict[UUID, Dict[Type[Event], int]] = {}
+        self._event_counts_by_season: Dict[str, Dict[Type[Event], int]] = {}
         self._event_bus.register_handler(
             AffiliationCreatedEvent,
             self._save_season_event,
@@ -162,20 +161,20 @@ class Application:
         if drop:
             print_err("Dropping existing data:")
             with Spinner():
-                self._command_bus.send(DropStorageCommand(uuid4()))
+                self._command_bus.send(DropStorageCommand(str(uuid4())))
             print_err()
 
         with GameUpdateTracker(self._event_bus) as tracker:
             print_err("Importing season data:")
             for year in tqdm(years):
-                self._command_bus.send(ImportSeasonByYearCommand(uuid4(), year))
+                self._command_bus.send(ImportSeasonByYearCommand(str(uuid4()), year))
 
             if tracker.updates:
                 print_err()
                 print_err("Calculating rankings:")
                 for season in tqdm(tracker.updates):
                     self._command_bus.send(
-                        CalculateRankingsForSeasonCommand(uuid4(), season),
+                        CalculateRankingsForSeasonCommand(str(uuid4()), season),
                     )
 
         if check:
@@ -195,7 +194,7 @@ class Application:
         rating_name = self._parse_rating(rating)
         limit = self._parse_top(top)
 
-        latest_season_week = self._query_bus.query(LatestSeasonWeekQuery(uuid4()))
+        latest_season_week = self._query_bus.query(LatestSeasonWeekQuery(str(uuid4())))
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -247,7 +246,7 @@ class Application:
     def print_seasons(self, top: str) -> None:
         limit = self._parse_top(top)
 
-        seasons = self._query_bus.query(SeasonsQuery(uuid4())).seasons
+        seasons = self._query_bus.query(SeasonsQuery(str(uuid4()))).seasons
         self._print_seasons_table(seasons[:limit])
 
     def print_teams(self, season: str, rating: str, top: str) -> None:
@@ -318,10 +317,10 @@ class Application:
     def _print_check(self) -> None:
         limit = 10
 
-        seasons = self._query_bus.query(SeasonsQuery(uuid4())).seasons
+        seasons = self._query_bus.query(SeasonsQuery(str(uuid4()))).seasons
         self._print_seasons_table(seasons)
 
-        latest_season_week = self._query_bus.query(LatestSeasonWeekQuery(uuid4()))
+        latest_season_week = self._query_bus.query(LatestSeasonWeekQuery(str(uuid4())))
         if latest_season_week is None:
             raise ValueError("No completed weeks were found")
 
@@ -390,7 +389,9 @@ class Application:
             year = int(year_week[0])
             week = int(year_week[1])
         elif season_week.casefold() == "latest".casefold():
-            latest_season_week = self._query_bus.query(LatestSeasonWeekQuery(uuid4()))
+            latest_season_week = self._query_bus.query(
+                LatestSeasonWeekQuery(str(uuid4())),
+            )
             if latest_season_week is None:
                 raise ValueError("No completed weeks were found")
             year = latest_season_week.year
@@ -424,19 +425,19 @@ class Application:
         raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
     def _get_season(self, year: int) -> SeasonByYearResult:
-        season = self._query_bus.query(SeasonByYearQuery(uuid4(), year))
+        season = self._query_bus.query(SeasonByYearQuery(str(uuid4()), year))
         if season is None:
             raise ValueError(f"Season not found for {year}")
         return season
 
     def _get_team_record(
         self,
-        season_id: UUID,
+        season_id: str,
         year: int,
         week: Optional[int],
     ) -> TeamRecordBySeasonWeekResult:
         team_record = self._query_bus.query(
-            TeamRecordBySeasonWeekQuery(uuid4(), season_id, week),
+            TeamRecordBySeasonWeekQuery(str(uuid4()), season_id, week),
         )
         if team_record is None:
             if week is not None:
@@ -447,12 +448,12 @@ class Application:
     def _get_team_ranking(
         self,
         rating_name: str,
-        season_id: UUID,
+        season_id: str,
         year: int,
         week: Optional[int],
     ) -> TeamRankingBySeasonWeekResult:
         team_ranking = self._query_bus.query(
-            TeamRankingBySeasonWeekQuery(uuid4(), rating_name, season_id, week),
+            TeamRankingBySeasonWeekQuery(str(uuid4()), rating_name, season_id, week),
         )
         if team_ranking is None:
             if week is not None:
@@ -465,12 +466,12 @@ class Application:
     def _get_game_ranking(
         self,
         rating_name: str,
-        season_id: UUID,
+        season_id: str,
         year: int,
         week: Optional[int],
     ) -> GameRankingBySeasonWeekResult:
         game_ranking = self._query_bus.query(
-            GameRankingBySeasonWeekQuery(uuid4(), rating_name, season_id, week),
+            GameRankingBySeasonWeekQuery(str(uuid4()), rating_name, season_id, week),
         )
         if game_ranking is None:
             if week is not None:
@@ -487,19 +488,19 @@ class Application:
 
         for season in seasons:
             week_count = self._query_bus.query(
-                WeekCountBySeasonQuery(uuid4(), season.season_id),
+                WeekCountBySeasonQuery(str(uuid4()), season.season_id),
             )
             team_count = self._query_bus.query(
-                TeamCountBySeasonQuery(uuid4(), season.season_id),
+                TeamCountBySeasonQuery(str(uuid4()), season.season_id),
             )
             affiliation_count = self._query_bus.query(
-                AffiliationCountBySeasonQuery(uuid4(), season.season_id),
+                AffiliationCountBySeasonQuery(str(uuid4()), season.season_id),
             )
             game_count = self._query_bus.query(
-                GameCountBySeasonQuery(uuid4(), season.season_id),
+                GameCountBySeasonQuery(str(uuid4()), season.season_id),
             )
             postseason_game_count = self._query_bus.query(
-                PostseasonGameCountBySeasonQuery(uuid4(), season.season_id),
+                PostseasonGameCountBySeasonQuery(str(uuid4()), season.season_id),
             )
 
             season_summary_table.add_row(
@@ -626,7 +627,7 @@ class Application:
         print()
         print("Events:")
         if self._event_counts_by_season:
-            seasons = self._query_bus.query(SeasonsQuery(uuid4())).seasons
+            seasons = self._query_bus.query(SeasonsQuery(str(uuid4()))).seasons
             season_map = {s.season_id: s for s in seasons}
 
             event_table = PrettyTable(
@@ -665,7 +666,7 @@ class Application:
             print("None")
 
     def _print_canceled_games(self) -> None:
-        canceled_games = self._query_bus.query(CanceledGamesQuery(uuid4())).games
+        canceled_games = self._query_bus.query(CanceledGamesQuery(str(uuid4()))).games
         if canceled_games:
             print()
             print("Canceled Games:")
@@ -683,7 +684,7 @@ class Application:
             print()
             print("Notes:")
             for event in self._note_events:
-                game = self._query_bus.query(GameByIDQuery(uuid4(), event.game_id))
+                game = self._query_bus.query(GameByIDQuery(str(uuid4()), event.game_id))
                 if game is not None:
                     print()
                     print(f"ID: {game.game_id}")
@@ -734,10 +735,10 @@ class Application:
             print()
             for fbs_error in fbs_team_errors:
                 fbs_error_season = self._query_bus.query(
-                    SeasonByIDQuery(uuid4(), fbs_error.season_id),
+                    SeasonByIDQuery(str(uuid4()), fbs_error.season_id),
                 )
                 fbs_error_team = self._query_bus.query(
-                    TeamByIDQuery(uuid4(), fbs_error.team_id),
+                    TeamByIDQuery(str(uuid4()), fbs_error.team_id),
                 )
                 if fbs_error_season is not None and fbs_error_team is not None:
                     print(
@@ -751,10 +752,10 @@ class Application:
             print()
             for fcs_error in fcs_team_errors:
                 fcs_error_season = self._query_bus.query(
-                    SeasonByIDQuery(uuid4(), fcs_error.season_id),
+                    SeasonByIDQuery(str(uuid4()), fcs_error.season_id),
                 )
                 fcs_error_team = self._query_bus.query(
-                    TeamByIDQuery(uuid4(), fcs_error.team_id),
+                    TeamByIDQuery(str(uuid4()), fcs_error.team_id),
                 )
                 if fcs_error_season is not None and fcs_error_team is not None:
                     print(
@@ -767,7 +768,7 @@ class Application:
             print()
             print("Game Errors:")
             for error in game_errors:
-                game = self._query_bus.query(GameByIDQuery(uuid4(), error.game_id))
+                game = self._query_bus.query(GameByIDQuery(str(uuid4()), error.game_id))
                 if game is not None:
                     print()
                     print(f"ID: {game.game_id}")
@@ -807,6 +808,6 @@ class Application:
             self._errors.clear()
             raise ValueError(f"{type(error).__name__}: {error.message}")
         if len(self._errors) > 1:
-            error = MultipleValidationError(uuid4(), self._errors)
+            error = MultipleValidationError(str(uuid4()), self._errors)
             self._errors = []
             raise ValueError(f"{type(error).__name__}: {error.message}")

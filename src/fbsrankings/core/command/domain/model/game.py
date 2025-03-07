@@ -162,16 +162,16 @@ class Game:
 
         self._bus.publish(
             GameRescheduledEvent(
-                uuid4(),
-                self.id_,
-                self.season_id,
+                str(uuid4()),
+                str(self.id_),
+                str(self.season_id),
                 old_week,
                 old_date,
                 week,
                 date,
                 self.season_section.name,
-                self.home_team_id,
-                self.away_team_id,
+                str(self.home_team_id),
+                str(self.away_team_id),
                 self.notes,
             ),
         )
@@ -188,14 +188,14 @@ class Game:
 
         self._bus.publish(
             GameCanceledEvent(
-                uuid4(),
-                self.id_,
-                self.season_id,
+                str(uuid4()),
+                str(self.id_),
+                str(self.season_id),
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id,
-                self.away_team_id,
+                str(self.home_team_id),
+                str(self.away_team_id),
                 self.notes,
             ),
         )
@@ -220,14 +220,14 @@ class Game:
 
         self._bus.publish(
             GameCompletedEvent(
-                uuid4(),
-                self.id_,
-                self.season_id,
+                str(uuid4()),
+                str(self.id_),
+                str(self.season_id),
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id,
-                self.away_team_id,
+                str(self.home_team_id),
+                str(self.away_team_id),
                 home_team_score,
                 away_team_score,
                 self.notes,
@@ -260,14 +260,14 @@ class Game:
 
         self._bus.publish(
             GameNotesUpdatedEvent(
-                uuid4(),
-                self.id_,
-                self.season_id,
+                str(uuid4()),
+                str(self.id_),
+                str(self.season_id),
                 self.week,
                 self.date,
                 self.season_section.name,
-                self.home_team_id,
-                self.away_team_id,
+                str(self.home_team_id),
+                str(self.away_team_id),
                 old_notes,
                 notes,
             ),
@@ -305,14 +305,14 @@ class GameFactory:
         )
         self._bus.publish(
             GameCreatedEvent(
-                uuid4(),
-                game.id_,
-                game.season_id,
+                str(uuid4()),
+                str(game.id_),
+                str(game.season_id),
                 game.week,
                 game.date,
                 game.season_section.name,
-                game.home_team_id,
-                game.away_team_id,
+                str(game.home_team_id),
+                str(game.away_team_id),
                 game.notes,
             ),
         )

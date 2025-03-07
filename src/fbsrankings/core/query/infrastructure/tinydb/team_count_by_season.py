@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from tinydb import Query
 
@@ -23,7 +22,7 @@ class TeamCountBySeasonQueryProjection:
     def project(self, event: AffiliationCreatedEvent) -> None:
         table = self._connection.table("team_count_by_season")
 
-        existing = table.get(Query().season_id == str(event.season_id))
+        existing = table.get(Query().season_id == event.season_id)
         if isinstance(existing, list):
             existing = existing[0]
         if existing is not None:
@@ -31,7 +30,7 @@ class TeamCountBySeasonQueryProjection:
         else:
             table.insert(
                 {
-                    "season_id": str(event.season_id),
+                    "season_id": event.season_id,
                     "count": 1,
                 },
             )
@@ -47,12 +46,12 @@ class TeamCountBySeasonQueryHandler:
     ) -> Optional[TeamCountBySeasonResult]:
         table = self._connection.table("team_count_by_season")
 
-        item = table.get(Query().season_id == str(query.season_id))
+        item = table.get(Query().season_id == query.season_id)
         if isinstance(item, list):
             item = item[0]
 
         return (
-            TeamCountBySeasonResult(UUID(item["season_id"]), item["count"])
+            TeamCountBySeasonResult(item["season_id"], item["count"])
             if item is not None
             else None
         )

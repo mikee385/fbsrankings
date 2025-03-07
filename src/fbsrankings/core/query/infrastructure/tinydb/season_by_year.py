@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.query import SeasonByYearQuery
 from fbsrankings.messages.query import SeasonByYearResult
@@ -14,7 +13,5 @@ class SeasonByYearQueryHandler:
         item = self._storage.cache_season_by_year.get(query.year)
 
         return (
-            SeasonByYearResult(UUID(item["id_"]), item["year"])
-            if item is not None
-            else None
+            SeasonByYearResult(item["id_"], item["year"]) if item is not None else None
         )

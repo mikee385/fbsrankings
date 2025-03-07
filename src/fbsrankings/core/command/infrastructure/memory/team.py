@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.team import Team
@@ -16,7 +17,7 @@ class TeamRepository(BaseRepository):
         self._bus = bus
 
     def get(self, id_: TeamID) -> Optional[Team]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_team(dto) if dto is not None else None
 
     def find(self, name: str) -> Optional[Team]:
@@ -24,7 +25,7 @@ class TeamRepository(BaseRepository):
         return self._to_team(dto) if dto is not None else None
 
     def _to_team(self, dto: TeamDto) -> Team:
-        return Team(self._bus, TeamID(dto.id_), dto.name)
+        return Team(self._bus, TeamID(UUID(dto.id_)), dto.name)
 
 
 class TeamEventHandler(BaseEventHandler):

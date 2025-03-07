@@ -1,6 +1,5 @@
 import datetime
 from typing import List
-from uuid import UUID
 
 from dataclasses import dataclass
 
@@ -9,15 +8,15 @@ from communication.messages import Query
 
 @dataclass(frozen=True)
 class CanceledGameResult:
-    game_id: UUID
-    season_id: UUID
+    game_id: str
+    season_id: str
     year: int
     week: int
     date: datetime.date
     season_section: str
-    home_team_id: UUID
+    home_team_id: str
     home_team_name: str
-    away_team_id: UUID
+    away_team_id: str
     away_team_name: str
     notes: str
 
@@ -29,4 +28,4 @@ class CanceledGamesResult:
 
 @dataclass(frozen=True)
 class CanceledGamesQuery(Query[CanceledGamesResult]):
-    query_id: UUID
+    query_id: str

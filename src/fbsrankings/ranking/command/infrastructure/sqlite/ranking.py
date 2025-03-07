@@ -147,7 +147,7 @@ class RankingEventHandler:
             f"FROM {self._ranking_table} "
             "WHERE Name = ? AND Type = ? AND SeasonID = ?"
         )
-        params: List[SqliteParam] = [event.name, self._type.name, str(event.season_id)]
+        params: List[SqliteParam] = [event.name, self._type.name, event.season_id]
 
         if event.week is not None:
             query += " AND Week = ?;"
@@ -172,10 +172,10 @@ class RankingEventHandler:
             "(UUID, Name, Type, SeasonID, Week) "
             "VALUES (?,?,?,?,?)",
             [
-                str(event.ranking_id),
+                event.ranking_id,
                 event.name,
                 self._type.name,
-                str(event.season_id),
+                event.season_id,
                 event.week,
             ],
         )
@@ -188,8 +188,8 @@ class RankingEventHandler:
             self._cursor.execute(
                 insert_sql,
                 [
-                    str(event.ranking_id),
-                    str(value.id_),
+                    event.ranking_id,
+                    value.id_,
                     value.order,
                     value.rank,
                     value.value,

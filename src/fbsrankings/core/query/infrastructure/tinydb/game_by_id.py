@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.query import GameByIDQuery
 from fbsrankings.messages.query import GameByIDResult
@@ -12,19 +11,19 @@ class GameByIDQueryHandler:
         self._storage = storage
 
     def __call__(self, query: GameByIDQuery) -> Optional[GameByIDResult]:
-        item = self._storage.cache_game_by_id.get(str(query.game_id))
+        item = self._storage.cache_game_by_id.get(query.game_id)
 
         return (
             GameByIDResult(
-                UUID(item["id_"]),
-                UUID(item["season_id"]),
+                item["id_"],
+                item["season_id"],
                 item["year"],
                 item["week"],
                 datetime.strptime(item["date"], "%Y-%m-%d").date(),
                 item["season_section"],
-                UUID(item["home_team_id"]),
+                item["home_team_id"],
                 item["home_team_name"],
-                UUID(item["away_team_id"]),
+                item["away_team_id"],
                 item["away_team_name"],
                 item["home_team_score"],
                 item["away_team_score"],

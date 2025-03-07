@@ -26,8 +26,8 @@ class GameStrengthRankingCalculator:
 
         for game in season_data.game_map.values():
             if game.status != GameStatus.CANCELED.name:
-                home_performance = performance_map.get(TeamID(game.home_team_id))
-                away_performance = performance_map.get(TeamID(game.away_team_id))
+                home_performance = performance_map.get(TeamID(UUID(game.home_team_id)))
+                away_performance = performance_map.get(TeamID(UUID(game.away_team_id)))
 
                 if home_performance is not None and away_performance is not None:
                     if home_performance.value > away_performance.value:
@@ -38,7 +38,7 @@ class GameStrengthRankingCalculator:
                         game_value = (
                             99 * home_performance.value + away_performance.value
                         ) / 100.0
-                    game_data[game.game_id] = game_value
+                    game_data[UUID(game.game_id)] = game_value
 
         result = {GameID(id_): data for id_, data in game_data.items()}
         ranking_values = GameRankingCalculator.to_values(season_data, result)

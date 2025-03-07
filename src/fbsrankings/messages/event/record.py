@@ -5,7 +5,6 @@ from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Type
-from uuid import UUID
 
 from dataclasses import dataclass
 from typing_extensions import Literal
@@ -16,7 +15,7 @@ from communication.messages import Event
 
 @dataclass(frozen=True)
 class TeamRecordValue:
-    team_id: UUID
+    team_id: str
     wins: int
     losses: int
     games: int
@@ -25,9 +24,9 @@ class TeamRecordValue:
 
 @dataclass(frozen=True)
 class TeamRecordCalculatedEvent(Event):
-    event_id: UUID
-    record_id: UUID
-    season_id: UUID
+    event_id: str
+    record_id: str
+    season_id: str
     week: Optional[int]
     values: List[TeamRecordValue]
 

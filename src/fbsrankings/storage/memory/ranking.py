@@ -3,14 +3,13 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
-from uuid import UUID
 
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class RankingValueDto:
-    id_: UUID
+    id_: str
     order: int
     rank: int
     value: float
@@ -18,18 +17,18 @@ class RankingValueDto:
 
 @dataclass(frozen=True)
 class RankingDto:
-    id_: UUID
+    id_: str
     name: str
-    season_id: UUID
+    season_id: str
     week: Optional[int]
     values: List[RankingValueDto]
 
 
 class RankingStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[UUID, RankingDto] = {}
-        self._by_key: Dict[Tuple[str, UUID, Optional[int]], RankingDto] = {}
-        self._by_season: Dict[UUID, List[RankingDto]] = {}
+        self._by_id: Dict[str, RankingDto] = {}
+        self._by_key: Dict[Tuple[str, str, Optional[int]], RankingDto] = {}
+        self._by_season: Dict[str, List[RankingDto]] = {}
 
     def add(self, ranking: RankingDto) -> None:
         key = (ranking.name, ranking.season_id, ranking.week)
@@ -48,19 +47,19 @@ class RankingStorage:
             self._by_season[ranking.season_id] = by_season
         by_season.append(ranking)
 
-    def get(self, id_: UUID) -> Optional[RankingDto]:
+    def get(self, id_: str) -> Optional[RankingDto]:
         return self._by_id.get(id_)
 
     def find(
         self,
         name: str,
-        season_id: UUID,
+        season_id: str,
         week: Optional[int],
     ) -> Optional[RankingDto]:
         key = (name, season_id, week)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: UUID) -> List[RankingDto]:
+    def for_season(self, season_id: str) -> List[RankingDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

@@ -21,7 +21,7 @@ class PostseasonGameCountBySeasonQueryHandler:
             "SELECT COUNT(*) "
             f"FROM {self._table} "
             "WHERE SeasonID = ? AND SeasonSection = ?;",
-            [str(query.season_id), SeasonSection.POSTSEASON.name],
+            [query.season_id, SeasonSection.POSTSEASON.name],
         )
         row = cursor.fetchone()
         cursor.close()

@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
@@ -21,19 +22,19 @@ class AffiliationRepository(BaseRepository):
         self._bus = bus
 
     def get(self, id_: AffiliationID) -> Optional[Affiliation]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_affiliation(dto) if dto is not None else None
 
     def find(self, season_id: SeasonID, team_id: TeamID) -> Optional[Affiliation]:
-        dto = self._storage.find(season_id, team_id)
+        dto = self._storage.find(str(season_id), str(team_id))
         return self._to_affiliation(dto) if dto is not None else None
 
     def _to_affiliation(self, dto: AffiliationDto) -> Affiliation:
         return Affiliation(
             self._bus,
-            AffiliationID(dto.id_),
-            SeasonID(dto.season_id),
-            TeamID(dto.team_id),
+            AffiliationID(UUID(dto.id_)),
+            SeasonID(UUID(dto.season_id)),
+            TeamID(UUID(dto.team_id)),
             Subdivision[dto.subdivision],
         )
 

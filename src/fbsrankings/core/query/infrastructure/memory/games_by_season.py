@@ -21,15 +21,15 @@ class GamesBySeasonQueryHandler:
             if season is not None and home_team is not None and away_team is not None:
                 items.append(
                     GameBySeasonResult(
-                        game.id_,
-                        game.season_id,
+                        str(game.id_),
+                        str(game.season_id),
                         season.year,
                         game.week,
                         game.date,
                         game.season_section,
-                        game.home_team_id,
+                        str(game.home_team_id),
                         home_team.name,
-                        game.away_team_id,
+                        str(game.away_team_id),
                         away_team.name,
                         game.home_team_score,
                         game.away_team_score,

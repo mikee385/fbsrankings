@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-from uuid import UUID
 
 from dataclasses import dataclass
 
@@ -9,7 +8,7 @@ from communication.messages import Query
 
 @dataclass(frozen=True)
 class TeamRankingValueBySeasonWeekResult:
-    team_id: UUID
+    team_id: str
     name: str
     order: int
     rank: int
@@ -18,9 +17,9 @@ class TeamRankingValueBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class TeamRankingBySeasonWeekResult:
-    ranking_id: UUID
+    ranking_id: str
     name: str
-    season_id: UUID
+    season_id: str
     year: int
     week: Optional[int]
     values: List[TeamRankingValueBySeasonWeekResult]
@@ -28,7 +27,7 @@ class TeamRankingBySeasonWeekResult:
 
 @dataclass(frozen=True)
 class TeamRankingBySeasonWeekQuery(Query[Optional[TeamRankingBySeasonWeekResult]]):
-    query_id: UUID
+    query_id: str
     name: str
-    season_id: UUID
+    season_id: str
     week: Optional[int]

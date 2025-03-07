@@ -1,5 +1,4 @@
 import sqlite3
-from uuid import UUID
 
 from fbsrankings.messages.query import TeamResult
 from fbsrankings.messages.query import TeamsQuery
@@ -18,7 +17,7 @@ class TeamsQueryHandler:
         cursor.execute(
             f"SELECT UUID, Name FROM {self._table};",
         )
-        items = [TeamResult(UUID(row[0]), row[1]) for row in cursor.fetchall()]
+        items = [TeamResult(row[0], row[1]) for row in cursor.fetchall()]
         cursor.close()
 
         return TeamsResult(items)

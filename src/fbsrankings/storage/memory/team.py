@@ -1,20 +1,19 @@
 from typing import Dict
 from typing import Iterable
 from typing import Optional
-from uuid import UUID
 
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class TeamDto:
-    id_: UUID
+    id_: str
     name: str
 
 
 class TeamStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[UUID, TeamDto] = {}
+        self._by_id: Dict[str, TeamDto] = {}
         self._by_key: Dict[str, TeamDto] = {}
 
     def add(self, team: TeamDto) -> None:
@@ -24,7 +23,7 @@ class TeamStorage:
         self._by_id[team.id_] = team
         self._by_key[team.name] = team
 
-    def get(self, id_: UUID) -> Optional[TeamDto]:
+    def get(self, id_: str) -> Optional[TeamDto]:
         return self._by_id.get(id_)
 
     def find(self, name: str) -> Optional[TeamDto]:

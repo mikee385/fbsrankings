@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from tinydb import Query
 
@@ -24,7 +23,7 @@ class TeamRankingBySeasonWeekQueryProjection:
     def project(self, event: TeamRankingCalculatedEvent) -> None:
         table = self._storage.connection.table("team_ranking_by_season_week")
 
-        existing_season = self._storage.cache_season_by_id.get(str(event.season_id))
+        existing_season = self._storage.cache_season_by_id.get(event.season_id)
         if existing_season is None:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
@@ -33,7 +32,7 @@ class TeamRankingBySeasonWeekQueryProjection:
 
         values = []
         for value in event.values:
-            existing_team = self._storage.cache_team_by_id.get(str(value.id_))
+            existing_team = self._storage.cache_team_by_id.get(value.id_)
             if existing_team is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
@@ -41,7 +40,7 @@ class TeamRankingBySeasonWeekQueryProjection:
                 )
             values.append(
                 {
-                    "id_": str(value.id_),
+                    "id_": value.id_,
                     "name": existing_team["name"],
                     "order": value.order,
                     "rank": value.rank,
@@ -51,7 +50,7 @@ class TeamRankingBySeasonWeekQueryProjection:
 
         existing = table.get(
             (Query().name == event.name)
-            & (Query().season_id == str(event.season_id))
+            & (Query().season_id == event.season_id)
             & (Query().week == event.week),
         )
         if isinstance(existing, list):
@@ -59,16 +58,16 @@ class TeamRankingBySeasonWeekQueryProjection:
         if existing is None:
             table.insert(
                 {
-                    "id_": str(event.ranking_id),
+                    "id_": event.ranking_id,
                     "name": event.name,
-                    "season_id": str(event.season_id),
+                    "season_id": event.season_id,
                     "year": existing_season["year"],
                     "week": event.week,
                     "values": values,
                 },
             )
 
-        elif existing["id_"] != str(event.ranking_id):
+        elif existing["id_"] != event.ranking_id:
             raise RuntimeError(
                 "Query database is out of sync with master database. "
                 f"ID for team ranking does not match: "
@@ -88,21 +87,21 @@ class TeamRankingBySeasonWeekQueryHandler:
 
         item = table.get(
             (Query().name == query.name)
-            & (Query().season_id == str(query.season_id))
+            & (Query().season_id == query.season_id)
             & (Query().week == query.week),
         )
         if isinstance(item, list):
             item = item[0]
         return (
             TeamRankingBySeasonWeekResult(
-                UUID(item["id_"]),
+                item["id_"],
                 item["name"],
-                UUID(item["season_id"]),
+                item["season_id"],
                 item["year"],
                 item["week"],
                 [
                     TeamRankingValueBySeasonWeekResult(
-                        UUID(value["id_"]),
+                        value["id_"],
                         value["name"],
                         value["order"],
                         value["rank"],

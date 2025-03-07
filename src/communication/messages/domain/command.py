@@ -1,12 +1,11 @@
 from typing import Callable
 from typing import TypeVar
-from uuid import UUID
 
 from typing_extensions import Protocol
 
 
 class Command(Protocol):
-    command_id: UUID
+    command_id: str
 
 
 C = TypeVar("C", bound=Command, contravariant=True)

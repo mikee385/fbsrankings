@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.season import Season
@@ -18,7 +19,7 @@ class SeasonRepository(BaseRepository):
         self._bus = bus
 
     def get(self, id_: SeasonID) -> Optional[Season]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_season(dto) if dto is not None else None
 
     def find(self, year: int) -> Optional[Season]:
@@ -26,7 +27,7 @@ class SeasonRepository(BaseRepository):
         return self._to_season(dto) if dto is not None else None
 
     def _to_season(self, dto: SeasonDto) -> Season:
-        return Season(self._bus, SeasonID(dto.id_), dto.year)
+        return Season(self._bus, SeasonID(UUID(dto.id_)), dto.year)
 
 
 class SeasonEventHandler(BaseEventHandler):

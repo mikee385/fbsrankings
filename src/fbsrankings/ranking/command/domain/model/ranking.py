@@ -152,7 +152,7 @@ class TeamRankingCalculator:  # noqa: PIE798
         team_id: TeamID,
         value: float,
     ) -> Tuple[float, str, str]:
-        affiliation = season_data.affiliation_map[team_id]
+        affiliation = season_data.affiliation_map[str(team_id)]
         return (-value, affiliation.team_name.upper(), str(team_id))
 
 
@@ -171,13 +171,13 @@ class TeamRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
-                uuid4(),
-                ranking.id_,
+                str(uuid4()),
+                str(ranking.id_),
                 ranking.name,
-                ranking.season_id,
+                str(ranking.season_id),
                 ranking.week,
                 [
-                    EventValue(value.id_, value.order, value.rank, value.value)
+                    EventValue(str(value.id_), value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),
@@ -219,7 +219,7 @@ class GameRankingCalculator:  # noqa: PIE798
         game_id: GameID,
         value: float,
     ) -> Tuple[float, datetime.date, str, str, str]:
-        game = season_data.game_map[game_id]
+        game = season_data.game_map[str(game_id)]
         home_affiliation = season_data.affiliation_map[game.home_team_id]
         away_affiliation = season_data.affiliation_map[game.away_team_id]
 
@@ -247,13 +247,13 @@ class GameRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
-                uuid4(),
-                ranking.id_,
+                str(uuid4()),
+                str(ranking.id_),
                 ranking.name,
-                ranking.season_id,
+                str(ranking.season_id),
                 ranking.week,
                 [
-                    EventValue(value.id_, value.order, value.rank, value.value)
+                    EventValue(str(value.id_), value.order, value.rank, value.value)
                     for value in ranking.values
                 ],
             ),

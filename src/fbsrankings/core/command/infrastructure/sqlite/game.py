@@ -135,13 +135,13 @@ class GameEventHandler(BaseEventHandler):
             "Notes) "
             "VALUES (?,?,?,?,?,?,?,?,?,?,?);",
             [
-                str(event.game_id),
-                str(event.season_id),
+                event.game_id,
+                event.season_id,
                 event.week,
                 event.date.strftime("%Y-%m-%d"),
                 event.season_section,
-                str(event.home_team_id),
-                str(event.away_team_id),
+                event.home_team_id,
+                event.away_team_id,
                 None,
                 None,
                 GameStatus.SCHEDULED.name,
@@ -152,13 +152,13 @@ class GameEventHandler(BaseEventHandler):
     def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self._table} SET Week = ?, Date = ? WHERE UUID = ?;",
-            [event.week, event.date.strftime("%Y-%m-%d"), str(event.game_id)],
+            [event.week, event.date.strftime("%Y-%m-%d"), event.game_id],
         )
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self._table} SET Status = ? WHERE UUID = ?;",
-            [GameStatus.CANCELED.name, str(event.game_id)],
+            [GameStatus.CANCELED.name, event.game_id],
         )
 
     def handle_completed(self, event: GameCompletedEvent) -> None:
@@ -170,12 +170,12 @@ class GameEventHandler(BaseEventHandler):
                 event.home_team_score,
                 event.away_team_score,
                 GameStatus.COMPLETED.name,
-                str(event.game_id),
+                event.game_id,
             ],
         )
 
     def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self._table} SET Notes = ? WHERE UUID = ?;",
-            [event.notes, str(event.game_id)],
+            [event.notes, event.game_id],
         )

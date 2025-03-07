@@ -24,7 +24,7 @@ class TeamRecordCalculator:
         self._factory = factory
 
     def calculate_for_season(self, season_data: SeasonData) -> List[TeamRecord]:
-        team_data: Dict[UUID, TeamData] = {}
+        team_data: Dict[str, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
             if affiliation.subdivision == Subdivision.FBS.name:
                 team_data[affiliation.team_id] = TeamData()
@@ -72,7 +72,7 @@ class TeamRecordCalculator:
                     losing_data.losses += 1
 
             record_values = [
-                TeamRecordValue(TeamID(id_), data.wins, data.losses)
+                TeamRecordValue(TeamID(UUID(id_)), data.wins, data.losses)
                 for id_, data in team_data.items()
             ]
 

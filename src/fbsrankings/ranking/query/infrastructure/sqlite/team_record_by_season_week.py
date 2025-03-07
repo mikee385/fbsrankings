@@ -2,7 +2,6 @@ import sqlite3
 from typing import List
 from typing import Optional
 from typing import Union
-from uuid import UUID
 
 from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRecordBySeasonWeekResult
@@ -42,7 +41,7 @@ class TeamRecordBySeasonWeekQueryHandler:
         )
 
         params: List[SqliteParam] = [
-            str(query.season_id),
+            query.season_id,
         ]
 
         if query.week is not None:
@@ -70,7 +69,7 @@ class TeamRecordBySeasonWeekQueryHandler:
             )
             values = [
                 TeamRecordValueBySeasonWeekResult(
-                    UUID(value[0]),
+                    value[0],
                     value[1],
                     value[2],
                     value[3],
@@ -82,8 +81,8 @@ class TeamRecordBySeasonWeekQueryHandler:
 
         if row is not None:
             return TeamRecordBySeasonWeekResult(
-                UUID(row[0]),
-                UUID(row[1]),
+                row[0],
+                row[1],
                 row[2],
                 row[3],
                 values,

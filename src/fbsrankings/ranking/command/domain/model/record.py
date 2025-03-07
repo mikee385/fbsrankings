@@ -90,13 +90,13 @@ class TeamRecordFactory:
         record = TeamRecord(self._bus, id_, season_id, week, values)
         self._bus.publish(
             TeamRecordCalculatedEvent(
-                uuid4(),
-                record.id_,
-                record.season_id,
+                str(uuid4()),
+                str(record.id_),
+                str(record.season_id),
                 record.week,
                 [
                     EventValue(
-                        value.team_id,
+                        str(value.team_id),
                         value.wins,
                         value.losses,
                         value.games,

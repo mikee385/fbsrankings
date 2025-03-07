@@ -5,7 +5,6 @@ from typing import ContextManager
 from typing import List
 from typing import Optional
 from typing import Type
-from uuid import UUID
 
 from dataclasses import dataclass
 from typing_extensions import Literal
@@ -16,7 +15,7 @@ from communication.messages import Event
 
 @dataclass(frozen=True)
 class RankingValue:
-    id_: UUID
+    id_: str
     order: int
     rank: int
     value: float
@@ -24,10 +23,10 @@ class RankingValue:
 
 @dataclass(frozen=True)  # noqa: B024
 class RankingCalculatedEvent(Event, metaclass=ABCMeta):
-    event_id: UUID
-    ranking_id: UUID
+    event_id: str
+    ranking_id: str
     name: str
-    season_id: UUID
+    season_id: str
     week: Optional[int]
     values: List[RankingValue]
 

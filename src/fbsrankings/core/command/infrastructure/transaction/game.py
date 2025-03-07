@@ -56,14 +56,14 @@ class GameRepository(BaseRepository):
 
 def _created_event(game: Game) -> GameCreatedEvent:
     return GameCreatedEvent(
-        uuid4(),
-        game.id_,
-        game.season_id,
+        str(uuid4()),
+        str(game.id_),
+        str(game.season_id),
         game.week,
         game.date,
         game.season_section.name,
-        game.home_team_id,
-        game.away_team_id,
+        str(game.home_team_id),
+        str(game.away_team_id),
         game.notes,
     )
 

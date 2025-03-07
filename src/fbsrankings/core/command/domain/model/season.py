@@ -34,7 +34,9 @@ class SeasonFactory:
     def create(self, year: int) -> Season:
         id_ = SeasonID(uuid4())
         season = Season(self._bus, id_, year)
-        self._bus.publish(SeasonCreatedEvent(uuid4(), season.id_, season.year))
+        self._bus.publish(
+            SeasonCreatedEvent(str(uuid4()), str(season.id_), season.year),
+        )
 
         return season
 

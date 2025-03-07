@@ -1,6 +1,5 @@
 import sqlite3
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.query import LatestSeasonWeekQuery
@@ -53,7 +52,7 @@ class LatestSeasonWeekQueryHandler:
         season_id, year, games_scheduled = row
 
         if games_scheduled == 0:
-            return LatestSeasonWeekResult(UUID(season_id), year, None)
+            return LatestSeasonWeekResult(season_id, year, None)
 
         cursor = self._connection.cursor()
         cursor.execute(
@@ -75,6 +74,6 @@ class LatestSeasonWeekQueryHandler:
         cursor.close()
 
         if row:
-            return LatestSeasonWeekResult(UUID(season_id), year, row[0])
+            return LatestSeasonWeekResult(season_id, year, row[0])
 
         return None

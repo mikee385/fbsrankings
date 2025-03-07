@@ -39,7 +39,7 @@ class LatestSeasonWeekQueryHandler:
                     week_data.has_scheduled = True
 
             if season_data.has_scheduled is False and season_data.has_completed is True:
-                return LatestSeasonWeekResult(season.id_, season.year, None)
+                return LatestSeasonWeekResult(str(season.id_), season.year, None)
 
             completed_weeks: List[int] = []
             for week, data in weeks.items():
@@ -47,6 +47,10 @@ class LatestSeasonWeekQueryHandler:
                     completed_weeks.append(week)
             if len(completed_weeks) > 0:
                 sorted_weeks = sorted(completed_weeks, reverse=True)
-                return LatestSeasonWeekResult(season.id_, season.year, sorted_weeks[0])
+                return LatestSeasonWeekResult(
+                    str(season.id_),
+                    season.year,
+                    sorted_weeks[0],
+                )
 
         return None

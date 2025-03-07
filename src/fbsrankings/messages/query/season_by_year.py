@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from dataclasses import dataclass
 
@@ -8,11 +7,11 @@ from communication.messages import Query
 
 @dataclass(frozen=True)
 class SeasonByYearResult:
-    season_id: UUID
+    season_id: str
     year: int
 
 
 @dataclass(frozen=True)
 class SeasonByYearQuery(Query[Optional[SeasonByYearResult]]):
-    query_id: UUID
+    query_id: str
     year: int

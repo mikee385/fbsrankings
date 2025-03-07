@@ -1,13 +1,12 @@
 from typing import Callable
 from typing import Generic
 from typing import TypeVar
-from uuid import UUID
 
 from typing_extensions import Protocol
 
 
 class QueryBase(Protocol):
-    query_id: UUID
+    query_id: str
 
 
 Q = TypeVar("Q", bound=QueryBase, contravariant=True)

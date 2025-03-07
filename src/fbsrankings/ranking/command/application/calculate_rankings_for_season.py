@@ -46,9 +46,9 @@ class CalculateRankingsForSeasonCommandHandler:
 
     def __call__(self, command: CalculateRankingsForSeasonCommand) -> None:
         with Transaction(self._data_source, self._event_bus) as transaction:
-            if isinstance(command.season_id_or_year, UUID):
+            if isinstance(command.season_id_or_year, str):
                 season_by_id = self._query_bus.query(
-                    SeasonByIDQuery(uuid4(), command.season_id_or_year),
+                    SeasonByIDQuery(str(uuid4()), command.season_id_or_year),
                 )
                 if season_by_id is None:
                     raise ValueError(
@@ -58,7 +58,7 @@ class CalculateRankingsForSeasonCommandHandler:
 
             elif isinstance(command.season_id_or_year, int):
                 season_by_year = self._query_bus.query(
-                    SeasonByYearQuery(uuid4(), command.season_id_or_year),
+                    SeasonByYearQuery(str(uuid4()), command.season_id_or_year),
                 )
                 if season_by_year is None:
                     raise ValueError(
@@ -67,14 +67,16 @@ class CalculateRankingsForSeasonCommandHandler:
                 season_id = season_by_year.season_id
 
             else:
-                raise TypeError("season_id_or_year must be of type UUID or int")
+                raise TypeError("season_id_or_year must be of type str or int")
 
             affiliations = self._query_bus.query(
-                AffiliationsBySeasonQuery(uuid4(), season_id),
+                AffiliationsBySeasonQuery(str(uuid4()), season_id),
             ).affiliations
-            games = self._query_bus.query(GamesBySeasonQuery(uuid4(), season_id)).games
+            games = self._query_bus.query(
+                GamesBySeasonQuery(str(uuid4()), season_id),
+            ).games
 
-            season_data = SeasonData(season_id, affiliations, games)
+            season_data = SeasonData(UUID(season_id), affiliations, games)
 
             TeamRecordCalculator(transaction.factory.team_record).calculate_for_season(
                 season_data,

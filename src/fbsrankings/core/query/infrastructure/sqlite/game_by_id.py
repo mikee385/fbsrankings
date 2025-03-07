@@ -1,7 +1,6 @@
 import sqlite3
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from fbsrankings.messages.query import GameByIDQuery
 from fbsrankings.messages.query import GameByIDResult
@@ -44,22 +43,22 @@ class GameByIDQueryHandler:
             f"JOIN {self._team_table} away_team "
             f"ON away_team.UUID = {self._game_table}.AwayTeamID "
             f"WHERE {self._game_table}.UUID = ?;",
-            [str(query.game_id)],
+            [query.game_id],
         )
         row = cursor.fetchone()
         cursor.close()
 
         if row:
             return GameByIDResult(
-                UUID(row[0]),
-                UUID(row[1]),
+                row[0],
+                row[1],
                 row[2],
                 row[3],
                 datetime.strptime(row[4], "%Y-%m-%d").date(),
                 row[5],
-                UUID(row[6]),
+                row[6],
                 row[7],
-                UUID(row[8]),
+                row[8],
                 row[9],
                 row[10],
                 row[11],

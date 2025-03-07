@@ -3,24 +3,23 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
-from uuid import UUID
 
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class AffiliationDto:
-    id_: UUID
-    season_id: UUID
-    team_id: UUID
+    id_: str
+    season_id: str
+    team_id: str
     subdivision: str
 
 
 class AffiliationStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[UUID, AffiliationDto] = {}
-        self._by_key: Dict[Tuple[UUID, UUID], AffiliationDto] = {}
-        self._by_season: Dict[UUID, List[AffiliationDto]] = {}
+        self._by_id: Dict[str, AffiliationDto] = {}
+        self._by_key: Dict[Tuple[str, str], AffiliationDto] = {}
+        self._by_season: Dict[str, List[AffiliationDto]] = {}
 
     def add(self, affiliation: AffiliationDto) -> None:
         key = (affiliation.season_id, affiliation.team_id)
@@ -39,14 +38,14 @@ class AffiliationStorage:
             self._by_season[affiliation.season_id] = by_season
         by_season.append(affiliation)
 
-    def get(self, id_: UUID) -> Optional[AffiliationDto]:
+    def get(self, id_: str) -> Optional[AffiliationDto]:
         return self._by_id.get(id_)
 
-    def find(self, season_id: UUID, team_id: UUID) -> Optional[AffiliationDto]:
+    def find(self, season_id: str, team_id: str) -> Optional[AffiliationDto]:
         key = (season_id, team_id)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: UUID) -> List[AffiliationDto]:
+    def for_season(self, season_id: str) -> List[AffiliationDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

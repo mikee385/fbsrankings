@@ -1,18 +1,17 @@
 from typing import List
-from uuid import UUID
 
 from communication.messages import Event
 
 
 class ValidationError(Event):
-    def __init__(self, event_id: UUID, message: str) -> None:
+    def __init__(self, event_id: str, message: str) -> None:
         super().__init__()
         self.event_id = event_id
         self.message = message
 
 
 class MultipleValidationError(ValidationError):
-    def __init__(self, event_id: UUID, errors: List[ValidationError]) -> None:
+    def __init__(self, event_id: str, errors: List[ValidationError]) -> None:
         super().__init__(
             event_id,
             "Multiple validation errors have occurred. See the errors property for"
@@ -24,9 +23,9 @@ class MultipleValidationError(ValidationError):
 class SeasonDataValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        season_id: UUID,
+        season_id: str,
         attribute_name: str,
         attribute_value: object,
         expected_value: object,
@@ -41,9 +40,9 @@ class SeasonDataValidationError(ValidationError):
 class TeamDataValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        team_id: UUID,
+        team_id: str,
         attribute_name: str,
         attribute_value: object,
         expected_value: object,
@@ -58,9 +57,9 @@ class TeamDataValidationError(ValidationError):
 class AffiliationDataValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        affiliation_id: UUID,
+        affiliation_id: str,
         attribute_name: str,
         attribute_value: object,
         expected_value: object,
@@ -75,9 +74,9 @@ class AffiliationDataValidationError(ValidationError):
 class GameDataValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        game_id: UUID,
+        game_id: str,
         attribute_name: str,
         attribute_value: object,
         expected_value: object,
@@ -92,10 +91,10 @@ class GameDataValidationError(ValidationError):
 class FBSGameCountValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        season_id: UUID,
-        team_id: UUID,
+        season_id: str,
+        team_id: str,
         game_count: int,
     ) -> None:
         super().__init__(event_id, message)
@@ -107,10 +106,10 @@ class FBSGameCountValidationError(ValidationError):
 class FCSGameCountValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        season_id: UUID,
-        team_id: UUID,
+        season_id: str,
+        team_id: str,
         game_count: int,
     ) -> None:
         super().__init__(event_id, message)
@@ -122,9 +121,9 @@ class FCSGameCountValidationError(ValidationError):
 class PostseasonGameCountValidationError(ValidationError):
     def __init__(
         self,
-        event_id: UUID,
+        event_id: str,
         message: str,
-        season_id: UUID,
+        season_id: str,
         regular_season_game_count: int,
         postseason_game_count: int,
     ) -> None:

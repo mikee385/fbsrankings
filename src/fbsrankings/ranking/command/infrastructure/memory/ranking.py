@@ -46,7 +46,7 @@ class RankingRepository(Generic[T]):
         self._to_value = to_value
 
     def get(self, id_: RankingID) -> Optional[Ranking[T]]:
-        dto = self._storage.get(id_)
+        dto = self._storage.get(str(id_))
         return self._to_ranking(dto) if dto is not None else None
 
     def find(
@@ -55,15 +55,15 @@ class RankingRepository(Generic[T]):
         season_id: SeasonID,
         week: Optional[int],
     ) -> Optional[Ranking[T]]:
-        dto = self._storage.find(name, season_id, week)
+        dto = self._storage.find(name, str(season_id), week)
         return self._to_ranking(dto) if dto is not None else None
 
     def _to_ranking(self, dto: RankingDto) -> Ranking[T]:
         return Ranking[T](
             self._bus,
-            RankingID(dto.id_),
+            RankingID(UUID(dto.id_)),
             dto.name,
-            SeasonID(dto.season_id),
+            SeasonID(UUID(dto.season_id)),
             dto.week,
             [self._to_value(value) for value in dto.values],
         )
@@ -81,7 +81,12 @@ class RankingEventHandler:
                 event.season_id,
                 event.week,
                 [
-                    RankingValueDto(value.id_, value.order, value.rank, value.value)
+                    RankingValueDto(
+                        value.id_,
+                        value.order,
+                        value.rank,
+                        value.value,
+                    )
                     for value in event.values
                 ],
             ),
@@ -105,7 +110,12 @@ class TeamRankingRepository(BaseTeamRankingRepository):
 
     @staticmethod
     def _to_value(dto: RankingValueDto) -> RankingValue[TeamID]:
-        return RankingValue[TeamID](TeamID(dto.id_), dto.order, dto.rank, dto.value)
+        return RankingValue[TeamID](
+            TeamID(UUID(dto.id_)),
+            dto.order,
+            dto.rank,
+            dto.value,
+        )
 
 
 class TeamRankingEventHandler(BaseTeamRankingEventHandler):
@@ -136,7 +146,12 @@ class GameRankingRepository(BaseGameRankingRepository):
 
     @staticmethod
     def _to_value(dto: RankingValueDto) -> RankingValue[GameID]:
-        return RankingValue[GameID](GameID(dto.id_), dto.order, dto.rank, dto.value)
+        return RankingValue[GameID](
+            GameID(UUID(dto.id_)),
+            dto.order,
+            dto.rank,
+            dto.value,
+        )
 
 
 class GameRankingEventHandler(BaseGameRankingEventHandler):

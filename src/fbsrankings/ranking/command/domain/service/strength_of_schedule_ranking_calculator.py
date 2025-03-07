@@ -33,14 +33,14 @@ class StrengthOfScheduleRankingCalculator:
         season_data: SeasonData,
         performance_ranking: Ranking[TeamID],
     ) -> Ranking[TeamID]:
-        team_data: Dict[UUID, TeamData] = {}
+        team_data: Dict[str, TeamData] = {}
 
         performance_map = {r.id_: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
             if game.status != GameStatus.CANCELED.name:
-                home_performance = performance_map.get(TeamID(game.home_team_id))
-                away_performance = performance_map.get(TeamID(game.away_team_id))
+                home_performance = performance_map.get(TeamID(UUID(game.home_team_id)))
+                away_performance = performance_map.get(TeamID(UUID(game.away_team_id)))
 
                 if home_performance is not None and away_performance is not None:
                     home_data = team_data.get(game.home_team_id)
@@ -56,7 +56,8 @@ class StrengthOfScheduleRankingCalculator:
                     away_data.add_opponent(home_performance.value)
 
         result = {
-            TeamID(id_): data.strength_of_schedule for id_, data in team_data.items()
+            TeamID(UUID(id_)): data.strength_of_schedule
+            for id_, data in team_data.items()
         }
         ranking_values = TeamRankingCalculator.to_values(season_data, result)
 

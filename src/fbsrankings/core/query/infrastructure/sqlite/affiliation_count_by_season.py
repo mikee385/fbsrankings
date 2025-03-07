@@ -23,7 +23,7 @@ class AffiliationCountBySeasonQueryHandler:
             "SUM(CASE WHEN Subdivision = ? THEN 1 ELSE 0 END) FCS_Count "
             f"FROM {self._table} "
             "WHERE SeasonID = ?;",
-            [Subdivision.FBS.name, Subdivision.FCS.name, str(query.season_id)],
+            [Subdivision.FBS.name, Subdivision.FCS.name, query.season_id],
         )
         row = cursor.fetchone()
         cursor.close()

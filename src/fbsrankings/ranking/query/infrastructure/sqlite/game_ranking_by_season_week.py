@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import List
 from typing import Optional
 from typing import Union
-from uuid import UUID
 
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
@@ -51,7 +50,7 @@ class GameRankingBySeasonWeekQueryHandler:
         params: List[SqliteParam] = [
             query.name,
             RankingType.GAME.name,
-            str(query.season_id),
+            query.season_id,
         ]
 
         if query.week is not None:
@@ -98,15 +97,15 @@ class GameRankingBySeasonWeekQueryHandler:
             )
             values = [
                 GameRankingValueBySeasonWeekResult(
-                    UUID(value[0]),
-                    UUID(value[1]),
+                    value[0],
+                    value[1],
                     value[2],
                     value[3],
                     datetime.strptime(value[4], "%Y-%m-%d").date(),
                     value[5],
-                    UUID(value[6]),
+                    value[6],
                     value[7],
-                    UUID(value[8]),
+                    value[8],
                     value[9],
                     value[10],
                     value[11],
@@ -123,9 +122,9 @@ class GameRankingBySeasonWeekQueryHandler:
 
         if row is not None:
             return GameRankingBySeasonWeekResult(
-                UUID(row[0]),
+                row[0],
                 row[1],
-                UUID(row[2]),
+                row[2],
                 row[3],
                 row[4],
                 values,

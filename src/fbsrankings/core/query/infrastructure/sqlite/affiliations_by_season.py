@@ -1,5 +1,4 @@
 import sqlite3
-from uuid import UUID
 
 from fbsrankings.messages.query import AffiliationBySeasonResult
 from fbsrankings.messages.query import AffiliationsBySeasonQuery
@@ -33,14 +32,14 @@ class AffiliationsBySeasonQueryHandler:
             f"JOIN {self._team_table} "
             f"ON {self._team_table}.UUID = {self._affiliation_table}.TeamID "
             f"WHERE {self._affiliation_table}.SeasonID = ?;",
-            [str(query.season_id)],
+            [query.season_id],
         )
         items = [
             AffiliationBySeasonResult(
-                UUID(row[0]),
-                UUID(row[1]),
+                row[0],
+                row[1],
                 row[2],
-                UUID(row[3]),
+                row[3],
                 row[4],
                 row[5],
             )
