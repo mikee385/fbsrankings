@@ -1,6 +1,5 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Type
 
 from communication.messages import C
 from communication.messages import CommandHandler
@@ -8,11 +7,11 @@ from communication.messages import CommandHandler
 
 class CommandBus(metaclass=ABCMeta):
     @abstractmethod
-    def register_handler(self, type_: Type[C], handler: CommandHandler[C]) -> None:
+    def register_handler(self, type_: type[C], handler: CommandHandler[C]) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def unregister_handler(self, type_: Type[C]) -> None:
+    def unregister_handler(self, type_: type[C]) -> None:
         raise NotImplementedError
 
     @abstractmethod

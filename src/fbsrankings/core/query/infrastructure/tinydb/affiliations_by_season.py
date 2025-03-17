@@ -71,14 +71,14 @@ class AffiliationsBySeasonQueryHandler:
 
         items = [
             AffiliationBySeasonResult(
-                item["id_"],
-                item["season_id"],
-                item["year"],
-                item["team_id"],
-                item["team_name"],
-                item["subdivision"],
+                affiliation_id=item["id_"],
+                season_id=item["season_id"],
+                year=item["year"],
+                team_id=item["team_id"],
+                team_name=item["team_name"],
+                subdivision=item["subdivision"],
             )
             for item in table.search(Query().season_id == query.season_id)
         ]
 
-        return AffiliationsBySeasonResult(items)
+        return AffiliationsBySeasonResult(affiliations=items)

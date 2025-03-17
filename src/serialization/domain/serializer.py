@@ -1,6 +1,5 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Type
 from typing import TypeVar
 
 
@@ -13,5 +12,5 @@ class Serializer(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def deserialize(self, data: bytes, type_: Type[T]) -> T:
+    def deserialize(self, data: bytes, type_: type[T]) -> T:
         raise NotImplementedError

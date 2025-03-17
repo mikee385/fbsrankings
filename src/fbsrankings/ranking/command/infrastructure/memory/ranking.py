@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Callable
 from typing import Generic
 from typing import Optional
@@ -6,14 +7,8 @@ from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import GameRankingCalculatedEvent
-from fbsrankings.messages.event import (
-    GameRankingEventHandler as BaseGameRankingEventHandler,
-)
-from fbsrankings.messages.event import RankingCalculatedEvent
+from fbsrankings.messages.event import RankingValue as EventValue
 from fbsrankings.messages.event import TeamRankingCalculatedEvent
-from fbsrankings.messages.event import (
-    TeamRankingEventHandler as BaseTeamRankingEventHandler,
-)
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -25,6 +20,12 @@ from fbsrankings.ranking.command.domain.model.ranking import RankingID
 from fbsrankings.ranking.command.domain.model.ranking import RankingValue
 from fbsrankings.ranking.command.domain.model.ranking import (
     TeamRankingRepository as BaseTeamRankingRepository,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventHandler as BaseGameRankingEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventHandler as BaseTeamRankingEventHandler,
 )
 from fbsrankings.storage.memory import RankingDto
 from fbsrankings.storage.memory import RankingStorage
@@ -73,21 +74,28 @@ class RankingEventHandler:
     def __init__(self, storage: RankingStorage) -> None:
         self._storage = storage
 
-    def handle_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_calculated(
+        self,
+        ranking_id: str,
+        name: str,
+        season_id: str,
+        week: Optional[int],
+        values: Sequence[EventValue],
+    ) -> None:
         self._storage.add(
             RankingDto(
-                event.ranking_id,
-                event.name,
-                event.season_id,
-                event.week,
+                ranking_id,
+                name,
+                season_id,
+                week,
                 [
                     RankingValueDto(
-                        value.id_,
+                        value.id,
                         value.order,
                         value.rank,
                         value.value,
                     )
-                    for value in event.values
+                    for value in values
                 ],
             ),
         )
@@ -126,7 +134,13 @@ class TeamRankingEventHandler(BaseTeamRankingEventHandler):
         self,
         event: TeamRankingCalculatedEvent,
     ) -> None:
-        self._event_handler.handle_calculated(event)
+        self._event_handler.handle_calculated(
+            event.ranking_id,
+            event.name,
+            event.season_id,
+            event.week if event.HasField("week") else None,
+            event.values,
+        )
 
 
 class GameRankingRepository(BaseGameRankingRepository):
@@ -162,4 +176,10 @@ class GameRankingEventHandler(BaseGameRankingEventHandler):
         self,
         event: GameRankingCalculatedEvent,
     ) -> None:
-        self._event_handler.handle_calculated(event)
+        self._event_handler.handle_calculated(
+            event.ranking_id,
+            event.name,
+            event.season_id,
+            event.week if event.HasField("week") else None,
+            event.values,
+        )

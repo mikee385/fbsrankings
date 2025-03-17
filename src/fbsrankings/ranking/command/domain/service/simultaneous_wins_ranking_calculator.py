@@ -1,5 +1,3 @@
-from typing import Dict
-from typing import List
 from uuid import UUID
 
 import numpy
@@ -39,14 +37,14 @@ class SimultaneousWinsRankingCalculator:
     def __init__(self, factory: TeamRankingFactory) -> None:
         self._factory = factory
 
-    def calculate_for_season(self, season_data: SeasonData) -> List[Ranking[TeamID]]:
-        team_data: Dict[str, TeamData] = {}
+    def calculate_for_season(self, season_data: SeasonData) -> list[Ranking[TeamID]]:
+        team_data: dict[str, TeamData] = {}
         for affiliation in season_data.affiliation_map.values():
-            if affiliation.subdivision == Subdivision.FBS.name:
+            if affiliation.subdivision == Subdivision.SUBDIVISION_FBS:
                 team_data[affiliation.team_id] = TeamData(len(team_data))
 
         season_is_complete = True
-        games_by_week: Dict[int, List[GameBySeasonResult]] = {}
+        games_by_week: dict[int, list[GameBySeasonResult]] = {}
         for game in season_data.game_map.values():
             winning_data = None
             losing_data = None
@@ -63,7 +61,7 @@ class SimultaneousWinsRankingCalculator:
                 week_games = games_by_week.setdefault(game.week, [])
                 week_games.append(game)
 
-            elif game.status == GameStatus.SCHEDULED.name:
+            elif game.status == GameStatus.GAME_STATUS_SCHEDULED:
                 season_is_complete = False
 
         n = len(team_data)

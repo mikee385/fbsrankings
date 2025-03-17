@@ -1,5 +1,4 @@
 import sqlite3
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -40,11 +39,11 @@ class TeamRecordBySeasonWeekQueryHandler:
             f"WHERE {self._record_table}.SeasonID = ?"
         )
 
-        params: List[SqliteParam] = [
+        params: list[SqliteParam] = [
             query.season_id,
         ]
 
-        if query.week is not None:
+        if query.HasField("week"):
             sql_query += f" AND {self._record_table}.Week = ?;"
             params.append(query.week)
         else:
@@ -69,10 +68,10 @@ class TeamRecordBySeasonWeekQueryHandler:
             )
             values = [
                 TeamRecordValueBySeasonWeekResult(
-                    value[0],
-                    value[1],
-                    value[2],
-                    value[3],
+                    team_id=value[0],
+                    name=value[1],
+                    wins=value[2],
+                    losses=value[3],
                 )
                 for value in cursor.fetchall()
             ]
@@ -81,10 +80,10 @@ class TeamRecordBySeasonWeekQueryHandler:
 
         if row is not None:
             return TeamRecordBySeasonWeekResult(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                values,
+                record_id=row[0],
+                season_id=row[1],
+                year=row[2],
+                week=row[3],
+                values=values,
             )
         return None

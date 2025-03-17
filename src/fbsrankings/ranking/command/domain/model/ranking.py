@@ -1,15 +1,12 @@
 import datetime
 from abc import ABCMeta
 from abc import abstractmethod
+from collections.abc import Iterable
+from collections.abc import Sequence
 from typing import Callable
-from typing import Dict
 from typing import Generic
-from typing import Iterable
-from typing import List
 from typing import NewType
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import TypeVar
 from uuid import UUID
 from uuid import uuid4
@@ -72,9 +69,9 @@ class RankingValue(Generic[T]):
     @staticmethod
     def to_values(
         season_data: SeasonData,
-        value_map: Dict[T, float],
+        value_map: dict[T, float],
         sort_key: Callable[[SeasonData, T, float], SupportsRichComparison],
-    ) -> List["RankingValue[T]"]:
+    ) -> list["RankingValue[T]"]:
         sorted_values = sorted(
             value_map.items(),
             key=lambda t: sort_key(season_data, t[0], t[1]),
@@ -138,8 +135,8 @@ class TeamRankingCalculator:  # noqa: PIE798
     @staticmethod
     def to_values(
         season_data: SeasonData,
-        value_map: Dict[TeamID, float],
-    ) -> List[RankingValue[TeamID]]:
+        value_map: dict[TeamID, float],
+    ) -> list[RankingValue[TeamID]]:
         return RankingValue.to_values(
             season_data,
             value_map,
@@ -151,7 +148,7 @@ class TeamRankingCalculator:  # noqa: PIE798
         season_data: SeasonData,
         team_id: TeamID,
         value: float,
-    ) -> Tuple[float, str, str]:
+    ) -> tuple[float, str, str]:
         affiliation = season_data.affiliation_map[str(team_id)]
         return (-value, affiliation.team_name.upper(), str(team_id))
 
@@ -171,13 +168,18 @@ class TeamRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             TeamRankingCalculatedEvent(
-                str(uuid4()),
-                str(ranking.id_),
-                ranking.name,
-                str(ranking.season_id),
-                ranking.week,
-                [
-                    EventValue(str(value.id_), value.order, value.rank, value.value)
+                event_id=str(uuid4()),
+                ranking_id=str(ranking.id_),
+                name=ranking.name,
+                season_id=str(ranking.season_id),
+                week=ranking.week,
+                values=[
+                    EventValue(
+                        id=str(value.id_),
+                        order=value.order,
+                        rank=value.rank,
+                        value=value.value,
+                    )
                     for value in ranking.values
                 ],
             ),
@@ -205,8 +207,8 @@ class GameRankingCalculator:  # noqa: PIE798
     @staticmethod
     def to_values(
         season_data: SeasonData,
-        value_map: Dict[GameID, float],
-    ) -> List[RankingValue[GameID]]:
+        value_map: dict[GameID, float],
+    ) -> list[RankingValue[GameID]]:
         return RankingValue.to_values(
             season_data,
             value_map,
@@ -218,14 +220,14 @@ class GameRankingCalculator:  # noqa: PIE798
         season_data: SeasonData,
         game_id: GameID,
         value: float,
-    ) -> Tuple[float, datetime.date, str, str, str]:
+    ) -> tuple[float, datetime.date, str, str, str]:
         game = season_data.game_map[str(game_id)]
         home_affiliation = season_data.affiliation_map[game.home_team_id]
         away_affiliation = season_data.affiliation_map[game.away_team_id]
 
         return (
             -value,
-            game.date,
+            game.date.ToDatetime().date(),
             home_affiliation.team_name.upper(),
             away_affiliation.team_name.upper(),
             str(game_id),
@@ -247,13 +249,18 @@ class GameRankingFactory:
         ranking = Ranking(self._bus, id_, name, season_id, week, values)
         self._bus.publish(
             GameRankingCalculatedEvent(
-                str(uuid4()),
-                str(ranking.id_),
-                ranking.name,
-                str(ranking.season_id),
-                ranking.week,
-                [
-                    EventValue(str(value.id_), value.order, value.rank, value.value)
+                event_id=str(uuid4()),
+                ranking_id=str(ranking.id_),
+                name=ranking.name,
+                season_id=str(ranking.season_id),
+                week=ranking.week,
+                values=[
+                    EventValue(
+                        id=str(value.id_),
+                        order=value.order,
+                        rank=value.rank,
+                        value=value.value,
+                    )
                     for value in ranking.values
                 ],
             ),

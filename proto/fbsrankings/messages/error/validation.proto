@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package fbsrankings.messages.error;
+
+message SeasonDataValidationError {
+    string event_id = 1;
+    string message = 2;
+    string season_id = 3;
+    string attribute_name = 4;
+    string attribute_value = 5;
+    string expected_value = 6;
+}
+
+message TeamDataValidationError {
+    string event_id = 1;
+    string message = 2;
+    string team_id = 3;
+    string attribute_name = 4;
+    string attribute_value = 5;
+    string expected_value = 6;
+}
+
+message AffiliationDataValidationError {
+    string event_id = 1;
+    string message = 2;
+    string affiliation_id = 3;
+    string attribute_name = 4;
+    string attribute_value = 5;
+    string expected_value = 6;
+}
+
+message GameDataValidationError {
+    string event_id = 1;
+    string message = 2;
+    string game_id = 3;
+    string attribute_name = 4;
+    string attribute_value = 5;
+    string expected_value = 6;
+}
+
+message FBSGameCountValidationError {
+    string event_id = 1;
+    string message = 2;
+    string season_id = 3;
+    string team_id = 4;
+    int32 game_count = 5;
+}
+
+message FCSGameCountValidationError {
+    string event_id = 1;
+    string message = 2;
+    string season_id = 3;
+    string team_id = 4;
+    int32 game_count = 5;
+}
+
+message PostseasonGameCountValidationError {
+    string event_id = 1;
+    string message = 2;
+    string season_id = 3;
+    int32 regular_season_game_count = 4;
+    int32 postseason_game_count = 5;
+}

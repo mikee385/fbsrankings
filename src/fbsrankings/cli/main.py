@@ -1,6 +1,6 @@
 import argparse
+from collections.abc import Sequence
 from typing import Optional
-from typing import Sequence
 from typing import Union
 
 from fbsrankings import __version__

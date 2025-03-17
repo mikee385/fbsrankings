@@ -3,7 +3,6 @@ from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import TeamRecordCalculatedEvent
-from fbsrankings.messages.event import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
@@ -12,6 +11,9 @@ from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventHandler as BaseEventHandler,
+)
 from fbsrankings.storage.memory import TeamRecordDto
 from fbsrankings.storage.memory import TeamRecordStorage
 from fbsrankings.storage.memory import TeamRecordValueDto
@@ -53,7 +55,7 @@ class TeamRecordEventHandler(BaseEventHandler):
             TeamRecordDto(
                 event.record_id,
                 event.season_id,
-                event.week,
+                event.week if event.HasField("week") else None,
                 [
                     TeamRecordValueDto(value.team_id, value.wins, value.losses)
                     for value in event.values

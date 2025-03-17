@@ -1,10 +1,8 @@
-from typing import Dict
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Tuple
-
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Optional
+
+from fbsrankings.messages.enums import Subdivision
 
 
 @dataclass(frozen=True)
@@ -12,14 +10,14 @@ class AffiliationDto:
     id_: str
     season_id: str
     team_id: str
-    subdivision: str
+    subdivision: Subdivision
 
 
 class AffiliationStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[str, AffiliationDto] = {}
-        self._by_key: Dict[Tuple[str, str], AffiliationDto] = {}
-        self._by_season: Dict[str, List[AffiliationDto]] = {}
+        self._by_id: dict[str, AffiliationDto] = {}
+        self._by_key: dict[tuple[str, str], AffiliationDto] = {}
+        self._by_season: dict[str, list[AffiliationDto]] = {}
 
     def add(self, affiliation: AffiliationDto) -> None:
         key = (affiliation.season_id, affiliation.team_id)
@@ -45,7 +43,7 @@ class AffiliationStorage:
         key = (season_id, team_id)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: str) -> List[AffiliationDto]:
+    def for_season(self, season_id: str) -> list[AffiliationDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

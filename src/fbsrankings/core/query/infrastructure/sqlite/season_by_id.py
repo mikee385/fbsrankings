@@ -22,5 +22,5 @@ class SeasonByIDQueryHandler:
         cursor.close()
 
         if row:
-            return SeasonByIDResult(row[0], row[1])
+            return SeasonByIDResult(season_id=row[0], year=row[1])
         return None

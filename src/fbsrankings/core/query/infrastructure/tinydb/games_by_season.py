@@ -4,6 +4,7 @@ from tinydb import Query
 from tinydb.table import Document
 
 from communication.bus import EventBus
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.event import GameCanceledEvent
 from fbsrankings.messages.event import GameCompletedEvent
@@ -70,7 +71,7 @@ class GamesBySeasonQueryProjection:
             "season_id": event.season_id,
             "year": existing_season["year"],
             "week": event.week,
-            "date": event.date.strftime("%Y-%m-%d"),
+            "date": event.date.ToDatetime().strftime("%Y-%m-%d"),
             "season_section": event.season_section,
             "home_team_id": event.home_team_id,
             "home_team_name": existing_home_team["name"],
@@ -78,7 +79,7 @@ class GamesBySeasonQueryProjection:
             "away_team_name": existing_away_team["name"],
             "home_team_score": None,
             "away_team_score": None,
-            "status": GameStatus.SCHEDULED.name,
+            "status": GameStatus.GAME_STATUS_SCHEDULED,
             "notes": event.notes,
         }
 
@@ -111,7 +112,7 @@ class GamesBySeasonQueryProjection:
             )
 
         existing = self._storage.connection.table("games").update(
-            {"status": GameStatus.CANCELED.name},
+            {"status": GameStatus.GAME_STATUS_CANCELED},
             Query().id_ == event.game_id,
         )
 
@@ -121,7 +122,7 @@ class GamesBySeasonQueryProjection:
                 f"Game {event.game_id} was not found",
             )
 
-        existing_by_id["status"] = GameStatus.CANCELED.name
+        existing_by_id["status"] = GameStatus.GAME_STATUS_CANCELED
 
     def project_completed(self, event: GameCompletedEvent) -> None:
         existing_by_id = self._storage.cache_game_by_id.get(event.game_id)
@@ -135,7 +136,7 @@ class GamesBySeasonQueryProjection:
             {
                 "home_team_score": event.home_team_score,
                 "away_team_score": event.away_team_score,
-                "status": GameStatus.COMPLETED.name,
+                "status": GameStatus.GAME_STATUS_COMPLETED,
             },
             Query().id_ == event.game_id,
         )
@@ -148,7 +149,7 @@ class GamesBySeasonQueryProjection:
 
         existing_by_id["home_team_score"] = event.home_team_score
         existing_by_id["away_team_score"] = event.away_team_score
-        existing_by_id["status"] = GameStatus.COMPLETED.name
+        existing_by_id["status"] = GameStatus.GAME_STATUS_COMPLETED
 
     def project_rescheduled(self, event: GameRescheduledEvent) -> None:
         existing_by_id = self._storage.cache_game_by_id.get(event.game_id)
@@ -159,7 +160,7 @@ class GamesBySeasonQueryProjection:
             )
 
         existing = self._storage.connection.table("games").update(
-            {"week": event.week, "date": event.date.strftime("%Y-%m-%d")},
+            {"week": event.week, "date": event.date.ToDatetime().strftime("%Y-%m-%d")},
             Query().id_ == event.game_id,
         )
 
@@ -170,7 +171,7 @@ class GamesBySeasonQueryProjection:
             )
 
         existing_by_id["week"] = event.week
-        existing_by_id["date"] = event.date.strftime("%Y-%m-%d")
+        existing_by_id["date"] = event.date.ToDatetime().strftime("%Y-%m-%d")
 
     def project_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         existing_by_id = self._storage.cache_game_by_id.get(event.game_id)
@@ -200,22 +201,24 @@ class GamesBySeasonQueryHandler:
 
     def __call__(self, query: GamesBySeasonQuery) -> GamesBySeasonResult:
         return GamesBySeasonResult(
-            [
+            games=[
                 GameBySeasonResult(
-                    item["id_"],
-                    item["season_id"],
-                    item["year"],
-                    item["week"],
-                    datetime.strptime(item["date"], "%Y-%m-%d").date(),
-                    item["season_section"],
-                    item["home_team_id"],
-                    item["home_team_name"],
-                    item["away_team_id"],
-                    item["away_team_name"],
-                    item["home_team_score"],
-                    item["away_team_score"],
-                    item["status"],
-                    item["notes"],
+                    game_id=item["id_"],
+                    season_id=item["season_id"],
+                    year=item["year"],
+                    week=item["week"],
+                    date=datetime_to_timestamp(
+                        datetime.strptime(item["date"], "%Y-%m-%d"),
+                    ),
+                    season_section=item["season_section"],
+                    home_team_id=item["home_team_id"],
+                    home_team_name=item["home_team_name"],
+                    away_team_id=item["away_team_id"],
+                    away_team_name=item["away_team_name"],
+                    home_team_score=item["home_team_score"],
+                    away_team_score=item["away_team_score"],
+                    status=item["status"],
+                    notes=item["notes"],
                 )
                 for item in self._storage.cache_game_by_id.values()
                 if item["season_id"] == query.season_id

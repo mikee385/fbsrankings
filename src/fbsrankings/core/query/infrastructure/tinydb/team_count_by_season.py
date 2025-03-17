@@ -51,7 +51,7 @@ class TeamCountBySeasonQueryHandler:
             item = item[0]
 
         return (
-            TeamCountBySeasonResult(item["season_id"], item["count"])
+            TeamCountBySeasonResult(season_id=item["season_id"], count=item["count"])
             if item is not None
             else None
         )

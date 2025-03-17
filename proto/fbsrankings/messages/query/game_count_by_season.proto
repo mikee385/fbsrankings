@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+message GameCountBySeasonResult {
+    string season_id = 1;
+    int32 count = 2;
+}
+
+message GameCountBySeasonQuery {
+    string query_id = 1;
+    string season_id = 2;
+}

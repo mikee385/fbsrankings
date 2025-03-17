@@ -1,9 +1,7 @@
 from typing import Any
 from typing import Callable
 from typing import cast
-from typing import Dict
 from typing import Optional
-from typing import Type
 
 from communication.bus import QueryBus
 from communication.channel import Channel
@@ -23,25 +21,21 @@ class QueryBridge(QueryBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: Dict[Type[Query[Any]], str],
-        result_types: Dict[Type[Query[Any]], Type[Any]],
+        topics: dict[type[Query[Any]], str],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
-        self._request_topics: Dict[Type[Query[Any]], str] = {}
-        self._response_topics: Dict[Type[Query[Any]], str] = {}
+        self._request_topics: dict[type[Query[Any]], str] = {}
+        self._response_topics: dict[type[Query[Any]], str] = {}
         for type_, topic in topics.items():
             self._request_topics[type_] = topic + "/request"
             self._response_topics[type_] = topic + "/response"
 
-        self._result_types: Dict[Type[Query[Any]], Type[Any]] = {}
-        self._result_types.update(result_types)
+        self._handlers: dict[type[Query[Any]], PayloadHandler] = {}
+        self._results: dict[str, Optional[Any]] = {}
 
-        self._handlers: Dict[Type[Query[Any]], PayloadHandler] = {}
-        self._results: Dict[str, Optional[Any]] = {}
-
-    def register_handler(self, type_: Type[Q], handler: QueryHandler[Q, R]) -> None:
+    def register_handler(self, type_: type[Q], handler: QueryHandler[Q, R]) -> None:
         query_type = type_
 
         if query_type not in self._request_topics:
@@ -65,7 +59,7 @@ class QueryBridge(QueryBus):
 
         self._channel.subscribe(request_topic, payload_handler)
 
-    def unregister_handler(self, type_: Type[Q]) -> None:
+    def unregister_handler(self, type_: type[Q]) -> None:
         request_topic = self._request_topics.get(type_)
         if request_topic is None:
             raise ValueError(f"Unknown type: {type_}")
@@ -74,12 +68,8 @@ class QueryBridge(QueryBus):
         if payload_handler is not None:
             self._channel.unsubscribe(request_topic, payload_handler)
 
-    def query(self, query: Query[R]) -> R:
+    def query(self, query: Query[R], return_type: type[R]) -> R:
         query_type = type(query)
-
-        if query_type not in self._result_types:
-            raise ValueError(f"Unknown type: {query_type}")
-        result_type = self._result_types[query_type]
 
         if query_type not in self._request_topics:
             raise ValueError(f"Unknown type: {query_type}")
@@ -92,7 +82,7 @@ class QueryBridge(QueryBus):
         self._results[response_topic] = None
 
         def payload_handler(payload: Payload) -> None:
-            result = self._serializer.deserialize(payload, result_type)
+            result = self._serializer.deserialize(payload, return_type)
             if response_topic in self._results:
                 self._results[response_topic] = result
 

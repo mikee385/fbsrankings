@@ -3,11 +3,13 @@ include .gitignore
 include .pre-commit-config.yaml
 include LICENSE
 include Makefile
+include
 include README.md
 include requirements/*
 include src/fbsrankings/py.typed
 include src/fbsrankings/fbsrankings.ini
 include whitelist.py
+recursive-include proto *.proto
 recursive-include tests *.py
 recursive-include tests/config *
 recursive-include tests/coverage *

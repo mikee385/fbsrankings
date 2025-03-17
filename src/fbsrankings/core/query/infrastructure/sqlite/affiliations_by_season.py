@@ -36,15 +36,15 @@ class AffiliationsBySeasonQueryHandler:
         )
         items = [
             AffiliationBySeasonResult(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                row[4],
-                row[5],
+                affiliation_id=row[0],
+                season_id=row[1],
+                year=row[2],
+                team_id=row[3],
+                team_name=row[4],
+                subdivision=row[5],
             )
             for row in cursor.fetchall()
         ]
         cursor.close()
 
-        return AffiliationsBySeasonResult(items)
+        return AffiliationsBySeasonResult(affiliations=items)

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package fbsrankings.messages.command;
+
+message DropStorageCommand {
+    string command_id = 1;
+}

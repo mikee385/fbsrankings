@@ -7,12 +7,13 @@ from fbsrankings.core.command.domain.model.game import GameID
 from fbsrankings.core.command.domain.model.game import GameRepository as BaseRepository
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
+from fbsrankings.core.command.infrastructure.shared.game import (
+    GameEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.enums import GameStatus
-from fbsrankings.messages.enums import SeasonSection
 from fbsrankings.messages.event import GameCanceledEvent
 from fbsrankings.messages.event import GameCompletedEvent
 from fbsrankings.messages.event import GameCreatedEvent
-from fbsrankings.messages.event import GameEventHandler as BaseEventHandler
 from fbsrankings.messages.event import GameNotesUpdatedEvent
 from fbsrankings.messages.event import GameRescheduledEvent
 from fbsrankings.storage.memory import GameDto
@@ -45,12 +46,12 @@ class GameRepository(BaseRepository):
             SeasonID(UUID(dto.season_id)),
             dto.week,
             dto.date,
-            SeasonSection[dto.season_section],
+            dto.season_section,
             TeamID(UUID(dto.home_team_id)),
             TeamID(UUID(dto.away_team_id)),
             dto.home_team_score,
             dto.away_team_score,
-            GameStatus[dto.status],
+            dto.status,
             dto.notes,
         )
 
@@ -65,13 +66,13 @@ class GameEventHandler(BaseEventHandler):
                 event.game_id,
                 event.season_id,
                 event.week,
-                event.date,
+                event.date.ToDatetime().date(),
                 event.season_section,
                 event.home_team_id,
                 event.away_team_id,
                 None,
                 None,
-                GameStatus.SCHEDULED.name,
+                GameStatus.GAME_STATUS_SCHEDULED,
                 event.notes,
             ),
         )
@@ -80,19 +81,19 @@ class GameEventHandler(BaseEventHandler):
         dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.week = event.week
-            dto.date = event.date
+            dto.date = event.date.ToDatetime().date()
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:
         dto = self._storage.get(event.game_id)
         if dto is not None:
-            dto.status = GameStatus.CANCELED.name
+            dto.status = GameStatus.GAME_STATUS_CANCELED
 
     def handle_completed(self, event: GameCompletedEvent) -> None:
         dto = self._storage.get(event.game_id)
         if dto is not None:
             dto.home_team_score = event.home_team_score
             dto.away_team_score = event.away_team_score
-            dto.status = GameStatus.COMPLETED.name
+            dto.status = GameStatus.GAME_STATUS_COMPLETED
 
     def handle_notes_updated(self, event: GameNotesUpdatedEvent) -> None:
         dto = self._storage.get(event.game_id)

@@ -1,24 +1,24 @@
 import sqlite3
 from types import TracebackType
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
 from fbsrankings.core.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
+from fbsrankings.core.command.infrastructure.shared.affiliation import (
+    AffiliationEventManager,
+)
+from fbsrankings.core.command.infrastructure.shared.game import GameEventManager
+from fbsrankings.core.command.infrastructure.shared.season import SeasonEventManager
+from fbsrankings.core.command.infrastructure.shared.team import TeamEventManager
 from fbsrankings.core.command.infrastructure.sqlite.affiliation import (
     AffiliationEventHandler,
 )
 from fbsrankings.core.command.infrastructure.sqlite.game import GameEventHandler
 from fbsrankings.core.command.infrastructure.sqlite.season import SeasonEventHandler
 from fbsrankings.core.command.infrastructure.sqlite.team import TeamEventHandler
-from fbsrankings.messages.event import AffiliationEventManager
-from fbsrankings.messages.event import GameEventManager
-from fbsrankings.messages.event import SeasonEventManager
-from fbsrankings.messages.event import TeamEventManager
 from fbsrankings.storage.sqlite import Storage
 
 
@@ -56,7 +56,7 @@ class EventHandler(BaseEventHandler):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

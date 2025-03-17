@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+message TeamResult {
+    string team_id = 1;
+    string name = 2;
+}
+
+message TeamsResult {
+    repeated TeamResult teams = 1;
+}
+
+message TeamsQuery {
+    string query_id = 1;
+}

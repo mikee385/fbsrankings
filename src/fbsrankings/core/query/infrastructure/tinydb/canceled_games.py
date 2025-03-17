@@ -3,6 +3,7 @@ from datetime import datetime
 from tinydb import Query
 
 from communication.bus import EventBus
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.event import GameCanceledEvent
 from fbsrankings.messages.event import GameNotesUpdatedEvent
 from fbsrankings.messages.query import CanceledGameResult
@@ -74,7 +75,7 @@ class CanceledGamesQueryProjection:
                     "season_id": event.season_id,
                     "year": existing_season["year"],
                     "week": event.week,
-                    "date": event.date.strftime("%Y-%m-%d"),
+                    "date": event.date.ToDatetime().strftime("%Y-%m-%d"),
                     "season_section": event.season_section,
                     "home_team_id": event.home_team_id,
                     "home_team_name": existing_home_team["name"],
@@ -115,19 +116,19 @@ class CanceledGamesQueryHandler:
 
         items = [
             CanceledGameResult(
-                item["id_"],
-                item["season_id"],
-                item["year"],
-                item["week"],
-                datetime.strptime(item["date"], "%Y-%m-%d").date(),
-                item["season_section"],
-                item["home_team_id"],
-                item["home_team_name"],
-                item["away_team_id"],
-                item["away_team_name"],
-                item["notes"],
+                game_id=item["id_"],
+                season_id=item["season_id"],
+                year=item["year"],
+                week=item["week"],
+                date=datetime_to_timestamp(datetime.strptime(item["date"], "%Y-%m-%d")),
+                season_section=item["season_section"],
+                home_team_id=item["home_team_id"],
+                home_team_name=item["home_team_name"],
+                away_team_id=item["away_team_id"],
+                away_team_name=item["away_team_name"],
+                notes=item["notes"],
             )
             for item in table.all()
         ]
 
-        return CanceledGamesResult(items)
+        return CanceledGamesResult(games=items)

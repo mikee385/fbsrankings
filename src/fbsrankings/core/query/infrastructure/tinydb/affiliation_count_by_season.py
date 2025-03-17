@@ -27,18 +27,18 @@ class AffiliationCountBySeasonQueryProjection:
         if isinstance(existing, list):
             existing = existing[0]
         if existing is not None:
-            if event.subdivision == Subdivision.FBS.name:
+            if event.subdivision == Subdivision.SUBDIVISION_FBS:
                 table.update(
                     {"fbs_count": existing["fbs_count"] + 1},
                     doc_ids=[existing.doc_id],
                 )
-            elif event.subdivision == Subdivision.FCS.name:
+            elif event.subdivision == Subdivision.SUBDIVISION_FCS:
                 table.update(
                     {"fcs_count": existing["fcs_count"] + 1},
                     doc_ids=[existing.doc_id],
                 )
         else:
-            if event.subdivision == Subdivision.FBS.name:
+            if event.subdivision == Subdivision.SUBDIVISION_FBS:
                 table.insert(
                     {
                         "season_id": event.season_id,
@@ -46,7 +46,7 @@ class AffiliationCountBySeasonQueryProjection:
                         "fcs_count": 0,
                     },
                 )
-            elif event.subdivision == Subdivision.FCS.name:
+            elif event.subdivision == Subdivision.SUBDIVISION_FCS:
                 table.insert(
                     {
                         "season_id": event.season_id,
@@ -72,9 +72,9 @@ class AffiliationCountBySeasonQueryHandler:
 
         return (
             AffiliationCountBySeasonResult(
-                item["season_id"],
-                item["fbs_count"],
-                item["fcs_count"],
+                season_id=item["season_id"],
+                fbs_count=item["fbs_count"],
+                fcs_count=item["fcs_count"],
             )
             if item is not None
             else None

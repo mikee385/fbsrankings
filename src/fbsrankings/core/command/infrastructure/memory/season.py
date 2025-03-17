@@ -7,8 +7,10 @@ from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.season import (
     SeasonRepository as BaseRepository,
 )
+from fbsrankings.core.command.infrastructure.shared.season import (
+    SeasonEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import SeasonCreatedEvent
-from fbsrankings.messages.event import SeasonEventHandler as BaseEventHandler
 from fbsrankings.storage.memory import SeasonDto
 from fbsrankings.storage.memory import SeasonStorage
 

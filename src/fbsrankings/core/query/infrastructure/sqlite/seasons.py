@@ -17,7 +17,9 @@ class SeasonsQueryHandler:
         cursor.execute(
             f"SELECT UUID, Year FROM {self._table};",
         )
-        items = [SeasonResult(row[0], row[1]) for row in cursor.fetchall()]
+        items = [
+            SeasonResult(season_id=row[0], year=row[1]) for row in cursor.fetchall()
+        ]
         cursor.close()
 
-        return SeasonsResult(items)
+        return SeasonsResult(seasons=items)

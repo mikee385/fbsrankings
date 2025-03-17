@@ -21,7 +21,7 @@ class PostseasonGameCountBySeasonQueryProjection:
         self._event_bus.unregister_handler(GameCreatedEvent, self.project)
 
     def project(self, event: GameCreatedEvent) -> None:
-        if event.season_section == SeasonSection.POSTSEASON.name:
+        if event.season_section == SeasonSection.SEASON_SECTION_POSTSEASON:
             table = self._connection.table("postseason_game_count_by_season")
 
             existing = table.get(Query().season_id == event.season_id)
@@ -56,7 +56,10 @@ class PostseasonGameCountBySeasonQueryHandler:
             item = item[0]
 
         return (
-            PostseasonGameCountBySeasonResult(item["season_id"], item["count"])
+            PostseasonGameCountBySeasonResult(
+                season_id=item["season_id"],
+                count=item["count"],
+            )
             if item is not None
             else None
         )

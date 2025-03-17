@@ -13,11 +13,12 @@ class PostseasonGameCountBySeasonQueryHandler:
         query: PostseasonGameCountBySeasonQuery,
     ) -> PostseasonGameCountBySeasonResult:
         return PostseasonGameCountBySeasonResult(
-            query.season_id,
-            sum(
+            season_id=query.season_id,
+            count=sum(
                 1
                 for _ in filter(
-                    lambda g: g.season_section == SeasonSection.POSTSEASON.name,
+                    lambda g: g.season_section
+                    == SeasonSection.SEASON_SECTION_POSTSEASON,
                     self._storage.game.for_season(query.season_id),
                 )
             ),

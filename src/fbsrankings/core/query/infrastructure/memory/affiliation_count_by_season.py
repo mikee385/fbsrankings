@@ -17,9 +17,13 @@ class AffiliationCountBySeasonQueryHandler:
 
         affiliations = self._storage.affiliation.for_season(query.season_id)
         for affiliation in affiliations:
-            if affiliation.subdivision == Subdivision.FBS.name:
+            if affiliation.subdivision == Subdivision.SUBDIVISION_FBS:
                 fbs_count += 1
-            elif affiliation.subdivision == Subdivision.FCS.name:
+            elif affiliation.subdivision == Subdivision.SUBDIVISION_FCS:
                 fcs_count += 1
 
-        return AffiliationCountBySeasonResult(query.season_id, fbs_count, fcs_count)
+        return AffiliationCountBySeasonResult(
+            season_id=query.season_id,
+            fbs_count=fbs_count,
+            fcs_count=fcs_count,
+        )

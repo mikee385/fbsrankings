@@ -251,9 +251,9 @@ class LatestSeasonWeekQueryHandler:
         if len(items) > 0:
             item = items[0]
             return LatestSeasonWeekResult(
-                item["season_id"],
-                item["year"],
-                item["week"],
+                season_id=item["season_id"],
+                year=item["year"],
+                week=item["week"],
             )
 
         season_count_table = self._storage.connection.table("game_status_season_count")
@@ -278,9 +278,9 @@ class LatestSeasonWeekQueryHandler:
                     },
                 )
                 return LatestSeasonWeekResult(
-                    season["season_id"],
-                    season["year"],
-                    None,
+                    season_id=season["season_id"],
+                    year=season["year"],
+                    week=None,
                 )
 
             if season["completed_count"] > 0:
@@ -323,9 +323,9 @@ class LatestSeasonWeekQueryHandler:
                             },
                         )
                         return LatestSeasonWeekResult(
-                            week["season_id"],
-                            existing_season["year"],
-                            week["week"],
+                            season_id=week["season_id"],
+                            year=existing_season["year"],
+                            week=week["week"],
                         )
 
         return None

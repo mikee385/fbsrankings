@@ -4,6 +4,7 @@ from typing import Optional
 from tinydb import Query
 
 from communication.bus import EventBus
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.event import GameRankingCalculatedEvent
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
@@ -33,15 +34,15 @@ class GameRankingBySeasonWeekQueryProjection:
 
         values = []
         for value in event.values:
-            existing_game = self._storage.cache_game_by_id.get(value.id_)
+            existing_game = self._storage.cache_game_by_id.get(value.id)
             if existing_game is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
-                    f"Game {value.id_} was not found for game ranking {event.ranking_id}",
+                    f"Game {value.id} was not found for game ranking {event.ranking_id}",
                 )
             values.append(
                 {
-                    "id_": value.id_,
+                    "id_": value.id,
                     "season_id": existing_game["season_id"],
                     "year": existing_season["year"],
                     "week": existing_game["week"],
@@ -64,7 +65,7 @@ class GameRankingBySeasonWeekQueryProjection:
         existing = table.get(
             (Query().name == event.name)
             & (Query().season_id == event.season_id)
-            & (Query().week == event.week),
+            & (Query().week == (event.week if event.HasField("week") else None)),
         )
         if isinstance(existing, list):
             existing = existing[0]
@@ -75,7 +76,7 @@ class GameRankingBySeasonWeekQueryProjection:
                     "name": event.name,
                     "season_id": event.season_id,
                     "year": existing_season["year"],
-                    "week": event.week,
+                    "week": event.week if event.HasField("week") else None,
                     "values": values,
                 },
             )
@@ -101,36 +102,38 @@ class GameRankingBySeasonWeekQueryHandler:
         item = table.get(
             (Query().name == query.name)
             & (Query().season_id == query.season_id)
-            & (Query().week == query.week),
+            & (Query().week == (query.week if query.HasField("week") else None)),
         )
         if isinstance(item, list):
             item = item[0]
         return (
             GameRankingBySeasonWeekResult(
-                item["id_"],
-                item["name"],
-                item["season_id"],
-                item["year"],
-                item["week"],
-                [
+                ranking_id=item["id_"],
+                name=item["name"],
+                season_id=item["season_id"],
+                year=item["year"],
+                week=item["week"],
+                values=[
                     GameRankingValueBySeasonWeekResult(
-                        value["id_"],
-                        value["season_id"],
-                        value["year"],
-                        value["week"],
-                        datetime.strptime(value["date"], "%Y-%m-%d").date(),
-                        value["season_section"],
-                        value["home_team_id"],
-                        value["home_team_name"],
-                        value["away_team_id"],
-                        value["away_team_name"],
-                        value["home_team_score"],
-                        value["away_team_score"],
-                        value["status"],
-                        value["notes"],
-                        value["order"],
-                        value["rank"],
-                        value["value"],
+                        game_id=value["id_"],
+                        season_id=value["season_id"],
+                        year=value["year"],
+                        week=value["week"],
+                        date=datetime_to_timestamp(
+                            datetime.strptime(value["date"], "%Y-%m-%d"),
+                        ),
+                        season_section=value["season_section"],
+                        home_team_id=value["home_team_id"],
+                        home_team_name=value["home_team_name"],
+                        away_team_id=value["away_team_id"],
+                        away_team_name=value["away_team_name"],
+                        home_team_score=value["home_team_score"],
+                        away_team_score=value["away_team_score"],
+                        status=value["status"],
+                        notes=value["notes"],
+                        order=value["order"],
+                        rank=value["rank"],
+                        value=value["value"],
                     )
                     for value in item["values"]
                 ],

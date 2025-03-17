@@ -17,7 +17,7 @@ class TeamsQueryHandler:
         cursor.execute(
             f"SELECT UUID, Name FROM {self._table};",
         )
-        items = [TeamResult(row[0], row[1]) for row in cursor.fetchall()]
+        items = [TeamResult(team_id=row[0], name=row[1]) for row in cursor.fetchall()]
         cursor.close()
 
-        return TeamsResult(items)
+        return TeamsResult(teams=items)

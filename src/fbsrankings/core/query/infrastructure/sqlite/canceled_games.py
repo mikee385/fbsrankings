@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.query import CanceledGameResult
 from fbsrankings.messages.query import CanceledGamesQuery
@@ -41,24 +42,24 @@ class CanceledGamesQueryHandler:
             f"JOIN {self._team_table} away_team "
             f"ON away_team.UUID = {self._game_table}.AwayTeamID "
             f"WHERE {self._game_table}.Status = ?;",
-            [GameStatus.CANCELED.name],
+            [GameStatus.GAME_STATUS_CANCELED],
         )
         items = [
             CanceledGameResult(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                datetime.strptime(row[4], "%Y-%m-%d").date(),
-                row[5],
-                row[6],
-                row[7],
-                row[8],
-                row[9],
-                row[10],
+                game_id=row[0],
+                season_id=row[1],
+                year=row[2],
+                week=row[3],
+                date=datetime_to_timestamp(datetime.strptime(row[4], "%Y-%m-%d")),
+                season_section=row[5],
+                home_team_id=row[6],
+                home_team_name=row[7],
+                away_team_id=row[8],
+                away_team_name=row[9],
+                notes=row[10],
             )
             for row in cursor.fetchall()
         ]
         cursor.close()
 
-        return CanceledGamesResult(items)
+        return CanceledGamesResult(games=items)

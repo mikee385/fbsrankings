@@ -9,17 +9,19 @@ class SubdivisionTable:
 
     def create(self, cursor: sqlite3.Cursor) -> None:
         cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS {self.table} (Name TEXT NOT NULL UNIQUE);",
+            f"CREATE TABLE IF NOT EXISTS {self.table} "
+            "(Name TEXT NOT NULL UNIQUE, "
+            "Number INT NOT NULL UNIQUE);",
         )
 
-        cursor.execute(f"SELECT Name FROM {self.table};")
+        cursor.execute(f"SELECT Number FROM {self.table};")
         existing = [row[0] for row in cursor.fetchall()]
-        insert_sql = f"INSERT INTO {self.table} (Name) VALUES (?);"
-        for value in Subdivision:
-            if value.name not in existing:
+        insert_sql = f"INSERT INTO {self.table} (Name, Number) VALUES (?, ?);"
+        for value in Subdivision.DESCRIPTOR.values:
+            if value.number not in existing:
                 cursor.execute(
                     insert_sql,
-                    [value.name],
+                    [value.name, value.number],
                 )
 
     def dump(self, connection: sqlite3.Connection) -> None:
@@ -44,7 +46,7 @@ class AffiliationTable:
             "(UUID TEXT NOT NULL UNIQUE, "
             "SeasonID TEXT NOT NULL REFERENCES season(UUID), "
             "TeamID TEXT NOT NULL REFERENCES team(UUID), "
-            "Subdivision TEXT NOT NULL REFERENCES subdivision(Name), "
+            "Subdivision INT NOT NULL REFERENCES subdivision(Number), "
             "UNIQUE(SeasonID, TeamID));",
         )
 

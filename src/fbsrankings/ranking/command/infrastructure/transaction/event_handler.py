@@ -1,17 +1,20 @@
 from types import TracebackType
-from typing import List
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
 from communication.messages import Event
-from fbsrankings.messages.event import GameRankingEventManager
-from fbsrankings.messages.event import TeamRankingEventManager
-from fbsrankings.messages.event import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventManager,
 )
 from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
     GameRankingEventHandler,
@@ -26,7 +29,7 @@ from fbsrankings.ranking.command.infrastructure.transaction.record import (
 
 class EventHandler(BaseEventHandler):
     def __init__(self, event_bus: EventBus, cache_bus: EventBus) -> None:
-        self.events: List[Event] = []
+        self.events: list[Event] = []
 
         self._team_record = TeamRecordEventManager(
             TeamRecordEventHandler(self.events, cache_bus),
@@ -59,7 +62,7 @@ class EventHandler(BaseEventHandler):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

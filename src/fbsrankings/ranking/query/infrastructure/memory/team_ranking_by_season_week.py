@@ -17,7 +17,7 @@ class TeamRankingBySeasonWeekQueryHandler:
         ranking = self._storage.team_ranking.find(
             query.name,
             query.season_id,
-            query.week,
+            query.week if query.HasField("week") else None,
         )
         if ranking is not None:
             season = self._storage.season.get(ranking.season_id)
@@ -28,21 +28,21 @@ class TeamRankingBySeasonWeekQueryHandler:
                 if team is not None:
                     values.append(
                         TeamRankingValueBySeasonWeekResult(
-                            value.id_,
-                            team.name,
-                            value.order,
-                            value.rank,
-                            value.value,
+                            team_id=value.id_,
+                            name=team.name,
+                            order=value.order,
+                            rank=value.rank,
+                            value=value.value,
                         ),
                     )
 
             if season is not None:
                 return TeamRankingBySeasonWeekResult(
-                    str(ranking.id_),
-                    ranking.name,
-                    str(ranking.season_id),
-                    season.year,
-                    ranking.week,
-                    values,
+                    ranking_id=str(ranking.id_),
+                    name=ranking.name,
+                    season_id=str(ranking.season_id),
+                    year=season.year,
+                    week=ranking.week,
+                    values=values,
                 )
         return None

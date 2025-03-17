@@ -9,9 +9,10 @@ from fbsrankings.core.command.domain.model.affiliation import (
 )
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.messages.enums import Subdivision
+from fbsrankings.core.command.infrastructure.shared.affiliation import (
+    AffiliationEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import AffiliationCreatedEvent
-from fbsrankings.messages.event import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.storage.memory import AffiliationDto
 from fbsrankings.storage.memory import AffiliationStorage
 
@@ -35,7 +36,7 @@ class AffiliationRepository(BaseRepository):
             AffiliationID(UUID(dto.id_)),
             SeasonID(UUID(dto.season_id)),
             TeamID(UUID(dto.team_id)),
-            Subdivision[dto.subdivision],
+            dto.subdivision,
         )
 
 

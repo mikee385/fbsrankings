@@ -1,15 +1,18 @@
 from types import TracebackType
-from typing import List
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
 from communication.messages import Event
 from fbsrankings.core.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
+from fbsrankings.core.command.infrastructure.shared.affiliation import (
+    AffiliationEventManager,
+)
+from fbsrankings.core.command.infrastructure.shared.game import GameEventManager
+from fbsrankings.core.command.infrastructure.shared.season import SeasonEventManager
+from fbsrankings.core.command.infrastructure.shared.team import TeamEventManager
 from fbsrankings.core.command.infrastructure.transaction.affiliation import (
     AffiliationEventHandler,
 )
@@ -18,10 +21,6 @@ from fbsrankings.core.command.infrastructure.transaction.season import (
     SeasonEventHandler,
 )
 from fbsrankings.core.command.infrastructure.transaction.team import TeamEventHandler
-from fbsrankings.messages.event import AffiliationEventManager
-from fbsrankings.messages.event import GameEventManager
-from fbsrankings.messages.event import SeasonEventManager
-from fbsrankings.messages.event import TeamEventManager
 
 
 class EventHandler(BaseEventHandler):
@@ -30,7 +29,7 @@ class EventHandler(BaseEventHandler):
         event_bus: EventBus,
         cache_bus: EventBus,
     ) -> None:
-        self.events: List[Event] = []
+        self.events: list[Event] = []
 
         self._season = SeasonEventManager(
             SeasonEventHandler(self.events, cache_bus),
@@ -69,7 +68,7 @@ class EventHandler(BaseEventHandler):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

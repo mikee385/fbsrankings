@@ -13,5 +13,7 @@ class SeasonByYearQueryHandler:
         item = self._storage.cache_season_by_year.get(query.year)
 
         return (
-            SeasonByYearResult(item["id_"], item["year"]) if item is not None else None
+            SeasonByYearResult(season_id=item["id_"], year=item["year"])
+            if item is not None
+            else None
         )

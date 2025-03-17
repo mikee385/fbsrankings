@@ -1,8 +1,5 @@
 import datetime
-from typing import Dict
-from typing import Iterator
-from typing import List
-from typing import Tuple
+from collections.abc import Iterator
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
@@ -22,7 +19,7 @@ from fbsrankings.messages.enums import Subdivision
 class SportsReference:
     def __init__(
         self,
-        alternate_names: Dict[str, str],
+        alternate_names: dict[str, str],
         importer: Importer,
         validator: Validator,
     ) -> None:
@@ -64,13 +61,13 @@ class SportsReference:
         most_recent_completed_week = 0
         for game in games:
             if (
-                game.status == GameStatus.COMPLETED
+                game.status == GameStatus.GAME_STATUS_COMPLETED
                 and game.week > most_recent_completed_week
             ):
                 most_recent_completed_week = game.week
         for game in games:
             if (
-                game.status == GameStatus.SCHEDULED
+                game.status == GameStatus.GAME_STATUS_SCHEDULED
                 and game.week < most_recent_completed_week
             ):
                 game.cancel()
@@ -85,8 +82,8 @@ class SportsReference:
     def _import_team_rows(
         self,
         season: Season,
-        team_rows: Iterator[List[str]],
-    ) -> Tuple[List[Team], List[Affiliation]]:
+        team_rows: Iterator[list[str]],
+    ) -> tuple[list[Team], list[Affiliation]]:
         header_row = next(team_rows)
         if header_row[0] == "":
             header_row = next(team_rows)
@@ -104,7 +101,11 @@ class SportsReference:
                 if alternate_name:
                     name = alternate_name
 
-                team, affiliation = self._import_team(name, season, Subdivision.FBS)
+                team, affiliation = self._import_team(
+                    name,
+                    season,
+                    Subdivision.SUBDIVISION_FBS,
+                )
                 teams.append(team)
                 fbs_affiliations.append(affiliation)
 
@@ -114,7 +115,7 @@ class SportsReference:
                         affiliation,
                         season.id_,
                         team.id_,
-                        Subdivision.FBS,
+                        Subdivision.SUBDIVISION_FBS,
                     )
 
         return teams, fbs_affiliations
@@ -124,7 +125,7 @@ class SportsReference:
         name: str,
         season: Season,
         subdivision: Subdivision,
-    ) -> Tuple[Team, Affiliation]:
+    ) -> tuple[Team, Affiliation]:
         team = self._importer.import_team(name)
 
         if self._validator is not None:
@@ -152,8 +153,8 @@ class SportsReference:
     def _import_game_rows(
         self,
         season: Season,
-        game_rows: Iterator[List[str]],
-    ) -> Tuple[List[Game], List[Affiliation]]:
+        game_rows: Iterator[list[str]],
+    ) -> tuple[list[Game], list[Affiliation]]:
         header_row = next(game_rows)
         if header_row[0] == "":
             header_row = next(game_rows)
@@ -248,17 +249,17 @@ class SportsReference:
                 home_team, home_affiliation = self._import_team(
                     home_team_name,
                     season,
-                    Subdivision.FCS,
+                    Subdivision.SUBDIVISION_FCS,
                 )
-                if home_affiliation.subdivision == Subdivision.FCS:
+                if home_affiliation.subdivision == Subdivision.SUBDIVISION_FCS:
                     fcs_affiliations.append(home_affiliation)
 
                 away_team, away_affiliation = self._import_team(
                     away_team_name,
                     season,
-                    Subdivision.FCS,
+                    Subdivision.SUBDIVISION_FCS,
                 )
-                if away_affiliation.subdivision == Subdivision.FCS:
+                if away_affiliation.subdivision == Subdivision.SUBDIVISION_FCS:
                     fcs_affiliations.append(away_affiliation)
 
                 notes = row[notes_index].strip()
@@ -271,9 +272,9 @@ class SportsReference:
                     postseason = True
 
                 if postseason:
-                    season_section = SeasonSection.POSTSEASON
+                    season_section = SeasonSection.SEASON_SECTION_POSTSEASON
                 else:
-                    season_section = SeasonSection.REGULAR_SEASON
+                    season_section = SeasonSection.SEASON_SECTION_REGULAR_SEASON
 
                 game = self._importer.import_game(
                     season.id_,
@@ -306,7 +307,7 @@ class SportsReference:
         return games, fcs_affiliations
 
 
-def _html_iter(soup: BeautifulSoup) -> Iterator[List[str]]:
+def _html_iter(soup: BeautifulSoup) -> Iterator[list[str]]:
     row_iter = iter(soup.find_all("tr"))
     for row in row_iter:
         yield [

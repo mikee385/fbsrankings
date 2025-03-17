@@ -1,6 +1,4 @@
 from typing import Callable
-from typing import Dict
-from typing import Type
 
 from communication.bus import CommandBus
 from communication.channel import Channel
@@ -19,17 +17,17 @@ class CommandBridge(CommandBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: Dict[Type[Command], str],
+        topics: dict[type[Command], str],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
-        self._topics: Dict[Type[Command], str] = {}
+        self._topics: dict[type[Command], str] = {}
         self._topics.update(topics)
 
-        self._handlers: Dict[Type[Command], PayloadHandler] = {}
+        self._handlers: dict[type[Command], PayloadHandler] = {}
 
-    def register_handler(self, type_: Type[C], handler: CommandHandler[C]) -> None:
+    def register_handler(self, type_: type[C], handler: CommandHandler[C]) -> None:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
@@ -45,7 +43,7 @@ class CommandBridge(CommandBus):
 
         self._channel.subscribe(topic, payload_handler)
 
-    def unregister_handler(self, type_: Type[C]) -> None:
+    def unregister_handler(self, type_: type[C]) -> None:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")

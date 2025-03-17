@@ -1,8 +1,7 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from typing import ContextManager
-
-from typing_extensions import Protocol
+from typing import Protocol
 
 from communication.bus import EventBus
 

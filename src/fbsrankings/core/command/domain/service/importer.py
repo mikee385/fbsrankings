@@ -84,7 +84,7 @@ class Importer:
         if (
             home_team_score is not None
             and away_team_score is not None
-            and game.status != GameStatus.COMPLETED
+            and game.status != GameStatus.GAME_STATUS_COMPLETED
         ):
             game.complete(home_team_score, away_team_score)
 

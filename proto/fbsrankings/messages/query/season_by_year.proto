@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+message SeasonByYearResult {
+    string season_id = 1;
+    int32 year = 2;
+}
+
+message SeasonByYearQuery {
+    string query_id = 1;
+    int32 year = 2;
+}

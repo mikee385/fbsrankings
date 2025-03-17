@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -10,8 +9,10 @@ from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRep
 from fbsrankings.core.command.infrastructure.memory.team import (
     TeamRepository as MemoryRepository,
 )
+from fbsrankings.core.command.infrastructure.shared.team import (
+    TeamEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import TeamCreatedEvent
-from fbsrankings.messages.event import TeamEventHandler as BaseEventHandler
 
 
 class TeamRepository(BaseRepository):
@@ -43,13 +44,17 @@ class TeamRepository(BaseRepository):
 
 
 def _created_event(team: Team) -> TeamCreatedEvent:
-    return TeamCreatedEvent(str(uuid4()), str(team.id_), team.name)
+    return TeamCreatedEvent(
+        event_id=str(uuid4()),
+        team_id=str(team.id_),
+        name=team.name,
+    )
 
 
 class TeamEventHandler(BaseEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

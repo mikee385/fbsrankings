@@ -14,7 +14,10 @@ class TeamRecordBySeasonWeekQueryHandler:
         self,
         query: TeamRecordBySeasonWeekQuery,
     ) -> Optional[TeamRecordBySeasonWeekResult]:
-        record = self._storage.team_record.find(query.season_id, query.week)
+        record = self._storage.team_record.find(
+            query.season_id,
+            query.week if query.HasField("week") else None,
+        )
         if record is not None:
             season = self._storage.season.get(record.season_id)
 
@@ -24,19 +27,19 @@ class TeamRecordBySeasonWeekQueryHandler:
                 if team is not None:
                     values.append(
                         TeamRecordValueBySeasonWeekResult(
-                            value.team_id,
-                            team.name,
-                            value.wins,
-                            value.losses,
+                            team_id=value.team_id,
+                            name=team.name,
+                            wins=value.wins,
+                            losses=value.losses,
                         ),
                     )
 
             if season is not None:
                 return TeamRecordBySeasonWeekResult(
-                    str(record.id_),
-                    str(record.season_id),
-                    season.year,
-                    record.week,
-                    values,
+                    record_id=str(record.id_),
+                    season_id=str(record.season_id),
+                    year=season.year,
+                    week=record.week,
+                    values=values,
                 )
         return None

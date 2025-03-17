@@ -1,11 +1,9 @@
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
 from communication.bus import EventBus
 from communication.messages import Event
 from fbsrankings.messages.event import TeamRecordCalculatedEvent
-from fbsrankings.messages.event import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.messages.event import TeamRecordValue as EventValue
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
@@ -15,6 +13,9 @@ from fbsrankings.ranking.command.domain.model.record import (
 )
 from fbsrankings.ranking.command.infrastructure.memory.record import (
     TeamRecordRepository as MemoryRepository,
+)
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventHandler as BaseEventHandler,
 )
 
 
@@ -48,17 +49,17 @@ class TeamRecordRepository(BaseRepository):
 
 def _created_event(record: TeamRecord) -> TeamRecordCalculatedEvent:
     return TeamRecordCalculatedEvent(
-        str(uuid4()),
-        str(record.id_),
-        str(record.season_id),
-        record.week,
-        [
+        event_id=str(uuid4()),
+        record_id=str(record.id_),
+        season_id=str(record.season_id),
+        week=record.week,
+        values=[
             EventValue(
-                str(value.team_id),
-                value.wins,
-                value.losses,
-                value.games,
-                value.win_percentage,
+                team_id=str(value.team_id),
+                wins=value.wins,
+                losses=value.losses,
+                games=value.games,
+                win_percentage=value.win_percentage,
             )
             for value in record.values
         ],
@@ -68,7 +69,7 @@ def _created_event(record: TeamRecord) -> TeamRecordCalculatedEvent:
 class TeamRecordEventHandler(BaseEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

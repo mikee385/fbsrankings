@@ -1,4 +1,3 @@
-from typing import Dict
 from uuid import UUID
 
 from fbsrankings.messages.enums import GameStatus
@@ -33,12 +32,12 @@ class StrengthOfScheduleRankingCalculator:
         season_data: SeasonData,
         performance_ranking: Ranking[TeamID],
     ) -> Ranking[TeamID]:
-        team_data: Dict[str, TeamData] = {}
+        team_data: dict[str, TeamData] = {}
 
         performance_map = {r.id_: r for r in performance_ranking.values}
 
         for game in season_data.game_map.values():
-            if game.status != GameStatus.CANCELED.name:
+            if game.status != GameStatus.GAME_STATUS_CANCELED:
                 home_performance = performance_map.get(TeamID(UUID(game.home_team_id)))
                 away_performance = performance_map.get(TeamID(UUID(game.away_team_id)))
 

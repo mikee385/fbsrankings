@@ -34,7 +34,13 @@ class TeamFactory:
     def create(self, name: str) -> Team:
         id_ = TeamID(uuid4())
         team = Team(self._bus, id_, name)
-        self._bus.publish(TeamCreatedEvent(str(uuid4()), str(team.id_), team.name))
+        self._bus.publish(
+            TeamCreatedEvent(
+                event_id=str(uuid4()),
+                team_id=str(team.id_),
+                name=team.name,
+            ),
+        )
 
         return team
 

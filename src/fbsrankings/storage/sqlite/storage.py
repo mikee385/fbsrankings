@@ -2,20 +2,18 @@ import sqlite3
 from pathlib import Path
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from fbsrankings.config import SqliteFile
 from fbsrankings.storage.sqlite.affiliation import AffiliationTable
 from fbsrankings.storage.sqlite.affiliation import SubdivisionTable
 from fbsrankings.storage.sqlite.game import GameStatusTable
 from fbsrankings.storage.sqlite.game import GameTable
+from fbsrankings.storage.sqlite.game import SeasonSectionTable
 from fbsrankings.storage.sqlite.ranking import RankingTable
 from fbsrankings.storage.sqlite.ranking import RankingTypeTable
 from fbsrankings.storage.sqlite.record import TeamRecordTable
-from fbsrankings.storage.sqlite.season import SeasonSectionTable
 from fbsrankings.storage.sqlite.season import SeasonTable
 from fbsrankings.storage.sqlite.team import TeamTable
 
@@ -101,7 +99,7 @@ class Storage(ContextManager["Storage"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

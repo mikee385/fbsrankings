@@ -5,9 +5,13 @@ from communication.bus import EventBus
 from communication.bus import QueryBus
 from fbsrankings.messages.command import CalculateRankingsForSeasonCommand
 from fbsrankings.messages.query import AffiliationsBySeasonQuery
+from fbsrankings.messages.query import AffiliationsBySeasonResult
 from fbsrankings.messages.query import GamesBySeasonQuery
+from fbsrankings.messages.query import GamesBySeasonResult
 from fbsrankings.messages.query import SeasonByIDQuery
+from fbsrankings.messages.query import SeasonByIDResult
 from fbsrankings.messages.query import SeasonByYearQuery
+from fbsrankings.messages.query import SeasonByYearResult
 from fbsrankings.ranking.command.domain.model.ranking import SeasonData
 from fbsrankings.ranking.command.domain.service.colley_matrix_ranking_calculator import (
     ColleyMatrixRankingCalculator,
@@ -46,23 +50,26 @@ class CalculateRankingsForSeasonCommandHandler:
 
     def __call__(self, command: CalculateRankingsForSeasonCommand) -> None:
         with Transaction(self._data_source, self._event_bus) as transaction:
-            if isinstance(command.season_id_or_year, str):
+            season_id_or_year = command.WhichOneof("season_id_or_year")
+            if season_id_or_year == "season_id":
                 season_by_id = self._query_bus.query(
-                    SeasonByIDQuery(str(uuid4()), command.season_id_or_year),
+                    SeasonByIDQuery(query_id=str(uuid4()), season_id=command.season_id),
+                    SeasonByIDResult,
                 )
                 if season_by_id is None:
                     raise ValueError(
-                        f"Season not found for {command.season_id_or_year}",
+                        f"Season not found for {command.season_id}",
                     )
                 season_id = season_by_id.season_id
 
-            elif isinstance(command.season_id_or_year, int):
+            elif season_id_or_year == "year":
                 season_by_year = self._query_bus.query(
-                    SeasonByYearQuery(str(uuid4()), command.season_id_or_year),
+                    SeasonByYearQuery(query_id=str(uuid4()), year=command.year),
+                    SeasonByYearResult,
                 )
                 if season_by_year is None:
                     raise ValueError(
-                        f"Season not found for {command.season_id_or_year}",
+                        f"Season not found for {command.year}",
                     )
                 season_id = season_by_year.season_id
 
@@ -70,10 +77,15 @@ class CalculateRankingsForSeasonCommandHandler:
                 raise TypeError("season_id_or_year must be of type str or int")
 
             affiliations = self._query_bus.query(
-                AffiliationsBySeasonQuery(str(uuid4()), season_id),
+                AffiliationsBySeasonQuery(
+                    query_id=str(uuid4()),
+                    season_id=season_id,
+                ),
+                AffiliationsBySeasonResult,
             ).affiliations
             games = self._query_bus.query(
-                GamesBySeasonQuery(str(uuid4()), season_id),
+                GamesBySeasonQuery(query_id=str(uuid4()), season_id=season_id),
+                GamesBySeasonResult,
             ).games
 
             season_data = SeasonData(UUID(season_id), affiliations, games)

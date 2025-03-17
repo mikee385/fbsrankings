@@ -1,9 +1,5 @@
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Tuple
-from typing import Type
 
 from communication.bus import EventBus
 from communication.channel import Channel
@@ -22,20 +18,20 @@ class EventBridge(EventBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: Dict[Type[Event], str],
+        topics: dict[type[Event], str],
     ) -> None:
         self._channel = channel
         self._serializer = serializer
 
-        self._topics: Dict[Type[Event], str] = {}
+        self._topics: dict[type[Event], str] = {}
         self._topics.update(topics)
 
-        self._handlers: Dict[
-            Tuple[Type[Event], EventHandler[Any]],
-            List[PayloadHandler],
+        self._handlers: dict[
+            tuple[type[Event], EventHandler[Any]],
+            list[PayloadHandler],
         ] = {}
 
-    def register_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+    def register_handler(self, type_: type[E], handler: EventHandler[E]) -> None:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
@@ -53,7 +49,7 @@ class EventBridge(EventBus):
 
         self._channel.subscribe(topic, payload_handler)
 
-    def unregister_handler(self, type_: Type[E], handler: EventHandler[E]) -> None:
+    def unregister_handler(self, type_: type[E], handler: EventHandler[E]) -> None:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")

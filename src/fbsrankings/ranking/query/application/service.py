@@ -1,10 +1,8 @@
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
 from typing import Union
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
 from communication.bus import QueryBus
@@ -78,7 +76,7 @@ class Service(ContextManager["Service"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

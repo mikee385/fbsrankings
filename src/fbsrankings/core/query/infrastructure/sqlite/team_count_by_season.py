@@ -20,4 +20,4 @@ class TeamCountBySeasonQueryHandler:
         row = cursor.fetchone()
         cursor.close()
 
-        return TeamCountBySeasonResult(query.season_id, row[0])
+        return TeamCountBySeasonResult(season_id=query.season_id, count=row[0])

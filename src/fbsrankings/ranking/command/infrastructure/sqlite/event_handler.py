@@ -1,16 +1,20 @@
 import sqlite3
 from types import TracebackType
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
-from fbsrankings.messages.event import GameRankingEventManager
-from fbsrankings.messages.event import TeamRankingEventManager
-from fbsrankings.messages.event import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventManager,
 )
 from fbsrankings.ranking.command.infrastructure.sqlite.ranking import (
     GameRankingEventHandler,
@@ -61,7 +65,7 @@ class EventHandler(BaseEventHandler):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

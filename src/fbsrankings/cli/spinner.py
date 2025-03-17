@@ -2,11 +2,10 @@ import threading
 import time
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
 
 from tqdm import tqdm
-from typing_extensions import Literal
 
 
 class Spinner(ContextManager["Spinner"]):
@@ -51,7 +50,7 @@ class Spinner(ContextManager["Spinner"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

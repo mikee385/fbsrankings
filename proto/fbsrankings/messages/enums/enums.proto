@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package fbsrankings.messages.enums;
+
+enum Subdivision {
+    SUBDIVISION_UNSPECIFIED = 0;
+    SUBDIVISION_FBS = 1;
+    SUBDIVISION_FCS = 2;
+}
+
+enum SeasonSection {
+    SEASON_SECTION_UNSPECIFIED = 0;
+    SEASON_SECTION_REGULAR_SEASON = 1;
+    SEASON_SECTION_POSTSEASON = 2;
+}
+
+enum GameStatus {
+    GAME_STATUS_UNSPECIFIED = 0;
+    GAME_STATUS_SCHEDULED = 1;
+    GAME_STATUS_COMPLETED = 2;
+    GAME_STATUS_CANCELED = 3;
+}

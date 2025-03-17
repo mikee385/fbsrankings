@@ -1,5 +1,6 @@
 from typing import Optional
 
+from fbsrankings.messages.convert import date_to_timestamp
 from fbsrankings.messages.query import GameByIDQuery
 from fbsrankings.messages.query import GameByIDResult
 from fbsrankings.storage.memory import Storage
@@ -18,19 +19,19 @@ class GameByIDQueryHandler:
 
             if season is not None and home_team is not None and away_team is not None:
                 return GameByIDResult(
-                    str(game.id_),
-                    str(game.season_id),
-                    season.year,
-                    game.week,
-                    game.date,
-                    game.season_section,
-                    str(game.home_team_id),
-                    home_team.name,
-                    str(game.away_team_id),
-                    away_team.name,
-                    game.home_team_score,
-                    game.away_team_score,
-                    game.status,
-                    game.notes,
+                    game_id=str(game.id_),
+                    season_id=str(game.season_id),
+                    year=season.year,
+                    week=game.week,
+                    date=date_to_timestamp(game.date),
+                    season_section=game.season_section,
+                    home_team_id=str(game.home_team_id),
+                    home_team_name=home_team.name,
+                    away_team_id=str(game.away_team_id),
+                    away_team_name=away_team.name,
+                    home_team_score=game.home_team_score,
+                    away_team_score=game.away_team_score,
+                    status=game.status,
+                    notes=game.notes,
                 )
         return None

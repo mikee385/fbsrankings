@@ -32,15 +32,15 @@ class TeamRankingBySeasonWeekQueryProjection:
 
         values = []
         for value in event.values:
-            existing_team = self._storage.cache_team_by_id.get(value.id_)
+            existing_team = self._storage.cache_team_by_id.get(value.id)
             if existing_team is None:
                 raise RuntimeError(
                     "Query database is out of sync with master database. "
-                    f"Team {value.id_} was not found for team ranking {event.ranking_id}",
+                    f"Team {value.id} was not found for team ranking {event.ranking_id}",
                 )
             values.append(
                 {
-                    "id_": value.id_,
+                    "id_": value.id,
                     "name": existing_team["name"],
                     "order": value.order,
                     "rank": value.rank,
@@ -51,7 +51,7 @@ class TeamRankingBySeasonWeekQueryProjection:
         existing = table.get(
             (Query().name == event.name)
             & (Query().season_id == event.season_id)
-            & (Query().week == event.week),
+            & (Query().week == (event.week if event.HasField("week") else None)),
         )
         if isinstance(existing, list):
             existing = existing[0]
@@ -62,7 +62,7 @@ class TeamRankingBySeasonWeekQueryProjection:
                     "name": event.name,
                     "season_id": event.season_id,
                     "year": existing_season["year"],
-                    "week": event.week,
+                    "week": event.week if event.HasField("week") else None,
                     "values": values,
                 },
             )
@@ -88,24 +88,24 @@ class TeamRankingBySeasonWeekQueryHandler:
         item = table.get(
             (Query().name == query.name)
             & (Query().season_id == query.season_id)
-            & (Query().week == query.week),
+            & (Query().week == (query.week if query.HasField("week") else None)),
         )
         if isinstance(item, list):
             item = item[0]
         return (
             TeamRankingBySeasonWeekResult(
-                item["id_"],
-                item["name"],
-                item["season_id"],
-                item["year"],
-                item["week"],
-                [
+                ranking_id=item["id_"],
+                name=item["name"],
+                season_id=item["season_id"],
+                year=item["year"],
+                week=item["week"],
+                values=[
                     TeamRankingValueBySeasonWeekResult(
-                        value["id_"],
-                        value["name"],
-                        value["order"],
-                        value["rank"],
-                        value["value"],
+                        team_id=value["id_"],
+                        name=value["name"],
+                        order=value["order"],
+                        rank=value["rank"],
+                        value=value["value"],
                     )
                     for value in item["values"]
                 ],

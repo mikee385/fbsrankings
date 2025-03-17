@@ -3,6 +3,8 @@
 from .domain.command import C
 from .domain.command import Command
 from .domain.command import CommandHandler
+from .domain.error import Error
+from .domain.error import MultipleError
 from .domain.event import E
 from .domain.event import Event
 from .domain.event import EventHandler
@@ -17,8 +19,10 @@ __all__ = [
     "Command",
     "CommandHandler",
     "E",
+    "Error",
     "Event",
     "EventHandler",
+    "MultipleError",
     "Q",
     "Query",
     "QueryHandler",

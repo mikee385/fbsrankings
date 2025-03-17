@@ -1,10 +1,6 @@
-from typing import Dict
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Tuple
-
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -21,14 +17,14 @@ class RankingDto:
     name: str
     season_id: str
     week: Optional[int]
-    values: List[RankingValueDto]
+    values: list[RankingValueDto]
 
 
 class RankingStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[str, RankingDto] = {}
-        self._by_key: Dict[Tuple[str, str, Optional[int]], RankingDto] = {}
-        self._by_season: Dict[str, List[RankingDto]] = {}
+        self._by_id: dict[str, RankingDto] = {}
+        self._by_key: dict[tuple[str, str, Optional[int]], RankingDto] = {}
+        self._by_season: dict[str, list[RankingDto]] = {}
 
     def add(self, ranking: RankingDto) -> None:
         key = (ranking.name, ranking.season_id, ranking.week)
@@ -59,7 +55,7 @@ class RankingStorage:
         key = (name, season_id, week)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: str) -> List[RankingDto]:
+    def for_season(self, season_id: str) -> list[RankingDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

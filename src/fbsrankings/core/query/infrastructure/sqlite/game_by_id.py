@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 from typing import Optional
 
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.query import GameByIDQuery
 from fbsrankings.messages.query import GameByIDResult
 from fbsrankings.storage.sqlite import GameTable
@@ -50,19 +51,19 @@ class GameByIDQueryHandler:
 
         if row:
             return GameByIDResult(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                datetime.strptime(row[4], "%Y-%m-%d").date(),
-                row[5],
-                row[6],
-                row[7],
-                row[8],
-                row[9],
-                row[10],
-                row[11],
-                row[12],
-                row[13],
+                game_id=row[0],
+                season_id=row[1],
+                year=row[2],
+                week=row[3],
+                date=datetime_to_timestamp(datetime.strptime(row[4], "%Y-%m-%d")),
+                season_section=row[5],
+                home_team_id=row[6],
+                home_team_name=row[7],
+                away_team_id=row[8],
+                away_team_name=row[9],
+                home_team_score=row[10],
+                away_team_score=row[11],
+                status=row[12],
+                notes=row[13],
             )
         return None

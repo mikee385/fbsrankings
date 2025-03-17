@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+import "fbsrankings/messages/enums/enums.proto";
+
+message AffiliationBySeasonResult {
+    string affiliation_id = 1;
+    string season_id = 2;
+    int32 year = 3;
+    string team_id = 4;
+    string team_name = 5;
+    fbsrankings.messages.enums.Subdivision subdivision = 6;
+}
+
+message AffiliationsBySeasonResult {
+    repeated AffiliationBySeasonResult affiliations = 1;
+}
+
+message AffiliationsBySeasonQuery {
+    string query_id = 1;
+    string season_id = 2;
+}

@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package fbsrankings.messages.event;
+
+import "google/protobuf/timestamp.proto";
+import "fbsrankings/messages/enums/enums.proto";
+
+message GameCreatedEvent {
+    string event_id = 1;
+    string game_id = 2;
+    string season_id = 3;
+    int32 week = 4;
+    google.protobuf.Timestamp date = 5;
+    fbsrankings.messages.enums.SeasonSection season_section = 6;
+    string home_team_id = 7;
+    string away_team_id = 8;
+    string notes = 9;
+}
+
+message GameRescheduledEvent {
+    string event_id = 1;
+    string game_id = 2;
+    string season_id = 3;
+    int32 old_week = 4;
+    google.protobuf.Timestamp old_date = 5;
+    int32 week = 6;
+    google.protobuf.Timestamp date = 7;
+    fbsrankings.messages.enums.SeasonSection season_section = 8;
+    string home_team_id = 9;
+    string away_team_id = 10;
+    string notes = 11;
+}
+
+message GameCanceledEvent {
+    string event_id = 1;
+    string game_id = 2;
+    string season_id = 3;
+    int32 week = 4;
+    google.protobuf.Timestamp date = 5;
+    fbsrankings.messages.enums.SeasonSection season_section = 6;
+    string home_team_id = 7;
+    string away_team_id = 8;
+    string notes = 9;
+}
+
+message GameCompletedEvent {
+    string event_id = 1;
+    string game_id = 2;
+    string season_id = 3;
+    int32 week = 4;
+    google.protobuf.Timestamp date = 5;
+    fbsrankings.messages.enums.SeasonSection season_section = 6;
+    string home_team_id = 7;
+    string away_team_id = 8;
+    int32 home_team_score = 9;
+    int32 away_team_score = 10;
+    string notes = 11;
+}
+
+message GameNotesUpdatedEvent {
+    string event_id = 1;
+    string game_id = 2;
+    string season_id = 3;
+    int32 week = 4;
+    google.protobuf.Timestamp date = 5;
+    fbsrankings.messages.enums.SeasonSection season_section = 6;
+    string home_team_id = 7;
+    string away_team_id = 8;
+    string old_notes = 9;
+    string notes = 10;
+}

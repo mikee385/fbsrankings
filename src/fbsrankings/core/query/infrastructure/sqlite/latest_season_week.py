@@ -41,7 +41,7 @@ class LatestSeasonWeekQueryHandler:
             "WHERE season.GamesCompleted > 0 "
             "ORDER BY season.Year DESC "
             "LIMIT 1;",
-            [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name],
+            [GameStatus.GAME_STATUS_COMPLETED, GameStatus.GAME_STATUS_SCHEDULED],
         )
         row = cursor.fetchone()
         cursor.close()
@@ -52,7 +52,7 @@ class LatestSeasonWeekQueryHandler:
         season_id, year, games_scheduled = row
 
         if games_scheduled == 0:
-            return LatestSeasonWeekResult(season_id, year, None)
+            return LatestSeasonWeekResult(season_id=season_id, year=year, week=None)
 
         cursor = self._connection.cursor()
         cursor.execute(
@@ -68,12 +68,16 @@ class LatestSeasonWeekQueryHandler:
             "WHERE week.GamesCompleted > 0 AND week.GamesScheduled = 0 "
             "ORDER BY week.Week DESC "
             "LIMIT 1;",
-            [GameStatus.COMPLETED.name, GameStatus.SCHEDULED.name, season_id],
+            [
+                GameStatus.GAME_STATUS_COMPLETED,
+                GameStatus.GAME_STATUS_SCHEDULED,
+                season_id,
+            ],
         )
         row = cursor.fetchone()
         cursor.close()
 
         if row:
-            return LatestSeasonWeekResult(season_id, year, row[0])
+            return LatestSeasonWeekResult(season_id=season_id, year=year, week=row[0])
 
         return None

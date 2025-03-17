@@ -1,23 +1,16 @@
 import sqlite3
+from collections.abc import Sequence
 from typing import Callable
 from typing import Generic
-from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import TypeVar
 from typing import Union
 from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import GameRankingCalculatedEvent
-from fbsrankings.messages.event import (
-    GameRankingEventHandler as BaseGameRankingEventHandler,
-)
-from fbsrankings.messages.event import RankingCalculatedEvent
+from fbsrankings.messages.event import RankingValue as EventValue
 from fbsrankings.messages.event import TeamRankingCalculatedEvent
-from fbsrankings.messages.event import (
-    TeamRankingEventHandler as BaseTeamRankingEventHandler,
-)
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -29,6 +22,12 @@ from fbsrankings.ranking.command.domain.model.ranking import RankingID
 from fbsrankings.ranking.command.domain.model.ranking import RankingValue
 from fbsrankings.ranking.command.domain.model.ranking import (
     TeamRankingRepository as BaseTeamRankingRepository,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventHandler as BaseGameRankingEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventHandler as BaseTeamRankingEventHandler,
 )
 from fbsrankings.storage.sqlite import GameRankingValueTable
 from fbsrankings.storage.sqlite import RankingTable
@@ -48,9 +47,9 @@ class RankingRepository(Generic[T]):
         bus: EventBus,
         connection: sqlite3.Connection,
         value_table: str,
-        value_columns: List[str],
+        value_columns: list[str],
         type_: RankingType,
-        to_value: Callable[[Tuple[str, str, int, int, float]], RankingValue[T]],
+        to_value: Callable[[tuple[str, str, int, int, float]], RankingValue[T]],
     ) -> None:
         self._bus = bus
         self._connection = connection
@@ -80,7 +79,7 @@ class RankingRepository(Generic[T]):
         week: Optional[int],
     ) -> Optional[Ranking[T]]:
         query = self._query() + " WHERE Name = ? AND Type = ? AND SeasonID = ?"
-        params: List[SqliteParam] = [name, self._type.name, str(season_id)]
+        params: list[SqliteParam] = [name, self._type.name, str(season_id)]
 
         if week is not None:
             query += " AND Week = ?;"
@@ -106,7 +105,7 @@ class RankingRepository(Generic[T]):
             f"FROM {self._ranking_table}"
         )
 
-    def _to_ranking(self, row: Tuple[str, str, str, str, Optional[int]]) -> Ranking[T]:
+    def _to_ranking(self, row: tuple[str, str, str, str, Optional[int]]) -> Ranking[T]:
         cursor = self._connection.cursor()
         cursor.execute(
             "SELECT " + " ,".join(self._value_columns) + " WHERE RankingID = ?;",
@@ -132,7 +131,7 @@ class RankingEventHandler:
         self,
         cursor: sqlite3.Cursor,
         value_table: str,
-        value_columns: List[str],
+        value_columns: list[str],
         type_: RankingType,
     ) -> None:
         self._cursor = cursor
@@ -141,17 +140,24 @@ class RankingEventHandler:
         self._value_columns = value_columns
         self._type = type_
 
-    def handle_calculated(self, event: RankingCalculatedEvent) -> None:
+    def handle_calculated(
+        self,
+        ranking_id: str,
+        name: str,
+        season_id: str,
+        week: Optional[int],
+        values: Sequence[EventValue],
+    ) -> None:
         query = (
             "SELECT UUID "
             f"FROM {self._ranking_table} "
             "WHERE Name = ? AND Type = ? AND SeasonID = ?"
         )
-        params: List[SqliteParam] = [event.name, self._type.name, event.season_id]
+        params: list[SqliteParam] = [name, self._type.name, season_id]
 
-        if event.week is not None:
+        if week is not None:
             query += " AND Week = ?;"
-            params.append(event.week)
+            params.append(week)
         else:
             query += " AND Week IS NULL;"
 
@@ -172,11 +178,11 @@ class RankingEventHandler:
             "(UUID, Name, Type, SeasonID, Week) "
             "VALUES (?,?,?,?,?)",
             [
-                event.ranking_id,
-                event.name,
+                ranking_id,
+                name,
                 self._type.name,
-                event.season_id,
-                event.week,
+                season_id,
+                week,
             ],
         )
         insert_sql = (
@@ -184,12 +190,12 @@ class RankingEventHandler:
             "(" + ", ".join(self._value_columns) + ") "
             "VALUES (?,?,?,?,?)"
         )
-        for value in event.values:
+        for value in values:
             self._cursor.execute(
                 insert_sql,
                 [
-                    event.ranking_id,
-                    value.id_,
+                    ranking_id,
+                    value.id,
                     value.order,
                     value.rank,
                     value.value,
@@ -228,7 +234,7 @@ class TeamRankingRepository(BaseTeamRankingRepository):
         return self._repository.find(name, season_id, week)
 
     @staticmethod
-    def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
+    def _to_value(row: tuple[str, str, int, int, float]) -> RankingValue[TeamID]:
         return RankingValue[TeamID](TeamID(UUID(row[1])), row[2], row[3], row[4])
 
 
@@ -250,7 +256,13 @@ class TeamRankingEventHandler(BaseTeamRankingEventHandler):
         )
 
     def handle_calculated(self, event: TeamRankingCalculatedEvent) -> None:
-        self._event_handler.handle_calculated(event)
+        self._event_handler.handle_calculated(
+            event.ranking_id,
+            event.name,
+            event.season_id,
+            event.week if event.HasField("week") else None,
+            event.values,
+        )
 
 
 class GameRankingRepository(BaseGameRankingRepository):
@@ -284,7 +296,7 @@ class GameRankingRepository(BaseGameRankingRepository):
         return self._repository.find(name, season_id, week)
 
     @staticmethod
-    def _to_value(row: Tuple[str, str, int, int, float]) -> RankingValue[GameID]:
+    def _to_value(row: tuple[str, str, int, int, float]) -> RankingValue[GameID]:
         return RankingValue[GameID](GameID(UUID(row[1])), row[2], row[3], row[4])
 
 
@@ -306,4 +318,10 @@ class GameRankingEventHandler(BaseGameRankingEventHandler):
         )
 
     def handle_calculated(self, event: GameRankingCalculatedEvent) -> None:
-        self._event_handler.handle_calculated(event)
+        self._event_handler.handle_calculated(
+            event.ranking_id,
+            event.name,
+            event.season_id,
+            event.week if event.HasField("week") else None,
+            event.values,
+        )

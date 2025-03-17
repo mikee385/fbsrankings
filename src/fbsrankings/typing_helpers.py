@@ -3,10 +3,9 @@
 # Copied from typeshed on 2024-02-21:
 # https://github.com/python/typeshed/blob/main/stdlib/_typeshed/__init__.pyi
 from typing import Any
+from typing import Protocol
 from typing import TypeVar
 from typing import Union
-
-from typing_extensions import Protocol
 
 
 # Comparison protocols

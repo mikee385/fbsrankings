@@ -1,9 +1,9 @@
 import sqlite3
 from datetime import datetime
-from typing import List
 from typing import Optional
 from typing import Union
 
+from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
 from fbsrankings.messages.query import GameRankingValueBySeasonWeekResult
@@ -47,13 +47,13 @@ class GameRankingBySeasonWeekQueryHandler:
             f"AND {self._ranking_table}.SeasonID = ?"
         )
 
-        params: List[SqliteParam] = [
+        params: list[SqliteParam] = [
             query.name,
             RankingType.GAME.name,
             query.season_id,
         ]
 
-        if query.week is not None:
+        if query.HasField("week"):
             sql_query += f" AND {self._ranking_table}.Week = ?;"
             params.append(query.week)
         else:
@@ -97,23 +97,23 @@ class GameRankingBySeasonWeekQueryHandler:
             )
             values = [
                 GameRankingValueBySeasonWeekResult(
-                    value[0],
-                    value[1],
-                    value[2],
-                    value[3],
-                    datetime.strptime(value[4], "%Y-%m-%d").date(),
-                    value[5],
-                    value[6],
-                    value[7],
-                    value[8],
-                    value[9],
-                    value[10],
-                    value[11],
-                    value[12],
-                    value[13],
-                    value[14],
-                    value[15],
-                    value[16],
+                    game_id=value[0],
+                    season_id=value[1],
+                    year=value[2],
+                    week=value[3],
+                    date=datetime_to_timestamp(datetime.strptime(value[4], "%Y-%m-%d")),
+                    season_section=value[5],
+                    home_team_id=value[6],
+                    home_team_name=value[7],
+                    away_team_id=value[8],
+                    away_team_name=value[9],
+                    home_team_score=value[10],
+                    away_team_score=value[11],
+                    status=value[12],
+                    notes=value[13],
+                    order=value[14],
+                    rank=value[15],
+                    value=value[16],
                 )
                 for value in cursor.fetchall()
             ]
@@ -122,11 +122,11 @@ class GameRankingBySeasonWeekQueryHandler:
 
         if row is not None:
             return GameRankingBySeasonWeekResult(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                row[4],
-                values,
+                ranking_id=row[0],
+                name=row[1],
+                season_id=row[2],
+                year=row[3],
+                week=row[4],
+                values=values,
             )
         return None

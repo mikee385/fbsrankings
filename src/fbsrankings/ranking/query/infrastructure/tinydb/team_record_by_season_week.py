@@ -48,7 +48,8 @@ class TeamRecordBySeasonWeekQueryProjection:
             )
 
         existing = table.get(
-            (Query().season_id == event.season_id) & (Query().week == event.week),
+            (Query().season_id == event.season_id)
+            & (Query().week == (event.week if event.HasField("week") else None)),
         )
         if isinstance(existing, list):
             existing = existing[0]
@@ -58,7 +59,7 @@ class TeamRecordBySeasonWeekQueryProjection:
                     "id_": event.record_id,
                     "season_id": event.season_id,
                     "year": existing_season["year"],
-                    "week": event.week,
+                    "week": event.week if event.HasField("week") else None,
                     "values": values,
                 },
             )
@@ -82,22 +83,23 @@ class TeamRecordBySeasonWeekQueryHandler:
         table = self._connection.table("team_record_by_season_week")
 
         item = table.get(
-            (Query().season_id == query.season_id) & (Query().week == query.week),
+            (Query().season_id == query.season_id)
+            & (Query().week == (query.week if query.HasField("week") else None)),
         )
         if isinstance(item, list):
             item = item[0]
         return (
             TeamRecordBySeasonWeekResult(
-                item["id_"],
-                item["season_id"],
-                item["year"],
-                item["week"],
-                [
+                record_id=item["id_"],
+                season_id=item["season_id"],
+                year=item["year"],
+                week=item["week"],
+                values=[
                     TeamRecordValueBySeasonWeekResult(
-                        value["id_"],
-                        value["name"],
-                        value["wins"],
-                        value["losses"],
+                        team_id=value["id_"],
+                        name=value["name"],
+                        wins=value["wins"],
+                        losses=value["losses"],
                     )
                     for value in item["values"]
                 ],

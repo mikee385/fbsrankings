@@ -1,9 +1,8 @@
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import List
+from collections.abc import Sequence
 from typing import NewType
 from typing import Optional
-from typing import Sequence
 from uuid import UUID
 from uuid import uuid4
 
@@ -51,7 +50,7 @@ class TeamRecord:
         id_: TeamRecordID,
         season_id: SeasonID,
         week: Optional[int],
-        values: List[TeamRecordValue],
+        values: list[TeamRecordValue],
     ) -> None:
         self._bus = bus
         self._id = id_
@@ -84,23 +83,23 @@ class TeamRecordFactory:
         self,
         season_id: SeasonID,
         week: Optional[int],
-        values: List[TeamRecordValue],
+        values: list[TeamRecordValue],
     ) -> TeamRecord:
         id_ = TeamRecordID(uuid4())
         record = TeamRecord(self._bus, id_, season_id, week, values)
         self._bus.publish(
             TeamRecordCalculatedEvent(
-                str(uuid4()),
-                str(record.id_),
-                str(record.season_id),
-                record.week,
-                [
+                event_id=str(uuid4()),
+                record_id=str(record.id_),
+                season_id=str(record.season_id),
+                week=record.week,
+                values=[
                     EventValue(
-                        str(value.team_id),
-                        value.wins,
-                        value.losses,
-                        value.games,
-                        value.win_percentage,
+                        team_id=str(value.team_id),
+                        wins=value.wins,
+                        losses=value.losses,
+                        games=value.games,
+                        win_percentage=value.win_percentage,
                     )
                     for value in record.values
                 ],

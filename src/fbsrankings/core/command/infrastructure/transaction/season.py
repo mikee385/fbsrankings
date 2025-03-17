@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -12,8 +11,10 @@ from fbsrankings.core.command.domain.model.season import (
 from fbsrankings.core.command.infrastructure.memory.season import (
     SeasonRepository as MemoryRepository,
 )
+from fbsrankings.core.command.infrastructure.shared.season import (
+    SeasonEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import SeasonCreatedEvent
-from fbsrankings.messages.event import SeasonEventHandler as BaseEventHandler
 
 
 class SeasonRepository(BaseRepository):
@@ -45,13 +46,17 @@ class SeasonRepository(BaseRepository):
 
 
 def _created_event(season: Season) -> SeasonCreatedEvent:
-    return SeasonCreatedEvent(str(uuid4()), str(season.id_), season.year)
+    return SeasonCreatedEvent(
+        event_id=str(uuid4()),
+        season_id=str(season.id_),
+        year=season.year,
+    )
 
 
 class SeasonEventHandler(BaseEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

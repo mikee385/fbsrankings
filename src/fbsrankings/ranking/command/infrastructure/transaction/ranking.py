@@ -1,14 +1,11 @@
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
 from communication.bus import EventBus
 from communication.messages import Event
 from fbsrankings.messages.event import GameRankingCalculatedEvent
-from fbsrankings.messages.event import GameRankingEventHandler as BaseGameEventHandler
 from fbsrankings.messages.event import RankingValue as EventValue
 from fbsrankings.messages.event import TeamRankingCalculatedEvent
-from fbsrankings.messages.event import TeamRankingEventHandler as BaseTeamEventHandler
 from fbsrankings.ranking.command.domain.model.core import GameID
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
@@ -25,6 +22,12 @@ from fbsrankings.ranking.command.infrastructure.memory.ranking import (
 )
 from fbsrankings.ranking.command.infrastructure.memory.ranking import (
     TeamRankingRepository as MemoryTeamRepository,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventHandler as BaseGameEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventHandler as BaseTeamEventHandler,
 )
 
 
@@ -63,13 +66,18 @@ class TeamRankingRepository(BaseTeamRepository):
 
 def _team_created_event(ranking: Ranking[TeamID]) -> TeamRankingCalculatedEvent:
     return TeamRankingCalculatedEvent(
-        str(uuid4()),
-        str(ranking.id_),
-        ranking.name,
-        str(ranking.season_id),
-        ranking.week,
-        [
-            EventValue(str(value.id_), value.order, value.rank, value.value)
+        event_id=str(uuid4()),
+        ranking_id=str(ranking.id_),
+        name=ranking.name,
+        season_id=str(ranking.season_id),
+        week=ranking.week,
+        values=[
+            EventValue(
+                id=str(value.id_),
+                order=value.order,
+                rank=value.rank,
+                value=value.value,
+            )
             for value in ranking.values
         ],
     )
@@ -78,7 +86,7 @@ def _team_created_event(ranking: Ranking[TeamID]) -> TeamRankingCalculatedEvent:
 class TeamRankingEventHandler(BaseTeamEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events
@@ -124,13 +132,18 @@ class GameRankingRepository(BaseGameRepository):
 
 def _game_created_event(ranking: Ranking[GameID]) -> GameRankingCalculatedEvent:
     return GameRankingCalculatedEvent(
-        str(uuid4()),
-        str(ranking.id_),
-        ranking.name,
-        str(ranking.season_id),
-        ranking.week,
-        [
-            EventValue(str(value.id_), value.order, value.rank, value.value)
+        event_id=str(uuid4()),
+        ranking_id=str(ranking.id_),
+        name=ranking.name,
+        season_id=str(ranking.season_id),
+        week=ranking.week,
+        values=[
+            EventValue(
+                id=str(value.id_),
+                order=value.order,
+                rank=value.rank,
+                value=value.value,
+            )
             for value in ranking.values
         ],
     )
@@ -139,7 +152,7 @@ def _game_created_event(ranking: Ranking[GameID]) -> GameRankingCalculatedEvent:
 class GameRankingEventHandler(BaseGameEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

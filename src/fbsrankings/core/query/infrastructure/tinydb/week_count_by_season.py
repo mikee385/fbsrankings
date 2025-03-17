@@ -52,7 +52,7 @@ class WeekCountBySeasonQueryHandler:
             item = item[0]
 
         return (
-            WeekCountBySeasonResult(item["season_id"], item["count"])
+            WeekCountBySeasonResult(season_id=item["season_id"], count=item["count"])
             if item is not None
             else None
         )

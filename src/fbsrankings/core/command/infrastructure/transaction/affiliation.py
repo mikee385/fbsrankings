@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 from uuid import uuid4
 
@@ -14,8 +13,10 @@ from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.infrastructure.memory.affiliation import (
     AffiliationRepository as MemoryRepository,
 )
+from fbsrankings.core.command.infrastructure.shared.affiliation import (
+    AffiliationEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import AffiliationCreatedEvent
-from fbsrankings.messages.event import AffiliationEventHandler as BaseEventHandler
 
 
 class AffiliationRepository(BaseRepository):
@@ -52,14 +53,14 @@ def _created_event(affiliation: Affiliation) -> AffiliationCreatedEvent:
         str(affiliation.id_),
         str(affiliation.season_id),
         str(affiliation.team_id),
-        affiliation.subdivision.name,
+        affiliation.subdivision,
     )
 
 
 class AffiliationEventHandler(BaseEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

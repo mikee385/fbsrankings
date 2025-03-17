@@ -1,10 +1,8 @@
 from pathlib import Path
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bridge import CommandBridge
 from communication.bridge import EventBridge
@@ -26,19 +24,17 @@ from fbsrankings.messages.command import DropStorageCommand
 from fbsrankings.messages.command import Topics as CommandTopics
 from fbsrankings.messages.error import Topics as ErrorTopics
 from fbsrankings.messages.event import Topics as EventTopics
-from fbsrankings.messages.query import ResultTypes
 from fbsrankings.messages.query import Topics as QueryTopics
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
+from serialization import JsonSerializer
 from serialization import PickleSerializer
+from serialization import ProtobufSerializer
+from serialization import Serializer
 
 
 class Environment(ContextManager["Environment"]):
     def __init__(self, config_location: str) -> None:
-        self.command_bus: CommandBus
-        self.query_bus: QueryBus
-        self.event_bus: EventBus
-
         package_dir = Path(__file__).resolve().parent.parent
 
         if config_location is not None:
@@ -51,12 +47,22 @@ class Environment(ContextManager["Environment"]):
         config = Config.from_ini(config_path)
         self.context = Context(config)
 
+        self._serializer: Optional[Serializer]
+
         if config.serialization == SerializationType.NONE:
             self._serializer = None
+        elif config.serialization == SerializationType.JSON:
+            self._serializer = JsonSerializer()
         elif config.serialization == SerializationType.PICKLE:
             self._serializer = PickleSerializer()
+        elif config.serialization == SerializationType.PROTOBUF:
+            self._serializer = ProtobufSerializer()
         else:
             raise ValueError(f"Unknown serialization type: {config.serialization}")
+
+        self.command_bus: CommandBus
+        self.query_bus: QueryBus
+        self.event_bus: EventBus
 
         if config.channel == ChannelType.NONE:
             self.command_bus = MemoryCommandBus()
@@ -79,7 +85,6 @@ class Environment(ContextManager["Environment"]):
                 self._channel,
                 self._serializer,
                 QueryTopics,
-                ResultTypes,
             )
             self.event_bus = EventBridge(
                 self._channel,
@@ -141,7 +146,7 @@ class Environment(ContextManager["Environment"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

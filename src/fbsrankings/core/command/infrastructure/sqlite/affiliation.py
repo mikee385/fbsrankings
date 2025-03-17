@@ -1,6 +1,5 @@
 import sqlite3
 from typing import Optional
-from typing import Tuple
 from uuid import UUID
 
 from communication.bus import EventBus
@@ -11,9 +10,11 @@ from fbsrankings.core.command.domain.model.affiliation import (
 )
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
+from fbsrankings.core.command.infrastructure.shared.affiliation import (
+    AffiliationEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.enums import Subdivision
 from fbsrankings.messages.event import AffiliationCreatedEvent
-from fbsrankings.messages.event import AffiliationEventHandler as BaseEventHandler
 from fbsrankings.storage.sqlite import AffiliationTable
 
 
@@ -55,13 +56,13 @@ class AffiliationRepository(BaseRepository):
             f"FROM {self._table}"
         )
 
-    def _to_affiliation(self, row: Tuple[str, str, str, str]) -> Affiliation:
+    def _to_affiliation(self, row: tuple[str, str, str, int]) -> Affiliation:
         return Affiliation(
             self._bus,
             AffiliationID(UUID(row[0])),
             SeasonID(UUID(row[1])),
             TeamID(UUID(row[2])),
-            Subdivision[row[3]],
+            Subdivision(row[3]),
         )
 
 

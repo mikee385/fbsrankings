@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package fbsrankings.messages.event;
+
+message TeamCreatedEvent {
+    string event_id = 1;
+    string team_id = 2;
+    string name = 3;
+}

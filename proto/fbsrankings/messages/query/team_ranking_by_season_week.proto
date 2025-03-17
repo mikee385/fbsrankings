@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+message TeamRankingValueBySeasonWeekResult {
+    string team_id = 1;
+    string name = 2;
+    int32 order = 3;
+    int32 rank = 4;
+    double value = 5;
+}
+
+message TeamRankingBySeasonWeekResult {
+    string ranking_id = 1;
+    string name = 2;
+    string season_id = 3;
+    int32 year = 4;
+    optional int32 week = 5;
+    repeated TeamRankingValueBySeasonWeekResult values = 6;
+}
+
+message TeamRankingBySeasonWeekQuery {
+    string query_id = 1;
+    string name = 2;
+    string season_id = 3;
+    optional int32 week = 4;
+}

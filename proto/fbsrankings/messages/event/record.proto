@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package fbsrankings.messages.event;
+
+message TeamRecordValue {
+    string team_id = 1;
+    int32 wins = 2;
+    int32 losses = 3;
+    int32 games = 4;
+    float win_percentage = 5;
+}
+
+message TeamRecordCalculatedEvent {
+    string event_id = 1;
+    string record_id = 2;
+    string season_id = 3;
+    optional int32 week = 4;
+    repeated TeamRecordValue values = 5;
+}

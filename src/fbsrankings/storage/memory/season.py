@@ -1,8 +1,6 @@
-from typing import Dict
-from typing import Iterable
-from typing import Optional
-
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -13,8 +11,8 @@ class SeasonDto:
 
 class SeasonStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[str, SeasonDto] = {}
-        self._by_key: Dict[int, SeasonDto] = {}
+        self._by_id: dict[str, SeasonDto] = {}
+        self._by_key: dict[int, SeasonDto] = {}
 
     def add(self, season: SeasonDto) -> None:
         if season.year in self._by_key:

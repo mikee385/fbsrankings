@@ -1,9 +1,7 @@
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import QueryBus
 from fbsrankings.core.query.infrastructure.memory.affiliation_count_by_season import (
@@ -130,7 +128,7 @@ class QueryManager(ContextManager["QueryManager"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

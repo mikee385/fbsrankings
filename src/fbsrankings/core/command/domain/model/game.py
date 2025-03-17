@@ -6,6 +6,8 @@ from typing import Optional
 from uuid import UUID
 from uuid import uuid4
 
+from google.protobuf.timestamp_pb2 import Timestamp
+
 from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
@@ -22,7 +24,7 @@ GameID = NewType("GameID", UUID)
 
 
 class GameStatusError(Exception):
-    def __init__(self, message: str, game_id: UUID, status: str) -> None:
+    def __init__(self, message: str, game_id: UUID, status: GameStatus) -> None:
         super().__init__(message)
         self.game_id = game_id
         self.status = status
@@ -61,7 +63,7 @@ class Game:
         self._losing_team_score: Optional[int]
 
         if home_team_score is not None and away_team_score is not None:
-            if status != GameStatus.COMPLETED:
+            if status != GameStatus.GAME_STATUS_COMPLETED:
                 raise ValueError("Game must be COMPLETED in order to have scores")
 
             self._set_score(home_team_score, away_team_score)
@@ -72,7 +74,7 @@ class Game:
         elif away_team_score is not None:
             raise ValueError("Away team score must be None if home team score is None")
 
-        elif status == GameStatus.COMPLETED:
+        elif status == GameStatus.GAME_STATUS_COMPLETED:
             raise ValueError("Game must be have scores in order to be COMPLETED")
 
         else:
@@ -147,11 +149,11 @@ class Game:
         return self._notes
 
     def reschedule(self, week: int, date: datetime.date) -> None:
-        if self.status != GameStatus.SCHEDULED:
+        if self.status != GameStatus.GAME_STATUS_SCHEDULED:
             raise GameStatusError(
                 "Game can only be rescheduled if it is still scheduled",
                 self.id_,
-                self.status.name,
+                self.status,
             )
 
         old_week = self._week
@@ -160,52 +162,65 @@ class Game:
         old_date = self._date
         self._date = date
 
+        old_timestamp = Timestamp()
+        old_timestamp.FromDatetime(
+            datetime.datetime.combine(old_date, datetime.datetime.min.time()),
+        )
+
+        timestamp = Timestamp()
+        timestamp.FromDatetime(
+            datetime.datetime.combine(self.date, datetime.datetime.min.time()),
+        )
         self._bus.publish(
             GameRescheduledEvent(
-                str(uuid4()),
-                str(self.id_),
-                str(self.season_id),
-                old_week,
-                old_date,
-                week,
-                date,
-                self.season_section.name,
-                str(self.home_team_id),
-                str(self.away_team_id),
-                self.notes,
+                event_id=str(uuid4()),
+                game_id=str(self.id_),
+                season_id=str(self.season_id),
+                old_week=old_week,
+                old_date=old_timestamp,
+                week=week,
+                date=timestamp,
+                season_section=self.season_section,
+                home_team_id=str(self.home_team_id),
+                away_team_id=str(self.away_team_id),
+                notes=self.notes,
             ),
         )
 
     def cancel(self) -> None:
-        if self.status != GameStatus.SCHEDULED:
+        if self.status != GameStatus.GAME_STATUS_SCHEDULED:
             raise GameStatusError(
                 "Game can only be canceled if it is still scheduled",
                 self.id_,
-                self.status.name,
+                self.status,
             )
 
-        self._status = GameStatus.CANCELED
+        self._status = GameStatus.GAME_STATUS_CANCELED
 
+        timestamp = Timestamp()
+        timestamp.FromDatetime(
+            datetime.datetime.combine(self.date, datetime.datetime.min.time()),
+        )
         self._bus.publish(
             GameCanceledEvent(
-                str(uuid4()),
-                str(self.id_),
-                str(self.season_id),
-                self.week,
-                self.date,
-                self.season_section.name,
-                str(self.home_team_id),
-                str(self.away_team_id),
-                self.notes,
+                event_id=str(uuid4()),
+                game_id=str(self.id_),
+                season_id=str(self.season_id),
+                week=self.week,
+                date=timestamp,
+                season_section=self.season_section,
+                home_team_id=str(self.home_team_id),
+                away_team_id=str(self.away_team_id),
+                notes=self.notes,
             ),
         )
 
     def complete(self, home_team_score: int, away_team_score: int) -> None:
-        if self.status != GameStatus.SCHEDULED:
+        if self.status != GameStatus.GAME_STATUS_SCHEDULED:
             raise GameStatusError(
                 "Game can only be completed if it is still scheduled",
                 self.id_,
-                self.status.name,
+                self.status,
             )
 
         if home_team_score is None:
@@ -216,21 +231,25 @@ class Game:
 
         self._set_score(home_team_score, away_team_score)
 
-        self._status = GameStatus.COMPLETED
+        self._status = GameStatus.GAME_STATUS_COMPLETED
 
+        timestamp = Timestamp()
+        timestamp.FromDatetime(
+            datetime.datetime.combine(self.date, datetime.datetime.min.time()),
+        )
         self._bus.publish(
             GameCompletedEvent(
-                str(uuid4()),
-                str(self.id_),
-                str(self.season_id),
-                self.week,
-                self.date,
-                self.season_section.name,
-                str(self.home_team_id),
-                str(self.away_team_id),
-                home_team_score,
-                away_team_score,
-                self.notes,
+                event_id=str(uuid4()),
+                game_id=str(self.id_),
+                season_id=str(self.season_id),
+                week=self.week,
+                date=timestamp,
+                season_section=self.season_section,
+                home_team_id=str(self.home_team_id),
+                away_team_id=str(self.away_team_id),
+                home_team_score=home_team_score,
+                away_team_score=away_team_score,
+                notes=self.notes,
             ),
         )
 
@@ -258,18 +277,22 @@ class Game:
         old_notes = self._notes
         self._notes = notes
 
+        timestamp = Timestamp()
+        timestamp.FromDatetime(
+            datetime.datetime.combine(self.date, datetime.datetime.min.time()),
+        )
         self._bus.publish(
             GameNotesUpdatedEvent(
-                str(uuid4()),
-                str(self.id_),
-                str(self.season_id),
-                self.week,
-                self.date,
-                self.season_section.name,
-                str(self.home_team_id),
-                str(self.away_team_id),
-                old_notes,
-                notes,
+                event_id=str(uuid4()),
+                game_id=str(self.id_),
+                season_id=str(self.season_id),
+                week=self.week,
+                date=timestamp,
+                season_section=self.season_section,
+                home_team_id=str(self.home_team_id),
+                away_team_id=str(self.away_team_id),
+                old_notes=old_notes,
+                notes=notes,
             ),
         )
 
@@ -300,20 +323,25 @@ class GameFactory:
             away_team_id,
             None,
             None,
-            GameStatus.SCHEDULED,
+            GameStatus.GAME_STATUS_SCHEDULED,
             notes,
+        )
+
+        timestamp = Timestamp()
+        timestamp.FromDatetime(
+            datetime.datetime.combine(game.date, datetime.datetime.min.time()),
         )
         self._bus.publish(
             GameCreatedEvent(
-                str(uuid4()),
-                str(game.id_),
-                str(game.season_id),
-                game.week,
-                game.date,
-                game.season_section.name,
-                str(game.home_team_id),
-                str(game.away_team_id),
-                game.notes,
+                event_id=str(uuid4()),
+                game_id=str(game.id_),
+                season_id=str(game.season_id),
+                week=game.week,
+                date=timestamp,
+                season_section=game.season_section,
+                home_team_id=str(game.home_team_id),
+                away_team_id=str(game.away_team_id),
+                notes=game.notes,
             ),
         )
 

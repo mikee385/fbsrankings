@@ -1,7 +1,6 @@
 from typing import Callable
+from typing import Protocol
 from typing import TypeVar
-
-from typing_extensions import Protocol
 
 
 class Command(Protocol):

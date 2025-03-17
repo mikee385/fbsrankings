@@ -1,13 +1,8 @@
 from types import TracebackType
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from communication.bus import EventBus
-from fbsrankings.messages.event import GameRankingEventManager
-from fbsrankings.messages.event import TeamRankingEventManager
-from fbsrankings.messages.event import TeamRecordEventManager
 from fbsrankings.ranking.command.infrastructure.event_handler import (
     EventHandler as BaseEventHandler,
 )
@@ -19,6 +14,15 @@ from fbsrankings.ranking.command.infrastructure.memory.ranking import (
 )
 from fbsrankings.ranking.command.infrastructure.memory.record import (
     TeamRecordEventHandler,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    GameRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.ranking import (
+    TeamRankingEventManager,
+)
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventManager,
 )
 from fbsrankings.storage.memory import Storage
 
@@ -51,7 +55,7 @@ class EventHandler(BaseEventHandler):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

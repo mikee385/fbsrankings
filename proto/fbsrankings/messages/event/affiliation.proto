@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package fbsrankings.messages.event;
+
+import "fbsrankings/messages/enums/enums.proto";
+
+message AffiliationCreatedEvent {
+    string event_id = 1;
+    string affiliation_id = 2;
+    string season_id = 3;
+    string team_id = 4;
+    fbsrankings.messages.enums.Subdivision subdivision = 5;
+}

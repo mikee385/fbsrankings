@@ -1,13 +1,10 @@
 import sqlite3
-from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 from uuid import UUID
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import TeamRecordCalculatedEvent
-from fbsrankings.messages.event import TeamRecordEventHandler as BaseEventHandler
 from fbsrankings.ranking.command.domain.model.core import SeasonID
 from fbsrankings.ranking.command.domain.model.core import TeamID
 from fbsrankings.ranking.command.domain.model.record import TeamRecord
@@ -16,6 +13,9 @@ from fbsrankings.ranking.command.domain.model.record import (
     TeamRecordRepository as BaseRepository,
 )
 from fbsrankings.ranking.command.domain.model.record import TeamRecordValue
+from fbsrankings.ranking.command.infrastructure.shared.record import (
+    TeamRecordEventHandler as BaseEventHandler,
+)
 from fbsrankings.storage.sqlite import TeamRecordTable
 from fbsrankings.storage.sqlite import TeamRecordValueTable
 
@@ -43,7 +43,7 @@ class TeamRecordRepository(BaseRepository):
 
     def find(self, season_id: SeasonID, week: Optional[int]) -> Optional[TeamRecord]:
         query = self._query() + " WHERE SeasonID = ?"
-        params: List[SqliteParam] = [str(season_id)]
+        params: list[SqliteParam] = [str(season_id)]
 
         if week is not None:
             query += " AND Week = ?;"
@@ -61,7 +61,7 @@ class TeamRecordRepository(BaseRepository):
     def _query(self) -> str:
         return f"SELECT UUID, SeasonID, Week FROM {self._record_table}"
 
-    def _to_record(self, row: Tuple[str, str, Optional[int]]) -> TeamRecord:
+    def _to_record(self, row: tuple[str, str, Optional[int]]) -> TeamRecord:
         cursor = self._connection.cursor()
         cursor.execute(
             "SELECT "
@@ -87,7 +87,7 @@ class TeamRecordRepository(BaseRepository):
         )
 
     @staticmethod
-    def _to_value(row: Tuple[str, str, int, int]) -> TeamRecordValue:
+    def _to_value(row: tuple[str, str, int, int]) -> TeamRecordValue:
         return TeamRecordValue(TeamID(UUID(row[1])), row[2], row[3])
 
 
@@ -99,9 +99,9 @@ class TeamRecordEventHandler(BaseEventHandler):
 
     def handle_calculated(self, event: TeamRecordCalculatedEvent) -> None:
         query = f"SELECT UUID FROM {self._record_table} WHERE SeasonID = ?"
-        params: List[SqliteParam] = [event.season_id]
+        params: list[SqliteParam] = [event.season_id]
 
-        if event.week is not None:
+        if event.HasField("week"):
             query += " AND Week = ?;"
             params.append(event.week)
         else:
@@ -123,7 +123,11 @@ class TeamRecordEventHandler(BaseEventHandler):
             f"INSERT INTO {self._record_table} "
             "(UUID, SeasonID, Week) "
             "VALUES (?,?,?);",
-            [event.record_id, event.season_id, event.week],
+            [
+                event.record_id,
+                event.season_id,
+                event.week if event.HasField("week") else None,
+            ],
         )
         insert_sql = (
             f"INSERT INTO {self._value_table} "

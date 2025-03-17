@@ -2,11 +2,10 @@ from configparser import ConfigParser
 from enum import Enum
 from pathlib import Path
 from typing import Any
-from typing import Dict
+from typing import Literal
 from typing import Union
 
 from pydantic import BaseModel
-from typing_extensions import Literal
 
 
 class ChannelType(str, Enum):
@@ -16,7 +15,9 @@ class ChannelType(str, Enum):
 
 class SerializationType(str, Enum):
     NONE = "none"
+    JSON = "json"
     PICKLE = "pickle"
+    PROTOBUF = "protobuf"
 
 
 class StorageType(str, Enum):
@@ -44,14 +45,14 @@ class Config(BaseModel):
     serialization: SerializationType
     storage: StorageType
 
-    alternate_names: Dict[str, str] = {}
+    alternate_names: dict[str, str] = {}
 
     sqlite: SqliteConfig = SqliteConfig(file="fbsrankings.db")
     tinydb: TinyDbConfig = TinyDbConfig(file="fbsrankings.json")
 
     @staticmethod
     def from_ini(file_path: Path) -> "Config":
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
 
         parser = ConfigParser()
         parser.read(file_path)

@@ -49,8 +49,8 @@ class SeasonsQueryHandler:
 
     def __call__(self, query: SeasonsQuery) -> SeasonsResult:
         return SeasonsResult(
-            [
-                SeasonResult(item["id_"], item["year"])
+            seasons=[
+                SeasonResult(season_id=item["id_"], year=item["year"])
                 for item in self._storage.cache_season_by_id.values()
             ],
         )

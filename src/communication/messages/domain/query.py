@@ -1,8 +1,7 @@
 from typing import Callable
 from typing import Generic
+from typing import Protocol
 from typing import TypeVar
-
-from typing_extensions import Protocol
 
 
 class QueryBase(Protocol):

@@ -1,11 +1,10 @@
 import datetime
-from typing import Dict
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Tuple
-
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Optional
+
+from fbsrankings.messages.enums import GameStatus
+from fbsrankings.messages.enums import SeasonSection
 
 
 @dataclass
@@ -14,20 +13,20 @@ class GameDto:
     season_id: str
     week: int
     date: datetime.date
-    season_section: str
+    season_section: SeasonSection
     home_team_id: str
     away_team_id: str
     home_team_score: Optional[int]
     away_team_score: Optional[int]
-    status: str
+    status: GameStatus
     notes: str
 
 
 class GameStorage:
     def __init__(self) -> None:
-        self._by_id: Dict[str, GameDto] = {}
-        self._by_key: Dict[Tuple[str, int, str, str], GameDto] = {}
-        self._by_season: Dict[str, List[GameDto]] = {}
+        self._by_id: dict[str, GameDto] = {}
+        self._by_key: dict[tuple[str, int, str, str], GameDto] = {}
+        self._by_season: dict[str, list[GameDto]] = {}
 
     @staticmethod
     def _get_key(
@@ -35,7 +34,7 @@ class GameStorage:
         week: int,
         team1_id: str,
         team2_id: str,
-    ) -> Tuple[str, int, str, str]:
+    ) -> tuple[str, int, str, str]:
         if team1_id < team2_id:
             return (season_id, week, team1_id, team2_id)
         return (season_id, week, team2_id, team1_id)
@@ -75,7 +74,7 @@ class GameStorage:
         key = self._get_key(season_id, week, team1_id, team2_id)
         return self._by_key.get(key)
 
-    def for_season(self, season_id: str) -> List[GameDto]:
+    def for_season(self, season_id: str) -> list[GameDto]:
         by_season = self._by_season.get(season_id)
         if by_season is None:
             return []

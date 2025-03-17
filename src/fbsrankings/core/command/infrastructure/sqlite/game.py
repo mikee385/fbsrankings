@@ -1,7 +1,6 @@
 import sqlite3
 from datetime import datetime
 from typing import Optional
-from typing import Tuple
 from uuid import UUID
 
 from communication.bus import EventBus
@@ -10,12 +9,14 @@ from fbsrankings.core.command.domain.model.game import GameID
 from fbsrankings.core.command.domain.model.game import GameRepository as BaseRepository
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import TeamID
+from fbsrankings.core.command.infrastructure.shared.game import (
+    GameEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.enums import SeasonSection
 from fbsrankings.messages.event import GameCanceledEvent
 from fbsrankings.messages.event import GameCompletedEvent
 from fbsrankings.messages.event import GameCreatedEvent
-from fbsrankings.messages.event import GameEventHandler as BaseEventHandler
 from fbsrankings.messages.event import GameNotesUpdatedEvent
 from fbsrankings.messages.event import GameRescheduledEvent
 from fbsrankings.storage.sqlite import GameTable
@@ -84,7 +85,7 @@ class GameRepository(BaseRepository):
 
     def _to_game(
         self,
-        row: Tuple[
+        row: tuple[
             str,
             str,
             int,
@@ -104,12 +105,12 @@ class GameRepository(BaseRepository):
             SeasonID(UUID(row[1])),
             row[2],
             datetime.strptime(row[3], "%Y-%m-%d").date(),
-            SeasonSection[row[4]],
+            SeasonSection(row[4]),
             TeamID(UUID(row[5])),
             TeamID(UUID(row[6])),
             row[7],
             row[8],
-            GameStatus[row[9]],
+            GameStatus(row[9]),
             row[10],
         )
 
@@ -138,13 +139,13 @@ class GameEventHandler(BaseEventHandler):
                 event.game_id,
                 event.season_id,
                 event.week,
-                event.date.strftime("%Y-%m-%d"),
+                event.date.ToDatetime().strftime("%Y-%m-%d"),
                 event.season_section,
                 event.home_team_id,
                 event.away_team_id,
                 None,
                 None,
-                GameStatus.SCHEDULED.name,
+                GameStatus.GAME_STATUS_SCHEDULED,
                 event.notes,
             ],
         )
@@ -152,13 +153,13 @@ class GameEventHandler(BaseEventHandler):
     def handle_rescheduled(self, event: GameRescheduledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self._table} SET Week = ?, Date = ? WHERE UUID = ?;",
-            [event.week, event.date.strftime("%Y-%m-%d"), event.game_id],
+            [event.week, event.date.ToDatetime().strftime("%Y-%m-%d"), event.game_id],
         )
 
     def handle_canceled(self, event: GameCanceledEvent) -> None:
         self._cursor.execute(
             f"UPDATE {self._table} SET Status = ? WHERE UUID = ?;",
-            [GameStatus.CANCELED.name, event.game_id],
+            [GameStatus.GAME_STATUS_CANCELED, event.game_id],
         )
 
     def handle_completed(self, event: GameCompletedEvent) -> None:
@@ -169,7 +170,7 @@ class GameEventHandler(BaseEventHandler):
             [
                 event.home_team_score,
                 event.away_team_score,
-                GameStatus.COMPLETED.name,
+                GameStatus.GAME_STATUS_COMPLETED,
                 event.game_id,
             ],
         )

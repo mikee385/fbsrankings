@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package fbsrankings.messages.query;
+
+import "google/protobuf/timestamp.proto";
+import "fbsrankings/messages/enums/enums.proto";
+
+message GameRankingValueBySeasonWeekResult {
+	string game_id = 1;
+	string season_id = 2;
+	int32 year = 3;
+	int32 week = 4;
+    google.protobuf.Timestamp date = 5;
+	fbsrankings.messages.enums.SeasonSection season_section = 6;
+	string home_team_id = 7;
+	string home_team_name = 8;
+	string away_team_id = 9;
+	string away_team_name = 10;
+	optional int32 home_team_score = 11;
+	optional int32 away_team_score = 12;
+	fbsrankings.messages.enums.GameStatus status = 13;
+	string notes = 14;
+	int32 order = 15;
+	int32 rank = 16;
+	double value = 17;
+}
+
+message GameRankingBySeasonWeekResult {
+	string ranking_id = 1;
+	string name = 2;
+	string season_id = 3;
+	int32 year = 4;
+	optional int32 week = 5;
+	repeated GameRankingValueBySeasonWeekResult values = 6;
+}
+
+message GameRankingBySeasonWeekQuery {
+	string query_id = 1;
+	string name = 2;
+	string season_id = 3;
+	optional int32 week = 4;
+}

@@ -22,5 +22,5 @@ class TeamByIDQueryHandler:
         cursor.close()
 
         if row:
-            return TeamByIDResult(row[0], row[1])
+            return TeamByIDResult(team_id=row[0], name=row[1])
         return None

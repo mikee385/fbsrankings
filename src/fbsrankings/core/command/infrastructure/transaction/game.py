@@ -1,6 +1,8 @@
-from typing import List
+from datetime import datetime
 from typing import Optional
 from uuid import uuid4
+
+from google.protobuf.timestamp_pb2 import Timestamp
 
 from communication.bus import EventBus
 from communication.messages import Event
@@ -12,10 +14,12 @@ from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.infrastructure.memory.game import (
     GameRepository as MemoryRepository,
 )
+from fbsrankings.core.command.infrastructure.shared.game import (
+    GameEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import GameCanceledEvent
 from fbsrankings.messages.event import GameCompletedEvent
 from fbsrankings.messages.event import GameCreatedEvent
-from fbsrankings.messages.event import GameEventHandler as BaseEventHandler
 from fbsrankings.messages.event import GameNotesUpdatedEvent
 from fbsrankings.messages.event import GameRescheduledEvent
 
@@ -55,23 +59,27 @@ class GameRepository(BaseRepository):
 
 
 def _created_event(game: Game) -> GameCreatedEvent:
+    timestamp = Timestamp()
+    timestamp.FromDatetime(
+        datetime.combine(game.date, datetime.min.time()),
+    )
     return GameCreatedEvent(
-        str(uuid4()),
-        str(game.id_),
-        str(game.season_id),
-        game.week,
-        game.date,
-        game.season_section.name,
-        str(game.home_team_id),
-        str(game.away_team_id),
-        game.notes,
+        event_id=str(uuid4()),
+        game_id=str(game.id_),
+        season_id=str(game.season_id),
+        week=game.week,
+        date=timestamp,
+        season_section=game.season_section,
+        home_team_id=str(game.home_team_id),
+        away_team_id=str(game.away_team_id),
+        notes=game.notes,
     )
 
 
 class GameEventHandler(BaseEventHandler):
     def __init__(
         self,
-        events: List[Event],
+        events: list[Event],
         cache_bus: EventBus,
     ) -> None:
         self._events = events

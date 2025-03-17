@@ -1,11 +1,10 @@
 # pylint: disable=redefined-outer-name
 import shutil
 import sys
+from collections.abc import Sequence
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any
-from typing import List
-from typing import Sequence
 
 import pytest
 
@@ -14,7 +13,7 @@ from fbsrankings.cli.main import main
 
 
 def _copy_files(src_dir: Path, dest_dir: Path, files: Sequence[str]) -> Sequence[Path]:
-    file_paths: List[Path] = []
+    file_paths: list[Path] = []
 
     for file in files:
         src_path = src_dir / file
@@ -105,7 +104,7 @@ def query_config(request: Any, config_path: Path, test_path: Path) -> Path:
 
 
 @pytest.fixture()
-def test_seasons() -> List[str]:
+def test_seasons() -> list[str]:
     return ["2012", "2013"]
 
 
@@ -177,7 +176,7 @@ def test_main_import(
     output_path: Path,
     test_path: Path,
     command_config: Path,
-    test_seasons: List[str],
+    test_seasons: list[str],
 ) -> None:
     files = _copy_files(
         output_path,

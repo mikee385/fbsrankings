@@ -1,4 +1,4 @@
-python_version = Python36
+python_version = Python39
 
 .PHONY:
     init
@@ -6,6 +6,7 @@ python_version = Python36
     install
     install-test
     upgrade
+    protoc
     check
     pre-commit
     test
@@ -46,12 +47,15 @@ upgrade:
     pip-sync requirements/$(python_version)-dev.txt
     pip install -e .
 
+protoc:
+    protoc --proto_path=proto --python_out=src --pyi_out=src proto/fbsrankings/messages/command/*.proto proto/fbsrankings/messages/enums/*.proto proto/fbsrankings/messages/event/*.proto proto/fbsrankings/messages/query/*.proto proto/fbsrankings/messages/error/*.proto
+
 check:
     isort src tests setup.py
-    black src tests setup.py
+    black src tests setup.py --exclude _pb2\.
     flake8 src tests setup.py
     mypy src tests setup.py
-    vulture src tests setup.py whitelist.py
+    vulture src tests setup.py whitelist.py --exclude *_pb2.*
     pylint src tests setup.py
     bandit --ini setup.cfg -r src
     pyroma .

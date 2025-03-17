@@ -1,9 +1,7 @@
 from types import TracebackType
 from typing import ContextManager
+from typing import Literal
 from typing import Optional
-from typing import Type
-
-from typing_extensions import Literal
 
 from fbsrankings.storage.memory.affiliation import AffiliationStorage
 from fbsrankings.storage.memory.game import GameStorage
@@ -42,7 +40,7 @@ class Storage(ContextManager["Storage"]):
 
     def __exit__(
         self,
-        type_: Optional[Type[BaseException]],
+        type_: Optional[type[BaseException]],
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:

@@ -5,8 +5,10 @@ from communication.bus import EventBus
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
 from fbsrankings.core.command.domain.model.team import TeamRepository as BaseRepository
+from fbsrankings.core.command.infrastructure.shared.team import (
+    TeamEventHandler as BaseEventHandler,
+)
 from fbsrankings.messages.event import TeamCreatedEvent
-from fbsrankings.messages.event import TeamEventHandler as BaseEventHandler
 from fbsrankings.storage.memory import TeamDto
 from fbsrankings.storage.memory import TeamStorage
 

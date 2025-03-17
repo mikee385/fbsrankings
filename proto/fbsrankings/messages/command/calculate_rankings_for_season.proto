@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package fbsrankings.messages.command;
+
+message CalculateRankingsForSeasonCommand {
+    string command_id = 1;
+    oneof season_id_or_year {
+        string season_id = 2;
+        int32 year = 3;
+    }
+}
