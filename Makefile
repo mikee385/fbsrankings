@@ -19,7 +19,7 @@ python_version = Python39
     upload
 
 init:
-    python -m pip install pip --upgrade
+    pip install pip --upgrade
     pip install setuptools --upgrade
     pip install wheel --upgrade
 
@@ -57,6 +57,7 @@ check:
     mypy src tests setup.py
     vulture src tests setup.py whitelist.py --exclude *_pb2.*
     pylint src tests setup.py
+    lint-imports
     bandit --ini setup.cfg -r src
     pyroma .
 

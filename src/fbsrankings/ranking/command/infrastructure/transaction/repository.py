@@ -2,11 +2,11 @@ from communication.bus import EventBus
 from fbsrankings.ranking.command.domain.model.ranking import GameRankingRepository
 from fbsrankings.ranking.command.domain.model.ranking import TeamRankingRepository
 from fbsrankings.ranking.command.domain.model.record import TeamRecordRepository
+from fbsrankings.ranking.command.domain.model.repository import (
+    Repository as BaseRepository,
+)
 from fbsrankings.ranking.command.infrastructure.memory.repository import (
     Repository as MemoryRepository,
-)
-from fbsrankings.ranking.command.infrastructure.repository import (
-    Repository as BaseRepository,
 )
 from fbsrankings.ranking.command.infrastructure.transaction.ranking import (
     GameRankingRepository as TransactionGameRankingRepository,

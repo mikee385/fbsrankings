@@ -4,11 +4,11 @@ from typing import Optional
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.factory import Factory
 from fbsrankings.core.command.domain.model.game import Game
+from fbsrankings.core.command.domain.model.repository import Repository
 from fbsrankings.core.command.domain.model.season import Season
 from fbsrankings.core.command.domain.model.season import SeasonID
 from fbsrankings.core.command.domain.model.team import Team
 from fbsrankings.core.command.domain.model.team import TeamID
-from fbsrankings.core.command.infrastructure.repository import Repository
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.enums import SeasonSection
 from fbsrankings.messages.enums import Subdivision

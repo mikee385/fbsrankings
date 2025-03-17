@@ -1,8 +1,8 @@
 from communication.bus import EventBus
+from fbsrankings.core.command.domain.model.repository import RepositoryFactory
 from fbsrankings.core.command.infrastructure.event_handler import EventHandlerFactory
 from fbsrankings.core.command.infrastructure.memory.event_handler import EventHandler
 from fbsrankings.core.command.infrastructure.memory.repository import Repository
-from fbsrankings.core.command.infrastructure.repository import RepositoryFactory
 from fbsrankings.storage.memory import Storage
 
 

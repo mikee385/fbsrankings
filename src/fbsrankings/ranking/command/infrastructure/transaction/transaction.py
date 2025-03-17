@@ -6,6 +6,7 @@ from typing import Optional
 from communication.bus import EventBus
 from communication.bus import MemoryEventBus
 from fbsrankings.ranking.command.domain.model.factory import Factory
+from fbsrankings.ranking.command.domain.model.repository import Repository
 from fbsrankings.ranking.command.infrastructure.data_source import DataSource
 from fbsrankings.ranking.command.infrastructure.memory.event_handler import (
     EventHandler as MemoryEventHandler,
@@ -13,7 +14,6 @@ from fbsrankings.ranking.command.infrastructure.memory.event_handler import (
 from fbsrankings.ranking.command.infrastructure.memory.repository import (
     Repository as MemoryRepository,
 )
-from fbsrankings.ranking.command.infrastructure.repository import Repository
 from fbsrankings.ranking.command.infrastructure.transaction.event_handler import (
     EventHandler as TransactionEventHandler,
 )

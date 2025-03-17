@@ -1,0 +1,181 @@
+[importlinter]
+root_packages=
+    communication
+    fbsrankings
+    serialization
+
+[importlinter:contract:ddd-layering]
+name = DDD layering
+type = layers
+layers =
+    (application)
+    (infrastructure)
+    (domain)
+containers =
+    communication.bridge
+    communication.bus
+    communication.channel
+    communication.messages
+    fbsrankings.core.command
+    fbsrankings.core.query
+    fbsrankings.ranking.command
+    fbsrankings.ranking.query
+    serialization
+
+[importlinter:contract:communication.bridge]
+name = communication.bridge can only import communication and serialization
+type = forbidden
+source_modules =
+    communication.bridge.**
+forbidden_modules =
+    fbsrankings.**
+
+[importlinter:contract:communication.bus]
+name = communication.bus can only import communication.messages
+type = forbidden
+source_modules =
+    communication.bus.**
+forbidden_modules =
+    communication.bridge.**
+    communication.channel.**
+    fbsrankings.**
+    serialization.**
+
+[importlinter:contract:communication.channel]
+name = communication.channel cannot import anything
+type = forbidden
+source_modules =
+    communication.channel.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.messages.**
+    fbsrankings.**
+    serialization.**
+
+[importlinter:contract:communication.messages]
+name = communication.messages cannot import anything
+type = forbidden
+source_modules =
+    communication.messages.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.channel.**
+    fbsrankings.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.config]
+name = fbsrankings.config cannot import anything
+type = forbidden
+source_modules =
+    fbsrankings.config.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.channel.**
+    communication.messages.**
+    fbsrankings.cli.**
+    fbsrankings.context.**
+    fbsrankings.core.**
+    fbsrankings.messages.**
+    fbsrankings.ranking.**
+    fbsrankings.storage.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.context]
+name = fbsrankings.context cannot import anything
+type = forbidden
+source_modules =
+    fbsrankings.context.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.channel.**
+    communication.messages.**
+    fbsrankings.cli.**
+    fbsrankings.core.**
+    fbsrankings.messages.command.**
+    fbsrankings.messages.error.**
+    fbsrankings.messages.event.**
+    fbsrankings.messages.query.**
+    fbsrankings.ranking.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.core]
+name = fbsrankings.core can only import communication.bus, communication.messages, fbsrankings.config, fbsrankings.context, fbsrankings.messages, fbsrankings.storage
+type = forbidden
+source_modules =
+    fbsrankings.core.**
+forbidden_modules =
+    communication.bridge.**
+    communication.channel.**
+    fbsrankings.cli.**
+    fbsrankings.ranking.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.messages]
+name = fbsrankings.messages can only import communication.messages
+type = forbidden
+source_modules =
+    fbsrankings.messages.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.channel.**
+    fbsrankings.cli.**
+    fbsrankings.config.**
+    fbsrankings.context.**
+    fbsrankings.core.**
+    fbsrankings.ranking.**
+    fbsrankings.storage.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.ranking]
+name = fbsrankings.ranking can only import communication.bus, communication.messages, fbsrankings.config, fbsrankings.context, fbsrankings.messages, fbsrankings.storage
+type = forbidden
+source_modules =
+    fbsrankings.ranking.**
+forbidden_modules =
+    communication.bridge.**
+    communication.channel.**
+    fbsrankings.cli.**
+    fbsrankings.core.**
+    serialization.**
+
+[importlinter:contract:fbsrankings.storage]
+name = fbsrankings.storage can only import config and enums
+type = forbidden
+source_modules =
+    fbsrankings.storage.**
+forbidden_modules =
+    communication.bridge.**
+    communication.bus.**
+    communication.channel.**
+    fbsrankings.cli.**
+    fbsrankings.context.**
+    fbsrankings.core.**
+    fbsrankings.messages.command.**
+    fbsrankings.messages.error.**
+    fbsrankings.messages.event.**
+    fbsrankings.messages.query.**
+    fbsrankings.ranking.**
+    serialization.**
+
+[importlinter:contract:serialization]
+name = serialization cannot import anything
+type = forbidden
+source_modules =
+    serialization.**
+forbidden_modules =
+    communication.**
+    fbsrankings.**
+
+[importlinter:contract:independent-services]
+name = Services must be independent
+type = independence
+modules =
+    fbsrankings.core.command
+    fbsrankings.core.query
+    fbsrankings.ranking.command
+    fbsrankings.ranking.query

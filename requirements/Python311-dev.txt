@@ -38,6 +38,7 @@ charset-normalizer==3.4.1
 click==8.1.8
     # via
     #   black
+    #   import-linter
     #   pip-tools
 colorama==0.4.6
     # via
@@ -142,6 +143,8 @@ flake8-use-fstring==1.4
     # via fbsrankings (setup.py)
 flake8-use-pathlib==0.3.0
     # via fbsrankings (setup.py)
+grimp==3.7.1
+    # via import-linter
 html5lib==1.1
     # via fbsrankings (setup.py)
 id==1.5.0
@@ -150,6 +153,8 @@ identify==2.6.9
     # via pre-commit
 idna==3.10
     # via requests
+import-linter==2.3
+    # via fbsrankings (setup.py)
 importlib-metadata==8.6.1
     # via keyring
 iniconfig==2.0.0
@@ -307,6 +312,8 @@ typing-extensions==4.12.2
     # via
     #   beautifulsoup4
     #   flake8-pie
+    #   grimp
+    #   import-linter
     #   mypy
     #   pydantic
     #   pydantic-core

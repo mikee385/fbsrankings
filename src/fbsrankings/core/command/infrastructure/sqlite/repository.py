@@ -1,5 +1,5 @@
 from communication.bus import EventBus
-from fbsrankings.core.command.infrastructure.repository import (
+from fbsrankings.core.command.domain.model.repository import (
     Repository as BaseRepository,
 )
 from fbsrankings.core.command.infrastructure.sqlite.affiliation import (

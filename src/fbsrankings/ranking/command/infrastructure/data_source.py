@@ -3,13 +3,13 @@ from typing import Union
 from communication.bus import EventBus
 from fbsrankings.config import StorageType
 from fbsrankings.context import Context
+from fbsrankings.ranking.command.domain.model.repository import Repository
+from fbsrankings.ranking.command.domain.model.repository import RepositoryFactory
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandler
 from fbsrankings.ranking.command.infrastructure.event_handler import EventHandlerFactory
 from fbsrankings.ranking.command.infrastructure.memory.data_source import (
     DataSource as MemoryDataSource,
 )
-from fbsrankings.ranking.command.infrastructure.repository import Repository
-from fbsrankings.ranking.command.infrastructure.repository import RepositoryFactory
 from fbsrankings.ranking.command.infrastructure.sqlite.data_source import (
     DataSource as SqliteDataSource,
 )

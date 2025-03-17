@@ -1,5 +1,6 @@
 include .bumpversion.cfg
 include .gitignore
+include .importlinter
 include .pre-commit-config.yaml
 include LICENSE
 include Makefile
