@@ -1,9 +1,9 @@
 import sqlite3
-from typing import Optional
 
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.query import LatestSeasonWeekQuery
 from fbsrankings.messages.query import LatestSeasonWeekResult
+from fbsrankings.messages.query import LatestSeasonWeekValue
 from fbsrankings.storage.sqlite import GameTable
 from fbsrankings.storage.sqlite import SeasonTable
 
@@ -18,7 +18,7 @@ class LatestSeasonWeekQueryHandler:
     def __call__(
         self,
         query: LatestSeasonWeekQuery,
-    ) -> Optional[LatestSeasonWeekResult]:
+    ) -> LatestSeasonWeekResult:
         cursor = self._connection.cursor()
         cursor.execute(
             "SELECT "
@@ -47,12 +47,14 @@ class LatestSeasonWeekQueryHandler:
         cursor.close()
 
         if row is None:
-            return None
+            return LatestSeasonWeekResult(latest=None)
 
         season_id, year, games_scheduled = row
 
         if games_scheduled == 0:
-            return LatestSeasonWeekResult(season_id=season_id, year=year, week=None)
+            return LatestSeasonWeekResult(
+                latest=LatestSeasonWeekValue(season_id=season_id, year=year, week=None),
+            )
 
         cursor = self._connection.cursor()
         cursor.execute(
@@ -78,6 +80,12 @@ class LatestSeasonWeekQueryHandler:
         cursor.close()
 
         if row:
-            return LatestSeasonWeekResult(season_id=season_id, year=year, week=row[0])
+            return LatestSeasonWeekResult(
+                latest=LatestSeasonWeekValue(
+                    season_id=season_id,
+                    year=year,
+                    week=row[0],
+                ),
+            )
 
-        return None
+        return LatestSeasonWeekResult(latest=None)

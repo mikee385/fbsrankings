@@ -1,10 +1,11 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Optional as _Optional
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class LatestSeasonWeekResult(_message.Message):
+class LatestSeasonWeekValue(_message.Message):
     __slots__ = ("season_id", "year", "week")
     SEASON_ID_FIELD_NUMBER: _ClassVar[int]
     YEAR_FIELD_NUMBER: _ClassVar[int]
@@ -13,6 +14,12 @@ class LatestSeasonWeekResult(_message.Message):
     year: int
     week: int
     def __init__(self, season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ...) -> None: ...
+
+class LatestSeasonWeekResult(_message.Message):
+    __slots__ = ("latest",)
+    LATEST_FIELD_NUMBER: _ClassVar[int]
+    latest: LatestSeasonWeekValue
+    def __init__(self, latest: _Optional[_Union[LatestSeasonWeekValue, _Mapping]] = ...) -> None: ...
 
 class LatestSeasonWeekQuery(_message.Message):
     __slots__ = ("query_id",)

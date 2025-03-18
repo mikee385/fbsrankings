@@ -1,5 +1,4 @@
 from typing import cast
-from typing import Optional
 
 from tinydb import Query
 
@@ -10,6 +9,7 @@ from fbsrankings.messages.event import GameCreatedEvent
 from fbsrankings.messages.event import GameRescheduledEvent
 from fbsrankings.messages.query import LatestSeasonWeekQuery
 from fbsrankings.messages.query import LatestSeasonWeekResult
+from fbsrankings.messages.query import LatestSeasonWeekValue
 from fbsrankings.storage.tinydb import Storage
 
 
@@ -244,16 +244,18 @@ class LatestSeasonWeekQueryHandler:
     def __call__(
         self,
         query: LatestSeasonWeekQuery,
-    ) -> Optional[LatestSeasonWeekResult]:
+    ) -> LatestSeasonWeekResult:
         table = self._storage.connection.table("latest_season_week")
 
         items = table.all()
         if len(items) > 0:
             item = items[0]
             return LatestSeasonWeekResult(
-                season_id=item["season_id"],
-                year=item["year"],
-                week=item["week"],
+                latest=LatestSeasonWeekValue(
+                    season_id=item["season_id"],
+                    year=item["year"],
+                    week=item["week"],
+                ),
             )
 
         season_count_table = self._storage.connection.table("game_status_season_count")
@@ -278,9 +280,11 @@ class LatestSeasonWeekQueryHandler:
                     },
                 )
                 return LatestSeasonWeekResult(
-                    season_id=season["season_id"],
-                    year=season["year"],
-                    week=None,
+                    latest=LatestSeasonWeekValue(
+                        season_id=season["season_id"],
+                        year=season["year"],
+                        week=None,
+                    ),
                 )
 
             if season["completed_count"] > 0:
@@ -323,9 +327,11 @@ class LatestSeasonWeekQueryHandler:
                             },
                         )
                         return LatestSeasonWeekResult(
-                            season_id=week["season_id"],
-                            year=existing_season["year"],
-                            week=week["week"],
+                            latest=LatestSeasonWeekValue(
+                                season_id=week["season_id"],
+                                year=existing_season["year"],
+                                week=week["week"],
+                            ),
                         )
 
-        return None
+        return LatestSeasonWeekResult(latest=None)

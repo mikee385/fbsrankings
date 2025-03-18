@@ -36,14 +36,14 @@ def test_main_latest_empty(
     _copy_files(data_path, test_path, ["empty_data.db", "empty_data.json"])
     files = _copy_files(output_path, test_path, ["main_latest_empty.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
+        expected_err = expected_file.read()
 
     exit_result = main(["latest", f"--config={command_config}"])
-    assert exit_result == 0
+    assert exit_result == 1
 
     captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
+    assert captured_out == ""
+    assert captured_err == expected_err
 
 
 def test_main_latest_rating_srs_top_5_full(
@@ -86,13 +86,13 @@ def test_main_latest_rating_srs_top_5_empty(
         ["main_latest_rating_colley_matrix_top_5_empty.txt"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
-        expected_out = expected_file.read()
+        expected_err = expected_file.read()
 
     exit_result = main(
         ["latest", "--rating=colley-matrix", "--top=5", f"--config={command_config}"],
     )
-    assert exit_result == 0
+    assert exit_result == 1
 
     captured_out, captured_err = capsys.readouterr()
-    assert captured_out == expected_out
-    assert captured_err == ""
+    assert captured_out == ""
+    assert captured_err == expected_err

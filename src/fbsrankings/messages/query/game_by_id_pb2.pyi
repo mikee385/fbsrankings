@@ -7,7 +7,7 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class GameByIDResult(_message.Message):
+class GameByIDValue(_message.Message):
     __slots__ = ("game_id", "season_id", "year", "week", "date", "season_section", "home_team_id", "home_team_name", "away_team_id", "away_team_name", "home_team_score", "away_team_score", "status", "notes")
     GAME_ID_FIELD_NUMBER: _ClassVar[int]
     SEASON_ID_FIELD_NUMBER: _ClassVar[int]
@@ -38,6 +38,12 @@ class GameByIDResult(_message.Message):
     status: _enums_pb2.GameStatus
     notes: str
     def __init__(self, game_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., date: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., season_section: _Optional[_Union[_enums_pb2.SeasonSection, str]] = ..., home_team_id: _Optional[str] = ..., home_team_name: _Optional[str] = ..., away_team_id: _Optional[str] = ..., away_team_name: _Optional[str] = ..., home_team_score: _Optional[int] = ..., away_team_score: _Optional[int] = ..., status: _Optional[_Union[_enums_pb2.GameStatus, str]] = ..., notes: _Optional[str] = ...) -> None: ...
+
+class GameByIDResult(_message.Message):
+    __slots__ = ("game",)
+    GAME_FIELD_NUMBER: _ClassVar[int]
+    game: GameByIDValue
+    def __init__(self, game: _Optional[_Union[GameByIDValue, _Mapping]] = ...) -> None: ...
 
 class GameByIDQuery(_message.Message):
     __slots__ = ("query_id", "game_id")

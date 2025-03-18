@@ -56,22 +56,22 @@ class CalculateRankingsForSeasonCommandHandler:
                     SeasonByIDQuery(query_id=str(uuid4()), season_id=command.season_id),
                     SeasonByIDResult,
                 )
-                if season_by_id is None:
+                if not season_by_id.HasField("season"):
                     raise ValueError(
                         f"Season not found for {command.season_id}",
                     )
-                season_id = season_by_id.season_id
+                season_id = season_by_id.season.season_id
 
             elif season_id_or_year == "year":
                 season_by_year = self._query_bus.query(
                     SeasonByYearQuery(query_id=str(uuid4()), year=command.year),
                     SeasonByYearResult,
                 )
-                if season_by_year is None:
+                if not season_by_year.HasField("season"):
                     raise ValueError(
                         f"Season not found for {command.year}",
                     )
-                season_id = season_by_year.season_id
+                season_id = season_by_year.season.season_id
 
             else:
                 raise TypeError("season_id_or_year must be of type str or int")

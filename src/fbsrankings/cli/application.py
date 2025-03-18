@@ -57,6 +57,7 @@ from fbsrankings.messages.query import SeasonByIDQuery
 from fbsrankings.messages.query import SeasonByIDResult
 from fbsrankings.messages.query import SeasonByYearQuery
 from fbsrankings.messages.query import SeasonByYearResult
+from fbsrankings.messages.query import SeasonByYearValue
 from fbsrankings.messages.query import SeasonResult
 from fbsrankings.messages.query import SeasonsQuery
 from fbsrankings.messages.query import SeasonsResult
@@ -205,12 +206,13 @@ class Application:
         rating_name = self._parse_rating(rating)
         limit = self._parse_top(top)
 
-        latest_season_week = self._query_bus.query(
+        result = self._query_bus.query(
             LatestSeasonWeekQuery(query_id=str(uuid4())),
             LatestSeasonWeekResult,
         )
-        if latest_season_week is None:
+        if not result.HasField("latest"):
             raise ValueError("No completed weeks were found")
+        latest_season_week = result.latest
 
         season_id = latest_season_week.season_id
         year = latest_season_week.year
@@ -260,11 +262,13 @@ class Application:
     def print_seasons(self, top: str) -> None:
         limit = self._parse_top(top)
 
-        seasons = self._query_bus.query(
+        result = self._query_bus.query(
             SeasonsQuery(query_id=str(uuid4())),
             SeasonsResult,
-        ).seasons
-        self._print_seasons_table(seasons[:limit])
+        )
+        if not result.seasons:
+            raise ValueError("No seasons were found")
+        self._print_seasons_table(result.seasons[:limit])
 
     def print_teams(self, season: str, rating: str, top: str) -> None:
         rating_name = self._parse_rating(rating)
@@ -334,18 +338,21 @@ class Application:
     def _print_check(self) -> None:
         limit = 10
 
-        seasons = self._query_bus.query(
+        season_result = self._query_bus.query(
             SeasonsQuery(query_id=str(uuid4())),
             SeasonsResult,
-        ).seasons
-        self._print_seasons_table(seasons)
+        )
+        if not season_result.seasons:
+            raise ValueError("No seasons were found")
+        self._print_seasons_table(season_result.seasons)
 
-        latest_season_week = self._query_bus.query(
+        result = self._query_bus.query(
             LatestSeasonWeekQuery(query_id=str(uuid4())),
             LatestSeasonWeekResult,
         )
-        if latest_season_week is None:
+        if not result.HasField("latest"):
             raise ValueError("No completed weeks were found")
+        latest_season_week = result.latest
 
         season_id = latest_season_week.season_id
         year = latest_season_week.year
@@ -412,12 +419,13 @@ class Application:
             year = int(year_week[0])
             week = int(year_week[1])
         elif season_week.casefold() == "latest".casefold():
-            latest_season_week = self._query_bus.query(
+            result = self._query_bus.query(
                 LatestSeasonWeekQuery(query_id=str(uuid4())),
                 LatestSeasonWeekResult,
             )
-            if latest_season_week is None:
+            if not result.HasField("latest"):
                 raise ValueError("No completed weeks were found")
+            latest_season_week = result.latest
             year = latest_season_week.year
             week = (
                 latest_season_week.week if latest_season_week.HasField("week") else None
@@ -450,14 +458,14 @@ class Application:
 
         raise ValueError(f"'{top}' must be a positive integer or 'all'")
 
-    def _get_season(self, year: int) -> SeasonByYearResult:
-        season = self._query_bus.query(
+    def _get_season(self, year: int) -> SeasonByYearValue:
+        result = self._query_bus.query(
             SeasonByYearQuery(query_id=str(uuid4()), year=year),
             SeasonByYearResult,
         )
-        if season is None:
+        if not result.HasField("season"):
             raise ValueError(f"Season not found for {year}")
-        return season
+        return result.season
 
     def _get_team_record(
         self,
@@ -678,8 +686,8 @@ class Application:
                     game.away_team_name,
                     (
                         f"{game.home_team_score}-{game.away_team_score}"
-                        if game.home_team_score is not None
-                        and game.away_team_score is not None
+                        if game.HasField("home_team_score")
+                        and game.HasField("away_team_score")
                         else ""
                     ),
                     game.value,
@@ -692,11 +700,13 @@ class Application:
         print()
         print("Events:")
         if self._event_counts_by_season:
-            seasons = self._query_bus.query(
+            result = self._query_bus.query(
                 SeasonsQuery(query_id=str(uuid4())),
                 SeasonsResult,
-            ).seasons
-            season_map = {s.season_id: s for s in seasons}
+            )
+            if not result.seasons:
+                raise ValueError("No seasons were found")
+            season_map = {s.season_id: s for s in result.seasons}
 
             event_table = PrettyTable(
                 field_names=[
@@ -755,20 +765,21 @@ class Application:
             print()
             print("Notes:")
             for event in self._note_events:
-                game = self._query_bus.query(
+                result = self._query_bus.query(
                     GameByIDQuery(query_id=str(uuid4()), game_id=event.game_id),
                     GameByIDResult,
                 )
-                if game is not None:
+                if result.HasField("game"):
+                    game = result.game
+
                     print()
                     print(f"ID: {game.game_id}")
                     print(f"Year {game.year}, Week {game.week}")
                     print(game.date)
                     print(game.season_section)
                     print(f"{game.home_team_name} vs. {game.away_team_name}")
-                    if (
-                        game.home_team_score is not None
-                        and game.away_team_score is not None
+                    if game.HasField("home_team_score") and game.HasField(
+                        "away_team_score",
                     ):
                         print(
                             f"{game.status}, {game.home_team_score} to"
@@ -808,64 +819,79 @@ class Application:
             print("FBS teams with too few games:")
             print()
             for fbs_error in fbs_team_errors:
-                fbs_error_season = self._query_bus.query(
+                season_result = self._query_bus.query(
                     SeasonByIDQuery(
                         query_id=str(uuid4()),
                         season_id=fbs_error.season_id,
                     ),
                     SeasonByIDResult,
                 )
-                fbs_error_team = self._query_bus.query(
+                if not season_result.HasField("season"):
+                    raise ValueError(f"Season not found for {fbs_error.season_id}")
+                fbs_error_season = season_result.season
+
+                team_result = self._query_bus.query(
                     TeamByIDQuery(query_id=str(uuid4()), team_id=fbs_error.team_id),
                     TeamByIDResult,
                 )
-                if fbs_error_season is not None and fbs_error_team is not None:
-                    print(
-                        f"{fbs_error_season.year} {fbs_error_team.name}:"
-                        f" {fbs_error.game_count}",
-                    )
+                if not team_result.HasField("team"):
+                    raise ValueError(f"Team not found for {fbs_error.team_id}")
+                fbs_error_team = team_result.team
+
+                print(
+                    f"{fbs_error_season.year} {fbs_error_team.name}:"
+                    f" {fbs_error.game_count}",
+                )
 
         if fcs_team_errors:
             print()
             print("FCS teams with too many games:")
             print()
             for fcs_error in fcs_team_errors:
-                fcs_error_season = self._query_bus.query(
+                season_result = self._query_bus.query(
                     SeasonByIDQuery(
                         query_id=str(uuid4()),
                         season_id=fcs_error.season_id,
                     ),
                     SeasonByIDResult,
                 )
-                fcs_error_team = self._query_bus.query(
+                if not season_result.HasField("season"):
+                    raise ValueError(f"Season not found for {fcs_error.season_id}")
+                fcs_error_season = season_result.season
+
+                team_result = self._query_bus.query(
                     TeamByIDQuery(query_id=str(uuid4()), team_id=fcs_error.team_id),
                     TeamByIDResult,
                 )
-                if fcs_error_season is not None and fcs_error_team is not None:
-                    print(
-                        f"{fcs_error_season.year} {fcs_error_team.name}:"
-                        f" {fcs_error.game_count}",
-                    )
+                if not team_result.HasField("team"):
+                    raise ValueError(f"Team not found for {fcs_error.team_id}")
+                fcs_error_team = team_result.team
+
+                print(
+                    f"{fcs_error_season.year} {fcs_error_team.name}:"
+                    f" {fcs_error.game_count}",
+                )
 
     def _print_game_errors(self, game_errors: list[GameDataValidationError]) -> None:
         if game_errors:
             print()
             print("Game Errors:")
             for error in game_errors:
-                game = self._query_bus.query(
+                result = self._query_bus.query(
                     GameByIDQuery(query_id=str(uuid4()), game_id=error.game_id),
                     GameByIDResult,
                 )
-                if game is not None:
+                if result.HasField("game"):
+                    game = result.game
+
                     print()
                     print(f"ID: {game.game_id}")
                     print(f"Year {game.year}, Week {game.week}")
                     print(game.date)
                     print(game.season_section)
                     print(f"{game.home_team_name} vs. {game.away_team_name}")
-                    if (
-                        game.home_team_score is not None
-                        and game.away_team_score is not None
+                    if game.HasField("home_team_score") and game.HasField(
+                        "away_team_score",
                     ):
                         print(
                             f"{game.status}, {game.home_team_score} to"

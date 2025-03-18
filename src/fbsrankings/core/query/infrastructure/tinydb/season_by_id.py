@@ -1,7 +1,6 @@
-from typing import Optional
-
 from fbsrankings.messages.query import SeasonByIDQuery
 from fbsrankings.messages.query import SeasonByIDResult
+from fbsrankings.messages.query import SeasonByIDValue
 from fbsrankings.storage.tinydb import Storage
 
 
@@ -9,11 +8,13 @@ class SeasonByIDQueryHandler:
     def __init__(self, storage: Storage) -> None:
         self._storage = storage
 
-    def __call__(self, query: SeasonByIDQuery) -> Optional[SeasonByIDResult]:
+    def __call__(self, query: SeasonByIDQuery) -> SeasonByIDResult:
         item = self._storage.cache_season_by_id.get(query.season_id)
 
         return (
-            SeasonByIDResult(season_id=item["id_"], year=item["year"])
+            SeasonByIDResult(
+                season=SeasonByIDValue(season_id=item["id_"], year=item["year"]),
+            )
             if item is not None
-            else None
+            else SeasonByIDResult(season=None)
         )

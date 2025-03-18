@@ -2,9 +2,13 @@ syntax = "proto3";
 
 package fbsrankings.messages.query;
 
-message TeamByIDResult {
+message TeamByIDValue {
     string team_id = 1;
     string name = 2;
+}
+
+message TeamByIDResult {
+    optional TeamByIDValue team = 1;
 }
 
 message TeamByIDQuery {

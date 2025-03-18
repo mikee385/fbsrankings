@@ -1,8 +1,7 @@
-from typing import Optional
-
 from fbsrankings.messages.enums import GameStatus
 from fbsrankings.messages.query import LatestSeasonWeekQuery
 from fbsrankings.messages.query import LatestSeasonWeekResult
+from fbsrankings.messages.query import LatestSeasonWeekValue
 from fbsrankings.storage.memory import Storage
 
 
@@ -19,7 +18,7 @@ class LatestSeasonWeekQueryHandler:
     def __call__(
         self,
         query: LatestSeasonWeekQuery,
-    ) -> Optional[LatestSeasonWeekResult]:
+    ) -> LatestSeasonWeekResult:
         for season in sorted(
             self._storage.season.all_(),
             key=lambda s: s.year,
@@ -38,9 +37,11 @@ class LatestSeasonWeekQueryHandler:
 
             if season_data.has_scheduled is False and season_data.has_completed is True:
                 return LatestSeasonWeekResult(
-                    season_id=str(season.id_),
-                    year=season.year,
-                    week=None,
+                    latest=LatestSeasonWeekValue(
+                        season_id=str(season.id_),
+                        year=season.year,
+                        week=None,
+                    ),
                 )
 
             completed_weeks: list[int] = []
@@ -50,9 +51,11 @@ class LatestSeasonWeekQueryHandler:
             if len(completed_weeks) > 0:
                 sorted_weeks = sorted(completed_weeks, reverse=True)
                 return LatestSeasonWeekResult(
-                    season_id=str(season.id_),
-                    year=season.year,
-                    week=sorted_weeks[0],
+                    latest=LatestSeasonWeekValue(
+                        season_id=str(season.id_),
+                        year=season.year,
+                        week=sorted_weeks[0],
+                    ),
                 )
 
-        return None
+        return LatestSeasonWeekResult(latest=None)

@@ -1,8 +1,8 @@
 import sqlite3
-from typing import Optional
 
 from fbsrankings.messages.query import SeasonByYearQuery
 from fbsrankings.messages.query import SeasonByYearResult
+from fbsrankings.messages.query import SeasonByYearValue
 from fbsrankings.storage.sqlite import SeasonTable
 
 
@@ -12,7 +12,7 @@ class SeasonByYearQueryHandler:
 
         self._table = SeasonTable().table
 
-    def __call__(self, query: SeasonByYearQuery) -> Optional[SeasonByYearResult]:
+    def __call__(self, query: SeasonByYearQuery) -> SeasonByYearResult:
         cursor = self._connection.cursor()
         cursor.execute(
             f"SELECT UUID, Year FROM {self._table} WHERE Year = ?;",
@@ -22,5 +22,7 @@ class SeasonByYearQueryHandler:
         cursor.close()
 
         if row:
-            return SeasonByYearResult(season_id=row[0], year=row[1])
-        return None
+            return SeasonByYearResult(
+                season=SeasonByYearValue(season_id=row[0], year=row[1]),
+            )
+        return SeasonByYearResult(season=None)
