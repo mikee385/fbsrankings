@@ -6,7 +6,7 @@ from fbsrankings.cli.main import main
 from .copy_files import _copy_files
 
 
-def test_main_latest(
+def test_main_latest_full(
     capsys: Any,
     output_path: Path,
     data_path: Path,
@@ -14,7 +14,7 @@ def test_main_latest(
     query_config: Path,
 ) -> None:
     _copy_files(data_path, test_path, ["test_data.db", "test_data.json"])
-    files = _copy_files(output_path, test_path, ["main_latest.txt"])
+    files = _copy_files(output_path, test_path, ["main_latest_full.txt"])
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
@@ -26,7 +26,27 @@ def test_main_latest(
     assert captured_err == ""
 
 
-def test_main_latest_rating_srs_top_5(
+def test_main_latest_empty(
+    capsys: Any,
+    output_path: Path,
+    data_path: Path,
+    test_path: Path,
+    command_config: Path,
+) -> None:
+    _copy_files(data_path, test_path, ["empty_data.db", "empty_data.json"])
+    files = _copy_files(output_path, test_path, ["main_latest_empty.txt"])
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
+        expected_out = expected_file.read()
+
+    exit_result = main(["latest", f"--config={command_config}"])
+    assert exit_result == 0
+
+    captured_out, captured_err = capsys.readouterr()
+    assert captured_out == expected_out
+    assert captured_err == ""
+
+
+def test_main_latest_rating_srs_top_5_full(
     capsys: Any,
     output_path: Path,
     data_path: Path,
@@ -37,13 +57,39 @@ def test_main_latest_rating_srs_top_5(
     files = _copy_files(
         output_path,
         test_path,
-        ["main_latest_rating_colley_matrix_top_5.txt"],
+        ["main_latest_rating_colley_matrix_top_5_full.txt"],
     )
     with files[0].open(mode="r", encoding="utf-8") as expected_file:
         expected_out = expected_file.read()
 
     exit_result = main(
         ["latest", "--rating=colley-matrix", "--top=5", f"--config={query_config}"],
+    )
+    assert exit_result == 0
+
+    captured_out, captured_err = capsys.readouterr()
+    assert captured_out == expected_out
+    assert captured_err == ""
+
+
+def test_main_latest_rating_srs_top_5_empty(
+    capsys: Any,
+    output_path: Path,
+    data_path: Path,
+    test_path: Path,
+    command_config: Path,
+) -> None:
+    _copy_files(data_path, test_path, ["empty_data.db", "empty_data.json"])
+    files = _copy_files(
+        output_path,
+        test_path,
+        ["main_latest_rating_colley_matrix_top_5_empty.txt"],
+    )
+    with files[0].open(mode="r", encoding="utf-8") as expected_file:
+        expected_out = expected_file.read()
+
+    exit_result = main(
+        ["latest", "--rating=colley-matrix", "--top=5", f"--config={command_config}"],
     )
     assert exit_result == 0
 
