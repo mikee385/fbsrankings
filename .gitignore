@@ -167,6 +167,9 @@ cython_debug/
 # pypi Configuration
 .pypirc
 
+# import-linter
+.import_linter_cache
+
 # Project output
 **/fbsrankings.db
 **/fbsrankings.json

@@ -19,6 +19,7 @@ repos:
     -   id: forbid-new-submodules
     -   id: mixed-line-ending
     -   id: name-tests-test
+        exclude: 'tests/cli/copy_files.py'
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
         exclude: '.bumpversion.cfg'

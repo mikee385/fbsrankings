@@ -55,7 +55,7 @@ check:
     black src tests setup.py --exclude _pb2\.
     flake8 src tests setup.py
     mypy src tests setup.py
-    vulture src tests setup.py whitelist.py --exclude *_pb2.*
+    vulture src whitelist.py --exclude *_pb2.*
     pylint src tests setup.py
     lint-imports
     bandit --ini setup.cfg -r src
