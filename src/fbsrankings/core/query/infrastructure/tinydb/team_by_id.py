@@ -11,8 +11,9 @@ class TeamByIDQueryHandler:
     def __call__(self, query: TeamByIDQuery) -> TeamByIDResult:
         item = self._storage.cache_team_by_id.get(query.team_id)
 
-        return (
-            TeamByIDResult(team=TeamByIDValue(team_id=item["id_"], name=item["name"]))
-            if item is not None
-            else TeamByIDResult(team=None)
-        )
+        if item is not None:
+            return TeamByIDResult(
+                team=TeamByIDValue(team_id=item["id_"], name=item["name"]),
+            )
+
+        return TeamByIDResult(team=None)

@@ -14,8 +14,8 @@ class GameByIDQueryHandler:
     def __call__(self, query: GameByIDQuery) -> GameByIDResult:
         item = self._storage.cache_game_by_id.get(query.game_id)
 
-        return (
-            GameByIDResult(
+        if item is not None:
+            return GameByIDResult(
                 game=GameByIDValue(
                     game_id=item["id_"],
                     season_id=item["season_id"],
@@ -35,6 +35,5 @@ class GameByIDQueryHandler:
                     notes=item["notes"],
                 ),
             )
-            if item is not None
-            else GameByIDResult(game=None)
-        )
+
+        return GameByIDResult(game=None)

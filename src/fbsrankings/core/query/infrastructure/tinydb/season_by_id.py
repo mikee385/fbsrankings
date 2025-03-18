@@ -11,10 +11,9 @@ class SeasonByIDQueryHandler:
     def __call__(self, query: SeasonByIDQuery) -> SeasonByIDResult:
         item = self._storage.cache_season_by_id.get(query.season_id)
 
-        return (
-            SeasonByIDResult(
+        if item is not None:
+            return SeasonByIDResult(
                 season=SeasonByIDValue(season_id=item["id_"], year=item["year"]),
             )
-            if item is not None
-            else SeasonByIDResult(season=None)
-        )
+
+        return SeasonByIDResult(season=None)

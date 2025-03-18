@@ -1,5 +1,3 @@
-from typing import Optional
-
 from tinydb import Query
 
 from communication.bus import EventBus
@@ -48,18 +46,17 @@ class PostseasonGameCountBySeasonQueryHandler:
     def __call__(
         self,
         query: PostseasonGameCountBySeasonQuery,
-    ) -> Optional[PostseasonGameCountBySeasonResult]:
+    ) -> PostseasonGameCountBySeasonResult:
         table = self._connection.table("postseason_game_count_by_season")
 
         item = table.get(Query().season_id == query.season_id)
         if isinstance(item, list):
             item = item[0]
 
-        return (
-            PostseasonGameCountBySeasonResult(
+        if item is not None:
+            return PostseasonGameCountBySeasonResult(
                 season_id=item["season_id"],
                 count=item["count"],
             )
-            if item is not None
-            else None
-        )
+
+        return PostseasonGameCountBySeasonResult(season_id=query.season_id, count=0)
