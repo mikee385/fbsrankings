@@ -16,10 +16,12 @@ class LatestSeasonWeekValue(_message.Message):
     def __init__(self, season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ...) -> None: ...
 
 class LatestSeasonWeekResult(_message.Message):
-    __slots__ = ("latest",)
+    __slots__ = ("query_id", "latest")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     LATEST_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     latest: LatestSeasonWeekValue
-    def __init__(self, latest: _Optional[_Union[LatestSeasonWeekValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., latest: _Optional[_Union[LatestSeasonWeekValue, _Mapping]] = ...) -> None: ...
 
 class LatestSeasonWeekQuery(_message.Message):
     __slots__ = ("query_id",)

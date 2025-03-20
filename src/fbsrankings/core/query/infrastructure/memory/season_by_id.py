@@ -12,6 +12,7 @@ class SeasonByIDQueryHandler:
         season = self._storage.season.get(query.season_id)
         if season is not None:
             return SeasonByIDResult(
+                query_id=query.query_id,
                 season=SeasonByIDValue(season_id=str(season.id_), year=season.year),
             )
-        return SeasonByIDResult(season=None)
+        return SeasonByIDResult(query_id=query.query_id, season=None)

@@ -20,7 +20,8 @@ message CanceledGameResult {
 }
 
 message CanceledGamesResult {
-    repeated CanceledGameResult games = 1;
+    string query_id = 1;
+    repeated CanceledGameResult games = 2;
 }
 
 message CanceledGamesQuery {

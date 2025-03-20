@@ -81,4 +81,4 @@ class AffiliationsBySeasonQueryHandler:
             for item in table.search(Query().season_id == query.season_id)
         ]
 
-        return AffiliationsBySeasonResult(affiliations=items)
+        return AffiliationsBySeasonResult(query_id=query.query_id, affiliations=items)

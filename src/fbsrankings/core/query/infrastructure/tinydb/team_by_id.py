@@ -13,7 +13,8 @@ class TeamByIDQueryHandler:
 
         if item is not None:
             return TeamByIDResult(
+                query_id=query.query_id,
                 team=TeamByIDValue(team_id=item["id_"], name=item["name"]),
             )
 
-        return TeamByIDResult(team=None)
+        return TeamByIDResult(query_id=query.query_id, team=None)

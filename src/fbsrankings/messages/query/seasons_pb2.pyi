@@ -15,10 +15,12 @@ class SeasonResult(_message.Message):
     def __init__(self, season_id: _Optional[str] = ..., year: _Optional[int] = ...) -> None: ...
 
 class SeasonsResult(_message.Message):
-    __slots__ = ("seasons",)
+    __slots__ = ("query_id", "seasons")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     SEASONS_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     seasons: _containers.RepeatedCompositeFieldContainer[SeasonResult]
-    def __init__(self, seasons: _Optional[_Iterable[_Union[SeasonResult, _Mapping]]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., seasons: _Optional[_Iterable[_Union[SeasonResult, _Mapping]]] = ...) -> None: ...
 
 class SeasonsQuery(_message.Message):
     __slots__ = ("query_id",)

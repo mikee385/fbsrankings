@@ -94,6 +94,7 @@ class TeamRankingBySeasonWeekQueryHandler:
 
         if item is not None:
             return TeamRankingBySeasonWeekResult(
+                query_id=query.query_id,
                 ranking=TeamRankingBySeasonWeekValue(
                     ranking_id=item["id_"],
                     name=item["name"],
@@ -113,4 +114,4 @@ class TeamRankingBySeasonWeekQueryHandler:
                 ),
             )
 
-        return TeamRankingBySeasonWeekResult(ranking=None)
+        return TeamRankingBySeasonWeekResult(query_id=query.query_id, ranking=None)

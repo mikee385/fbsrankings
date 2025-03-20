@@ -15,10 +15,12 @@ class TeamResult(_message.Message):
     def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class TeamsResult(_message.Message):
-    __slots__ = ("teams",)
+    __slots__ = ("query_id", "teams")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     TEAMS_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     teams: _containers.RepeatedCompositeFieldContainer[TeamResult]
-    def __init__(self, teams: _Optional[_Iterable[_Union[TeamResult, _Mapping]]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., teams: _Optional[_Iterable[_Union[TeamResult, _Mapping]]] = ...) -> None: ...
 
 class TeamsQuery(_message.Message):
     __slots__ = ("query_id",)

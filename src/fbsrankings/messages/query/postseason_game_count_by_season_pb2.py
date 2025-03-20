@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n@fbsrankings/messages/query/postseason_game_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\"E\n!PostseasonGameCountBySeasonResult\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x05\"G\n PostseasonGameCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n@fbsrankings/messages/query/postseason_game_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\"W\n!PostseasonGameCountBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"G\n PostseasonGameCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,7 +32,7 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_POSTSEASONGAMECOUNTBYSEASONRESULT']._serialized_start=96
-  _globals['_POSTSEASONGAMECOUNTBYSEASONRESULT']._serialized_end=165
-  _globals['_POSTSEASONGAMECOUNTBYSEASONQUERY']._serialized_start=167
-  _globals['_POSTSEASONGAMECOUNTBYSEASONQUERY']._serialized_end=238
+  _globals['_POSTSEASONGAMECOUNTBYSEASONRESULT']._serialized_end=183
+  _globals['_POSTSEASONGAMECOUNTBYSEASONQUERY']._serialized_start=185
+  _globals['_POSTSEASONGAMECOUNTBYSEASONQUERY']._serialized_end=256
 # @@protoc_insertion_point(module_scope)

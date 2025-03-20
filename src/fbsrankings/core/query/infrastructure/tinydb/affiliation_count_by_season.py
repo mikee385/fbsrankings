@@ -70,12 +70,14 @@ class AffiliationCountBySeasonQueryHandler:
 
         if item is not None:
             return AffiliationCountBySeasonResult(
+                query_id=query.query_id,
                 season_id=item["season_id"],
                 fbs_count=item["fbs_count"],
                 fcs_count=item["fcs_count"],
             )
 
         return AffiliationCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             fbs_count=0,
             fcs_count=0,

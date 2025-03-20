@@ -41,10 +41,12 @@ class GameBySeasonResult(_message.Message):
     def __init__(self, game_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., date: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., season_section: _Optional[_Union[_enums_pb2.SeasonSection, str]] = ..., home_team_id: _Optional[str] = ..., home_team_name: _Optional[str] = ..., away_team_id: _Optional[str] = ..., away_team_name: _Optional[str] = ..., home_team_score: _Optional[int] = ..., away_team_score: _Optional[int] = ..., status: _Optional[_Union[_enums_pb2.GameStatus, str]] = ..., notes: _Optional[str] = ...) -> None: ...
 
 class GamesBySeasonResult(_message.Message):
-    __slots__ = ("games",)
+    __slots__ = ("query_id", "games")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     GAMES_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     games: _containers.RepeatedCompositeFieldContainer[GameBySeasonResult]
-    def __init__(self, games: _Optional[_Iterable[_Union[GameBySeasonResult, _Mapping]]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., games: _Optional[_Iterable[_Union[GameBySeasonResult, _Mapping]]] = ...) -> None: ...
 
 class GamesBySeasonQuery(_message.Message):
     __slots__ = ("query_id", "season_id")

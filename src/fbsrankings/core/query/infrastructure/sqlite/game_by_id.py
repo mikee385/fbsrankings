@@ -51,6 +51,7 @@ class GameByIDQueryHandler:
 
         if row:
             return GameByIDResult(
+                query_id=query.query_id,
                 game=GameByIDValue(
                     game_id=row[0],
                     season_id=row[1],
@@ -68,4 +69,4 @@ class GameByIDQueryHandler:
                     notes=row[13],
                 ),
             )
-        return GameByIDResult(game=None)
+        return GameByIDResult(query_id=query.query_id, game=None)

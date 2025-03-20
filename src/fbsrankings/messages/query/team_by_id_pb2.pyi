@@ -14,10 +14,12 @@ class TeamByIDValue(_message.Message):
     def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class TeamByIDResult(_message.Message):
-    __slots__ = ("team",)
+    __slots__ = ("query_id", "team")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     TEAM_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     team: TeamByIDValue
-    def __init__(self, team: _Optional[_Union[TeamByIDValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., team: _Optional[_Union[TeamByIDValue, _Mapping]] = ...) -> None: ...
 
 class TeamByIDQuery(_message.Message):
     __slots__ = ("query_id", "team_id")

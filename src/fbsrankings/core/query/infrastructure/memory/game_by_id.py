@@ -18,6 +18,7 @@ class GameByIDQueryHandler:
 
             if season is not None and home_team is not None and away_team is not None:
                 return GameByIDResult(
+                    query_id=query.query_id,
                     game=GameByIDValue(
                         game_id=str(game.id_),
                         season_id=str(game.season_id),
@@ -35,4 +36,4 @@ class GameByIDQueryHandler:
                         notes=game.notes,
                     ),
                 )
-        return GameByIDResult(game=None)
+        return GameByIDResult(query_id=query.query_id, game=None)

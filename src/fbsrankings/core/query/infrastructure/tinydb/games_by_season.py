@@ -201,6 +201,7 @@ class GamesBySeasonQueryHandler:
 
     def __call__(self, query: GamesBySeasonQuery) -> GamesBySeasonResult:
         return GamesBySeasonResult(
+            query_id=query.query_id,
             games=[
                 GameBySeasonResult(
                     game_id=item["id_"],

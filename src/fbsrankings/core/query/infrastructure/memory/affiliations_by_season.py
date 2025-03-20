@@ -29,4 +29,4 @@ class AffiliationsBySeasonQueryHandler:
                     ),
                 )
 
-        return AffiliationsBySeasonResult(affiliations=items)
+        return AffiliationsBySeasonResult(query_id=query.query_id, affiliations=items)

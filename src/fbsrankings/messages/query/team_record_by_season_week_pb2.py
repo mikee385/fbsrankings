@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n;fbsrankings/messages/query/team_record_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"`\n!TeamRecordValueBySeasonWeekResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04wins\x18\x03 \x01(\x05\x12\x0e\n\x06losses\x18\x04 \x01(\x05\"\xbc\x01\n\x1bTeamRecordBySeasonWeekValue\x12\x11\n\trecord_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12M\n\x06values\x18\x05 \x03(\x0b\x32=.fbsrankings.messages.query.TeamRecordValueBySeasonWeekResultB\x07\n\x05_week\"w\n\x1cTeamRecordBySeasonWeekResult\x12L\n\x06record\x18\x01 \x01(\x0b\x32\x37.fbsrankings.messages.query.TeamRecordBySeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_record\"^\n\x1bTeamRecordBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_weekb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n;fbsrankings/messages/query/team_record_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"`\n!TeamRecordValueBySeasonWeekResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04wins\x18\x03 \x01(\x05\x12\x0e\n\x06losses\x18\x04 \x01(\x05\"\xbc\x01\n\x1bTeamRecordBySeasonWeekValue\x12\x11\n\trecord_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12M\n\x06values\x18\x05 \x03(\x0b\x32=.fbsrankings.messages.query.TeamRecordValueBySeasonWeekResultB\x07\n\x05_week\"\x89\x01\n\x1cTeamRecordBySeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12L\n\x06record\x18\x02 \x01(\x0b\x32\x37.fbsrankings.messages.query.TeamRecordBySeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_record\"^\n\x1bTeamRecordBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,8 +35,8 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_TEAMRECORDVALUEBYSEASONWEEKRESULT']._serialized_end=187
   _globals['_TEAMRECORDBYSEASONWEEKVALUE']._serialized_start=190
   _globals['_TEAMRECORDBYSEASONWEEKVALUE']._serialized_end=378
-  _globals['_TEAMRECORDBYSEASONWEEKRESULT']._serialized_start=380
-  _globals['_TEAMRECORDBYSEASONWEEKRESULT']._serialized_end=499
-  _globals['_TEAMRECORDBYSEASONWEEKQUERY']._serialized_start=501
-  _globals['_TEAMRECORDBYSEASONWEEKQUERY']._serialized_end=595
+  _globals['_TEAMRECORDBYSEASONWEEKRESULT']._serialized_start=381
+  _globals['_TEAMRECORDBYSEASONWEEKRESULT']._serialized_end=518
+  _globals['_TEAMRECORDBYSEASONWEEKQUERY']._serialized_start=520
+  _globals['_TEAMRECORDBYSEASONWEEKQUERY']._serialized_end=614
 # @@protoc_insertion_point(module_scope)

@@ -14,7 +14,8 @@ message AffiliationBySeasonResult {
 }
 
 message AffiliationsBySeasonResult {
-    repeated AffiliationBySeasonResult affiliations = 1;
+    string query_id = 1;
+    repeated AffiliationBySeasonResult affiliations = 2;
 }
 
 message AffiliationsBySeasonQuery {

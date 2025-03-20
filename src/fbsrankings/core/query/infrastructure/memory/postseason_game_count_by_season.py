@@ -13,6 +13,7 @@ class PostseasonGameCountBySeasonQueryHandler:
         query: PostseasonGameCountBySeasonQuery,
     ) -> PostseasonGameCountBySeasonResult:
         return PostseasonGameCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             count=sum(
                 1

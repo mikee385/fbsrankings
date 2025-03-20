@@ -35,7 +35,8 @@ message GameRankingBySeasonWeekValue {
 }
 
 message GameRankingBySeasonWeekResult {
-	optional GameRankingBySeasonWeekValue ranking = 1;
+    string query_id = 1;
+	optional GameRankingBySeasonWeekValue ranking = 2;
 }
 
 message GameRankingBySeasonWeekQuery {

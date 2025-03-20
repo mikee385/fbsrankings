@@ -9,7 +9,8 @@ message LatestSeasonWeekValue {
 }
 
 message LatestSeasonWeekResult {
-    optional LatestSeasonWeekValue latest = 1;
+    string query_id = 1;
+    optional LatestSeasonWeekValue latest = 2;
 }
 
 message LatestSeasonWeekQuery {

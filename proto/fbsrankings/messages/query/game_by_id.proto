@@ -23,7 +23,8 @@ message GameByIDValue {
 }
 
 message GameByIDResult {
-    optional GameByIDValue game = 1;
+    string query_id = 1;
+    optional GameByIDValue game = 2;
 }
 
 message GameByIDQuery {

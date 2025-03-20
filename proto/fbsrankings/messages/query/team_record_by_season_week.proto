@@ -18,7 +18,8 @@ message TeamRecordBySeasonWeekValue {
 }
 
 message TeamRecordBySeasonWeekResult {
-    optional TeamRecordBySeasonWeekValue record = 1;
+    string query_id = 1;
+    optional TeamRecordBySeasonWeekValue record = 2;
 }
 
 message TeamRecordBySeasonWeekQuery {

@@ -8,7 +8,8 @@ message SeasonResult {
 }
 
 message SeasonsResult {
-    repeated SeasonResult seasons = 1;
+    string query_id = 1;
+    repeated SeasonResult seasons = 2;
 }
 
 message SeasonsQuery {

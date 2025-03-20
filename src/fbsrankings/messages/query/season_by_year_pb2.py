@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n/fbsrankings/messages/query/season_by_year.proto\x12\x1a\x66\x62srankings.messages.query\"4\n\x11SeasonByYearValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\"c\n\x12SeasonByYearResult\x12\x42\n\x06season\x18\x01 \x01(\x0b\x32-.fbsrankings.messages.query.SeasonByYearValueH\x00\x88\x01\x01\x42\t\n\x07_season\"3\n\x11SeasonByYearQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n/fbsrankings/messages/query/season_by_year.proto\x12\x1a\x66\x62srankings.messages.query\"4\n\x11SeasonByYearValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\"u\n\x12SeasonByYearResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x42\n\x06season\x18\x02 \x01(\x0b\x32-.fbsrankings.messages.query.SeasonByYearValueH\x00\x88\x01\x01\x42\t\n\x07_season\"3\n\x11SeasonByYearQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,7 +34,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_SEASONBYYEARVALUE']._serialized_start=79
   _globals['_SEASONBYYEARVALUE']._serialized_end=131
   _globals['_SEASONBYYEARRESULT']._serialized_start=133
-  _globals['_SEASONBYYEARRESULT']._serialized_end=232
-  _globals['_SEASONBYYEARQUERY']._serialized_start=234
-  _globals['_SEASONBYYEARQUERY']._serialized_end=285
+  _globals['_SEASONBYYEARRESULT']._serialized_end=250
+  _globals['_SEASONBYYEARQUERY']._serialized_start=252
+  _globals['_SEASONBYYEARQUERY']._serialized_end=303
 # @@protoc_insertion_point(module_scope)

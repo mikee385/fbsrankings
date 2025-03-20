@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/affiliation_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\"Y\n\x1e\x41\x66\x66iliationCountBySeasonResult\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x11\n\tfbs_count\x18\x02 \x01(\x05\x12\x11\n\tfcs_count\x18\x03 \x01(\x05\"D\n\x1d\x41\x66\x66iliationCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/affiliation_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\"k\n\x1e\x41\x66\x66iliationCountBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x11\n\tfbs_count\x18\x03 \x01(\x05\x12\x11\n\tfcs_count\x18\x04 \x01(\x05\"D\n\x1d\x41\x66\x66iliationCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,7 +32,7 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_AFFILIATIONCOUNTBYSEASONRESULT']._serialized_start=92
-  _globals['_AFFILIATIONCOUNTBYSEASONRESULT']._serialized_end=181
-  _globals['_AFFILIATIONCOUNTBYSEASONQUERY']._serialized_start=183
-  _globals['_AFFILIATIONCOUNTBYSEASONQUERY']._serialized_end=251
+  _globals['_AFFILIATIONCOUNTBYSEASONRESULT']._serialized_end=199
+  _globals['_AFFILIATIONCOUNTBYSEASONQUERY']._serialized_start=201
+  _globals['_AFFILIATIONCOUNTBYSEASONQUERY']._serialized_end=269
 # @@protoc_insertion_point(module_scope)

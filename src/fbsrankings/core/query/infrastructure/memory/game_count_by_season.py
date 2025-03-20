@@ -9,6 +9,7 @@ class GameCountBySeasonQueryHandler:
 
     def __call__(self, query: GameCountBySeasonQuery) -> GameCountBySeasonResult:
         return GameCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             count=len(self._storage.game.for_season(query.season_id)),
         )

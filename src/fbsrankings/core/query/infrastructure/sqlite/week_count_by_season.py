@@ -20,4 +20,8 @@ class WeekCountBySeasonQueryHandler:
         row = cursor.fetchone()
         cursor.close()
 
-        return WeekCountBySeasonResult(season_id=query.season_id, count=row[0])
+        return WeekCountBySeasonResult(
+            query_id=query.query_id,
+            season_id=query.season_id,
+            count=row[0],
+        )

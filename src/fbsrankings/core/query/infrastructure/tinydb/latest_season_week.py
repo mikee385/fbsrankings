@@ -251,6 +251,7 @@ class LatestSeasonWeekQueryHandler:
         if len(items) > 0:
             item = items[0]
             return LatestSeasonWeekResult(
+                query_id=query.query_id,
                 latest=LatestSeasonWeekValue(
                     season_id=item["season_id"],
                     year=item["year"],
@@ -280,6 +281,7 @@ class LatestSeasonWeekQueryHandler:
                     },
                 )
                 return LatestSeasonWeekResult(
+                    query_id=query.query_id,
                     latest=LatestSeasonWeekValue(
                         season_id=season["season_id"],
                         year=season["year"],
@@ -327,6 +329,7 @@ class LatestSeasonWeekQueryHandler:
                             },
                         )
                         return LatestSeasonWeekResult(
+                            query_id=query.query_id,
                             latest=LatestSeasonWeekValue(
                                 season_id=week["season_id"],
                                 year=existing_season["year"],
@@ -334,4 +337,4 @@ class LatestSeasonWeekQueryHandler:
                             ),
                         )
 
-        return LatestSeasonWeekResult(latest=None)
+        return LatestSeasonWeekResult(query_id=query.query_id, latest=None)

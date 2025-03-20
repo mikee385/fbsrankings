@@ -12,6 +12,7 @@ class TeamByIDQueryHandler:
         team = self._storage.team.get(query.team_id)
         if team is not None:
             return TeamByIDResult(
+                query_id=query.query_id,
                 team=TeamByIDValue(team_id=str(team.id_), name=team.name),
             )
-        return TeamByIDResult(team=None)
+        return TeamByIDResult(query_id=query.query_id, team=None)

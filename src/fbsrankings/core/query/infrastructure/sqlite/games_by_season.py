@@ -67,4 +67,4 @@ class GamesBySeasonQueryHandler:
         ]
         cursor.close()
 
-        return GamesBySeasonResult(games=items)
+        return GamesBySeasonResult(query_id=query.query_id, games=items)

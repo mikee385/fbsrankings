@@ -8,7 +8,8 @@ message TeamByIDValue {
 }
 
 message TeamByIDResult {
-    optional TeamByIDValue team = 1;
+    string query_id = 1;
+    optional TeamByIDValue team = 2;
 }
 
 message TeamByIDQuery {

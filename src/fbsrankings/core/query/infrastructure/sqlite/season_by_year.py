@@ -23,6 +23,7 @@ class SeasonByYearQueryHandler:
 
         if row:
             return SeasonByYearResult(
+                query_id=query.query_id,
                 season=SeasonByYearValue(season_id=row[0], year=row[1]),
             )
-        return SeasonByYearResult(season=None)
+        return SeasonByYearResult(query_id=query.query_id, season=None)

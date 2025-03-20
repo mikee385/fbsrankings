@@ -35,10 +35,12 @@ class CanceledGameResult(_message.Message):
     def __init__(self, game_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., date: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., season_section: _Optional[_Union[_enums_pb2.SeasonSection, str]] = ..., home_team_id: _Optional[str] = ..., home_team_name: _Optional[str] = ..., away_team_id: _Optional[str] = ..., away_team_name: _Optional[str] = ..., notes: _Optional[str] = ...) -> None: ...
 
 class CanceledGamesResult(_message.Message):
-    __slots__ = ("games",)
+    __slots__ = ("query_id", "games")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     GAMES_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     games: _containers.RepeatedCompositeFieldContainer[CanceledGameResult]
-    def __init__(self, games: _Optional[_Iterable[_Union[CanceledGameResult, _Mapping]]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., games: _Optional[_Iterable[_Union[CanceledGameResult, _Mapping]]] = ...) -> None: ...
 
 class CanceledGamesQuery(_message.Message):
     __slots__ = ("query_id",)

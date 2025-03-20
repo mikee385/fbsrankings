@@ -122,6 +122,7 @@ class GameRankingBySeasonWeekQueryHandler:
 
         if row is not None:
             return GameRankingBySeasonWeekResult(
+                query_id=query.query_id,
                 ranking=GameRankingBySeasonWeekValue(
                     ranking_id=row[0],
                     name=row[1],
@@ -132,4 +133,4 @@ class GameRankingBySeasonWeekQueryHandler:
                 ),
             )
 
-        return GameRankingBySeasonWeekResult(ranking=None)
+        return GameRankingBySeasonWeekResult(query_id=query.query_id, ranking=None)

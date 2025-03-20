@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n3fbsrankings/messages/query/latest_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"T\n\x15LatestSeasonWeekValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_week\"k\n\x16LatestSeasonWeekResult\x12\x46\n\x06latest\x18\x01 \x01(\x0b\x32\x31.fbsrankings.messages.query.LatestSeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_latest\")\n\x15LatestSeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n3fbsrankings/messages/query/latest_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"T\n\x15LatestSeasonWeekValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_week\"}\n\x16LatestSeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x46\n\x06latest\x18\x02 \x01(\x0b\x32\x31.fbsrankings.messages.query.LatestSeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_latest\")\n\x15LatestSeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,7 +34,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_LATESTSEASONWEEKVALUE']._serialized_start=83
   _globals['_LATESTSEASONWEEKVALUE']._serialized_end=167
   _globals['_LATESTSEASONWEEKRESULT']._serialized_start=169
-  _globals['_LATESTSEASONWEEKRESULT']._serialized_end=276
-  _globals['_LATESTSEASONWEEKQUERY']._serialized_start=278
-  _globals['_LATESTSEASONWEEKQUERY']._serialized_end=319
+  _globals['_LATESTSEASONWEEKRESULT']._serialized_end=294
+  _globals['_LATESTSEASONWEEKQUERY']._serialized_start=296
+  _globals['_LATESTSEASONWEEKQUERY']._serialized_end=337
 # @@protoc_insertion_point(module_scope)

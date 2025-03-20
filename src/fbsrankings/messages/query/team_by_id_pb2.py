@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/query/team_by_id.proto\x12\x1a\x66\x62srankings.messages.query\".\n\rTeamByIDValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"W\n\x0eTeamByIDResult\x12<\n\x04team\x18\x01 \x01(\x0b\x32).fbsrankings.messages.query.TeamByIDValueH\x00\x88\x01\x01\x42\x07\n\x05_team\"2\n\rTeamByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/query/team_by_id.proto\x12\x1a\x66\x62srankings.messages.query\".\n\rTeamByIDValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"i\n\x0eTeamByIDResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12<\n\x04team\x18\x02 \x01(\x0b\x32).fbsrankings.messages.query.TeamByIDValueH\x00\x88\x01\x01\x42\x07\n\x05_team\"2\n\rTeamByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,7 +34,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_TEAMBYIDVALUE']._serialized_start=75
   _globals['_TEAMBYIDVALUE']._serialized_end=121
   _globals['_TEAMBYIDRESULT']._serialized_start=123
-  _globals['_TEAMBYIDRESULT']._serialized_end=210
-  _globals['_TEAMBYIDQUERY']._serialized_start=212
-  _globals['_TEAMBYIDQUERY']._serialized_end=262
+  _globals['_TEAMBYIDRESULT']._serialized_end=228
+  _globals['_TEAMBYIDQUERY']._serialized_start=230
+  _globals['_TEAMBYIDQUERY']._serialized_end=280
 # @@protoc_insertion_point(module_scope)

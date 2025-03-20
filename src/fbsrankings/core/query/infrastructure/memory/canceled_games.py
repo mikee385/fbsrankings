@@ -39,4 +39,4 @@ class CanceledGamesQueryHandler:
                         ),
                     )
 
-        return CanceledGamesResult(games=games)
+        return CanceledGamesResult(query_id=query.query_id, games=games)

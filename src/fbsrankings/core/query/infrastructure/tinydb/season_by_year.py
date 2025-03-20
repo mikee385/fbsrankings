@@ -13,7 +13,8 @@ class SeasonByYearQueryHandler:
 
         if item is not None:
             return SeasonByYearResult(
+                query_id=query.query_id,
                 season=SeasonByYearValue(season_id=item["id_"], year=item["year"]),
             )
 
-        return SeasonByYearResult(season=None)
+        return SeasonByYearResult(query_id=query.query_id, season=None)

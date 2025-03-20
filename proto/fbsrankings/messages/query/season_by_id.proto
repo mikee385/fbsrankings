@@ -8,7 +8,8 @@ message SeasonByIDValue {
 }
 
 message SeasonByIDResult {
-    optional SeasonByIDValue season = 1;
+    string query_id = 1;
+    optional SeasonByIDValue season = 2;
 }
 
 message SeasonByIDQuery {

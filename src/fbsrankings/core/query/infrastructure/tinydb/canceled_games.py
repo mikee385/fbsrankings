@@ -131,4 +131,4 @@ class CanceledGamesQueryHandler:
             for item in table.all()
         ]
 
-        return CanceledGamesResult(games=items)
+        return CanceledGamesResult(query_id=query.query_id, games=items)

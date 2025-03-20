@@ -26,7 +26,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n0fbsrankings/messages/query/games_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\"\xc8\x03\n\x12GameBySeasonResult\x12\x0f\n\x07game_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x16\n\x0ehome_team_name\x18\x08 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\t \x01(\t\x12\x16\n\x0e\x61way_team_name\x18\n \x01(\t\x12\x1c\n\x0fhome_team_score\x18\x0b \x01(\x05H\x00\x88\x01\x01\x12\x1c\n\x0f\x61way_team_score\x18\x0c \x01(\x05H\x01\x88\x01\x01\x12\x36\n\x06status\x18\r \x01(\x0e\x32&.fbsrankings.messages.enums.GameStatus\x12\r\n\x05notes\x18\x0e \x01(\tB\x12\n\x10_home_team_scoreB\x12\n\x10_away_team_score\"T\n\x13GamesBySeasonResult\x12=\n\x05games\x18\x01 \x03(\x0b\x32..fbsrankings.messages.query.GameBySeasonResult\"9\n\x12GamesBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n0fbsrankings/messages/query/games_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\"\xc8\x03\n\x12GameBySeasonResult\x12\x0f\n\x07game_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x16\n\x0ehome_team_name\x18\x08 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\t \x01(\t\x12\x16\n\x0e\x61way_team_name\x18\n \x01(\t\x12\x1c\n\x0fhome_team_score\x18\x0b \x01(\x05H\x00\x88\x01\x01\x12\x1c\n\x0f\x61way_team_score\x18\x0c \x01(\x05H\x01\x88\x01\x01\x12\x36\n\x06status\x18\r \x01(\x0e\x32&.fbsrankings.messages.enums.GameStatus\x12\r\n\x05notes\x18\x0e \x01(\tB\x12\n\x10_home_team_scoreB\x12\n\x10_away_team_score\"f\n\x13GamesBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12=\n\x05games\x18\x02 \x03(\x0b\x32..fbsrankings.messages.query.GameBySeasonResult\"9\n\x12GamesBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,7 +36,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GAMEBYSEASONRESULT']._serialized_start=154
   _globals['_GAMEBYSEASONRESULT']._serialized_end=610
   _globals['_GAMESBYSEASONRESULT']._serialized_start=612
-  _globals['_GAMESBYSEASONRESULT']._serialized_end=696
-  _globals['_GAMESBYSEASONQUERY']._serialized_start=698
-  _globals['_GAMESBYSEASONQUERY']._serialized_end=755
+  _globals['_GAMESBYSEASONRESULT']._serialized_end=714
+  _globals['_GAMESBYSEASONQUERY']._serialized_start=716
+  _globals['_GAMESBYSEASONQUERY']._serialized_end=773
 # @@protoc_insertion_point(module_scope)

@@ -50,8 +50,13 @@ class GameCountBySeasonQueryHandler:
 
         if item is not None:
             return GameCountBySeasonResult(
+                query_id=query.query_id,
                 season_id=item["season_id"],
                 count=item["count"],
             )
 
-        return GameCountBySeasonResult(season_id=query.season_id, count=0)
+        return GameCountBySeasonResult(
+            query_id=query.query_id,
+            season_id=query.season_id,
+            count=0,
+        )

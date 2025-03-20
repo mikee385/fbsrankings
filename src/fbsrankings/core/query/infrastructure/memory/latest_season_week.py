@@ -37,6 +37,7 @@ class LatestSeasonWeekQueryHandler:
 
             if season_data.has_scheduled is False and season_data.has_completed is True:
                 return LatestSeasonWeekResult(
+                    query_id=query.query_id,
                     latest=LatestSeasonWeekValue(
                         season_id=str(season.id_),
                         year=season.year,
@@ -51,6 +52,7 @@ class LatestSeasonWeekQueryHandler:
             if len(completed_weeks) > 0:
                 sorted_weeks = sorted(completed_weeks, reverse=True)
                 return LatestSeasonWeekResult(
+                    query_id=query.query_id,
                     latest=LatestSeasonWeekValue(
                         season_id=str(season.id_),
                         year=season.year,
@@ -58,4 +60,4 @@ class LatestSeasonWeekQueryHandler:
                     ),
                 )
 
-        return LatestSeasonWeekResult(latest=None)
+        return LatestSeasonWeekResult(query_id=query.query_id, latest=None)

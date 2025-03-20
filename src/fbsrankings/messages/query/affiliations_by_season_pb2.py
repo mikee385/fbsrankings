@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n7fbsrankings/messages/query/affiliations_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a&fbsrankings/messages/enums/enums.proto\"\xb6\x01\n\x19\x41\x66\x66iliationBySeasonResult\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x11\n\tteam_name\x18\x05 \x01(\t\x12<\n\x0bsubdivision\x18\x06 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivision\"i\n\x1a\x41\x66\x66iliationsBySeasonResult\x12K\n\x0c\x61\x66\x66iliations\x18\x01 \x03(\x0b\x32\x35.fbsrankings.messages.query.AffiliationBySeasonResult\"@\n\x19\x41\x66\x66iliationsBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n7fbsrankings/messages/query/affiliations_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a&fbsrankings/messages/enums/enums.proto\"\xb6\x01\n\x19\x41\x66\x66iliationBySeasonResult\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x11\n\tteam_name\x18\x05 \x01(\t\x12<\n\x0bsubdivision\x18\x06 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivision\"{\n\x1a\x41\x66\x66iliationsBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12K\n\x0c\x61\x66\x66iliations\x18\x02 \x03(\x0b\x32\x35.fbsrankings.messages.query.AffiliationBySeasonResult\"@\n\x19\x41\x66\x66iliationsBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,7 +35,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_AFFILIATIONBYSEASONRESULT']._serialized_start=128
   _globals['_AFFILIATIONBYSEASONRESULT']._serialized_end=310
   _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_start=312
-  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_end=417
-  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_start=419
-  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_end=483
+  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_end=435
+  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_start=437
+  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_end=501
 # @@protoc_insertion_point(module_scope)

@@ -23,6 +23,7 @@ class AffiliationCountBySeasonQueryHandler:
                 fcs_count += 1
 
         return AffiliationCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             fbs_count=fbs_count,
             fcs_count=fcs_count,

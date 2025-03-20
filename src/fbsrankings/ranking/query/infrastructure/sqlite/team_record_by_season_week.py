@@ -80,6 +80,7 @@ class TeamRecordBySeasonWeekQueryHandler:
 
         if row is not None:
             return TeamRecordBySeasonWeekResult(
+                query_id=query.query_id,
                 record=TeamRecordBySeasonWeekValue(
                     record_id=row[0],
                     season_id=row[1],
@@ -89,4 +90,4 @@ class TeamRecordBySeasonWeekQueryHandler:
                 ),
             )
 
-        return TeamRecordBySeasonWeekResult(record=None)
+        return TeamRecordBySeasonWeekResult(query_id=query.query_id, record=None)

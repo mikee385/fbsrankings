@@ -54,6 +54,7 @@ class GameRankingBySeasonWeekQueryHandler:
                             )
 
                 return GameRankingBySeasonWeekResult(
+                    query_id=query.query_id,
                     ranking=GameRankingBySeasonWeekValue(
                         ranking_id=str(ranking.id_),
                         name=ranking.name,
@@ -64,4 +65,4 @@ class GameRankingBySeasonWeekQueryHandler:
                     ),
                 )
 
-        return GameRankingBySeasonWeekResult(ranking=None)
+        return GameRankingBySeasonWeekResult(query_id=query.query_id, ranking=None)

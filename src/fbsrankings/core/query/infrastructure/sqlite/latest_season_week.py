@@ -47,12 +47,13 @@ class LatestSeasonWeekQueryHandler:
         cursor.close()
 
         if row is None:
-            return LatestSeasonWeekResult(latest=None)
+            return LatestSeasonWeekResult(query_id=query.query_id, latest=None)
 
         season_id, year, games_scheduled = row
 
         if games_scheduled == 0:
             return LatestSeasonWeekResult(
+                query_id=query.query_id,
                 latest=LatestSeasonWeekValue(season_id=season_id, year=year, week=None),
             )
 
@@ -81,6 +82,7 @@ class LatestSeasonWeekQueryHandler:
 
         if row:
             return LatestSeasonWeekResult(
+                query_id=query.query_id,
                 latest=LatestSeasonWeekValue(
                     season_id=season_id,
                     year=year,
@@ -88,4 +90,4 @@ class LatestSeasonWeekQueryHandler:
                 ),
             )
 
-        return LatestSeasonWeekResult(latest=None)
+        return LatestSeasonWeekResult(query_id=query.query_id, latest=None)

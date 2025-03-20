@@ -55,8 +55,13 @@ class PostseasonGameCountBySeasonQueryHandler:
 
         if item is not None:
             return PostseasonGameCountBySeasonResult(
+                query_id=query.query_id,
                 season_id=item["season_id"],
                 count=item["count"],
             )
 
-        return PostseasonGameCountBySeasonResult(season_id=query.season_id, count=0)
+        return PostseasonGameCountBySeasonResult(
+            query_id=query.query_id,
+            season_id=query.season_id,
+            count=0,
+        )

@@ -40,10 +40,12 @@ class GameByIDValue(_message.Message):
     def __init__(self, game_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., date: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., season_section: _Optional[_Union[_enums_pb2.SeasonSection, str]] = ..., home_team_id: _Optional[str] = ..., home_team_name: _Optional[str] = ..., away_team_id: _Optional[str] = ..., away_team_name: _Optional[str] = ..., home_team_score: _Optional[int] = ..., away_team_score: _Optional[int] = ..., status: _Optional[_Union[_enums_pb2.GameStatus, str]] = ..., notes: _Optional[str] = ...) -> None: ...
 
 class GameByIDResult(_message.Message):
-    __slots__ = ("game",)
+    __slots__ = ("query_id", "game")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     GAME_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     game: GameByIDValue
-    def __init__(self, game: _Optional[_Union[GameByIDValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., game: _Optional[_Union[GameByIDValue, _Mapping]] = ...) -> None: ...
 
 class GameByIDQuery(_message.Message):
     __slots__ = ("query_id", "game_id")

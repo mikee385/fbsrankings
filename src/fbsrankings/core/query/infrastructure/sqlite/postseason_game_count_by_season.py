@@ -27,6 +27,7 @@ class PostseasonGameCountBySeasonQueryHandler:
         cursor.close()
 
         return PostseasonGameCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             count=row[0],
         )

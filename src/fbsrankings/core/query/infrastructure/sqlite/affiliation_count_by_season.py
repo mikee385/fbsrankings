@@ -29,6 +29,7 @@ class AffiliationCountBySeasonQueryHandler:
         cursor.close()
 
         return AffiliationCountBySeasonResult(
+            query_id=query.query_id,
             season_id=query.season_id,
             fbs_count=row[0],
             fcs_count=row[1],

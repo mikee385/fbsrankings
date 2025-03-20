@@ -3,8 +3,9 @@ syntax = "proto3";
 package fbsrankings.messages.query;
 
 message TeamCountBySeasonResult {
-    string season_id = 1;
-    int32 count = 2;
+    string query_id = 1;
+    string season_id = 2;
+    int32 count = 3;
 }
 
 message TeamCountBySeasonQuery {

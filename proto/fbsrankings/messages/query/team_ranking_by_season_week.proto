@@ -20,7 +20,8 @@ message TeamRankingBySeasonWeekValue {
 }
 
 message TeamRankingBySeasonWeekResult {
-    optional TeamRankingBySeasonWeekValue ranking = 1;
+    string query_id = 1;
+    optional TeamRankingBySeasonWeekValue ranking = 2;
 }
 
 message TeamRankingBySeasonWeekQuery {

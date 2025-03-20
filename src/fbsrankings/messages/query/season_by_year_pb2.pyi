@@ -14,10 +14,12 @@ class SeasonByYearValue(_message.Message):
     def __init__(self, season_id: _Optional[str] = ..., year: _Optional[int] = ...) -> None: ...
 
 class SeasonByYearResult(_message.Message):
-    __slots__ = ("season",)
+    __slots__ = ("query_id", "season")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     SEASON_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     season: SeasonByYearValue
-    def __init__(self, season: _Optional[_Union[SeasonByYearValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., season: _Optional[_Union[SeasonByYearValue, _Mapping]] = ...) -> None: ...
 
 class SeasonByYearQuery(_message.Message):
     __slots__ = ("query_id", "year")

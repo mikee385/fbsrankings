@@ -16,6 +16,7 @@ class GameByIDQueryHandler:
 
         if item is not None:
             return GameByIDResult(
+                query_id=query.query_id,
                 game=GameByIDValue(
                     game_id=item["id_"],
                     season_id=item["season_id"],
@@ -36,4 +37,4 @@ class GameByIDQueryHandler:
                 ),
             )
 
-        return GameByIDResult(game=None)
+        return GameByIDResult(query_id=query.query_id, game=None)

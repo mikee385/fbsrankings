@@ -62,4 +62,4 @@ class CanceledGamesQueryHandler:
         ]
         cursor.close()
 
-        return CanceledGamesResult(games=items)
+        return CanceledGamesResult(query_id=query.query_id, games=items)

@@ -63,10 +63,12 @@ class GameRankingBySeasonWeekValue(_message.Message):
     def __init__(self, ranking_id: _Optional[str] = ..., name: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., values: _Optional[_Iterable[_Union[GameRankingValueBySeasonWeekResult, _Mapping]]] = ...) -> None: ...
 
 class GameRankingBySeasonWeekResult(_message.Message):
-    __slots__ = ("ranking",)
+    __slots__ = ("query_id", "ranking")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     RANKING_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     ranking: GameRankingBySeasonWeekValue
-    def __init__(self, ranking: _Optional[_Union[GameRankingBySeasonWeekValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., ranking: _Optional[_Union[GameRankingBySeasonWeekValue, _Mapping]] = ...) -> None: ...
 
 class GameRankingBySeasonWeekQuery(_message.Message):
     __slots__ = ("query_id", "name", "season_id", "week")

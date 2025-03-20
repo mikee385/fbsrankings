@@ -22,4 +22,4 @@ class SeasonsQueryHandler:
         ]
         cursor.close()
 
-        return SeasonsResult(seasons=items)
+        return SeasonsResult(query_id=query.query_id, seasons=items)

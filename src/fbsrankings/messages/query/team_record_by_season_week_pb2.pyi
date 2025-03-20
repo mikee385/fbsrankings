@@ -33,10 +33,12 @@ class TeamRecordBySeasonWeekValue(_message.Message):
     def __init__(self, record_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., values: _Optional[_Iterable[_Union[TeamRecordValueBySeasonWeekResult, _Mapping]]] = ...) -> None: ...
 
 class TeamRecordBySeasonWeekResult(_message.Message):
-    __slots__ = ("record",)
+    __slots__ = ("query_id", "record")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     RECORD_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     record: TeamRecordBySeasonWeekValue
-    def __init__(self, record: _Optional[_Union[TeamRecordBySeasonWeekValue, _Mapping]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., record: _Optional[_Union[TeamRecordBySeasonWeekValue, _Mapping]] = ...) -> None: ...
 
 class TeamRecordBySeasonWeekQuery(_message.Message):
     __slots__ = ("query_id", "season_id", "week")

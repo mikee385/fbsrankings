@@ -49,6 +49,7 @@ class TeamsQueryHandler:
 
     def __call__(self, query: TeamsQuery) -> TeamsResult:
         return TeamsResult(
+            query_id=query.query_id,
             teams=[
                 TeamResult(team_id=item["id_"], name=item["name"])
                 for item in self._storage.cache_team_by_id.values()

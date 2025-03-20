@@ -24,10 +24,12 @@ class AffiliationBySeasonResult(_message.Message):
     def __init__(self, affiliation_id: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., team_id: _Optional[str] = ..., team_name: _Optional[str] = ..., subdivision: _Optional[_Union[_enums_pb2.Subdivision, str]] = ...) -> None: ...
 
 class AffiliationsBySeasonResult(_message.Message):
-    __slots__ = ("affiliations",)
+    __slots__ = ("query_id", "affiliations")
+    QUERY_ID_FIELD_NUMBER: _ClassVar[int]
     AFFILIATIONS_FIELD_NUMBER: _ClassVar[int]
+    query_id: str
     affiliations: _containers.RepeatedCompositeFieldContainer[AffiliationBySeasonResult]
-    def __init__(self, affiliations: _Optional[_Iterable[_Union[AffiliationBySeasonResult, _Mapping]]] = ...) -> None: ...
+    def __init__(self, query_id: _Optional[str] = ..., affiliations: _Optional[_Iterable[_Union[AffiliationBySeasonResult, _Mapping]]] = ...) -> None: ...
 
 class AffiliationsBySeasonQuery(_message.Message):
     __slots__ = ("query_id", "season_id")
