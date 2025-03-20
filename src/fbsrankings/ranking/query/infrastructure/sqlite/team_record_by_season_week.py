@@ -1,9 +1,9 @@
 import sqlite3
-from typing import Optional
 from typing import Union
 
 from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRecordBySeasonWeekResult
+from fbsrankings.messages.query import TeamRecordBySeasonWeekValue
 from fbsrankings.messages.query import TeamRecordValueBySeasonWeekResult
 from fbsrankings.storage.sqlite import SeasonTable
 from fbsrankings.storage.sqlite import TeamRecordTable
@@ -26,7 +26,7 @@ class TeamRecordBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: TeamRecordBySeasonWeekQuery,
-    ) -> Optional[TeamRecordBySeasonWeekResult]:
+    ) -> TeamRecordBySeasonWeekResult:
         sql_query = (
             "SELECT "
             f"{self._record_table}.UUID, "
@@ -80,10 +80,13 @@ class TeamRecordBySeasonWeekQueryHandler:
 
         if row is not None:
             return TeamRecordBySeasonWeekResult(
-                record_id=row[0],
-                season_id=row[1],
-                year=row[2],
-                week=row[3],
-                values=values,
+                record=TeamRecordBySeasonWeekValue(
+                    record_id=row[0],
+                    season_id=row[1],
+                    year=row[2],
+                    week=row[3],
+                    values=values,
+                ),
             )
-        return None
+
+        return TeamRecordBySeasonWeekResult(record=None)

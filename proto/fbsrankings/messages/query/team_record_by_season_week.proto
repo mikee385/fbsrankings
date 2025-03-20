@@ -9,12 +9,16 @@ message TeamRecordValueBySeasonWeekResult {
     int32 losses = 4;
 }
 
-message TeamRecordBySeasonWeekResult {
+message TeamRecordBySeasonWeekValue {
     string record_id = 1;
     string season_id = 2;
     int32 year = 3;
     optional int32 week = 4;
     repeated TeamRecordValueBySeasonWeekResult values = 5;
+}
+
+message TeamRecordBySeasonWeekResult {
+    optional TeamRecordBySeasonWeekValue record = 1;
 }
 
 message TeamRecordBySeasonWeekQuery {

@@ -1,11 +1,11 @@
 import sqlite3
 from datetime import datetime
-from typing import Optional
 from typing import Union
 
 from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
+from fbsrankings.messages.query import GameRankingBySeasonWeekValue
 from fbsrankings.messages.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.storage.sqlite import GameRankingValueTable
 from fbsrankings.storage.sqlite import GameTable
@@ -31,7 +31,7 @@ class GameRankingBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: GameRankingBySeasonWeekQuery,
-    ) -> Optional[GameRankingBySeasonWeekResult]:
+    ) -> GameRankingBySeasonWeekResult:
         sql_query = (
             "SELECT "
             f"{self._ranking_table}.UUID, "
@@ -122,11 +122,14 @@ class GameRankingBySeasonWeekQueryHandler:
 
         if row is not None:
             return GameRankingBySeasonWeekResult(
-                ranking_id=row[0],
-                name=row[1],
-                season_id=row[2],
-                year=row[3],
-                week=row[4],
-                values=values,
+                ranking=GameRankingBySeasonWeekValue(
+                    ranking_id=row[0],
+                    name=row[1],
+                    season_id=row[2],
+                    year=row[3],
+                    week=row[4],
+                    values=values,
+                ),
             )
-        return None
+
+        return GameRankingBySeasonWeekResult(ranking=None)

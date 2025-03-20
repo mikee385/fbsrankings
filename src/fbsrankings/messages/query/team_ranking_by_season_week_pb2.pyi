@@ -20,7 +20,7 @@ class TeamRankingValueBySeasonWeekResult(_message.Message):
     value: float
     def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., order: _Optional[int] = ..., rank: _Optional[int] = ..., value: _Optional[float] = ...) -> None: ...
 
-class TeamRankingBySeasonWeekResult(_message.Message):
+class TeamRankingBySeasonWeekValue(_message.Message):
     __slots__ = ("ranking_id", "name", "season_id", "year", "week", "values")
     RANKING_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -35,6 +35,12 @@ class TeamRankingBySeasonWeekResult(_message.Message):
     week: int
     values: _containers.RepeatedCompositeFieldContainer[TeamRankingValueBySeasonWeekResult]
     def __init__(self, ranking_id: _Optional[str] = ..., name: _Optional[str] = ..., season_id: _Optional[str] = ..., year: _Optional[int] = ..., week: _Optional[int] = ..., values: _Optional[_Iterable[_Union[TeamRankingValueBySeasonWeekResult, _Mapping]]] = ...) -> None: ...
+
+class TeamRankingBySeasonWeekResult(_message.Message):
+    __slots__ = ("ranking",)
+    RANKING_FIELD_NUMBER: _ClassVar[int]
+    ranking: TeamRankingBySeasonWeekValue
+    def __init__(self, ranking: _Optional[_Union[TeamRankingBySeasonWeekValue, _Mapping]] = ...) -> None: ...
 
 class TeamRankingBySeasonWeekQuery(_message.Message):
     __slots__ = ("query_id", "name", "season_id", "week")

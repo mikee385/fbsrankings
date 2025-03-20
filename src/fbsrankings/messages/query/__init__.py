@@ -19,6 +19,7 @@ from .game_count_by_season_pb2 import GameCountBySeasonQuery
 from .game_count_by_season_pb2 import GameCountBySeasonResult
 from .game_ranking_by_season_week_pb2 import GameRankingBySeasonWeekQuery
 from .game_ranking_by_season_week_pb2 import GameRankingBySeasonWeekResult
+from .game_ranking_by_season_week_pb2 import GameRankingBySeasonWeekValue
 from .game_ranking_by_season_week_pb2 import GameRankingValueBySeasonWeekResult
 from .games_by_season_pb2 import GameBySeasonResult
 from .games_by_season_pb2 import GamesBySeasonQuery
@@ -44,9 +45,11 @@ from .team_count_by_season_pb2 import TeamCountBySeasonQuery
 from .team_count_by_season_pb2 import TeamCountBySeasonResult
 from .team_ranking_by_season_week_pb2 import TeamRankingBySeasonWeekQuery
 from .team_ranking_by_season_week_pb2 import TeamRankingBySeasonWeekResult
+from .team_ranking_by_season_week_pb2 import TeamRankingBySeasonWeekValue
 from .team_ranking_by_season_week_pb2 import TeamRankingValueBySeasonWeekResult
 from .team_record_by_season_week_pb2 import TeamRecordBySeasonWeekQuery
 from .team_record_by_season_week_pb2 import TeamRecordBySeasonWeekResult
+from .team_record_by_season_week_pb2 import TeamRecordBySeasonWeekValue
 from .team_record_by_season_week_pb2 import TeamRecordValueBySeasonWeekResult
 from .teams_pb2 import TeamResult
 from .teams_pb2 import TeamsQuery
@@ -72,6 +75,7 @@ __all__ = [
     "GameCountBySeasonResult",
     "GameRankingBySeasonWeekQuery",
     "GameRankingBySeasonWeekResult",
+    "GameRankingBySeasonWeekValue",
     "GameRankingValueBySeasonWeekResult",
     "GamesBySeasonQuery",
     "GamesBySeasonResult",
@@ -96,9 +100,11 @@ __all__ = [
     "TeamCountBySeasonResult",
     "TeamRankingBySeasonWeekQuery",
     "TeamRankingBySeasonWeekResult",
+    "TeamRankingBySeasonWeekValue",
     "TeamRankingValueBySeasonWeekResult",
     "TeamRecordBySeasonWeekQuery",
     "TeamRecordBySeasonWeekResult",
+    "TeamRecordBySeasonWeekValue",
     "TeamRecordValueBySeasonWeekResult",
     "TeamResult",
     "TeamsQuery",

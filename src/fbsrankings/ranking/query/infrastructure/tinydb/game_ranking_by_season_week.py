@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from tinydb import Query
 
@@ -8,6 +7,7 @@ from fbsrankings.messages.convert import datetime_to_timestamp
 from fbsrankings.messages.event import GameRankingCalculatedEvent
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
+from fbsrankings.messages.query import GameRankingBySeasonWeekValue
 from fbsrankings.messages.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.storage.tinydb import Storage
 
@@ -96,7 +96,7 @@ class GameRankingBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: GameRankingBySeasonWeekQuery,
-    ) -> Optional[GameRankingBySeasonWeekResult]:
+    ) -> GameRankingBySeasonWeekResult:
         table = self._connection.table("game_ranking_by_season_week")
 
         item = table.get(
@@ -106,38 +106,40 @@ class GameRankingBySeasonWeekQueryHandler:
         )
         if isinstance(item, list):
             item = item[0]
-        return (
-            GameRankingBySeasonWeekResult(
-                ranking_id=item["id_"],
-                name=item["name"],
-                season_id=item["season_id"],
-                year=item["year"],
-                week=item["week"],
-                values=[
-                    GameRankingValueBySeasonWeekResult(
-                        game_id=value["id_"],
-                        season_id=value["season_id"],
-                        year=value["year"],
-                        week=value["week"],
-                        date=datetime_to_timestamp(
-                            datetime.strptime(value["date"], "%Y-%m-%d"),
-                        ),
-                        season_section=value["season_section"],
-                        home_team_id=value["home_team_id"],
-                        home_team_name=value["home_team_name"],
-                        away_team_id=value["away_team_id"],
-                        away_team_name=value["away_team_name"],
-                        home_team_score=value["home_team_score"],
-                        away_team_score=value["away_team_score"],
-                        status=value["status"],
-                        notes=value["notes"],
-                        order=value["order"],
-                        rank=value["rank"],
-                        value=value["value"],
-                    )
-                    for value in item["values"]
-                ],
+
+        if item is not None:
+            return GameRankingBySeasonWeekResult(
+                ranking=GameRankingBySeasonWeekValue(
+                    ranking_id=item["id_"],
+                    name=item["name"],
+                    season_id=item["season_id"],
+                    year=item["year"],
+                    week=item["week"],
+                    values=[
+                        GameRankingValueBySeasonWeekResult(
+                            game_id=value["id_"],
+                            season_id=value["season_id"],
+                            year=value["year"],
+                            week=value["week"],
+                            date=datetime_to_timestamp(
+                                datetime.strptime(value["date"], "%Y-%m-%d"),
+                            ),
+                            season_section=value["season_section"],
+                            home_team_id=value["home_team_id"],
+                            home_team_name=value["home_team_name"],
+                            away_team_id=value["away_team_id"],
+                            away_team_name=value["away_team_name"],
+                            home_team_score=value["home_team_score"],
+                            away_team_score=value["away_team_score"],
+                            status=value["status"],
+                            notes=value["notes"],
+                            order=value["order"],
+                            rank=value["rank"],
+                            value=value["value"],
+                        )
+                        for value in item["values"]
+                    ],
+                ),
             )
-            if item is not None
-            else None
-        )
+
+        return GameRankingBySeasonWeekResult(ranking=None)

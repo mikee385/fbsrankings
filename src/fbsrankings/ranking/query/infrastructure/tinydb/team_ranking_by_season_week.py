@@ -1,11 +1,10 @@
-from typing import Optional
-
 from tinydb import Query
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import TeamRankingCalculatedEvent
 from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingBySeasonWeekValue
 from fbsrankings.messages.query import TeamRankingValueBySeasonWeekResult
 from fbsrankings.storage.tinydb import Storage
 
@@ -82,7 +81,7 @@ class TeamRankingBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: TeamRankingBySeasonWeekQuery,
-    ) -> Optional[TeamRankingBySeasonWeekResult]:
+    ) -> TeamRankingBySeasonWeekResult:
         table = self._connection.table("team_ranking_by_season_week")
 
         item = table.get(
@@ -92,24 +91,26 @@ class TeamRankingBySeasonWeekQueryHandler:
         )
         if isinstance(item, list):
             item = item[0]
-        return (
-            TeamRankingBySeasonWeekResult(
-                ranking_id=item["id_"],
-                name=item["name"],
-                season_id=item["season_id"],
-                year=item["year"],
-                week=item["week"],
-                values=[
-                    TeamRankingValueBySeasonWeekResult(
-                        team_id=value["id_"],
-                        name=value["name"],
-                        order=value["order"],
-                        rank=value["rank"],
-                        value=value["value"],
-                    )
-                    for value in item["values"]
-                ],
+
+        if item is not None:
+            return TeamRankingBySeasonWeekResult(
+                ranking=TeamRankingBySeasonWeekValue(
+                    ranking_id=item["id_"],
+                    name=item["name"],
+                    season_id=item["season_id"],
+                    year=item["year"],
+                    week=item["week"],
+                    values=[
+                        TeamRankingValueBySeasonWeekResult(
+                            team_id=value["id_"],
+                            name=value["name"],
+                            order=value["order"],
+                            rank=value["rank"],
+                            value=value["value"],
+                        )
+                        for value in item["values"]
+                    ],
+                ),
             )
-            if item is not None
-            else None
-        )
+
+        return TeamRankingBySeasonWeekResult(ranking=None)

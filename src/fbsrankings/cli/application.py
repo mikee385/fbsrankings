@@ -48,6 +48,7 @@ from fbsrankings.messages.query import GameCountBySeasonQuery
 from fbsrankings.messages.query import GameCountBySeasonResult
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
+from fbsrankings.messages.query import GameRankingBySeasonWeekValue
 from fbsrankings.messages.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.messages.query import LatestSeasonWeekQuery
 from fbsrankings.messages.query import LatestSeasonWeekResult
@@ -67,8 +68,10 @@ from fbsrankings.messages.query import TeamCountBySeasonQuery
 from fbsrankings.messages.query import TeamCountBySeasonResult
 from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingBySeasonWeekValue
 from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRecordBySeasonWeekResult
+from fbsrankings.messages.query import TeamRecordBySeasonWeekValue
 from fbsrankings.messages.query import WeekCountBySeasonQuery
 from fbsrankings.messages.query import WeekCountBySeasonResult
 
@@ -472,8 +475,8 @@ class Application:
         season_id: str,
         year: int,
         week: Optional[int],
-    ) -> TeamRecordBySeasonWeekResult:
-        team_record = self._query_bus.query(
+    ) -> TeamRecordBySeasonWeekValue:
+        result = self._query_bus.query(
             TeamRecordBySeasonWeekQuery(
                 query_id=str(uuid4()),
                 season_id=season_id,
@@ -481,11 +484,11 @@ class Application:
             ),
             TeamRecordBySeasonWeekResult,
         )
-        if team_record is None:
+        if not result.HasField("record"):
             if week is not None:
                 raise ValueError(f"Team records not found for {year}, Week {week}")
             raise ValueError(f"Team records not found for {year}")
-        return team_record
+        return result.record
 
     def _get_team_ranking(
         self,
@@ -493,8 +496,8 @@ class Application:
         season_id: str,
         year: int,
         week: Optional[int],
-    ) -> TeamRankingBySeasonWeekResult:
-        team_ranking = self._query_bus.query(
+    ) -> TeamRankingBySeasonWeekValue:
+        result = self._query_bus.query(
             TeamRankingBySeasonWeekQuery(
                 query_id=str(uuid4()),
                 name=rating_name,
@@ -503,13 +506,13 @@ class Application:
             ),
             TeamRankingBySeasonWeekResult,
         )
-        if team_ranking is None:
+        if not result.HasField("ranking"):
             if week is not None:
                 raise ValueError(
                     f"Team rankings not found for {rating_name}, {year}, Week {week}",
                 )
             raise ValueError(f"Team rankings not found for {rating_name}, {year}")
-        return team_ranking
+        return result.ranking
 
     def _get_game_ranking(
         self,
@@ -517,8 +520,8 @@ class Application:
         season_id: str,
         year: int,
         week: Optional[int],
-    ) -> GameRankingBySeasonWeekResult:
-        game_ranking = self._query_bus.query(
+    ) -> GameRankingBySeasonWeekValue:
+        result = self._query_bus.query(
             GameRankingBySeasonWeekQuery(
                 query_id=str(uuid4()),
                 name=rating_name,
@@ -527,13 +530,13 @@ class Application:
             ),
             GameRankingBySeasonWeekResult,
         )
-        if game_ranking is None:
+        if not result.HasField("ranking"):
             if week is not None:
                 raise ValueError(
                     f"Game rankings not found for {rating_name}, {year}, Week {week}",
                 )
             raise ValueError(f"Game rankings not found for {rating_name}, {year}")
-        return game_ranking
+        return result.ranking
 
     def _print_seasons_table(self, seasons: Iterable[SeasonResult]) -> None:
         season_summary_table = PrettyTable(
@@ -607,9 +610,9 @@ class Application:
 
     @staticmethod
     def _print_teams_table(
-        record: TeamRecordBySeasonWeekResult,
-        ranking: TeamRankingBySeasonWeekResult,
-        sos: TeamRankingBySeasonWeekResult,
+        record: TeamRecordBySeasonWeekValue,
+        ranking: TeamRankingBySeasonWeekValue,
+        sos: TeamRankingBySeasonWeekValue,
         limit: Optional[int],
     ) -> None:
         record_map = {v.team_id: v for v in record.values}
@@ -651,7 +654,7 @@ class Application:
     @staticmethod
     def _print_games_table(
         game_values: list[GameRankingValueBySeasonWeekResult],
-        team_ranking: TeamRankingBySeasonWeekResult,
+        team_ranking: TeamRankingBySeasonWeekValue,
         limit: Optional[int],
     ) -> None:
         team_map = {v.team_id: v for v in team_ranking.values}

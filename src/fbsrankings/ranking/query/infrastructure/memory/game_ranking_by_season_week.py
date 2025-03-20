@@ -1,8 +1,7 @@
-from typing import Optional
-
 from fbsrankings.messages.convert import date_to_timestamp
 from fbsrankings.messages.query import GameRankingBySeasonWeekQuery
 from fbsrankings.messages.query import GameRankingBySeasonWeekResult
+from fbsrankings.messages.query import GameRankingBySeasonWeekValue
 from fbsrankings.messages.query import GameRankingValueBySeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
@@ -14,7 +13,7 @@ class GameRankingBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: GameRankingBySeasonWeekQuery,
-    ) -> Optional[GameRankingBySeasonWeekResult]:
+    ) -> GameRankingBySeasonWeekResult:
         ranking = self._storage.game_ranking.find(
             query.name,
             query.season_id,
@@ -55,11 +54,14 @@ class GameRankingBySeasonWeekQueryHandler:
                             )
 
                 return GameRankingBySeasonWeekResult(
-                    ranking_id=str(ranking.id_),
-                    name=ranking.name,
-                    season_id=str(ranking.season_id),
-                    year=season.year,
-                    week=ranking.week,
-                    values=values,
+                    ranking=GameRankingBySeasonWeekValue(
+                        ranking_id=str(ranking.id_),
+                        name=ranking.name,
+                        season_id=str(ranking.season_id),
+                        year=season.year,
+                        week=ranking.week,
+                        values=values,
+                    ),
                 )
-        return None
+
+        return GameRankingBySeasonWeekResult(ranking=None)

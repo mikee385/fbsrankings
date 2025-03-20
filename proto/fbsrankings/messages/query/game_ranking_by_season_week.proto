@@ -25,13 +25,17 @@ message GameRankingValueBySeasonWeekResult {
 	double value = 17;
 }
 
-message GameRankingBySeasonWeekResult {
+message GameRankingBySeasonWeekValue {
 	string ranking_id = 1;
 	string name = 2;
 	string season_id = 3;
 	int32 year = 4;
 	optional int32 week = 5;
 	repeated GameRankingValueBySeasonWeekResult values = 6;
+}
+
+message GameRankingBySeasonWeekResult {
+	optional GameRankingBySeasonWeekValue ranking = 1;
 }
 
 message GameRankingBySeasonWeekQuery {

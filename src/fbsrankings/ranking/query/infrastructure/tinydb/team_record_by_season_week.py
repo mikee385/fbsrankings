@@ -1,11 +1,10 @@
-from typing import Optional
-
 from tinydb import Query
 
 from communication.bus import EventBus
 from fbsrankings.messages.event import TeamRecordCalculatedEvent
 from fbsrankings.messages.query import TeamRecordBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRecordBySeasonWeekResult
+from fbsrankings.messages.query import TeamRecordBySeasonWeekValue
 from fbsrankings.messages.query import TeamRecordValueBySeasonWeekResult
 from fbsrankings.storage.tinydb import Storage
 
@@ -79,7 +78,7 @@ class TeamRecordBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: TeamRecordBySeasonWeekQuery,
-    ) -> Optional[TeamRecordBySeasonWeekResult]:
+    ) -> TeamRecordBySeasonWeekResult:
         table = self._connection.table("team_record_by_season_week")
 
         item = table.get(
@@ -88,22 +87,24 @@ class TeamRecordBySeasonWeekQueryHandler:
         )
         if isinstance(item, list):
             item = item[0]
-        return (
-            TeamRecordBySeasonWeekResult(
-                record_id=item["id_"],
-                season_id=item["season_id"],
-                year=item["year"],
-                week=item["week"],
-                values=[
-                    TeamRecordValueBySeasonWeekResult(
-                        team_id=value["id_"],
-                        name=value["name"],
-                        wins=value["wins"],
-                        losses=value["losses"],
-                    )
-                    for value in item["values"]
-                ],
+
+        if item is not None:
+            return TeamRecordBySeasonWeekResult(
+                record=TeamRecordBySeasonWeekValue(
+                    record_id=item["id_"],
+                    season_id=item["season_id"],
+                    year=item["year"],
+                    week=item["week"],
+                    values=[
+                        TeamRecordValueBySeasonWeekResult(
+                            team_id=value["id_"],
+                            name=value["name"],
+                            wins=value["wins"],
+                            losses=value["losses"],
+                        )
+                        for value in item["values"]
+                    ],
+                ),
             )
-            if item is not None
-            else None
-        )
+
+        return TeamRecordBySeasonWeekResult(record=None)

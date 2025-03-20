@@ -10,13 +10,17 @@ message TeamRankingValueBySeasonWeekResult {
     double value = 5;
 }
 
-message TeamRankingBySeasonWeekResult {
+message TeamRankingBySeasonWeekValue {
     string ranking_id = 1;
     string name = 2;
     string season_id = 3;
     int32 year = 4;
     optional int32 week = 5;
     repeated TeamRankingValueBySeasonWeekResult values = 6;
+}
+
+message TeamRankingBySeasonWeekResult {
+    optional TeamRankingBySeasonWeekValue ranking = 1;
 }
 
 message TeamRankingBySeasonWeekQuery {

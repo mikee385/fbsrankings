@@ -1,7 +1,6 @@
-from typing import Optional
-
 from fbsrankings.messages.query import TeamRankingBySeasonWeekQuery
 from fbsrankings.messages.query import TeamRankingBySeasonWeekResult
+from fbsrankings.messages.query import TeamRankingBySeasonWeekValue
 from fbsrankings.messages.query import TeamRankingValueBySeasonWeekResult
 from fbsrankings.storage.memory import Storage
 
@@ -13,7 +12,7 @@ class TeamRankingBySeasonWeekQueryHandler:
     def __call__(
         self,
         query: TeamRankingBySeasonWeekQuery,
-    ) -> Optional[TeamRankingBySeasonWeekResult]:
+    ) -> TeamRankingBySeasonWeekResult:
         ranking = self._storage.team_ranking.find(
             query.name,
             query.season_id,
@@ -38,11 +37,14 @@ class TeamRankingBySeasonWeekQueryHandler:
 
             if season is not None:
                 return TeamRankingBySeasonWeekResult(
-                    ranking_id=str(ranking.id_),
-                    name=ranking.name,
-                    season_id=str(ranking.season_id),
-                    year=season.year,
-                    week=ranking.week,
-                    values=values,
+                    ranking=TeamRankingBySeasonWeekValue(
+                        ranking_id=str(ranking.id_),
+                        name=ranking.name,
+                        season_id=str(ranking.season_id),
+                        year=season.year,
+                        week=ranking.week,
+                        values=values,
+                    ),
                 )
-        return None
+
+        return TeamRankingBySeasonWeekResult(ranking=None)
