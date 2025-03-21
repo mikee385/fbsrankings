@@ -22,17 +22,20 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\'fbsrankings/messages/event/record.proto\x12\x1a\x66\x62srankings.messages.event\"g\n\x0fTeamRecordValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04wins\x18\x02 \x01(\x05\x12\x0e\n\x06losses\x18\x03 \x01(\x05\x12\r\n\x05games\x18\x04 \x01(\x05\x12\x16\n\x0ewin_percentage\x18\x05 \x01(\x02\"\xac\x01\n\x19TeamRecordCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x11\n\trecord_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12;\n\x06values\x18\x05 \x03(\x0b\x32+.fbsrankings.messages.event.TeamRecordValueB\x07\n\x05_weekb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\'fbsrankings/messages/event/record.proto\x12\x1a\x66\x62srankings.messages.event\x1a*fbsrankings/messages/options/options.proto\"g\n\x0fTeamRecordValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04wins\x18\x02 \x01(\x05\x12\x0e\n\x06losses\x18\x03 \x01(\x05\x12\r\n\x05games\x18\x04 \x01(\x05\x12\x16\n\x0ewin_percentage\x18\x05 \x01(\x02\"\xda\x01\n\x19TeamRecordCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x11\n\trecord_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12;\n\x06values\x18\x05 \x03(\x0b\x32+.fbsrankings.messages.event.TeamRecordValue:,\x82\xb5\x18(fbsrankings.event.team_record_calculatedB\x07\n\x05_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.record_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TEAMRECORDVALUE']._serialized_start=71
-  _globals['_TEAMRECORDVALUE']._serialized_end=174
-  _globals['_TEAMRECORDCALCULATEDEVENT']._serialized_start=177
-  _globals['_TEAMRECORDCALCULATEDEVENT']._serialized_end=349
+  _globals['_TEAMRECORDCALCULATEDEVENT']._loaded_options = None
+  _globals['_TEAMRECORDCALCULATEDEVENT']._serialized_options = b'\202\265\030(fbsrankings.event.team_record_calculated'
+  _globals['_TEAMRECORDVALUE']._serialized_start=115
+  _globals['_TEAMRECORDVALUE']._serialized_end=218
+  _globals['_TEAMRECORDCALCULATEDEVENT']._serialized_start=221
+  _globals['_TEAMRECORDCALCULATEDEVENT']._serialized_end=439
 # @@protoc_insertion_point(module_scope)

@@ -22,19 +22,22 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/query/team_by_id.proto\x12\x1a\x66\x62srankings.messages.query\".\n\rTeamByIDValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"i\n\x0eTeamByIDResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12<\n\x04team\x18\x02 \x01(\x0b\x32).fbsrankings.messages.query.TeamByIDValueH\x00\x88\x01\x01\x42\x07\n\x05_team\"2\n\rTeamByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/query/team_by_id.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\".\n\rTeamByIDValue\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"i\n\x0eTeamByIDResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12<\n\x04team\x18\x02 \x01(\x0b\x32).fbsrankings.messages.query.TeamByIDValueH\x00\x88\x01\x01\x42\x07\n\x05_team\"T\n\rTeamByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\t: \x82\xb5\x18\x1c\x66\x62srankings.query.team_by_idb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.team_by_id_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TEAMBYIDVALUE']._serialized_start=75
-  _globals['_TEAMBYIDVALUE']._serialized_end=121
-  _globals['_TEAMBYIDRESULT']._serialized_start=123
-  _globals['_TEAMBYIDRESULT']._serialized_end=228
-  _globals['_TEAMBYIDQUERY']._serialized_start=230
-  _globals['_TEAMBYIDQUERY']._serialized_end=280
+  _globals['_TEAMBYIDQUERY']._loaded_options = None
+  _globals['_TEAMBYIDQUERY']._serialized_options = b'\202\265\030\034fbsrankings.query.team_by_id'
+  _globals['_TEAMBYIDVALUE']._serialized_start=119
+  _globals['_TEAMBYIDVALUE']._serialized_end=165
+  _globals['_TEAMBYIDRESULT']._serialized_start=167
+  _globals['_TEAMBYIDRESULT']._serialized_end=272
+  _globals['_TEAMBYIDQUERY']._serialized_start=274
+  _globals['_TEAMBYIDQUERY']._serialized_end=358
 # @@protoc_insertion_point(module_scope)

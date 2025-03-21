@@ -2,6 +2,7 @@
 
 from communication.messages import Event
 
+from ..options import get_topic
 from .validation_pb2 import AffiliationDataValidationError
 from .validation_pb2 import FBSGameCountValidationError
 from .validation_pb2 import FCSGameCountValidationError
@@ -22,11 +23,11 @@ __all__ = [
 ]
 
 Topics: dict[type[Event], str] = {
-    AffiliationDataValidationError: "fbsrankings/error/validation/affiliation_data",
-    FBSGameCountValidationError: "fbsrankings/error/validation/fbs_game_count",
-    FCSGameCountValidationError: "fbsrankings/error/validation/fcs_game_count",
-    GameDataValidationError: "fbsrankings/error/validation/game_data",
-    PostseasonGameCountValidationError: "fbsrankings/error/validation/postseason_game_count",
-    SeasonDataValidationError: "fbsrankings/error/validation/season_data",
-    TeamDataValidationError: "fbsrankings/error/validation/team_data",
+    AffiliationDataValidationError: get_topic(AffiliationDataValidationError),
+    FBSGameCountValidationError: get_topic(FBSGameCountValidationError),
+    FCSGameCountValidationError: get_topic(FCSGameCountValidationError),
+    GameDataValidationError: get_topic(GameDataValidationError),
+    PostseasonGameCountValidationError: get_topic(PostseasonGameCountValidationError),
+    SeasonDataValidationError: get_topic(SeasonDataValidationError),
+    TeamDataValidationError: get_topic(TeamDataValidationError),
 }

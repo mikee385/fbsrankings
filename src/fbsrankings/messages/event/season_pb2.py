@@ -22,15 +22,18 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\'fbsrankings/messages/event/season.proto\x12\x1a\x66\x62srankings.messages.event\"G\n\x12SeasonCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\'fbsrankings/messages/event/season.proto\x12\x1a\x66\x62srankings.messages.event\x1a*fbsrankings/messages/options/options.proto\"m\n\x12SeasonCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05:$\x82\xb5\x18 fbsrankings.event.season_createdb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.season_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_SEASONCREATEDEVENT']._serialized_start=71
-  _globals['_SEASONCREATEDEVENT']._serialized_end=142
+  _globals['_SEASONCREATEDEVENT']._loaded_options = None
+  _globals['_SEASONCREATEDEVENT']._serialized_options = b'\202\265\030 fbsrankings.event.season_created'
+  _globals['_SEASONCREATEDEVENT']._serialized_start=115
+  _globals['_SEASONCREATEDEVENT']._serialized_end=224
 # @@protoc_insertion_point(module_scope)

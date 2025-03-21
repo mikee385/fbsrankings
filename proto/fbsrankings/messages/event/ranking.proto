@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package fbsrankings.messages.event;
 
+import "fbsrankings/messages/options/options.proto";
+
 message RankingValue {
     string id = 1;
     int32 order = 2;
@@ -16,6 +18,8 @@ message TeamRankingCalculatedEvent {
     string season_id = 4;
     optional int32 week = 5;
     repeated RankingValue values = 6;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.team_ranking_calculated";
 }
 
 message GameRankingCalculatedEvent {
@@ -25,4 +29,6 @@ message GameRankingCalculatedEvent {
     string season_id = 4;
     optional int32 week = 5;
     repeated RankingValue values = 6;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_ranking_calculated";
 }

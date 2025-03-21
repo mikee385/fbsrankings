@@ -22,19 +22,22 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&fbsrankings/messages/query/teams.proto\x12\x1a\x66\x62srankings.messages.query\"+\n\nTeamResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"V\n\x0bTeamsResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x35\n\x05teams\x18\x02 \x03(\x0b\x32&.fbsrankings.messages.query.TeamResult\"\x1e\n\nTeamsQuery\x12\x10\n\x08query_id\x18\x01 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n&fbsrankings/messages/query/teams.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\"+\n\nTeamResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"V\n\x0bTeamsResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x35\n\x05teams\x18\x02 \x03(\x0b\x32&.fbsrankings.messages.query.TeamResult\";\n\nTeamsQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t:\x1b\x82\xb5\x18\x17\x66\x62srankings.query.teamsb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.teams_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TEAMRESULT']._serialized_start=70
-  _globals['_TEAMRESULT']._serialized_end=113
-  _globals['_TEAMSRESULT']._serialized_start=115
-  _globals['_TEAMSRESULT']._serialized_end=201
-  _globals['_TEAMSQUERY']._serialized_start=203
-  _globals['_TEAMSQUERY']._serialized_end=233
+  _globals['_TEAMSQUERY']._loaded_options = None
+  _globals['_TEAMSQUERY']._serialized_options = b'\202\265\030\027fbsrankings.query.teams'
+  _globals['_TEAMRESULT']._serialized_start=114
+  _globals['_TEAMRESULT']._serialized_end=157
+  _globals['_TEAMSRESULT']._serialized_start=159
+  _globals['_TEAMSRESULT']._serialized_end=245
+  _globals['_TEAMSQUERY']._serialized_start=247
+  _globals['_TEAMSQUERY']._serialized_end=306
 # @@protoc_insertion_point(module_scope)

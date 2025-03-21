@@ -24,21 +24,24 @@ _sym_db = _symbol_database.Default()
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/game_ranking_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\"\x84\x04\n\"GameRankingValueBySeasonWeekResult\x12\x0f\n\x07game_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x16\n\x0ehome_team_name\x18\x08 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\t \x01(\t\x12\x16\n\x0e\x61way_team_name\x18\n \x01(\t\x12\x1c\n\x0fhome_team_score\x18\x0b \x01(\x05H\x00\x88\x01\x01\x12\x1c\n\x0f\x61way_team_score\x18\x0c \x01(\x05H\x01\x88\x01\x01\x12\x36\n\x06status\x18\r \x01(\x0e\x32&.fbsrankings.messages.enums.GameStatus\x12\r\n\x05notes\x18\x0e \x01(\t\x12\r\n\x05order\x18\x0f \x01(\x05\x12\x0c\n\x04rank\x18\x10 \x01(\x05\x12\r\n\x05value\x18\x11 \x01(\x01\x42\x12\n\x10_home_team_scoreB\x12\n\x10_away_team_score\"\xcd\x01\n\x1cGameRankingBySeasonWeekValue\x12\x12\n\nranking_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04year\x18\x04 \x01(\x05\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12N\n\x06values\x18\x06 \x03(\x0b\x32>.fbsrankings.messages.query.GameRankingValueBySeasonWeekResultB\x07\n\x05_week\"\x8d\x01\n\x1dGameRankingBySeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12N\n\x07ranking\x18\x02 \x01(\x0b\x32\x38.fbsrankings.messages.query.GameRankingBySeasonWeekValueH\x00\x88\x01\x01\x42\n\n\x08_ranking\"m\n\x1cGameRankingBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_weekb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/game_ranking_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\x1a*fbsrankings/messages/options/options.proto\"\x84\x04\n\"GameRankingValueBySeasonWeekResult\x12\x0f\n\x07game_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x16\n\x0ehome_team_name\x18\x08 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\t \x01(\t\x12\x16\n\x0e\x61way_team_name\x18\n \x01(\t\x12\x1c\n\x0fhome_team_score\x18\x0b \x01(\x05H\x00\x88\x01\x01\x12\x1c\n\x0f\x61way_team_score\x18\x0c \x01(\x05H\x01\x88\x01\x01\x12\x36\n\x06status\x18\r \x01(\x0e\x32&.fbsrankings.messages.enums.GameStatus\x12\r\n\x05notes\x18\x0e \x01(\t\x12\r\n\x05order\x18\x0f \x01(\x05\x12\x0c\n\x04rank\x18\x10 \x01(\x05\x12\r\n\x05value\x18\x11 \x01(\x01\x42\x12\n\x10_home_team_scoreB\x12\n\x10_away_team_score\"\xcd\x01\n\x1cGameRankingBySeasonWeekValue\x12\x12\n\nranking_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04year\x18\x04 \x01(\x05\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12N\n\x06values\x18\x06 \x03(\x0b\x32>.fbsrankings.messages.query.GameRankingValueBySeasonWeekResultB\x07\n\x05_week\"\x8d\x01\n\x1dGameRankingBySeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12N\n\x07ranking\x18\x02 \x01(\x0b\x32\x38.fbsrankings.messages.query.GameRankingBySeasonWeekValueH\x00\x88\x01\x01\x42\n\n\x08_ranking\"\xa0\x01\n\x1cGameRankingBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01:1\x82\xb5\x18-fbsrankings.query.game_ranking_by_season_weekB\x07\n\x05_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.game_ranking_by_season_week_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_GAMERANKINGVALUEBYSEASONWEEKRESULT']._serialized_start=166
-  _globals['_GAMERANKINGVALUEBYSEASONWEEKRESULT']._serialized_end=682
-  _globals['_GAMERANKINGBYSEASONWEEKVALUE']._serialized_start=685
-  _globals['_GAMERANKINGBYSEASONWEEKVALUE']._serialized_end=890
-  _globals['_GAMERANKINGBYSEASONWEEKRESULT']._serialized_start=893
-  _globals['_GAMERANKINGBYSEASONWEEKRESULT']._serialized_end=1034
-  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._serialized_start=1036
-  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._serialized_end=1145
+  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._loaded_options = None
+  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._serialized_options = b'\202\265\030-fbsrankings.query.game_ranking_by_season_week'
+  _globals['_GAMERANKINGVALUEBYSEASONWEEKRESULT']._serialized_start=210
+  _globals['_GAMERANKINGVALUEBYSEASONWEEKRESULT']._serialized_end=726
+  _globals['_GAMERANKINGBYSEASONWEEKVALUE']._serialized_start=729
+  _globals['_GAMERANKINGBYSEASONWEEKVALUE']._serialized_end=934
+  _globals['_GAMERANKINGBYSEASONWEEKRESULT']._serialized_start=937
+  _globals['_GAMERANKINGBYSEASONWEEKRESULT']._serialized_end=1078
+  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._serialized_start=1081
+  _globals['_GAMERANKINGBYSEASONWEEKQUERY']._serialized_end=1241
 # @@protoc_insertion_point(module_scope)

@@ -3,7 +3,9 @@ syntax = "proto3";
 package fbsrankings.messages.query;
 
 import "google/protobuf/timestamp.proto";
+
 import "fbsrankings/messages/enums/enums.proto";
+import "fbsrankings/messages/options/options.proto";
 
 message GameByIDValue {
     string game_id = 1;
@@ -30,4 +32,6 @@ message GameByIDResult {
 message GameByIDQuery {
     string query_id = 1;
     string game_id = 2;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.game_by_id";
 }

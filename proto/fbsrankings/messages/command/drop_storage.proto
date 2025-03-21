@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package fbsrankings.messages.command;
 
+import "fbsrankings/messages/options/options.proto";
+
 message DropStorageCommand {
     string command_id = 1;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.command.drop_storage";
 }

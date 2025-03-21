@@ -22,17 +22,20 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n5fbsrankings/messages/query/week_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\"M\n\x17WeekCountBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"=\n\x16WeekCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n5fbsrankings/messages/query/week_count_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\"M\n\x17WeekCountBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"i\n\x16WeekCountBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t:*\x82\xb5\x18&fbsrankings.query.week_count_by_seasonb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.week_count_by_season_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_WEEKCOUNTBYSEASONRESULT']._serialized_start=85
-  _globals['_WEEKCOUNTBYSEASONRESULT']._serialized_end=162
-  _globals['_WEEKCOUNTBYSEASONQUERY']._serialized_start=164
-  _globals['_WEEKCOUNTBYSEASONQUERY']._serialized_end=225
+  _globals['_WEEKCOUNTBYSEASONQUERY']._loaded_options = None
+  _globals['_WEEKCOUNTBYSEASONQUERY']._serialized_options = b'\202\265\030&fbsrankings.query.week_count_by_season'
+  _globals['_WEEKCOUNTBYSEASONRESULT']._serialized_start=129
+  _globals['_WEEKCOUNTBYSEASONRESULT']._serialized_end=206
+  _globals['_WEEKCOUNTBYSEASONQUERY']._serialized_start=208
+  _globals['_WEEKCOUNTBYSEASONQUERY']._serialized_end=313
 # @@protoc_insertion_point(module_scope)

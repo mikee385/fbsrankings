@@ -22,15 +22,18 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n%fbsrankings/messages/event/team.proto\x12\x1a\x66\x62srankings.messages.event\"C\n\x10TeamCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n%fbsrankings/messages/event/team.proto\x12\x1a\x66\x62srankings.messages.event\x1a*fbsrankings/messages/options/options.proto\"g\n\x10TeamCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07team_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t:\"\x82\xb5\x18\x1e\x66\x62srankings.event.team_createdb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.team_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TEAMCREATEDEVENT']._serialized_start=69
-  _globals['_TEAMCREATEDEVENT']._serialized_end=136
+  _globals['_TEAMCREATEDEVENT']._loaded_options = None
+  _globals['_TEAMCREATEDEVENT']._serialized_options = b'\202\265\030\036fbsrankings.event.team_created'
+  _globals['_TEAMCREATEDEVENT']._serialized_start=113
+  _globals['_TEAMCREATEDEVENT']._serialized_end=216
 # @@protoc_insertion_point(module_scope)

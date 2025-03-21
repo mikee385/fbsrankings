@@ -22,27 +22,42 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/error/validation.proto\x12\x1a\x66\x62srankings.messages.error\"\x9a\x01\n\x19SeasonDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t\"\x96\x01\n\x17TeamDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07team_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t\"\xa4\x01\n\x1e\x41\x66\x66iliationDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t\"\x96\x01\n\x17GameDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07game_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t\"x\n\x1b\x46\x42SGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x12\n\ngame_count\x18\x05 \x01(\x05\"x\n\x1b\x46\x43SGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x12\n\ngame_count\x18\x05 \x01(\x05\"\x9c\x01\n\"PostseasonGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12!\n\x19regular_season_game_count\x18\x04 \x01(\x05\x12\x1d\n\x15postseason_game_count\x18\x05 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+fbsrankings/messages/error/validation.proto\x12\x1a\x66\x62srankings.messages.error\x1a*fbsrankings/messages/options/options.proto\"\xc8\x01\n\x19SeasonDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t:,\x82\xb5\x18(fbsrankings.error.validation.season_data\"\xc2\x01\n\x17TeamDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07team_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t:*\x82\xb5\x18&fbsrankings.error.validation.team_data\"\xd7\x01\n\x1e\x41\x66\x66iliationDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t:1\x82\xb5\x18-fbsrankings.error.validation.affiliation_data\"\xc2\x01\n\x17GameDataValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07game_id\x18\x03 \x01(\t\x12\x16\n\x0e\x61ttribute_name\x18\x04 \x01(\t\x12\x17\n\x0f\x61ttribute_value\x18\x05 \x01(\t\x12\x16\n\x0e\x65xpected_value\x18\x06 \x01(\t:*\x82\xb5\x18&fbsrankings.error.validation.game_data\"\xa9\x01\n\x1b\x46\x42SGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x12\n\ngame_count\x18\x05 \x01(\x05:/\x82\xb5\x18+fbsrankings.error.validation.fbs_game_count\"\xa9\x01\n\x1b\x46\x43SGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x12\n\ngame_count\x18\x05 \x01(\x05:/\x82\xb5\x18+fbsrankings.error.validation.fcs_game_count\"\xd4\x01\n\"PostseasonGameCountValidationError\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12!\n\x19regular_season_game_count\x18\x04 \x01(\x05\x12\x1d\n\x15postseason_game_count\x18\x05 \x01(\x05:6\x82\xb5\x18\x32\x66\x62srankings.error.validation.postseason_game_countb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.error.validation_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_SEASONDATAVALIDATIONERROR']._serialized_start=76
-  _globals['_SEASONDATAVALIDATIONERROR']._serialized_end=230
-  _globals['_TEAMDATAVALIDATIONERROR']._serialized_start=233
-  _globals['_TEAMDATAVALIDATIONERROR']._serialized_end=383
-  _globals['_AFFILIATIONDATAVALIDATIONERROR']._serialized_start=386
-  _globals['_AFFILIATIONDATAVALIDATIONERROR']._serialized_end=550
-  _globals['_GAMEDATAVALIDATIONERROR']._serialized_start=553
-  _globals['_GAMEDATAVALIDATIONERROR']._serialized_end=703
-  _globals['_FBSGAMECOUNTVALIDATIONERROR']._serialized_start=705
-  _globals['_FBSGAMECOUNTVALIDATIONERROR']._serialized_end=825
-  _globals['_FCSGAMECOUNTVALIDATIONERROR']._serialized_start=827
-  _globals['_FCSGAMECOUNTVALIDATIONERROR']._serialized_end=947
-  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._serialized_start=950
-  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._serialized_end=1106
+  _globals['_SEASONDATAVALIDATIONERROR']._loaded_options = None
+  _globals['_SEASONDATAVALIDATIONERROR']._serialized_options = b'\202\265\030(fbsrankings.error.validation.season_data'
+  _globals['_TEAMDATAVALIDATIONERROR']._loaded_options = None
+  _globals['_TEAMDATAVALIDATIONERROR']._serialized_options = b'\202\265\030&fbsrankings.error.validation.team_data'
+  _globals['_AFFILIATIONDATAVALIDATIONERROR']._loaded_options = None
+  _globals['_AFFILIATIONDATAVALIDATIONERROR']._serialized_options = b'\202\265\030-fbsrankings.error.validation.affiliation_data'
+  _globals['_GAMEDATAVALIDATIONERROR']._loaded_options = None
+  _globals['_GAMEDATAVALIDATIONERROR']._serialized_options = b'\202\265\030&fbsrankings.error.validation.game_data'
+  _globals['_FBSGAMECOUNTVALIDATIONERROR']._loaded_options = None
+  _globals['_FBSGAMECOUNTVALIDATIONERROR']._serialized_options = b'\202\265\030+fbsrankings.error.validation.fbs_game_count'
+  _globals['_FCSGAMECOUNTVALIDATIONERROR']._loaded_options = None
+  _globals['_FCSGAMECOUNTVALIDATIONERROR']._serialized_options = b'\202\265\030+fbsrankings.error.validation.fcs_game_count'
+  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._loaded_options = None
+  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._serialized_options = b'\202\265\0302fbsrankings.error.validation.postseason_game_count'
+  _globals['_SEASONDATAVALIDATIONERROR']._serialized_start=120
+  _globals['_SEASONDATAVALIDATIONERROR']._serialized_end=320
+  _globals['_TEAMDATAVALIDATIONERROR']._serialized_start=323
+  _globals['_TEAMDATAVALIDATIONERROR']._serialized_end=517
+  _globals['_AFFILIATIONDATAVALIDATIONERROR']._serialized_start=520
+  _globals['_AFFILIATIONDATAVALIDATIONERROR']._serialized_end=735
+  _globals['_GAMEDATAVALIDATIONERROR']._serialized_start=738
+  _globals['_GAMEDATAVALIDATIONERROR']._serialized_end=932
+  _globals['_FBSGAMECOUNTVALIDATIONERROR']._serialized_start=935
+  _globals['_FBSGAMECOUNTVALIDATIONERROR']._serialized_end=1104
+  _globals['_FCSGAMECOUNTVALIDATIONERROR']._serialized_start=1107
+  _globals['_FCSGAMECOUNTVALIDATIONERROR']._serialized_end=1276
+  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._serialized_start=1279
+  _globals['_POSTSEASONGAMECOUNTVALIDATIONERROR']._serialized_end=1491
 # @@protoc_insertion_point(module_scope)

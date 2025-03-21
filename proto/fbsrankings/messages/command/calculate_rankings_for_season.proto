@@ -2,10 +2,14 @@ syntax = "proto3";
 
 package fbsrankings.messages.command;
 
+import "fbsrankings/messages/options/options.proto";
+
 message CalculateRankingsForSeasonCommand {
     string command_id = 1;
     oneof season_id_or_year {
         string season_id = 2;
         int32 year = 3;
     }
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.command.calculate_rankings_for_season";
 }

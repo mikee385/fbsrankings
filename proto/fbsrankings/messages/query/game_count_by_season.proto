@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package fbsrankings.messages.query;
 
+import "fbsrankings/messages/options/options.proto";
+
 message GameCountBySeasonResult {
     string query_id = 1;
     string season_id = 2;
@@ -11,4 +13,6 @@ message GameCountBySeasonResult {
 message GameCountBySeasonQuery {
     string query_id = 1;
     string season_id = 2;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.game_count_by_season";
 }

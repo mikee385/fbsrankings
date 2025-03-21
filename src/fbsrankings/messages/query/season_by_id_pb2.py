@@ -22,19 +22,22 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n-fbsrankings/messages/query/season_by_id.proto\x12\x1a\x66\x62srankings.messages.query\"2\n\x0fSeasonByIDValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\"q\n\x10SeasonByIDResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12@\n\x06season\x18\x02 \x01(\x0b\x32+.fbsrankings.messages.query.SeasonByIDValueH\x00\x88\x01\x01\x42\t\n\x07_season\"6\n\x0fSeasonByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n-fbsrankings/messages/query/season_by_id.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\"2\n\x0fSeasonByIDValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\"q\n\x10SeasonByIDResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12@\n\x06season\x18\x02 \x01(\x0b\x32+.fbsrankings.messages.query.SeasonByIDValueH\x00\x88\x01\x01\x42\t\n\x07_season\"Z\n\x0fSeasonByIDQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t:\"\x82\xb5\x18\x1e\x66\x62srankings.query.season_by_idb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.season_by_id_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_SEASONBYIDVALUE']._serialized_start=77
-  _globals['_SEASONBYIDVALUE']._serialized_end=127
-  _globals['_SEASONBYIDRESULT']._serialized_start=129
-  _globals['_SEASONBYIDRESULT']._serialized_end=242
-  _globals['_SEASONBYIDQUERY']._serialized_start=244
-  _globals['_SEASONBYIDQUERY']._serialized_end=298
+  _globals['_SEASONBYIDQUERY']._loaded_options = None
+  _globals['_SEASONBYIDQUERY']._serialized_options = b'\202\265\030\036fbsrankings.query.season_by_id'
+  _globals['_SEASONBYIDVALUE']._serialized_start=121
+  _globals['_SEASONBYIDVALUE']._serialized_end=171
+  _globals['_SEASONBYIDRESULT']._serialized_start=173
+  _globals['_SEASONBYIDRESULT']._serialized_end=286
+  _globals['_SEASONBYIDQUERY']._serialized_start=288
+  _globals['_SEASONBYIDQUERY']._serialized_end=378
 # @@protoc_insertion_point(module_scope)

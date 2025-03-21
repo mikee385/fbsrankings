@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package fbsrankings.messages.query;
 
+import "fbsrankings/messages/options/options.proto";
+
 message TeamByIDValue {
     string team_id = 1;
     string name = 2;
@@ -15,4 +17,6 @@ message TeamByIDResult {
 message TeamByIDQuery {
     string query_id = 1;
     string team_id = 2;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.team_by_id";
 }

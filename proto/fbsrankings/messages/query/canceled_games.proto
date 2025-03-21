@@ -3,7 +3,9 @@ syntax = "proto3";
 package fbsrankings.messages.query;
 
 import "google/protobuf/timestamp.proto";
+
 import "fbsrankings/messages/enums/enums.proto";
+import "fbsrankings/messages/options/options.proto";
 
 message CanceledGameResult {
     string game_id = 1;
@@ -26,4 +28,6 @@ message CanceledGamesResult {
 
 message CanceledGamesQuery {
     string query_id = 1;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.canceled_games";
 }

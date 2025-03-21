@@ -24,23 +24,34 @@ _sym_db = _symbol_database.Default()
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n%fbsrankings/messages/event/game.proto\x12\x1a\x66\x62srankings.messages.event\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\"\xfe\x01\n\x10GameCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\r\n\x05notes\x18\t \x01(\t\"\xc2\x02\n\x14GameRescheduledEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x10\n\x08old_week\x18\x04 \x01(\x05\x12,\n\x08old_date\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0c\n\x04week\x18\x06 \x01(\x05\x12(\n\x04\x64\x61te\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x08 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\t \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\n \x01(\t\x12\r\n\x05notes\x18\x0b \x01(\t\"\xff\x01\n\x11GameCanceledEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\r\n\x05notes\x18\t \x01(\t\"\xb2\x02\n\x12GameCompletedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\x17\n\x0fhome_team_score\x18\t \x01(\x05\x12\x17\n\x0f\x61way_team_score\x18\n \x01(\x05\x12\r\n\x05notes\x18\x0b \x01(\t\"\x96\x02\n\x15GameNotesUpdatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\x11\n\told_notes\x18\t \x01(\t\x12\r\n\x05notes\x18\n \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n%fbsrankings/messages/event/game.proto\x12\x1a\x66\x62srankings.messages.event\x1a\x1fgoogle/protobuf/timestamp.proto\x1a&fbsrankings/messages/enums/enums.proto\x1a*fbsrankings/messages/options/options.proto\"\xa2\x02\n\x10GameCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\r\n\x05notes\x18\t \x01(\t:\"\x82\xb5\x18\x1e\x66\x62srankings.event.game_created\"\xea\x02\n\x14GameRescheduledEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x10\n\x08old_week\x18\x04 \x01(\x05\x12,\n\x08old_date\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0c\n\x04week\x18\x06 \x01(\x05\x12(\n\x04\x64\x61te\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x08 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\t \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\n \x01(\t\x12\r\n\x05notes\x18\x0b \x01(\t:&\x82\xb5\x18\"fbsrankings.event.game_rescheduled\"\xa4\x02\n\x11GameCanceledEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\r\n\x05notes\x18\t \x01(\t:#\x82\xb5\x18\x1f\x66\x62srankings.event.game_canceled\"\xd8\x02\n\x12GameCompletedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\x17\n\x0fhome_team_score\x18\t \x01(\x05\x12\x17\n\x0f\x61way_team_score\x18\n \x01(\x05\x12\r\n\x05notes\x18\x0b \x01(\t:$\x82\xb5\x18 fbsrankings.event.game_completed\"\xc0\x02\n\x15GameNotesUpdatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x0f\n\x07game_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04week\x18\x04 \x01(\x05\x12(\n\x04\x64\x61te\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x41\n\x0eseason_section\x18\x06 \x01(\x0e\x32).fbsrankings.messages.enums.SeasonSection\x12\x14\n\x0chome_team_id\x18\x07 \x01(\t\x12\x14\n\x0c\x61way_team_id\x18\x08 \x01(\t\x12\x11\n\told_notes\x18\t \x01(\t\x12\r\n\x05notes\x18\n \x01(\t:(\x82\xb5\x18$fbsrankings.event.game_notes_updatedb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.game_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_GAMECREATEDEVENT']._serialized_start=143
-  _globals['_GAMECREATEDEVENT']._serialized_end=397
-  _globals['_GAMERESCHEDULEDEVENT']._serialized_start=400
-  _globals['_GAMERESCHEDULEDEVENT']._serialized_end=722
-  _globals['_GAMECANCELEDEVENT']._serialized_start=725
-  _globals['_GAMECANCELEDEVENT']._serialized_end=980
-  _globals['_GAMECOMPLETEDEVENT']._serialized_start=983
-  _globals['_GAMECOMPLETEDEVENT']._serialized_end=1289
-  _globals['_GAMENOTESUPDATEDEVENT']._serialized_start=1292
-  _globals['_GAMENOTESUPDATEDEVENT']._serialized_end=1570
+  _globals['_GAMECREATEDEVENT']._loaded_options = None
+  _globals['_GAMECREATEDEVENT']._serialized_options = b'\202\265\030\036fbsrankings.event.game_created'
+  _globals['_GAMERESCHEDULEDEVENT']._loaded_options = None
+  _globals['_GAMERESCHEDULEDEVENT']._serialized_options = b'\202\265\030\"fbsrankings.event.game_rescheduled'
+  _globals['_GAMECANCELEDEVENT']._loaded_options = None
+  _globals['_GAMECANCELEDEVENT']._serialized_options = b'\202\265\030\037fbsrankings.event.game_canceled'
+  _globals['_GAMECOMPLETEDEVENT']._loaded_options = None
+  _globals['_GAMECOMPLETEDEVENT']._serialized_options = b'\202\265\030 fbsrankings.event.game_completed'
+  _globals['_GAMENOTESUPDATEDEVENT']._loaded_options = None
+  _globals['_GAMENOTESUPDATEDEVENT']._serialized_options = b'\202\265\030$fbsrankings.event.game_notes_updated'
+  _globals['_GAMECREATEDEVENT']._serialized_start=187
+  _globals['_GAMECREATEDEVENT']._serialized_end=477
+  _globals['_GAMERESCHEDULEDEVENT']._serialized_start=480
+  _globals['_GAMERESCHEDULEDEVENT']._serialized_end=842
+  _globals['_GAMECANCELEDEVENT']._serialized_start=845
+  _globals['_GAMECANCELEDEVENT']._serialized_end=1137
+  _globals['_GAMECOMPLETEDEVENT']._serialized_start=1140
+  _globals['_GAMECOMPLETEDEVENT']._serialized_end=1484
+  _globals['_GAMENOTESUPDATEDEVENT']._serialized_start=1487
+  _globals['_GAMENOTESUPDATEDEVENT']._serialized_end=1807
 # @@protoc_insertion_point(module_scope)

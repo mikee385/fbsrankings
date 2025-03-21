@@ -2,8 +2,12 @@ syntax = "proto3";
 
 package fbsrankings.messages.event;
 
+import "fbsrankings/messages/options/options.proto";
+
 message TeamCreatedEvent {
     string event_id = 1;
     string team_id = 2;
     string name = 3;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.team_created";
 }

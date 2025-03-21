@@ -22,21 +22,24 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/team_ranking_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"o\n\"TeamRankingValueBySeasonWeekResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05order\x18\x03 \x01(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05value\x18\x05 \x01(\x01\"\xcd\x01\n\x1cTeamRankingBySeasonWeekValue\x12\x12\n\nranking_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04year\x18\x04 \x01(\x05\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12N\n\x06values\x18\x06 \x03(\x0b\x32>.fbsrankings.messages.query.TeamRankingValueBySeasonWeekResultB\x07\n\x05_week\"\x8d\x01\n\x1dTeamRankingBySeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12N\n\x07ranking\x18\x02 \x01(\x0b\x32\x38.fbsrankings.messages.query.TeamRankingBySeasonWeekValueH\x00\x88\x01\x01\x42\n\n\x08_ranking\"m\n\x1cTeamRankingBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_weekb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n<fbsrankings/messages/query/team_ranking_by_season_week.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\"o\n\"TeamRankingValueBySeasonWeekResult\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05order\x18\x03 \x01(\x05\x12\x0c\n\x04rank\x18\x04 \x01(\x05\x12\r\n\x05value\x18\x05 \x01(\x01\"\xcd\x01\n\x1cTeamRankingBySeasonWeekValue\x12\x12\n\nranking_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0c\n\x04year\x18\x04 \x01(\x05\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12N\n\x06values\x18\x06 \x03(\x0b\x32>.fbsrankings.messages.query.TeamRankingValueBySeasonWeekResultB\x07\n\x05_week\"\x8d\x01\n\x1dTeamRankingBySeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12N\n\x07ranking\x18\x02 \x01(\x0b\x32\x38.fbsrankings.messages.query.TeamRankingBySeasonWeekValueH\x00\x88\x01\x01\x42\n\n\x08_ranking\"\xa0\x01\n\x1cTeamRankingBySeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x11\n\x04week\x18\x04 \x01(\x05H\x00\x88\x01\x01:1\x82\xb5\x18-fbsrankings.query.team_ranking_by_season_weekB\x07\n\x05_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.team_ranking_by_season_week_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TEAMRANKINGVALUEBYSEASONWEEKRESULT']._serialized_start=92
-  _globals['_TEAMRANKINGVALUEBYSEASONWEEKRESULT']._serialized_end=203
-  _globals['_TEAMRANKINGBYSEASONWEEKVALUE']._serialized_start=206
-  _globals['_TEAMRANKINGBYSEASONWEEKVALUE']._serialized_end=411
-  _globals['_TEAMRANKINGBYSEASONWEEKRESULT']._serialized_start=414
-  _globals['_TEAMRANKINGBYSEASONWEEKRESULT']._serialized_end=555
-  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._serialized_start=557
-  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._serialized_end=666
+  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._loaded_options = None
+  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._serialized_options = b'\202\265\030-fbsrankings.query.team_ranking_by_season_week'
+  _globals['_TEAMRANKINGVALUEBYSEASONWEEKRESULT']._serialized_start=136
+  _globals['_TEAMRANKINGVALUEBYSEASONWEEKRESULT']._serialized_end=247
+  _globals['_TEAMRANKINGBYSEASONWEEKVALUE']._serialized_start=250
+  _globals['_TEAMRANKINGBYSEASONWEEKVALUE']._serialized_end=455
+  _globals['_TEAMRANKINGBYSEASONWEEKRESULT']._serialized_start=458
+  _globals['_TEAMRANKINGBYSEASONWEEKRESULT']._serialized_end=599
+  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._serialized_start=602
+  _globals['_TEAMRANKINGBYSEASONWEEKQUERY']._serialized_end=762
 # @@protoc_insertion_point(module_scope)

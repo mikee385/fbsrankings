@@ -22,19 +22,22 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n3fbsrankings/messages/query/latest_season_week.proto\x12\x1a\x66\x62srankings.messages.query\"T\n\x15LatestSeasonWeekValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_week\"}\n\x16LatestSeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x46\n\x06latest\x18\x02 \x01(\x0b\x32\x31.fbsrankings.messages.query.LatestSeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_latest\")\n\x15LatestSeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n3fbsrankings/messages/query/latest_season_week.proto\x12\x1a\x66\x62srankings.messages.query\x1a*fbsrankings/messages/options/options.proto\"T\n\x15LatestSeasonWeekValue\x12\x11\n\tseason_id\x18\x01 \x01(\t\x12\x0c\n\x04year\x18\x02 \x01(\x05\x12\x11\n\x04week\x18\x03 \x01(\x05H\x00\x88\x01\x01\x42\x07\n\x05_week\"}\n\x16LatestSeasonWeekResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x46\n\x06latest\x18\x02 \x01(\x0b\x32\x31.fbsrankings.messages.query.LatestSeasonWeekValueH\x00\x88\x01\x01\x42\t\n\x07_latest\"S\n\x15LatestSeasonWeekQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t:(\x82\xb5\x18$fbsrankings.query.latest_season_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.latest_season_week_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_LATESTSEASONWEEKVALUE']._serialized_start=83
-  _globals['_LATESTSEASONWEEKVALUE']._serialized_end=167
-  _globals['_LATESTSEASONWEEKRESULT']._serialized_start=169
-  _globals['_LATESTSEASONWEEKRESULT']._serialized_end=294
-  _globals['_LATESTSEASONWEEKQUERY']._serialized_start=296
-  _globals['_LATESTSEASONWEEKQUERY']._serialized_end=337
+  _globals['_LATESTSEASONWEEKQUERY']._loaded_options = None
+  _globals['_LATESTSEASONWEEKQUERY']._serialized_options = b'\202\265\030$fbsrankings.query.latest_season_week'
+  _globals['_LATESTSEASONWEEKVALUE']._serialized_start=127
+  _globals['_LATESTSEASONWEEKVALUE']._serialized_end=211
+  _globals['_LATESTSEASONWEEKRESULT']._serialized_start=213
+  _globals['_LATESTSEASONWEEKRESULT']._serialized_end=338
+  _globals['_LATESTSEASONWEEKQUERY']._serialized_start=340
+  _globals['_LATESTSEASONWEEKQUERY']._serialized_end=423
 # @@protoc_insertion_point(module_scope)

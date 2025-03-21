@@ -23,19 +23,22 @@ _sym_db = _symbol_database.Default()
 
 
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n7fbsrankings/messages/query/affiliations_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a&fbsrankings/messages/enums/enums.proto\"\xb6\x01\n\x19\x41\x66\x66iliationBySeasonResult\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x11\n\tteam_name\x18\x05 \x01(\t\x12<\n\x0bsubdivision\x18\x06 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivision\"{\n\x1a\x41\x66\x66iliationsBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12K\n\x0c\x61\x66\x66iliations\x18\x02 \x03(\x0b\x32\x35.fbsrankings.messages.query.AffiliationBySeasonResult\"@\n\x19\x41\x66\x66iliationsBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n7fbsrankings/messages/query/affiliations_by_season.proto\x12\x1a\x66\x62srankings.messages.query\x1a&fbsrankings/messages/enums/enums.proto\x1a*fbsrankings/messages/options/options.proto\"\xb6\x01\n\x19\x41\x66\x66iliationBySeasonResult\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t\x12\x0c\n\x04year\x18\x03 \x01(\x05\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12\x11\n\tteam_name\x18\x05 \x01(\t\x12<\n\x0bsubdivision\x18\x06 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivision\"{\n\x1a\x41\x66\x66iliationsBySeasonResult\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12K\n\x0c\x61\x66\x66iliations\x18\x02 \x03(\x0b\x32\x35.fbsrankings.messages.query.AffiliationBySeasonResult\"n\n\x19\x41\x66\x66iliationsBySeasonQuery\x12\x10\n\x08query_id\x18\x01 \x01(\t\x12\x11\n\tseason_id\x18\x02 \x01(\t:,\x82\xb5\x18(fbsrankings.query.affiliations_by_seasonb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.query.affiliations_by_season_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_AFFILIATIONBYSEASONRESULT']._serialized_start=128
-  _globals['_AFFILIATIONBYSEASONRESULT']._serialized_end=310
-  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_start=312
-  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_end=435
-  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_start=437
-  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_end=501
+  _globals['_AFFILIATIONSBYSEASONQUERY']._loaded_options = None
+  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_options = b'\202\265\030(fbsrankings.query.affiliations_by_season'
+  _globals['_AFFILIATIONBYSEASONRESULT']._serialized_start=172
+  _globals['_AFFILIATIONBYSEASONRESULT']._serialized_end=354
+  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_start=356
+  _globals['_AFFILIATIONSBYSEASONRESULT']._serialized_end=479
+  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_start=481
+  _globals['_AFFILIATIONSBYSEASONQUERY']._serialized_end=591
 # @@protoc_insertion_point(module_scope)

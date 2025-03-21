@@ -3,6 +3,7 @@ syntax = "proto3";
 package fbsrankings.messages.event;
 
 import "fbsrankings/messages/enums/enums.proto";
+import "fbsrankings/messages/options/options.proto";
 
 message AffiliationCreatedEvent {
     string event_id = 1;
@@ -10,4 +11,6 @@ message AffiliationCreatedEvent {
     string season_id = 3;
     string team_id = 4;
     fbsrankings.messages.enums.Subdivision subdivision = 5;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.affiliation_created";
 }

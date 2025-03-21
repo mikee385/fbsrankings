@@ -23,15 +23,18 @@ _sym_db = _symbol_database.Default()
 
 
 from fbsrankings.messages.enums import enums_pb2 as fbsrankings_dot_messages_dot_enums_dot_enums__pb2
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n,fbsrankings/messages/event/affiliation.proto\x12\x1a\x66\x62srankings.messages.event\x1a&fbsrankings/messages/enums/enums.proto\"\xa5\x01\n\x17\x41\x66\x66iliationCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12<\n\x0bsubdivision\x18\x05 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivisionb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n,fbsrankings/messages/event/affiliation.proto\x12\x1a\x66\x62srankings.messages.event\x1a&fbsrankings/messages/enums/enums.proto\x1a*fbsrankings/messages/options/options.proto\"\xd0\x01\n\x17\x41\x66\x66iliationCreatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x16\n\x0e\x61\x66\x66iliation_id\x18\x02 \x01(\t\x12\x11\n\tseason_id\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\t\x12<\n\x0bsubdivision\x18\x05 \x01(\x0e\x32\'.fbsrankings.messages.enums.Subdivision:)\x82\xb5\x18%fbsrankings.event.affiliation_createdb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.affiliation_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_AFFILIATIONCREATEDEVENT']._serialized_start=117
-  _globals['_AFFILIATIONCREATEDEVENT']._serialized_end=282
+  _globals['_AFFILIATIONCREATEDEVENT']._loaded_options = None
+  _globals['_AFFILIATIONCREATEDEVENT']._serialized_options = b'\202\265\030%fbsrankings.event.affiliation_created'
+  _globals['_AFFILIATIONCREATEDEVENT']._serialized_start=161
+  _globals['_AFFILIATIONCREATEDEVENT']._serialized_end=369
 # @@protoc_insertion_point(module_scope)

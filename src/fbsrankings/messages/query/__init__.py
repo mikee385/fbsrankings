@@ -4,6 +4,7 @@ from typing import Any
 
 from communication.messages import Query
 
+from ..options import get_topic
 from .affiliation_count_by_season_pb2 import AffiliationCountBySeasonQuery
 from .affiliation_count_by_season_pb2 import AffiliationCountBySeasonResult
 from .affiliations_by_season_pb2 import AffiliationBySeasonResult
@@ -114,22 +115,22 @@ __all__ = [
 ]
 
 Topics: dict[type[Query[Any]], str] = {
-    AffiliationCountBySeasonQuery: "fbsrankings/query/affiliation_count_by_season",
-    AffiliationsBySeasonQuery: "fbsrankings/query/affiliations_by_season",
-    CanceledGamesQuery: "fbsrankings/query/canceled_games",
-    GameByIDQuery: "fbsrankings/query/game_by_id",
-    GameCountBySeasonQuery: "fbsrankings/query/game_count_by_season",
-    GameRankingBySeasonWeekQuery: "fbsrankings/query/game_ranking_by_season_week",
-    GamesBySeasonQuery: "fbsrankings/query/games_by_season",
-    LatestSeasonWeekQuery: "fbsrankings/query/latest_season_week",
-    PostseasonGameCountBySeasonQuery: "fbsrankings/query/postseason_game_count_by_season",
-    SeasonByIDQuery: "fbsrankings/query/season_by_id",
-    SeasonByYearQuery: "fbsrankings/query/season_by_year",
-    SeasonsQuery: "fbsrankings/query/seasons",
-    TeamByIDQuery: "fbsrankings/query/team_by_id",
-    TeamCountBySeasonQuery: "fbsrankings/query/team_count_by_season",
-    TeamRankingBySeasonWeekQuery: "fbsrankings/query/team_ranking_by_season_week",
-    TeamRecordBySeasonWeekQuery: "fbsrankings/query/team_record_by_season_week",
-    TeamsQuery: "fbsrankings/query/teams",
-    WeekCountBySeasonQuery: "fbsrankings/query/week_count_by_season",
+    AffiliationCountBySeasonQuery: get_topic(AffiliationCountBySeasonQuery),
+    AffiliationsBySeasonQuery: get_topic(AffiliationsBySeasonQuery),
+    CanceledGamesQuery: get_topic(CanceledGamesQuery),
+    GameByIDQuery: get_topic(GameByIDQuery),
+    GameCountBySeasonQuery: get_topic(GameCountBySeasonQuery),
+    GameRankingBySeasonWeekQuery: get_topic(GameRankingBySeasonWeekQuery),
+    GamesBySeasonQuery: get_topic(GamesBySeasonQuery),
+    LatestSeasonWeekQuery: get_topic(LatestSeasonWeekQuery),
+    PostseasonGameCountBySeasonQuery: get_topic(PostseasonGameCountBySeasonQuery),
+    SeasonByIDQuery: get_topic(SeasonByIDQuery),
+    SeasonByYearQuery: get_topic(SeasonByYearQuery),
+    SeasonsQuery: get_topic(SeasonsQuery),
+    TeamByIDQuery: get_topic(TeamByIDQuery),
+    TeamCountBySeasonQuery: get_topic(TeamCountBySeasonQuery),
+    TeamRankingBySeasonWeekQuery: get_topic(TeamRankingBySeasonWeekQuery),
+    TeamRecordBySeasonWeekQuery: get_topic(TeamRecordBySeasonWeekQuery),
+    TeamsQuery: get_topic(TeamsQuery),
+    WeekCountBySeasonQuery: get_topic(WeekCountBySeasonQuery),
 }

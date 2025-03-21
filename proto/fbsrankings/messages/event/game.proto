@@ -3,7 +3,9 @@ syntax = "proto3";
 package fbsrankings.messages.event;
 
 import "google/protobuf/timestamp.proto";
+
 import "fbsrankings/messages/enums/enums.proto";
+import "fbsrankings/messages/options/options.proto";
 
 message GameCreatedEvent {
     string event_id = 1;
@@ -15,6 +17,8 @@ message GameCreatedEvent {
     string home_team_id = 7;
     string away_team_id = 8;
     string notes = 9;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_created";
 }
 
 message GameRescheduledEvent {
@@ -29,6 +33,8 @@ message GameRescheduledEvent {
     string home_team_id = 9;
     string away_team_id = 10;
     string notes = 11;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_rescheduled";
 }
 
 message GameCanceledEvent {
@@ -41,6 +47,8 @@ message GameCanceledEvent {
     string home_team_id = 7;
     string away_team_id = 8;
     string notes = 9;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_canceled";
 }
 
 message GameCompletedEvent {
@@ -55,6 +63,8 @@ message GameCompletedEvent {
     int32 home_team_score = 9;
     int32 away_team_score = 10;
     string notes = 11;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_completed";
 }
 
 message GameNotesUpdatedEvent {
@@ -68,4 +78,6 @@ message GameNotesUpdatedEvent {
     string away_team_id = 8;
     string old_notes = 9;
     string notes = 10;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.event.game_notes_updated";
 }

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package fbsrankings.messages.query;
 
+import "fbsrankings/messages/options/options.proto";
+
 message TeamRankingValueBySeasonWeekResult {
     string team_id = 1;
     string name = 2;
@@ -29,4 +31,6 @@ message TeamRankingBySeasonWeekQuery {
     string name = 2;
     string season_id = 3;
     optional int32 week = 4;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.team_ranking_by_season_week";
 }

@@ -3,6 +3,7 @@ syntax = "proto3";
 package fbsrankings.messages.query;
 
 import "fbsrankings/messages/enums/enums.proto";
+import "fbsrankings/messages/options/options.proto";
 
 message AffiliationBySeasonResult {
     string affiliation_id = 1;
@@ -21,4 +22,6 @@ message AffiliationsBySeasonResult {
 message AffiliationsBySeasonQuery {
     string query_id = 1;
     string season_id = 2;
+
+    option (fbsrankings.messages.options.topic) = "fbsrankings.query.affiliations_by_season";
 }

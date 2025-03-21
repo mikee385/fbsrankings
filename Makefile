@@ -48,7 +48,7 @@ upgrade:
     pip install -e .
 
 protoc:
-    protoc --proto_path=proto --python_out=src --pyi_out=src proto/fbsrankings/messages/command/*.proto proto/fbsrankings/messages/enums/*.proto proto/fbsrankings/messages/event/*.proto proto/fbsrankings/messages/query/*.proto proto/fbsrankings/messages/error/*.proto
+    protoc --proto_path=proto --python_out=src --pyi_out=src proto/fbsrankings/messages/command/*.proto proto/fbsrankings/messages/enums/*.proto proto/fbsrankings/messages/event/*.proto proto/fbsrankings/messages/options/*.proto proto/fbsrankings/messages/query/*.proto proto/fbsrankings/messages/error/*.proto
 
 check:
     isort src tests setup.py

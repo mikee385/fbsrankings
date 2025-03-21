@@ -22,19 +22,24 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from fbsrankings.messages.options import options_pb2 as fbsrankings_dot_messages_dot_options_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(fbsrankings/messages/event/ranking.proto\x12\x1a\x66\x62srankings.messages.event\"F\n\x0cRankingValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05order\x18\x02 \x01(\x05\x12\x0c\n\x04rank\x18\x03 \x01(\x05\x12\r\n\x05value\x18\x04 \x01(\x02\"\xb9\x01\n\x1aTeamRankingCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x12\n\nranking_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\tseason_id\x18\x04 \x01(\t\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x38\n\x06values\x18\x06 \x03(\x0b\x32(.fbsrankings.messages.event.RankingValueB\x07\n\x05_week\"\xb9\x01\n\x1aGameRankingCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x12\n\nranking_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\tseason_id\x18\x04 \x01(\t\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x38\n\x06values\x18\x06 \x03(\x0b\x32(.fbsrankings.messages.event.RankingValueB\x07\n\x05_weekb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(fbsrankings/messages/event/ranking.proto\x12\x1a\x66\x62srankings.messages.event\x1a*fbsrankings/messages/options/options.proto\"F\n\x0cRankingValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05order\x18\x02 \x01(\x05\x12\x0c\n\x04rank\x18\x03 \x01(\x05\x12\r\n\x05value\x18\x04 \x01(\x02\"\xe8\x01\n\x1aTeamRankingCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x12\n\nranking_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\tseason_id\x18\x04 \x01(\t\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x38\n\x06values\x18\x06 \x03(\x0b\x32(.fbsrankings.messages.event.RankingValue:-\x82\xb5\x18)fbsrankings.event.team_ranking_calculatedB\x07\n\x05_week\"\xe8\x01\n\x1aGameRankingCalculatedEvent\x12\x10\n\x08\x65vent_id\x18\x01 \x01(\t\x12\x12\n\nranking_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x11\n\tseason_id\x18\x04 \x01(\t\x12\x11\n\x04week\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x38\n\x06values\x18\x06 \x03(\x0b\x32(.fbsrankings.messages.event.RankingValue:-\x82\xb5\x18)fbsrankings.event.game_ranking_calculatedB\x07\n\x05_weekb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fbsrankings.messages.event.ranking_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_RANKINGVALUE']._serialized_start=72
-  _globals['_RANKINGVALUE']._serialized_end=142
-  _globals['_TEAMRANKINGCALCULATEDEVENT']._serialized_start=145
-  _globals['_TEAMRANKINGCALCULATEDEVENT']._serialized_end=330
-  _globals['_GAMERANKINGCALCULATEDEVENT']._serialized_start=333
-  _globals['_GAMERANKINGCALCULATEDEVENT']._serialized_end=518
+  _globals['_TEAMRANKINGCALCULATEDEVENT']._loaded_options = None
+  _globals['_TEAMRANKINGCALCULATEDEVENT']._serialized_options = b'\202\265\030)fbsrankings.event.team_ranking_calculated'
+  _globals['_GAMERANKINGCALCULATEDEVENT']._loaded_options = None
+  _globals['_GAMERANKINGCALCULATEDEVENT']._serialized_options = b'\202\265\030)fbsrankings.event.game_ranking_calculated'
+  _globals['_RANKINGVALUE']._serialized_start=116
+  _globals['_RANKINGVALUE']._serialized_end=186
+  _globals['_TEAMRANKINGCALCULATEDEVENT']._serialized_start=189
+  _globals['_TEAMRANKINGCALCULATEDEVENT']._serialized_end=421
+  _globals['_GAMERANKINGCALCULATEDEVENT']._serialized_start=424
+  _globals['_GAMERANKINGCALCULATEDEVENT']._serialized_end=656
 # @@protoc_insertion_point(module_scope)

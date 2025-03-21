@@ -2,6 +2,7 @@
 
 from communication.messages import Event
 
+from ..options import get_topic
 from .affiliation_pb2 import AffiliationCreatedEvent
 from .game_pb2 import GameCanceledEvent
 from .game_pb2 import GameCompletedEvent
@@ -34,15 +35,15 @@ __all__ = [
 ]
 
 Topics: dict[type[Event], str] = {
-    AffiliationCreatedEvent: "fbsrankings/event/affiliation_created",
-    GameCanceledEvent: "fbsrankings/event/game_canceled",
-    GameCompletedEvent: "fbsrankings/event/game_completed",
-    GameCreatedEvent: "fbsrankings/event/game_created",
-    GameNotesUpdatedEvent: "fbsrankings/event/game_notes_updated",
-    GameRankingCalculatedEvent: "fbsrankings/event/game_ranking_calculated",
-    GameRescheduledEvent: "fbsrankings/event/game_rescheduled",
-    SeasonCreatedEvent: "fbsrankings/event/season_created",
-    TeamCreatedEvent: "fbsrankings/event/team_created",
-    TeamRankingCalculatedEvent: "fbsrankings/event/team_ranking_calculated",
-    TeamRecordCalculatedEvent: "fbsrankings/event/team_record_calculated",
+    AffiliationCreatedEvent: get_topic(AffiliationCreatedEvent),
+    GameCanceledEvent: get_topic(GameCanceledEvent),
+    GameCompletedEvent: get_topic(GameCompletedEvent),
+    GameCreatedEvent: get_topic(GameCreatedEvent),
+    GameNotesUpdatedEvent: get_topic(GameNotesUpdatedEvent),
+    GameRankingCalculatedEvent: get_topic(GameRankingCalculatedEvent),
+    GameRescheduledEvent: get_topic(GameRescheduledEvent),
+    SeasonCreatedEvent: get_topic(SeasonCreatedEvent),
+    TeamCreatedEvent: get_topic(TeamCreatedEvent),
+    TeamRankingCalculatedEvent: get_topic(TeamRankingCalculatedEvent),
+    TeamRecordCalculatedEvent: get_topic(TeamRecordCalculatedEvent),
 }
