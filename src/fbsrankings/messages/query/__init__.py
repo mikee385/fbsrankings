@@ -1,10 +1,5 @@
 """Query message classes for the fbsrankings package"""
 
-from typing import Any
-
-from communication.messages import Query
-
-from ..options import get_topic
 from .affiliation_count_by_season_pb2 import AffiliationCountBySeasonQuery
 from .affiliation_count_by_season_pb2 import AffiliationCountBySeasonResult
 from .affiliations_by_season_pb2 import AffiliationBySeasonResult
@@ -113,24 +108,3 @@ __all__ = [
     "WeekCountBySeasonQuery",
     "WeekCountBySeasonResult",
 ]
-
-Topics: dict[type[Query[Any]], str] = {
-    AffiliationCountBySeasonQuery: get_topic(AffiliationCountBySeasonQuery),
-    AffiliationsBySeasonQuery: get_topic(AffiliationsBySeasonQuery),
-    CanceledGamesQuery: get_topic(CanceledGamesQuery),
-    GameByIDQuery: get_topic(GameByIDQuery),
-    GameCountBySeasonQuery: get_topic(GameCountBySeasonQuery),
-    GameRankingBySeasonWeekQuery: get_topic(GameRankingBySeasonWeekQuery),
-    GamesBySeasonQuery: get_topic(GamesBySeasonQuery),
-    LatestSeasonWeekQuery: get_topic(LatestSeasonWeekQuery),
-    PostseasonGameCountBySeasonQuery: get_topic(PostseasonGameCountBySeasonQuery),
-    SeasonByIDQuery: get_topic(SeasonByIDQuery),
-    SeasonByYearQuery: get_topic(SeasonByYearQuery),
-    SeasonsQuery: get_topic(SeasonsQuery),
-    TeamByIDQuery: get_topic(TeamByIDQuery),
-    TeamCountBySeasonQuery: get_topic(TeamCountBySeasonQuery),
-    TeamRankingBySeasonWeekQuery: get_topic(TeamRankingBySeasonWeekQuery),
-    TeamRecordBySeasonWeekQuery: get_topic(TeamRecordBySeasonWeekQuery),
-    TeamsQuery: get_topic(TeamsQuery),
-    WeekCountBySeasonQuery: get_topic(WeekCountBySeasonQuery),
-}

@@ -21,10 +21,7 @@ from fbsrankings.context import Context
 from fbsrankings.core.command import Service as CoreCommandService
 from fbsrankings.core.query import Service as CoreQueryService
 from fbsrankings.messages.command import DropStorageCommand
-from fbsrankings.messages.command import Topics as CommandTopics
-from fbsrankings.messages.error import Topics as ErrorTopics
-from fbsrankings.messages.event import Topics as EventTopics
-from fbsrankings.messages.query import Topics as QueryTopics
+from fbsrankings.messages.options import TopicMapper
 from fbsrankings.ranking.command import Service as RankingCommandService
 from fbsrankings.ranking.query import Service as RankingQueryService
 from serialization import JsonSerializer
@@ -34,7 +31,7 @@ from serialization import Serializer
 
 
 class Environment(ContextManager["Environment"]):
-    def __init__(self, config_location: str) -> None:
+    def __init__(self, config_location: Optional[str]) -> None:
         package_dir = Path(__file__).resolve().parent.parent
 
         if config_location is not None:
@@ -75,21 +72,22 @@ class Environment(ContextManager["Environment"]):
                     f"Serialization cannot be 'none' when channel is {config.channel}",
                 )
             self._channel = MemoryChannel()
+            self._topic_mapper = TopicMapper()
 
             self.command_bus = CommandBridge(
                 self._channel,
                 self._serializer,
-                CommandTopics,
+                self._topic_mapper,
             )
             self.query_bus = QueryBridge(
                 self._channel,
                 self._serializer,
-                QueryTopics,
+                self._topic_mapper,
             )
             self.event_bus = EventBridge(
                 self._channel,
                 self._serializer,
-                {**EventTopics, **ErrorTopics},
+                self._topic_mapper,
             )
 
         else:

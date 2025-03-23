@@ -6,6 +6,7 @@ from communication.channel import Payload
 from communication.messages import C
 from communication.messages import Command
 from communication.messages import CommandHandler
+from communication.messages import CommandTopicMapper
 from serialization import Serializer
 
 
@@ -17,20 +18,22 @@ class CommandBridge(CommandBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: dict[type[Command], str],
+        topics: CommandTopicMapper,
     ) -> None:
         self._channel = channel
         self._serializer = serializer
-
-        self._topics: dict[type[Command], str] = {}
-        self._topics.update(topics)
+        self._topics = topics
 
         self._handlers: dict[type[Command], PayloadHandler] = {}
 
-    def register_handler(self, type_: type[C], handler: CommandHandler[C]) -> None:
+    def _get_topic(self, type_: type[C]) -> str:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
+        return topic
+
+    def register_handler(self, type_: type[C], handler: CommandHandler[C]) -> None:
+        topic = self._get_topic(type_)
 
         def payload_handler(payload: Payload) -> None:
             command = self._serializer.deserialize(payload, type_)
@@ -44,9 +47,7 @@ class CommandBridge(CommandBus):
         self._channel.subscribe(topic, payload_handler)
 
     def unregister_handler(self, type_: type[C]) -> None:
-        topic = self._topics.get(type_)
-        if topic is None:
-            raise ValueError(f"Unknown type: {type_}")
+        topic = self._get_topic(type_)
 
         payload_handler = self._handlers.pop(type_)
         if payload_handler is not None:
@@ -54,9 +55,7 @@ class CommandBridge(CommandBus):
 
     def send(self, command: C) -> None:
         type_ = type(command)
-        topic = self._topics.get(type_)
-        if topic is None:
-            raise ValueError(f"Unknown type: {type_}")
+        topic = self._get_topic(type_)
 
         payload = self._serializer.serialize(command)
         self._channel.publish(topic, payload)

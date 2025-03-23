@@ -9,6 +9,7 @@ from communication.channel import Payload
 from communication.messages import Q
 from communication.messages import Query
 from communication.messages import QueryHandler
+from communication.messages import QueryTopicMapper
 from communication.messages import R
 from serialization import Serializer
 
@@ -21,28 +22,28 @@ class QueryBridge(QueryBus):
         self,
         channel: Channel,
         serializer: Serializer,
-        topics: dict[type[Query[Any]], str],
+        topics: QueryTopicMapper,
     ) -> None:
         self._channel = channel
         self._serializer = serializer
-
-        self._topics: dict[type[Query[Any]], str] = {}
-        self._topics.update(topics)
+        self._topics = topics
 
         self._handlers: dict[type[Query[Any]], PayloadHandler] = {}
         self._results: dict[str, Optional[Any]] = {}
 
-    def _get_request_topic(self, type_: type[Q]) -> str:
+    def _get_topic(self, type_: type[Q]) -> str:
         topic = self._topics.get(type_)
         if topic is None:
             raise ValueError(f"Unknown type: {type_}")
+        return topic
+
+    def _get_request_topic(self, type_: type[Q]) -> str:
+        topic = self._get_topic(type_)
         return topic + "/request"
 
     def _get_response_topic(self, query: Q) -> str:
         type_ = type(query)
-        topic = self._topics.get(type_)
-        if topic is None:
-            raise ValueError(f"Unknown type: {type_}")
+        topic = self._get_topic(type_)
         return topic + "/response/" + str(query.query_id)
 
     def register_handler(self, type_: type[Q], handler: QueryHandler[Q, R]) -> None:

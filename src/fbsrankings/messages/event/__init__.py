@@ -1,8 +1,5 @@
 """Event message classes for the fbsrankings package"""
 
-from communication.messages import Event
-
-from ..options import get_topic
 from .affiliation_pb2 import AffiliationCreatedEvent
 from .game_pb2 import GameCanceledEvent
 from .game_pb2 import GameCompletedEvent
@@ -33,17 +30,3 @@ __all__ = [
     "TeamRecordCalculatedEvent",
     "TeamRecordValue",
 ]
-
-Topics: dict[type[Event], str] = {
-    AffiliationCreatedEvent: get_topic(AffiliationCreatedEvent),
-    GameCanceledEvent: get_topic(GameCanceledEvent),
-    GameCompletedEvent: get_topic(GameCompletedEvent),
-    GameCreatedEvent: get_topic(GameCreatedEvent),
-    GameNotesUpdatedEvent: get_topic(GameNotesUpdatedEvent),
-    GameRankingCalculatedEvent: get_topic(GameRankingCalculatedEvent),
-    GameRescheduledEvent: get_topic(GameRescheduledEvent),
-    SeasonCreatedEvent: get_topic(SeasonCreatedEvent),
-    TeamCreatedEvent: get_topic(TeamCreatedEvent),
-    TeamRankingCalculatedEvent: get_topic(TeamRankingCalculatedEvent),
-    TeamRecordCalculatedEvent: get_topic(TeamRecordCalculatedEvent),
-}

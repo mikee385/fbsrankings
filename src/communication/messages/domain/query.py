@@ -1,5 +1,6 @@
 from typing import Callable
 from typing import Generic
+from typing import Optional
 from typing import Protocol
 from typing import TypeVar
 
@@ -17,3 +18,8 @@ class Query(QueryBase, Generic[R], Protocol):
 
 
 QueryHandler = Callable[[Q], R]
+
+
+class QueryTopicMapper(Protocol):
+    def get(self, key: type[Q]) -> Optional[str]:
+        raise NotImplementedError
