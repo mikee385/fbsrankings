@@ -8,7 +8,6 @@ from typing import Union
 from uuid import uuid4
 
 from prettytable import PrettyTable
-from tqdm import tqdm
 
 from communication.bus import CommandBus
 from communication.bus import EventBus
@@ -17,7 +16,8 @@ from communication.messages import Error
 from communication.messages import Event
 from communication.messages import MultipleError
 from fbsrankings.cli.error import print_err
-from fbsrankings.cli.spinner import Spinner
+from fbsrankings.cli.progress import ProgressBar
+from fbsrankings.cli.progress import Spinner
 from fbsrankings.messages.command import CalculateRankingsForSeasonCommand
 from fbsrankings.messages.command import DropStorageCommand
 from fbsrankings.messages.command import ImportSeasonByYearCommand
@@ -176,7 +176,7 @@ class Application:
 
         with GameUpdateTracker(self._event_bus) as tracker:
             print_err("Importing season data:")
-            for year in tqdm(years):
+            for year in ProgressBar(years):
                 self._command_bus.send(
                     ImportSeasonByYearCommand(command_id=str(uuid4()), year=year),
                 )
@@ -184,7 +184,7 @@ class Application:
             if tracker.updates:
                 print_err()
                 print_err("Calculating rankings:")
-                for season_id in tqdm(tracker.updates):
+                for season_id in ProgressBar(tracker.updates.keys()):
                     self._command_bus.send(
                         CalculateRankingsForSeasonCommand(
                             command_id=str(uuid4()),

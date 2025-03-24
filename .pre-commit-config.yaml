@@ -109,6 +109,5 @@ repos:
         -   types-prettytable
         -   types-protobuf
         -   types-setuptools
-        -   types-tqdm
         args: [--strict]
         exclude: (whitelist\.py|_pb2\.py)
