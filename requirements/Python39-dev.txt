@@ -19,8 +19,6 @@ backports-tarfile==1.2.0
     # via jaraco-context
 bandit==1.8.3
     # via fbsrankings (setup.py)
-beautifulsoup4==4.13.3
-    # via fbsrankings (setup.py)
 black==25.1.0
     # via fbsrankings (setup.py)
 build==1.2.2.post1
@@ -146,8 +144,6 @@ flake8-use-pathlib==0.3.0
     # via fbsrankings (setup.py)
 grimp==3.7.1
     # via import-linter
-html5lib==1.1
-    # via fbsrankings (setup.py)
 id==1.5.0
     # via twine
 identify==2.6.9
@@ -278,12 +274,8 @@ rich==13.9.4
     # via
     #   bandit
     #   twine
-six==1.17.0
-    # via html5lib
 sort-requirements==1.3.0
     # via fbsrankings (setup.py)
-soupsieve==2.6
-    # via beautifulsoup4
 stevedore==5.4.1
     # via bandit
 tinydb==4.8.2
@@ -306,12 +298,8 @@ twine==6.1.0
     # via fbsrankings (setup.py)
 typeguard==4.4.2
     # via fbsrankings (setup.py)
-types-beautifulsoup4==4.12.0.20250204
-    # via fbsrankings (setup.py)
 types-dataclasses==0.6.6
     # via fbsrankings (setup.py)
-types-html5lib==1.1.11.20241018
-    # via types-beautifulsoup4
 types-prettytable==3.4.2.6
     # via fbsrankings (setup.py)
 types-protobuf==5.29.1.20250315
@@ -321,7 +309,6 @@ types-setuptools==76.0.0.20250313
 typing-extensions==4.12.2
     # via
     #   astroid
-    #   beautifulsoup4
     #   black
     #   flake8-pie
     #   grimp
@@ -344,8 +331,6 @@ vulture==2.14
     # via fbsrankings (setup.py)
 wcwidth==0.2.13
     # via prettytable
-webencodings==0.5.1
-    # via html5lib
 wheel==0.45.1
     # via
     #   fbsrankings (setup.py)

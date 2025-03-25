@@ -1,9 +1,9 @@
 import datetime
 from collections.abc import Iterator
+from html.parser import HTMLParser
+from typing import Any
+from typing import Optional
 from urllib.request import urlopen
-
-from bs4 import BeautifulSoup
-from bs4 import Tag
 
 from fbsrankings.core.command.domain.model.affiliation import Affiliation
 from fbsrankings.core.command.domain.model.game import Game
@@ -39,7 +39,7 @@ class SportsReference:
             raise ValueError(f"Only HTTP is allowed for teams URL {team_url}")
 
         with urlopen(team_url) as team_html:  # nosec
-            team_soup = BeautifulSoup(team_html, "html5lib")
+            team_soup = team_html.read().decode("utf-8")
         team_rows = _html_iter(team_soup)
 
         game_url = f"https://www.sports-reference.com/cfb/years/{year}-schedule.html"
@@ -47,7 +47,7 @@ class SportsReference:
             raise ValueError(f"Only HTTP is allowed for games URL {game_url}")
 
         with urlopen(game_url) as game_html:  # nosec
-            game_soup = BeautifulSoup(game_html, "html5lib")
+            game_soup = game_html.read().decode("utf-8")
         game_rows = _html_iter(game_soup)
 
         season = self._importer.import_season(year)
@@ -307,10 +307,44 @@ class SportsReference:
         return games, fcs_affiliations
 
 
-def _html_iter(soup: BeautifulSoup) -> Iterator[list[str]]:
-    row_iter = iter(soup.find_all("tr"))
-    for row in row_iter:
-        yield [
-            child.getText()
-            for child in filter(lambda c: isinstance(c, Tag), row.children)
-        ]
+class TableRowParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.in_tr = False
+        self.in_td_or_th = False
+        self.data = ""
+        self.current_row: list[str] = []
+        self.rows: list[list[str]] = []
+
+    def handle_starttag(
+        self,
+        tag: str,
+        _: list[tuple[str, Optional[str]]],
+    ) -> None:
+        if tag == "tr":
+            self.in_tr = True
+            self.current_row = []
+        elif tag in ("td", "th") and self.in_tr:
+            self.in_td_or_th = True
+            self.data = ""
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "tr" and self.in_tr:
+            self.in_tr = False
+            self.rows.append(self.current_row)
+        elif tag in ("td", "th") and self.in_td_or_th:
+            self.in_td_or_th = False
+            self.current_row.append(self.data.strip())
+
+    def handle_data(self, data: str) -> None:
+        if self.in_td_or_th:
+            self.data = data
+
+    def error(self, message: str) -> Any:
+        raise ValueError(message)
+
+
+def _html_iter(html_content: str) -> Iterator[list[str]]:
+    parser = TableRowParser()
+    parser.feed(html_content)
+    yield from parser.rows

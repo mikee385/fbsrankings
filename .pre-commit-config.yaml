@@ -104,7 +104,6 @@ repos:
         -   pydantic
         -   pytest
         -   tinydb
-        -   types-beautifulsoup4
         -   types-dataclasses
         -   types-prettytable
         -   types-protobuf
