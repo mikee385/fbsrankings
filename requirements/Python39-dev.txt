@@ -4,8 +4,6 @@
 #
 #    pip-compile --extra=dev --output-file=requirements/Python39-dev.txt setup.py
 #
-annotated-types==0.7.0
-    # via pydantic
 astor==0.8.1
     # via flake8-simplify
 astroid==3.3.9
@@ -221,9 +219,9 @@ pluggy==1.5.0
     # via pytest
 pre-commit==4.2.0
     # via fbsrankings (setup.py)
-prettytable==3.15.1
+prettytable==3.16.0
     # via fbsrankings (setup.py)
-protobuf==6.30.1
+protobuf==6.30.2
     # via fbsrankings (setup.py)
 py-make==0.1.2
     # via fbsrankings (setup.py)
@@ -231,10 +229,6 @@ pycodestyle==2.12.1
     # via
     #   flake8
     #   flake8-print
-pydantic==2.10.6
-    # via fbsrankings (setup.py)
-pydantic-core==2.27.2
-    # via pydantic
 pyflakes==3.2.0
     # via flake8
 pygments==2.19.1
@@ -306,7 +300,7 @@ types-protobuf==5.29.1.20250315
     # via fbsrankings (setup.py)
 types-setuptools==76.0.0.20250313
     # via fbsrankings (setup.py)
-typing-extensions==4.12.2
+typing-extensions==4.13.0
     # via
     #   astroid
     #   black
@@ -314,8 +308,6 @@ typing-extensions==4.12.2
     #   grimp
     #   import-linter
     #   mypy
-    #   pydantic
-    #   pydantic-core
     #   pylint
     #   rich
     #   typeguard
