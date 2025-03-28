@@ -32,10 +32,12 @@ class ProgressBar(Generic[T]):
         self._length = length
         self._fill = fill
 
+        self._start_time: float
         self._current: int
         self._iterator: Iterator[T]
 
     def __iter__(self) -> Iterator[T]:
+        self._start_time = time.time()
         self._current = 0
         self._iterator = self._iterable.__iter__()
         return self
@@ -52,9 +54,21 @@ class ProgressBar(Generic[T]):
         percent = iteration / self._total
         filled_length = int(self._length * percent)
         progress_bar = self._fill * filled_length + "-" * (self._length - filled_length)
+
         sys.stderr.write(
             f"\r{percent * 100:>5.1f}% |{progress_bar}| {iteration}/{self._total}",
         )
+
+        if iteration > 0:
+            elapsed_time = time.time() - self._start_time
+            time_per_iteration = elapsed_time / iteration if iteration > 0 else 0
+            remaining_time = time_per_iteration * (self._total - iteration)
+
+            sys.stderr.write(
+                f" [{format_time(elapsed_time)}<{format_time(remaining_time)},"
+                f" {format_time(time_per_iteration)}s/it]",
+            )
+
         sys.stderr.flush()
 
     def _print_complete(self) -> None:
@@ -66,8 +80,10 @@ class ProgressBar(Generic[T]):
 class Spinner(ContextManager["Spinner"]):
     def __init__(self) -> None:
         self._sequence = ["|", "/", "-", "\\"]
-        self._counter = 0
-        self._busy = False
+
+        self._start_time: float
+        self._counter: int
+        self._busy: bool
         self._thread: threading.Thread
 
     def _spinner_task(self) -> None:
@@ -80,6 +96,7 @@ class Spinner(ContextManager["Spinner"]):
             self._counter += 1
 
     def __enter__(self) -> "Spinner":
+        self._start_time = time.time()
         self._counter = 0
         self._busy = True
 
@@ -94,9 +111,14 @@ class Spinner(ContextManager["Spinner"]):
         value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> Literal[False]:
+        elapsed_time = time.time() - self._start_time
         self._busy = False
         self._thread.join()
 
-        sys.stderr.write("\rDone!          \n")
+        sys.stderr.write(f"\rDone! [{format_time(elapsed_time)}]  \n")
 
         return False
+
+
+def format_time(timestamp: float) -> str:
+    return time.strftime("%M:%S", time.gmtime(timestamp))
