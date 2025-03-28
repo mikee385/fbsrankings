@@ -104,7 +104,6 @@ repos:
         -   pytest
         -   tinydb
         -   types-dataclasses
-        -   types-prettytable
         -   types-protobuf
         -   types-setuptools
         args: [--strict]

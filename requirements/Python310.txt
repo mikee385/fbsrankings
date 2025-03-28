@@ -6,11 +6,7 @@
 #
 numpy==2.2.4
     # via fbsrankings (setup.py)
-prettytable==3.16.0
-    # via fbsrankings (setup.py)
 protobuf==6.30.2
     # via fbsrankings (setup.py)
 tinydb==4.8.2
     # via fbsrankings (setup.py)
-wcwidth==0.2.13
-    # via prettytable

@@ -7,8 +7,6 @@ from typing import Optional
 from typing import Union
 from uuid import uuid4
 
-from prettytable import PrettyTable
-
 from communication.bus import CommandBus
 from communication.bus import EventBus
 from communication.bus import QueryBus
@@ -538,10 +536,50 @@ class Application:
             raise ValueError(f"Game rankings not found for {rating_name}, {year}")
         return result.ranking
 
+    @staticmethod
+    def _print_table(
+        header: list[str],
+        alignments: list[str],
+        rows: list[list[str]],
+    ) -> None:
+        num_columns = len(header)
+        column_widths = [
+            max(len(header[column]), max(len(row[column]) for row in rows))
+            for column in range(num_columns)
+        ]
+        separator = "+" + "+".join("-" * (width + 2) for width in column_widths) + "+"
+
+        print(separator)
+
+        line = "| "
+        for column in range(num_columns):
+            if alignments[column] == "r":
+                line += header[column].rjust(column_widths[column]) + " | "
+            elif alignments[column] == "l":
+                line += header[column].ljust(column_widths[column]) + " | "
+            else:
+                line += header[column].center(column_widths[column]) + " | "
+        print(line.rstrip())
+
+        print(separator)
+
+        for row in rows:
+            line = "| "
+            for column in range(num_columns):
+                if alignments[column] == "r":
+                    line += row[column].rjust(column_widths[column]) + " | "
+                elif alignments[column] == "l":
+                    line += row[column].ljust(column_widths[column]) + " | "
+                else:
+                    line += row[column].center(column_widths[column]) + " | "
+            print(line.rstrip())
+
+        print(separator)
+
     def _print_seasons_table(self, seasons: Iterable[SeasonResult]) -> None:
-        season_summary_table = PrettyTable(
-            field_names=["Season", "Weeks", "Teams", "FBS", "FCS", "Games", "Post"],
-        )
+        headers = ["Season", "Weeks", "Teams", "FBS", "FCS", "Games", "Post"]
+        alignments = ["c", "c", "c", "c", "c", "c", "c"]
+        rows = []
 
         for season in seasons:
             week_count = self._query_bus.query(
@@ -580,20 +618,20 @@ class Application:
                 PostseasonGameCountBySeasonResult,
             )
 
-            season_summary_table.add_row(
+            rows.append(
                 [
-                    season.year,
-                    week_count.count,
-                    team_count.count,
-                    affiliation_count.fbs_count,
-                    affiliation_count.fcs_count,
-                    game_count.count,
-                    postseason_game_count.count,
+                    str(season.year),
+                    str(week_count.count),
+                    str(team_count.count),
+                    str(affiliation_count.fbs_count),
+                    str(affiliation_count.fcs_count),
+                    str(game_count.count),
+                    str(postseason_game_count.count),
                 ],
             )
 
         print()
-        print(season_summary_table)
+        self._print_table(headers, alignments, rows)
 
     @staticmethod
     def _print_table_title(
@@ -608,8 +646,8 @@ class Application:
         else:
             print(f"{year} {header}, {rating_name}:")
 
-    @staticmethod
     def _print_teams_table(
+        self,
         record: TeamRecordBySeasonWeekValue,
         ranking: TeamRankingBySeasonWeekValue,
         sos: TeamRankingBySeasonWeekValue,
@@ -618,17 +656,9 @@ class Application:
         record_map = {v.team_id: v for v in record.values}
         sos_map = {v.team_id: v for v in sos.values}
 
-        table = PrettyTable(
-            field_names=["#", "Team", "W-L", "Val", "SOS_#", "SOS_Val"],
-        )
-        table.align["#"] = "r"
-        table.align["Team"] = "l"
-        table.align["W-L"] = "r"
-        table.align["Val"] = "c"
-        table.align["SOS_#"] = "r"
-        table.align["SOS_Val"] = "c"
-        table.float_format["Val"] = ".3"
-        table.float_format["SOS_Val"] = ".3"
+        headers = ["#", "Team", "W-L", "Val", "SOS_#", "SOS_Val"]
+        alignments = ["r", "l", "r", "c", "r", "c"]
+        rows = []
 
         values = list(ranking.values)
         if limit is not None:
@@ -638,38 +668,30 @@ class Application:
             record_value = record_map[ranking_value.team_id]
             sos_value = sos_map[ranking_value.team_id]
 
-            table.add_row(
+            rows.append(
                 [
-                    ranking_value.rank,
-                    ranking_value.name,
+                    str(ranking_value.rank),
+                    str(ranking_value.name),
                     f"{record_value.wins}-{record_value.losses}",
-                    ranking_value.value,
-                    sos_value.rank,
-                    sos_value.value,
+                    f"{ranking_value.value:.3f}",
+                    str(sos_value.rank),
+                    f"{sos_value.value:.3f}",
                 ],
             )
 
-        print(table)
+        self._print_table(headers, alignments, rows)
 
-    @staticmethod
     def _print_games_table(
+        self,
         game_values: list[GameRankingValueBySeasonWeekResult],
         team_ranking: TeamRankingBySeasonWeekValue,
         limit: Optional[int],
     ) -> None:
         team_map = {v.team_id: v for v in team_ranking.values}
 
-        table = PrettyTable(
-            field_names=["Date", "H#", "Home", "A#", "Away", "Score", "Val"],
-        )
-        table.align["Date"] = "c"
-        table.align["H#"] = "r"
-        table.align["Home"] = "l"
-        table.align["A#"] = "r"
-        table.align["Away"] = "l"
-        table.align["Score"] = "r"
-        table.align["Val"] = "c"
-        table.float_format["Val"] = ".3"
+        headers = ["Date", "H#", "Home", "A#", "Away", "Score", "Val"]
+        alignments = ["c", "r", "l", "r", "l", "r", "c"]
+        rows = []
 
         if limit is None:
             values = game_values
@@ -680,24 +702,24 @@ class Application:
             home_team = team_map[game.home_team_id]
             away_team = team_map[game.away_team_id]
 
-            table.add_row(
+            rows.append(
                 [
-                    game.date.ToDatetime().date(),
-                    home_team.rank,
-                    game.home_team_name,
-                    away_team.rank,
-                    game.away_team_name,
+                    str(game.date.ToDatetime().date()),
+                    str(home_team.rank),
+                    str(game.home_team_name),
+                    str(away_team.rank),
+                    str(game.away_team_name),
                     (
                         f"{game.home_team_score}-{game.away_team_score}"
                         if game.HasField("home_team_score")
                         and game.HasField("away_team_score")
                         else ""
                     ),
-                    game.value,
+                    f"{game.value:.3f}",
                 ],
             )
 
-        print(table)
+        self._print_table(headers, alignments, rows)
 
     def _print_events(self) -> None:
         print()
@@ -711,37 +733,39 @@ class Application:
                 raise ValueError("No seasons were found")
             season_map = {s.season_id: s for s in result.seasons}
 
-            event_table = PrettyTable(
-                field_names=[
-                    "Year",
-                    "Tm",
-                    "GmS",
-                    "GmC",
-                    "GmR",
-                    "GmX",
-                    "GmN",
-                    "TRd",
-                    "TRk",
-                    "GRk",
-                ],
-            )
+            headers = [
+                "Year",
+                "Tm",
+                "GmS",
+                "GmC",
+                "GmR",
+                "GmX",
+                "GmN",
+                "TRd",
+                "TRk",
+                "GRk",
+            ]
+            alignments = ["c", "c", "c", "c", "c", "c", "c", "c", "c", "c"]
+            rows = []
+
             for season, counts in self._event_counts_by_season.items():
                 year = season_map[season].year
-                event_table.add_row(
+                rows.append(
                     [
-                        year,
-                        counts.get(AffiliationCreatedEvent, 0),
-                        counts.get(GameCreatedEvent, 0),
-                        counts.get(GameCompletedEvent, 0),
-                        counts.get(GameRescheduledEvent, 0),
-                        counts.get(GameCanceledEvent, 0),
-                        counts.get(GameNotesUpdatedEvent, 0),
-                        counts.get(TeamRecordCalculatedEvent, 0),
-                        counts.get(TeamRankingCalculatedEvent, 0),
-                        counts.get(GameRankingCalculatedEvent, 0),
+                        str(year),
+                        str(counts.get(AffiliationCreatedEvent, 0)),
+                        str(counts.get(GameCreatedEvent, 0)),
+                        str(counts.get(GameCompletedEvent, 0)),
+                        str(counts.get(GameRescheduledEvent, 0)),
+                        str(counts.get(GameCanceledEvent, 0)),
+                        str(counts.get(GameNotesUpdatedEvent, 0)),
+                        str(counts.get(TeamRecordCalculatedEvent, 0)),
+                        str(counts.get(TeamRankingCalculatedEvent, 0)),
+                        str(counts.get(GameRankingCalculatedEvent, 0)),
                     ],
                 )
-            print(event_table)
+
+            self._print_table(headers, alignments, rows)
 
         else:
             print("None")

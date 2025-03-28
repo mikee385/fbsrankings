@@ -214,8 +214,6 @@ pluggy==1.5.0
     # via pytest
 pre-commit==4.2.0
     # via fbsrankings (setup.py)
-prettytable==3.16.0
-    # via fbsrankings (setup.py)
 protobuf==6.30.2
     # via fbsrankings (setup.py)
 py-make==0.1.2
@@ -289,11 +287,9 @@ typeguard==4.4.2
     # via fbsrankings (setup.py)
 types-dataclasses==0.6.6
     # via fbsrankings (setup.py)
-types-prettytable==3.4.2.6
-    # via fbsrankings (setup.py)
 types-protobuf==5.29.1.20250315
     # via fbsrankings (setup.py)
-types-setuptools==76.0.0.20250313
+types-setuptools==77.0.2.20250328
     # via fbsrankings (setup.py)
 typing-extensions==4.13.0
     # via
@@ -315,8 +311,6 @@ virtualenv==20.29.3
     #   pre-commit
 vulture==2.14
     # via fbsrankings (setup.py)
-wcwidth==0.2.13
-    # via prettytable
 wheel==0.45.1
     # via
     #   fbsrankings (setup.py)

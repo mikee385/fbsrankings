@@ -1,4 +1,4 @@
-python_version = Python39
+python_version = Python310
 
 .PHONY:
     init
@@ -45,7 +45,7 @@ upgrade:
     pip-compile --extra=dev --output-file=requirements/$(python_version)-dev.txt setup.py --upgrade
     sort-requirements requirements/$(python_version)-dev.txt
     pip-sync requirements/$(python_version)-dev.txt
-    pip install -e .
+    pip install -e . --use-pep517
 
 protoc:
     protoc --proto_path=proto --python_out=src --pyi_out=src proto/fbsrankings/messages/command/*.proto proto/fbsrankings/messages/enums/*.proto proto/fbsrankings/messages/event/*.proto proto/fbsrankings/messages/options/*.proto proto/fbsrankings/messages/query/*.proto proto/fbsrankings/messages/error/*.proto
